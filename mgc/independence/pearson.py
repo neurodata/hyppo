@@ -8,9 +8,11 @@ from ._utils import _contains_nan
 
 
 def _check_input(x, y):
+    # check if x and y are ndarrays
     if not isinstance(x, np.ndarray) or not isinstance(y, np.ndarray):
         raise ValueError("x and y must be ndarrays")
 
+    # check if x or y is shape (n,)
     if x.ndim != 1 or y.ndim != 1:
         raise ValueError("x and y must be of shape (n,). Please reshape")
 

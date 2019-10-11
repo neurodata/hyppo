@@ -3,6 +3,7 @@ import warnings
 import numpy as np
 
 
+# from scipy
 def _contains_nan(a):
     try:
         # Calling np.sum to avoid creating a huge array into memory

@@ -102,7 +102,6 @@ class IndependenceTest(ABC):
 
         # generate null distribution and p-value
         pvalue = 0
-        null_dist = np.zeros(reps)
 
         # use all cores to create function that parallelizes over number of reps
         mapwrapper = MapWrapper(workers)
