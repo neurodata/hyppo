@@ -25,7 +25,7 @@ def _check_input(x, y):
     return x, y
 
 
-class Kendall(IndependenceTest):
+class Spearman(IndependenceTest):
     """
     Compute the Spearman test statistic and p-value.
 
