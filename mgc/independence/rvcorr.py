@@ -76,7 +76,7 @@ class RVCorr(IndependenceTest):
             The computed independence test p-value.
         """
         check_input = _CheckInputs(x, y, dim=np.max(x.shape[0], y.shape[0]),
-                                                    is_pval=True, reps=reps)
+                                   reps=reps)
         x, y = check_input(RVCorr.__name__)
 
         return super(RVCorr, self).p_value(x, y, reps, workers)

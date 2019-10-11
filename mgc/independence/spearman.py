@@ -77,7 +77,7 @@ class Spearman(IndependenceTest):
         pvalue : float
             The computed independence test p-value.
         """
-        check_input = _CheckInputs(x, y, dim=1, is_pval=True)
+        check_input = _CheckInputs(x, y, dim=1)
         x, y = check_input(Spearman.__name__)
         _, pvalue = spearmanr(x, y)
         self.pvalue = pvalue

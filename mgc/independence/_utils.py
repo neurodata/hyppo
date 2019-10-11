@@ -29,13 +29,13 @@ def _contains_nan(a):
 
 
 class _CheckInputs:
-    def __init__(self, x, y, dim, is_pval=False, reps=1000):
+    def __init__(self, x, y, dim, reps=None, compute_distance=None):
         self.x = x
         self.y = y
         self.dim = dim
-        self.is_pval = is_pval
+        self.compute_distance = compute_distance
 
-        if is_pval:
+        if reps:
             self.reps = reps
 
     def __call__(self, test_name):
@@ -44,15 +44,16 @@ class _CheckInputs:
         _contains_nan(self.y)
         self.x, self.y = self.check_dim_xy(test_name)
         self.x, self.y = self.convert_xy_float64()
+        self.check_compute_distance()
 
-        if self.is_pval == "pval":
+        if self.reps:
             self.check_reps()
 
         return self.x, self.y
 
     def check_ndarray_xy(self):
         if (not isinstance(self.x, np.ndarray) or
-            not isinstance(self.y, np.ndarray)):
+                not isinstance(self.y, np.ndarray)):
             raise ValueError("x and y must be ndarrays")
 
     def check_dim_xy(self, test_name):
@@ -60,7 +61,8 @@ class _CheckInputs:
         if self.dim == 1:
             # check if x or y is shape (n,)
             if self.x.ndim != 1 or self.y.ndim != 1:
-                raise ValueError("x and y must be of shape (n,). Please reshape")
+                raise ValueError(
+                    "x and y must be of shape (n,). Please reshape")
         elif self.dim > 1:
             # convert arrays of type (n,) to (n, 1)
             if self.x.ndim == 1:
@@ -78,15 +80,15 @@ class _CheckInputs:
         nx, px = self.x.shape[0]
         ny, py = self.y.shape[0]
 
-        test_nsame = ['MGC', 'Dcor']
+        test_nsame = ['MGC', 'Dcorr', 'HHG']
         if test_name in test_nsame:
             if nx != ny:
                 raise ValueError("Shape mismatch, x and y must have shape [n, p] and "
-                                "[n, q].")
+                                 "[n, q].")
         else:
             if nx != ny or px != py:
                 raise ValueError("Shape mismatch, x and y must have shape [n, p] and "
-                                "[n, p].")
+                                 "[n, p].")
 
     def convert_xy_float64(self):
         # convert x and y to floats
@@ -97,9 +99,16 @@ class _CheckInputs:
 
     def check_reps(self):
         if not isinstance(self.reps, int) or self.reps < 0:
-            raise ValueError("Number of reps must be an integer greater than 0.")
+            raise ValueError(
+                "Number of reps must be an integer greater than 0.")
         elif self.reps < 1000:
             msg = ("The number of replications is low (under 1000), and p-value "
-                "calculations may be unreliable. Use the p-value result, with "
-                "caution!")
+                   "calculations may be unreliable. Use the p-value result, with "
+                   "caution!")
             warnings.warn(msg, RuntimeWarning)
+
+    def check_compute_distance(self):
+        # check if compute_distance_matrix if a callable()
+        if (not callable(self.compute_distance) and
+            self.compute_distance is not None):
+            raise ValueError("Compute_distance must be a function.")

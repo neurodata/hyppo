@@ -59,7 +59,7 @@ class Kendall(IndependenceTest):
         pvalue : float
             The computed independence test p-value.
         """
-        check_input = _CheckInputs(x, y, dim=1, is_pval=True)
+        check_input = _CheckInputs(x, y, dim=1)
         x, y = check_input(Kendall.__name__)
         _, pvalue = kendalltau(x, y)
         self.pvalue = pvalue

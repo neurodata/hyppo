@@ -78,7 +78,7 @@ class CannCorr(IndependenceTest):
             The computed independence test p-value.
         """
         check_input = _CheckInputs(x, y, dim=np.max(x.shape[0], y.shape[0]),
-                                                    is_pval=True, reps=reps)
+                                   reps=reps)
         x, y = check_input(CannCorr.__name__)
 
         return super(CannCorr, self).p_value(x, y, reps, workers)

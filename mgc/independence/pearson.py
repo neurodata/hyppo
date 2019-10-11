@@ -59,7 +59,7 @@ class Pearson(IndependenceTest):
         pvalue : float
             The computed independence test p-value.
         """
-        check_input = _CheckInputs(x, y, dim=1, is_pval=True)
+        check_input = _CheckInputs(x, y, dim=1)
         x, y = check_input(Pearson.__name__)
         _, pvalue = pearsonr(x, y)
         self.pvalue = pvalue
