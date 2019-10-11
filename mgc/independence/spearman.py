@@ -4,7 +4,7 @@ import numpy as np
 from scipy.stats import spearmanr
 
 from .base import IndependenceTest
-from ._utils import _contains_nan
+from ._utils import _contains_nan, _CheckInputs
 
 
 def _check_input(x, y):
@@ -55,7 +55,8 @@ class Spearman(IndependenceTest):
         stat : float
             The computed independence test statistic.
         """
-        x, y = _check_input(x, y)
+        check_input = _CheckInputs(x, y, dim=1)
+        x, y = check_input(Spearman.__name__)
         stat, _ = spearmanr(x, y)
         self.stat = stat
 
@@ -76,7 +77,8 @@ class Spearman(IndependenceTest):
         pvalue : float
             The computed independence test p-value.
         """
-        x, y = _check_input(x, y)
+        check_input = _CheckInputs(x, y, dim=1, is_pval=True)
+        x, y = check_input(Spearman.__name__)
         _, pvalue = spearmanr(x, y)
         self.pvalue = pvalue
 

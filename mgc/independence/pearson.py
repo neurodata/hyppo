@@ -4,27 +4,7 @@ import numpy as np
 from scipy.stats import pearsonr
 
 from .base import IndependenceTest
-from ._utils import _contains_nan
-
-
-def _check_input(x, y):
-    # check if x and y are ndarrays
-    if not isinstance(x, np.ndarray) or not isinstance(y, np.ndarray):
-        raise ValueError("x and y must be ndarrays")
-
-    # check if x or y is shape (n,)
-    if x.ndim != 1 or y.ndim != 1:
-        raise ValueError("x and y must be of shape (n,). Please reshape")
-
-    # check for NaNs
-    _contains_nan(x)
-    _contains_nan(y)
-
-    # convert x and y to floats
-    x = np.asarray(x).astype(np.float64)
-    y = np.asarray(y).astype(np.float64)
-
-    return x, y
+from ._utils import _contains_nan, _CheckInputs
 
 
 class Pearson(IndependenceTest):
@@ -57,7 +37,8 @@ class Pearson(IndependenceTest):
         stat : float
             The computed independence test statistic.
         """
-        x, y = _check_input(x, y)
+        check_input = _CheckInputs(x, y, dim=1)
+        x, y = check_input(Pearson.__name__)
         stat, _ = pearsonr(x, y)
         self.stat = stat
 
@@ -78,7 +59,8 @@ class Pearson(IndependenceTest):
         pvalue : float
             The computed independence test p-value.
         """
-        x, y = _check_input(x, y)
+        check_input = _CheckInputs(x, y, dim=1, is_pval=True)
+        x, y = check_input(Pearson.__name__)
         _, pvalue = pearsonr(x, y)
         self.pvalue = pvalue
 
