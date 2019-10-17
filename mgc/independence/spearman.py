@@ -38,7 +38,7 @@ class Spearman(IndependenceTest):
     """
 
     def __init__(self):
-        super().__init__(self)
+        IndependenceTest.__init__(self)
 
     def statistic(self, x, y):
         """
