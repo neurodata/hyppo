@@ -16,12 +16,10 @@ cache: pip
 
 install:
 - pip install -r requirements.txt
-- pip install -U pytest pytest-cov codecov
-- if [[ $TRAVIS_PYTHON_VERSION != '3.5' ]]; then travis_retry pip install black; fi
+- python3 setup.py install
 
 script:
-- pytest graspy/ tests/
-- if [[ $TRAVIS_PYTHON_VERSION != '3.5' ]]; then black --check --diff ./graspy ./tests; fi
+- py.test -s --cov=mgcpy
 
 after_success:
 - codecov
