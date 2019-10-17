@@ -1,28 +1,7 @@
-import warnings
-
-import numpy as np
 from scipy.stats import spearmanr
 
 from .base import IndependenceTest
 from ._utils import _contains_nan, _CheckInputs
-
-
-def _check_input(x, y):
-    if not isinstance(x, np.ndarray) or not isinstance(y, np.ndarray):
-        raise ValueError("x and y must be ndarrays")
-
-    if x.ndim != 1 or y.ndim != 1:
-        raise ValueError("x and y must be of shape (n,). Please reshape")
-
-    # check for NaNs
-    _contains_nan(x)
-    _contains_nan(y)
-
-    # convert x and y to floats
-    x = np.asarray(x).astype(np.float64)
-    y = np.asarray(y).astype(np.float64)
-
-    return x, y
 
 
 class Spearman(IndependenceTest):
@@ -62,7 +41,7 @@ class Spearman(IndependenceTest):
 
         return stat
 
-    def p_value(self, x, y):
+    def test(self, x, y):
         """
         Calulates the Spearman test p-value.
 
@@ -79,7 +58,8 @@ class Spearman(IndependenceTest):
         """
         check_input = _CheckInputs(x, y, dim=1)
         x, y = check_input(Spearman.__name__)
-        _, pvalue = spearmanr(x, y)
+        stat, pvalue = spearmanr(x, y)
+        self.stat = stat
         self.pvalue = pvalue
 
         return pvalue

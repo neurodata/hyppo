@@ -1,6 +1,3 @@
-import warnings
-
-import numpy as np
 from scipy.stats import kendalltau
 
 from .base import IndependenceTest
@@ -44,7 +41,7 @@ class Kendall(IndependenceTest):
 
         return stat
 
-    def p_value(self, x, y):
+    def test(self, x, y):
         """
         Calulates the Kendall test p-value.
 
@@ -61,7 +58,8 @@ class Kendall(IndependenceTest):
         """
         check_input = _CheckInputs(x, y, dim=1)
         x, y = check_input(Kendall.__name__)
-        _, pvalue = kendalltau(x, y)
+        stat, pvalue = kendalltau(x, y)
+        self.stat = stat
         self.pvalue = pvalue
 
-        return pvalue
+        return stat, pvalue

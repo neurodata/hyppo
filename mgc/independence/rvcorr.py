@@ -1,5 +1,3 @@
-import warnings
-
 import numpy as np
 
 from .base import IndependenceTest
@@ -56,7 +54,7 @@ class RVCorr(IndependenceTest):
 
         return stat
 
-    def p_value(self, x, y, reps=1000, workers=-1):
+    def test(self, x, y, reps=1000, workers=-1):
         """
         Calulates the RV test p-value.
 
@@ -79,4 +77,4 @@ class RVCorr(IndependenceTest):
                                    reps=reps)
         x, y = check_input(RVCorr.__name__)
 
-        return super(RVCorr, self).p_value(x, y, reps, workers)
+        return super(RVCorr, self).test(x, y, reps, workers)

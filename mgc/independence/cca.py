@@ -1,5 +1,3 @@
-import warnings
-
 import numpy as np
 from scipy.sparse.linalg import svds
 
@@ -60,7 +58,7 @@ class CannCorr(IndependenceTest):
 
         return stat
 
-    def p_value(self, x, y, reps=1000, workers=-1):
+    def test(self, x, y, reps=1000, workers=-1):
         """
         Calulates the CCA test p-value.
 
@@ -81,4 +79,4 @@ class CannCorr(IndependenceTest):
                                    reps=reps)
         x, y = check_input(CannCorr.__name__)
 
-        return super(CannCorr, self).p_value(x, y, reps, workers)
+        return super(CannCorr, self).test(x, y, reps, workers)

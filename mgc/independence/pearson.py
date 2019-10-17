@@ -1,6 +1,3 @@
-import warnings
-
-import numpy as np
 from scipy.stats import pearsonr
 
 from .base import IndependenceTest
@@ -44,7 +41,7 @@ class Pearson(IndependenceTest):
 
         return stat
 
-    def p_value(self, x, y):
+    def test(self, x, y):
         """
         Calulates the Pearson test p-value.
 
@@ -61,7 +58,8 @@ class Pearson(IndependenceTest):
         """
         check_input = _CheckInputs(x, y, dim=1)
         x, y = check_input(Pearson.__name__)
-        _, pvalue = pearsonr(x, y)
+        stat, pvalue = pearsonr(x, y)
+        self.stat = stat
         self.pvalue = pvalue
 
-        return pvalue
+        return stat, pvalue

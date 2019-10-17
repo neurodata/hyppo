@@ -75,7 +75,7 @@ class IndependenceTest(ABC):
         return perm_stat
 
     @abstractmethod
-    def p_value(self, x, y, reps=1000, workers=-1):
+    def test(self, x, y, reps=1000, workers=-1):
         """
         Calulates the independece test p-value.
 
@@ -100,19 +100,21 @@ class IndependenceTest(ABC):
         self.x = x
         self.y = y
 
-        # generate null distribution and p-value
-        pvalue = 0
+        # calculate observed test statistic
+        obs_stat = self.statistic(x, y)
 
         # use all cores to create function that parallelizes over number of reps
         mapwrapper = MapWrapper(workers)
         null_dist = np.array(list(mapwrapper(self._perm_stat, range(reps))))
+        self.null_dist = null_dist
 
         # calculate p-value and significant permutation map through list
-        pvalue = (null_dist >= self.stat).sum() / reps
+        pvalue = (null_dist >= obs_stat).sum() / reps
 
         # correct for a p-value of 0. This is because, with bootstrapping
         # permutations, a p-value of 0 is incorrect
         if pvalue == 0:
             pvalue = 1 / reps
+        self.pvalue = pvalue
 
-        return pvalue, null_dist
+        return obs_stat, pvalue
