@@ -19,7 +19,7 @@ class RVCorr(IndependenceTest):
     """
 
     def __init__(self):
-        super().__init__(self)
+        IndependenceTest.__init__(self)
 
     def statistic(self, x, y):
         """
@@ -38,7 +38,7 @@ class RVCorr(IndependenceTest):
         stat : float
             The computed independence test statistic.
         """
-        check_input = _CheckInputs(x, y, dim=np.max(x.shape[0], y.shape[0]))
+        check_input = _CheckInputs(x, y, dim=np.max([x.shape[0], y.shape[0]]))
         x, y = check_input(RVCorr.__name__)
 
         centx = x - np.mean(x, axis=0)
@@ -50,7 +50,7 @@ class RVCorr(IndependenceTest):
         vary = centy.T @ centy
 
         covar = np.trace(covar @ covar.T)
-        stat = np.divide(covar, np.sqrt(np.trace(varx @ varx)),
+        stat = np.divide(covar, np.sqrt(np.trace(varx @ varx)) *
                          np.sqrt(vary @ vary))
         self.stat = stat
 
@@ -75,7 +75,7 @@ class RVCorr(IndependenceTest):
         pvalue : float
             The computed independence test p-value.
         """
-        check_input = _CheckInputs(x, y, dim=np.max(x.shape[0], y.shape[0]),
+        check_input = _CheckInputs(x, y, dim=np.max([x.shape[0], y.shape[0]]),
                                    reps=reps)
         x, y = check_input(RVCorr.__name__)
 

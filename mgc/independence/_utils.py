@@ -19,8 +19,9 @@ def _contains_nan(a):
             # Don't know what to do. Fall back to omitting nan values and
             # issue a warning.
             contains_nan = False
-            warnings.warn("The input array could not be properly checked for nan "
-                          "values. nan values will be ignored.", RuntimeWarning)
+            msg = ("The input array could not be properly checked for nan "
+                   "values. nan values will be ignored.")
+            warnings.warn(msg, RuntimeWarning)
 
     if contains_nan:
         raise ValueError("Input contains NaNs. Please omit and try again")
@@ -34,9 +35,7 @@ class _CheckInputs:
         self.y = y
         self.dim = dim
         self.compute_distance = compute_distance
-
-        if reps:
-            self.reps = reps
+        self.reps = reps
 
     def __call__(self, test_name):
         self.check_ndarray_xy()
@@ -60,10 +59,12 @@ class _CheckInputs:
         # check if x and y are ndarrays
         if self.dim == 1:
             # check if x or y is shape (n,)
-            if self.x.ndim != 1 or self.y.ndim != 1:
-                raise ValueError(
-                    "x and y must be of shape (n,). Please reshape")
-        elif self.dim > 1:
+            if self.x.ndim > 1 or self.y.ndim > 1:
+                msg = ("x and y must be of shape (n,). Will reshape")
+                warnings.warn(msg, RuntimeWarning)
+                self.x.shape = (-1)
+                self.y.shape = (-1)
+        if self.dim > 1:
             # convert arrays of type (n,) to (n, 1)
             if self.x.ndim == 1:
                 self.x.shape = (-1, 1)
@@ -71,24 +72,23 @@ class _CheckInputs:
                 self.y.shape = (-1, 1)
 
             self._check_nd_indeptest(test_name)
-        else:
-            raise ValueError("dim must be 1 or greater than 1")
 
         return self.x, self.y
 
     def _check_nd_indeptest(self, test_name):
-        nx, px = self.x.shape[0]
-        ny, py = self.y.shape[0]
+        if self.dim > 1:
+            nx, px = self.x.shape
+            ny, py = self.y.shape
 
-        test_nsame = ['MGC', 'Dcorr', 'HHG']
-        if test_name in test_nsame:
-            if nx != ny:
-                raise ValueError("Shape mismatch, x and y must have shape [n, p] and "
-                                 "[n, q].")
-        else:
-            if nx != ny or px != py:
-                raise ValueError("Shape mismatch, x and y must have shape [n, p] and "
-                                 "[n, p].")
+            test_nsame = ['MGC', 'Dcorr', 'HHG']
+            if test_name in test_nsame:
+                if nx != ny:
+                    raise ValueError("Shape mismatch, x and y must have shape"
+                                     " [n, p] and [n, q].")
+            else:
+                if nx != ny or px != py:
+                    raise ValueError("Shape mismatch, x and y must have the"
+                                     " same shape [n, p].")
 
     def convert_xy_float64(self):
         # convert x and y to floats

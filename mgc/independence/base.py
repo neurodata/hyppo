@@ -56,7 +56,7 @@ class IndependenceTest(ABC):
             independence tests (check desired test class for specifics).
         """
 
-    def _perm_stat(self):
+    def _perm_stat(self, index):
         """
         Helper function that is used to calculate parallel permuted test
         statistics.
@@ -105,7 +105,7 @@ class IndependenceTest(ABC):
 
         # use all cores to create function that parallelizes over number of reps
         mapwrapper = MapWrapper(workers)
-        null_dist = list(mapwrapper(self._perm_stat(), range(reps)))
+        null_dist = np.array(list(mapwrapper(self._perm_stat, range(reps))))
 
         # calculate p-value and significant permutation map through list
         pvalue = (null_dist >= self.stat).sum() / reps
