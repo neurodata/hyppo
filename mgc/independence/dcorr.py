@@ -9,9 +9,9 @@ from ._utils import _contains_nan, _CheckInputs
 def _center_distmat(distx):
     n = distx.shape[0]
 
-    exp_distx = (((distx.mean(axis=0) * n) / (n-2)).reshape(n, -1)
-                + (distx.mean(axis=1 * n) / (n-2)).reshape(n, -1)
-                - np.sum(distx) / ((n-1) * (n-2)))
+    exp_distx = ((distx.sum(axis=0) / (n-2)).reshape(n, -1)
+                + (distx.sum(axis=1) / (n-2)).reshape(n, -1)
+                - distx.sum() / ((n-1) * (n-2)))
     cent_distx = distx - exp_distx
 
     return cent_distx
@@ -20,6 +20,28 @@ def _center_distmat(distx):
 @njit
 def _global_cov(distx, disty):
     return np.sum(distx @ disty)
+
+
+@njit
+def _dcorr(distx, disty, is_paired=False):
+    cent_distx = _center_distmat(distx)
+    cent_disty = _center_distmat(disty)
+
+    covar = _global_cov(cent_distx, cent_disty.T)
+    varx = _global_cov(cent_distx, cent_distx.T)
+    vary = _global_cov(cent_disty, cent_disty.T)
+
+    if varx <= 0 or vary <= 0:
+        stat = 0
+    else:
+        if is_paired:
+            n = cent_distx.shape[0]
+            stat = (varx * (n-1)/n + vary * (n-1)/n
+                    - 2/n * np.trace(cent_distx @ cent_disty.T))
+        else:
+            stat = covar / np.real(np.sqrt(varx * vary))
+
+    return stat
 
 
 class Dcorr(IndependenceTest):
@@ -60,23 +82,7 @@ class Dcorr(IndependenceTest):
         distx = self.compute_distance(x)
         disty = self.compute_distance(y)
 
-        cent_distx = _center_distmat(distx)
-        cent_disty = _center_distmat(disty)
-
-        covar = _global_cov(cent_distx, cent_disty.T)
-        varx = _global_cov(cent_distx, cent_distx.T)
-        vary = _global_cov(cent_disty, cent_disty.T)
-
-        if varx <= 0 or vary <= 0:
-            stat = 0
-        else:
-            if self.is_paired:
-                n = cent_distx.shape[0]
-                stat = (varx * (n-1)/n + vary * (n-1)/n
-                        - 2/n * np.trace(cent_distx @ cent_disty.T))
-            else:
-                stat = covar / np.real(np.sqrt(varx * vary))
-
+        stat = _dcorr(distx, disty, self.is_paired)
         self.stat = stat
 
         return stat

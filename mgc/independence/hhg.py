@@ -6,7 +6,7 @@ from ._utils import _contains_nan, _CheckInputs
 
 
 @njit
-def _fast_hhg(distx, disty):
+def _hhg(distx, disty):
     n = distx.shape[0]
     S = np.zeros((n, n))
 
@@ -67,7 +67,7 @@ class HHG(IndependenceTest):
         distx = self.compute_distance(x)
         disty = self.compute_distance(y)
 
-        stat = _fast_hhg(distx, disty)
+        stat = _hhg(distx, disty)
 
         self.stat = stat
 

@@ -62,4 +62,4 @@ class Spearman(IndependenceTest):
         self.stat = stat
         self.pvalue = pvalue
 
-        return pvalue
+        return stat, pvalue
