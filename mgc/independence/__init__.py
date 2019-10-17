@@ -4,5 +4,7 @@ from .cca import CannCorr
 from .kendall import Kendall
 from .spearman import Spearman
 from .hhg import HHG
+from .dcorr import Dcorr
 
-__all__ = ["Pearson", "RVCorr", "CannCorr", "Kendall", "Spearman", "HHG"]
+__all__ = ["Pearson", "RVCorr", "CannCorr", "Kendall", "Spearman", "HHG",
+           "Dcorr"]
