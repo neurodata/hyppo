@@ -2,7 +2,7 @@ import numpy as np
 from numba import njit
 
 from .base import IndependenceTest
-from ._utils import _contains_nan, _CheckInputs
+from ._utils import _CheckInputs
 
 
 @njit

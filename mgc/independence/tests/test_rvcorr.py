@@ -3,7 +3,7 @@ import numpy as np
 from numpy.testing import assert_almost_equal
 
 from ...benchmarks.simulation import linear
-from ..rvcorr import RVCorr
+from .. import RVCorr
 
 
 class TestRVStat:

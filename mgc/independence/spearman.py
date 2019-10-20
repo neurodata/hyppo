@@ -1,7 +1,7 @@
 from scipy.stats import spearmanr
 
 from .base import IndependenceTest
-from ._utils import _contains_nan, _CheckInputs
+from ._utils import _CheckInputs
 
 
 class Spearman(IndependenceTest):

@@ -4,14 +4,12 @@ import numpy as np
 from scipy.spatial.distance import cdist
 from scipy._lib._util import MapWrapper
 
-
-def _euclidean(x):
-    return cdist(x, x, metric='euclidean')
+from .._utils import euclidean
 
 
 class IndependenceTest(ABC):
     """
-    Base class for independence testing.
+    Base class for all tests in mgc.
 
     Parameters
     ----------
@@ -39,7 +37,7 @@ class IndependenceTest(ABC):
 
         # set compute_distance kernel
         if not compute_distance:
-            compute_distance = _euclidean
+            compute_distance = euclidean
         self.compute_distance = compute_distance
 
         super().__init__()
