@@ -1,3 +1,3 @@
-from .unpair_k import UnpairKSamp
+from .unpair_k import UnpairKSample
 
-__all__ = ["UnpairKSamp"]
+__all__ = ["UnpairKSample"]
