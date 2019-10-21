@@ -1,8 +1,21 @@
 language: python
-python:
-  - "3.5"
-  - "3.6"      # current default Python on Travis CI
-  - "3.7"
+jobs:
+  include:
+    - name: "linux"
+      python:
+        - "3.5"
+        - "3.6"      # current default Python on Travis CI
+        - "3.7"
+    - name: "macos"
+      os: osx
+      osx_image: xcode11.2
+      language: shell
+    - name: "windows"
+      os: windows
+      language: shell
+      before_install:
+        - choco install python --version 3.6.0
+        - python -m pip install --upgrade pip
 # command to install dependencies
 install:
   - pip3 install -r requirements.txt
