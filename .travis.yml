@@ -11,15 +11,17 @@ python:
 matrix:
   include:
     - python: 3.7
+    - python: 3.8
 
 cache: pip
 
 install:
 - pip install -r requirements.txt
+- pip install -U pytest pytest-cov codecov
 - python3 setup.py install
 
 script:
-- py.test -s --cov=mgc
+- pytest -s --cov=mgc
 
 after_success:
 - codecov
