@@ -19,7 +19,7 @@ install:
 - python3 setup.py install
 
 script:
-- py.test -s --cov=mgcpy
+- py.test -s --cov=mgc
 
 after_success:
 - codecov
