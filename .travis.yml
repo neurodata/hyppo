@@ -1,6 +1,4 @@
 language: python      # this works for Linux but is an error on macOS or Windows
-virtualenv:
-  system_site_packages: true
 jobs:
   include:
     - name: "Python 3.8.0 on Xenial Linux"
