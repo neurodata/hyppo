@@ -1,27 +1,15 @@
+dist: xenial
+sudo: true
 language: python
-jobs:
-  include:
-    - name: "linux python 3.5"
-      python: "3.5"
-    - name: "linux python 3.6"
-      python: "3.6"   # current default Python on Travis CI
-    - name: "linux python 3.7"
-      python: "3.7"
-    - name: "macos python 3.7.4"
-      os: osx
-      osx_image: xcode11.2
-      language: shell
-    - name: "windows python 3.7.4"
-      os: windows
-      language: shell
-      before_install:
-        - choco install python --version 3.6.0
-        - python -m pip install --upgrade pip
-# command to install dependencies
+python:
+- '3.5'
+- '3.6'
+- '3.7'
+cache: pip
 install:
-  - pip3 install --upgrade pip
-  - pip3 install --user -r requirements.txt
-  - pip3 install pytest
-# command to run tests
+- pip install -r requirements.txt
+- pip install -U pytest pytest-cov codecov
 script:
-  - pytest
+- pytest
+after_success:
+- codecov
