@@ -21,6 +21,6 @@ class TestUnpairKSamp:
         x, y = linear_2samp(n, 1, noise=0)
         stat, pvalue = UnpairKSample(indep_test).test([x, y])
 
-        assert_almost_equal(stat, obs_stat, decimal=2)
-        assert_almost_equal(pvalue, obs_pvalue, decimal=2)
+        assert_almost_equal(stat, obs_stat, decimal=1)
+        assert_almost_equal(pvalue, obs_pvalue, decimal=1)
 
