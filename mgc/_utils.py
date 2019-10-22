@@ -36,7 +36,7 @@ def check_ndarray_xy(x, y):
 
 
 def check_ndarray_inputs(inputs):
-    if len(inputs) == 1:
+    if len(inputs) < 2:
         raise ValueError("there must be at least 2 inputs")
     for i in inputs:
         if not isinstance(i, np.ndarray):
@@ -52,11 +52,7 @@ def convert_xy_float64(x, y):
 
 
 def convert_inputs_float64(inputs):
-    nd_inputs = []
-    for i in inputs:
-        nd_inputs.append(np.asarray(i).astype(np.float64))
-
-    return nd_inputs
+    return [np.asarray(i).astype(np.float64) for i in inputs]
 
 
 def check_reps(reps):
