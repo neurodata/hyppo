@@ -1,8 +1,13 @@
 [report]
 exclude_lines =
-  pragma: no cover
-  def __repr__
-  RuntimeError
-  NotImplementedError
-  FileNotFoundError
-  ImportError
+    # Have to re-enable the standard pragma
+    pragma: no cover
+    @abstract
+    NotImplementedError
+show_missing = True
+
+[run]
+omit =
+    *tests*
+    *__init__.py
+    mgc/_utils.py
