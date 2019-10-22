@@ -6,6 +6,7 @@ from scipy._lib._util import MapWrapper
 
 from .._utils import euclidean
 from ._utils import k_sample_transform
+from ..independence import Dcorr, HHG
 
 
 class KSampleTest(ABC):
@@ -35,12 +36,16 @@ class KSampleTest(ABC):
         # set statistic and p-value
         self.stat = None
         self.pvalue = None
-        self.indep_test = indep_test
 
         # set compute_distance kernel
         if not compute_distance:
             compute_distance = euclidean
         self.compute_distance = compute_distance
+        dist_tests = [Dcorr, HHG]
+        if indep_test in dist_tests:
+            self.indep_test = indep_test(compute_distance=compute_distance)
+        else:
+            self.indep_test = indep_test()
 
         super().__init__()
 
@@ -54,9 +59,8 @@ class KSampleTest(ABC):
         perm_stat : float
             Test statistic for each value in the null distribution.
         """
-        u, v = k_sample_transform(self.inputs)
-        permu = np.random.permutation(u)
-        permv = np.random.permutation(v)
+        permu = np.random.permutation(self.u)
+        permv = np.random.permutation(self.v)
 
         # calculate permuted statics, store in null distribution
         perm_stat = self.indep_test.statistic(permu, permv)
@@ -64,7 +68,7 @@ class KSampleTest(ABC):
         return perm_stat
 
     @abstractmethod
-    def test(self, indep_test=None, reps=1000, workers=-1, *argv):
+    def test(self, inputs, reps=1000, workers=-1):
         """
         Calulates the independece test p-value.
 
@@ -86,11 +90,13 @@ class KSampleTest(ABC):
         null_dist : list
             The null distribution of the permuted test statistics.
         """
-        self.inputs = list(range(*argv))
-        self.indep_test = indep_test
+        inputs = inputs
 
         # calculate observed test statistic
-        obs_stat = indep_test.statistic(*argv)
+        u, v = k_sample_transform(inputs)
+        self.u = u
+        self.v = v
+        obs_stat = self.indep_test.statistic(u, v)
 
         # use all cores to create function that parallelizes over number of reps
         mapwrapper = MapWrapper(workers)

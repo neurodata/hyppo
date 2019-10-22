@@ -20,7 +20,7 @@ class UnpairKSample(KSampleTest):
     def __init__(self, indep_test, compute_distance=None):
         KSampleTest.__init__(self, indep_test, compute_distance=compute_distance)
 
-    def test(self, indep_test=None, reps=1000, workers=-1, *argv):
+    def test(self, inputs, reps=1000, workers=-1):
         """
         Calulates the HHG test p-value.
 
@@ -37,12 +37,11 @@ class UnpairKSample(KSampleTest):
         pvalue : float
             The computed independence test p-value.
         """
-        inputs = list(range(*argv))
-        check_input = _CheckInputs(dim=np.max([i.shape[0]
+        check_input = _CheckInputs(inputs=inputs,
+                                   dim=np.max([i.ndim
                                                for i in inputs]),
-                                   indep_test=indep_test,
-                                   compute_distance=self.compute_distance
-                                   *argv)
+                                   indep_test=self.indep_test,
+                                   compute_distance=self.compute_distance)
         inputs = check_input(UnpairKSample.__name__)
 
-        return super(UnpairKSample, self).test(indep_test, reps, workers, *inputs)
+        return super(UnpairKSample, self).test(inputs, reps, workers)

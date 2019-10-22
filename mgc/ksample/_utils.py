@@ -9,9 +9,9 @@ from ..independence import *
 
 
 class _CheckInputs:
-    def __init__(self, dim, indep_test, reps=None, compute_distance=None,
-                *argv):
-        self.inputs = list(range(*argv))
+    def __init__(self, inputs, dim, indep_test, reps=None,
+                 compute_distance=None):
+        self.inputs = inputs
         self.dim = dim
         self.compute_distance = compute_distance
         self.reps = reps
@@ -21,7 +21,7 @@ class _CheckInputs:
         check_ndarray_inputs(self.inputs)
         for i in self.inputs:
             contains_nan(i)
-        self.inputs = self.check_dim_xy(test_name)
+        self.inputs = self.check_dim(test_name)
         self.inputs = convert_inputs_float64(self.inputs)
         self._check_indep_test()
         self._check_min_samples()
@@ -32,7 +32,7 @@ class _CheckInputs:
 
         return self.inputs
 
-    def check_dim_xy(self, test_name):
+    def check_dim(self, test_name):
         # check if inputs are ndarrays
         new_inputs = []
         dims = []
@@ -56,15 +56,15 @@ class _CheckInputs:
         return new_inputs
 
     def _check_nd_ksampletest(self, dims, test_name):
-        test_psame = ['UnpairKSample']
+        test_psame = ["UnpairKSample"]
         if test_name in test_psame:
-            if len(set(dims)) == 1:
+            if len(set(dims)) > 1:
                 raise ValueError("Shape mismatch, inputs must have shape "
                                  "[n, p] and [m, p].")
 
     def _check_indep_test(self):
-        tests = [CannCorr, Dcorr, HHG, Kendall, Pearson, RVCorr, Spearman]
-        if self.indep_test not in tests:
+        tests = [CannCorr, Dcorr, HHG, RVCorr]
+        if self.indep_test.__class__ not in tests:
             raise ValueError("Independence test must be implemented in mgc")
 
     def _check_min_samples(self):
@@ -77,9 +77,7 @@ def k_sample_transform(inputs):
     n_inputs = len(inputs)
     u = np.vstack(inputs)
     ns = [i.shape[0] for i in inputs]
-    v_list = []
-    for i in range(n_inputs):
-        v_list.append(np.repeat(i/n_inputs, ns[i]))
-    v = np.vstack(v_list)
+    v_list = [np.repeat(i/(n_inputs-i), ns[i]) for i in range(n_inputs)]
+    v = np.vstack(v_list).reshape(-1, 1)
 
     return u, v
