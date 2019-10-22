@@ -52,7 +52,7 @@ class _CheckInputs:
         nx, px = self.x.shape
         ny, py = self.y.shape
 
-        test_nsame = ['MGC', 'Dcorr', 'HHG']
+        test_nsame = ["MGC", "Dcorr", "HHG", "CannCorr", "RVCorr"]
         if test_name in test_nsame:
             if nx != ny:
                 raise ValueError("Shape mismatch, x and y must have shape "

@@ -5,45 +5,6 @@ from .base import IndependenceTest
 from ._utils import _CheckInputs
 
 
-@njit
-def _center_distmat(distx):
-    n = distx.shape[0]
-
-    exp_distx = ((distx.sum(axis=0) / (n-2)).reshape(n, -1)
-                + (distx.sum(axis=1) / (n-2)).reshape(n, -1)
-                - distx.sum() / ((n-1) * (n-2)))
-    cent_distx = distx - exp_distx
-
-    return cent_distx
-
-
-@njit
-def _global_cov(distx, disty):
-    return np.sum(distx @ disty)
-
-
-@njit
-def _dcorr(distx, disty, is_paired=False):
-    cent_distx = _center_distmat(distx)
-    cent_disty = _center_distmat(disty)
-
-    covar = _global_cov(cent_distx, cent_disty.T)
-    varx = _global_cov(cent_distx, cent_distx.T)
-    vary = _global_cov(cent_disty, cent_disty.T)
-
-    if varx <= 0 or vary <= 0:
-        stat = 0
-    else:
-        if is_paired:
-            n = cent_distx.shape[0]
-            stat = (varx * (n-1)/n + vary * (n-1)/n
-                    - 2/n * np.trace(cent_distx @ cent_disty.T))
-        else:
-            stat = covar / np.real(np.sqrt(varx * vary))
-
-    return stat
-
-
 class Dcorr(IndependenceTest):
     """
     Compute the Dcorr test statistic and p-value.
@@ -56,9 +17,8 @@ class Dcorr(IndependenceTest):
         The computed independence test p-value.
     """
 
-    def __init__(self, compute_distance=None, is_paired=False):
+    def __init__(self, compute_distance=None):
         IndependenceTest.__init__(self, compute_distance=compute_distance)
-        self.is_paired = is_paired
 
     def statistic(self, x, y):
         """
@@ -82,7 +42,7 @@ class Dcorr(IndependenceTest):
         distx = self.compute_distance(x)
         disty = self.compute_distance(y)
 
-        stat = _dcorr(distx, disty, self.is_paired)
+        stat = _dcorr(distx, disty)
         self.stat = stat
 
         return stat
@@ -111,3 +71,37 @@ class Dcorr(IndependenceTest):
         x, y = check_input(Dcorr.__name__)
 
         return super(Dcorr, self).test(x, y, reps, workers)
+
+
+@njit
+def _center_distmat(distx):
+    n = distx.shape[0]
+
+    exp_distx = ((distx.sum(axis=0) / (n-2)).reshape(n, -1)
+                + (distx.sum(axis=1) / (n-2)).reshape(n, -1)
+                - distx.sum() / ((n-1) * (n-2)))
+    cent_distx = distx - exp_distx
+
+    return cent_distx
+
+
+@njit
+def _global_cov(distx, disty):
+    return np.sum(distx @ disty)
+
+
+@njit
+def _dcorr(distx, disty):
+    cent_distx = _center_distmat(distx)
+    cent_disty = _center_distmat(disty)
+
+    covar = _global_cov(cent_distx, cent_disty.T)
+    varx = _global_cov(cent_distx, cent_distx.T)
+    vary = _global_cov(cent_disty, cent_disty.T)
+
+    if varx <= 0 or vary <= 0:
+        stat = 0
+    else:
+        stat = covar / np.real(np.sqrt(varx * vary))
+
+    return stat
