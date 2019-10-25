@@ -20,6 +20,17 @@ class TestCCAStat:
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(pvalue, obs_pvalue, decimal=2)
 
+    @pytest.mark.parametrize("n", [100, 1000, 10000])
+    @pytest.mark.parametrize("obs_stat", [0.57])
+    @pytest.mark.parametrize("obs_pvalue", [1/1000])
+    def test_linear_threed(self, n, obs_stat, obs_pvalue):
+        np.random.seed(123456789)
+        x, y = linear(n, 3, noise=0)
+        stat, pvalue = CannCorr().test(x, y)
+
+        assert_almost_equal(stat, obs_stat, decimal=1)
+        assert_almost_equal(pvalue, obs_pvalue, decimal=1)
+
 
 class TestCCAErrorWarn:
     """ Tests errors and warnings derived from MGC.
