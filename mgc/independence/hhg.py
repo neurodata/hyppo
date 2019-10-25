@@ -5,31 +5,6 @@ from .base import IndependenceTest
 from ._utils import _CheckInputs
 
 
-@njit
-def _hhg(distx, disty):
-    n = distx.shape[0]
-    S = np.zeros((n, n))
-
-    for i in range(n):
-        for j in range(n):
-            if i != j:
-                a = distx[i, :] <= distx[i, j]
-                b = disty[i, :] <= disty[i, j]
-
-                t11 = np.sum(a * b) - 2
-                t12 = np.sum(a * (1 - b))
-                t21 = np.sum((1 - a) * b)
-                t22 = np.sum((1 - a) * (1 - b))
-
-                denom = (t11+t12) * (t21+t22) * (t11+t21) * (t12+t22)
-                if denom > 0:
-                    S[i, j] = ((n-2) * (t12*t21 - t11*t22) ** 2) / denom
-
-    stat = np.sum(S)
-
-    return stat
-
-
 class HHG(IndependenceTest):
     """
     Compute the HHG test statistic and p-value.
@@ -95,3 +70,28 @@ class HHG(IndependenceTest):
         x, y = check_input()
 
         return super(HHG, self).test(x, y, reps, workers)
+
+
+@njit
+def _hhg(distx, disty):
+    n = distx.shape[0]
+    S = np.zeros((n, n))
+
+    for i in range(n):
+        for j in range(n):
+            if i != j:
+                a = distx[i, :] <= distx[i, j]
+                b = disty[i, :] <= disty[i, j]
+
+                t11 = np.sum(a * b) - 2
+                t12 = np.sum(a * (1 - b))
+                t21 = np.sum((1 - a) * b)
+                t22 = np.sum((1 - a) * (1 - b))
+
+                denom = (t11+t12) * (t21+t22) * (t11+t21) * (t12+t22)
+                if denom > 0:
+                    S[i, j] = ((n-2) * (t12*t21 - t11*t22) ** 2) / denom
+
+    stat = np.sum(S)
+
+    return stat
