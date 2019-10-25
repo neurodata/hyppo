@@ -38,10 +38,8 @@ class UnpairKSample(KSampleTest):
             The computed independence test p-value.
         """
         check_input = _CheckInputs(inputs=inputs,
-                                   dim=np.max([i.ndim
-                                               for i in inputs]),
                                    indep_test=self.indep_test,
                                    compute_distance=self.compute_distance)
-        inputs = check_input(UnpairKSample.__name__)
+        inputs = check_input()
 
         return super(UnpairKSample, self).test(inputs, reps, workers)

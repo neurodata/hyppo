@@ -35,7 +35,7 @@ class Pearson(IndependenceTest):
             The computed independence test statistic.
         """
         check_input = _CheckInputs(x, y, dim=1)
-        x, y = check_input(Pearson.__name__)
+        x, y = check_input()
         stat, _ = pearsonr(x, y)
         self.stat = stat
 
@@ -57,7 +57,7 @@ class Pearson(IndependenceTest):
             The computed independence test p-value.
         """
         check_input = _CheckInputs(x, y, dim=1)
-        x, y = check_input(Pearson.__name__)
+        x, y = check_input()
         stat, pvalue = pearsonr(x, y)
         self.stat = stat
         self.pvalue = pvalue

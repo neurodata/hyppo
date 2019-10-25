@@ -35,7 +35,7 @@ class Kendall(IndependenceTest):
             The computed independence test statistic.
         """
         check_input = _CheckInputs(x, y, dim=1)
-        x, y = check_input(Kendall.__name__)
+        x, y = check_input()
         stat, _ = kendalltau(x, y)
         self.stat = stat
 
@@ -57,7 +57,7 @@ class Kendall(IndependenceTest):
             The computed independence test p-value.
         """
         check_input = _CheckInputs(x, y, dim=1)
-        x, y = check_input(Kendall.__name__)
+        x, y = check_input()
         stat, pvalue = kendalltau(x, y)
         self.stat = stat
         self.pvalue = pvalue

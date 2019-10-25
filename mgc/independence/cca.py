@@ -35,8 +35,8 @@ class CannCorr(IndependenceTest):
         stat : float
             The computed independence test statistic.
         """
-        check_input = _CheckInputs(x, y, dim=np.max([x.shape[0], y.shape[0]]))
-        x, y = check_input(CannCorr.__name__)
+        check_input = _CheckInputs(x, y, dim=2)
+        x, y = check_input()
 
         centx = x - np.mean(x, axis=0)
         centy = y - np.mean(y, axis=0)
@@ -75,8 +75,7 @@ class CannCorr(IndependenceTest):
         pvalue : float
             The computed independence test p-value.
         """
-        check_input = _CheckInputs(x, y, dim=np.max([x.shape[0], y.shape[0]]),
-                                   reps=reps)
-        x, y = check_input(CannCorr.__name__)
+        check_input = _CheckInputs(x, y, dim=2, reps=reps)
+        x, y = check_input()
 
         return super(CannCorr, self).test(x, y, reps, workers)

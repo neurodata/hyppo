@@ -35,9 +35,9 @@ class Dcorr(IndependenceTest):
         stat : float
             The computed independence test statistic.
         """
-        check_input = _CheckInputs(x, y, dim=np.max([x.shape[0], y.shape[0]]),
+        check_input = _CheckInputs(x, y, dim=2,
                                    compute_distance=self.compute_distance)
-        x, y = check_input(Dcorr.__name__)
+        x, y = check_input()
 
         distx = self.compute_distance(x)
         disty = self.compute_distance(y)
@@ -64,11 +64,9 @@ class Dcorr(IndependenceTest):
         pvalue : float
             The computed independence test p-value.
         """
-        check_input = _CheckInputs(x,
-                                   y,
-                                   dim=np.max([x.shape[0], y.shape[0]]),
+        check_input = _CheckInputs(x, y, dim=2, reps=reps,
                                    compute_distance=self.compute_distance)
-        x, y = check_input(Dcorr.__name__)
+        x, y = check_input()
 
         return super(Dcorr, self).test(x, y, reps, workers)
 
