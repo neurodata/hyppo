@@ -54,7 +54,7 @@ class IndependenceTest(ABC):
             independence tests (check desired test class for specifics).
         """
 
-    def _perm_stat(self, index):
+    def _perm_stat(self, index):                                                # pragma: no cover
         """
         Helper function that is used to calculate parallel permuted test
         statistics.
