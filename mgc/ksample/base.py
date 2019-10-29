@@ -49,7 +49,7 @@ class KSampleTest(ABC):
 
         super().__init__()
 
-    def _perm_stat(self, index):
+    def _perm_stat(self, index):                                            # pragma: no cover
         """
         Helper function that is used to calculate parallel permuted test
         statistics.
