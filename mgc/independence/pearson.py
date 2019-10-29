@@ -19,7 +19,7 @@ class Pearson(IndependenceTest):
     def __init__(self):
         IndependenceTest.__init__(self)
 
-    def statistic(self, x, y):
+    def _statistic(self, x, y):
         """
         Calulates the Pearson test statistic.
 
@@ -34,8 +34,6 @@ class Pearson(IndependenceTest):
         stat : float
             The computed independence test statistic.
         """
-        check_input = _CheckInputs(x, y, dim=1)
-        x, y = check_input()
         stat, _ = pearsonr(x, y)
         self.stat = stat
 

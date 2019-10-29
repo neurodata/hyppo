@@ -63,7 +63,7 @@ class KSampleTest(ABC):
         permv = np.random.permutation(self.v)
 
         # calculate permuted statics, store in null distribution
-        perm_stat = self.indep_test.statistic(permu, permv)
+        perm_stat = self.indep_test._statistic(permu, permv)
 
         return perm_stat
 
@@ -90,13 +90,11 @@ class KSampleTest(ABC):
         null_dist : list
             The null distribution of the permuted test statistics.
         """
-        inputs = inputs
-
         # calculate observed test statistic
         u, v = k_sample_transform(inputs)
         self.u = u
         self.v = v
-        obs_stat = self.indep_test.statistic(u, v)
+        obs_stat = self.indep_test._statistic(u, v)
 
         # use all cores to create function that parallelizes over number of reps
         mapwrapper = MapWrapper(workers)
