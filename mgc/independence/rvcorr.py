@@ -19,7 +19,7 @@ class RVCorr(IndependenceTest):
     def __init__(self):
         IndependenceTest.__init__(self)
 
-    def statistic(self, x, y):
+    def _statistic(self, x, y):
         """
         Calulates the RV test statistic.
 
@@ -36,9 +36,6 @@ class RVCorr(IndependenceTest):
         stat : float
             The computed independence test statistic.
         """
-        check_input = _CheckInputs(x, y, dim=2)
-        x, y = check_input()
-
         centx = x - np.mean(x, axis=0)
         centy = y - np.mean(y, axis=0)
 

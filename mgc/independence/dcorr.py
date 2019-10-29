@@ -20,7 +20,7 @@ class Dcorr(IndependenceTest):
     def __init__(self, compute_distance=None):
         IndependenceTest.__init__(self, compute_distance=compute_distance)
 
-    def statistic(self, x, y):
+    def _statistic(self, x, y):
         """
         Calulates the Dcorr test statistic.
 
@@ -35,10 +35,6 @@ class Dcorr(IndependenceTest):
         stat : float
             The computed independence test statistic.
         """
-        check_input = _CheckInputs(x, y, dim=2,
-                                   compute_distance=self.compute_distance)
-        x, y = check_input()
-
         distx = self.compute_distance(x)
         disty = self.compute_distance(y)
 

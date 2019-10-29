@@ -19,7 +19,7 @@ class Kendall(IndependenceTest):
     def __init__(self):
         IndependenceTest.__init__(self)
 
-    def statistic(self, x, y):
+    def _statistic(self, x, y):
         """
         Calulates the Kendall test statistic.
 
@@ -34,8 +34,6 @@ class Kendall(IndependenceTest):
         stat : float
             The computed independence test statistic.
         """
-        check_input = _CheckInputs(x, y, dim=1)
-        x, y = check_input()
         stat, _ = kendalltau(x, y)
         self.stat = stat
 

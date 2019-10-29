@@ -43,7 +43,7 @@ class IndependenceTest(ABC):
         super().__init__()
 
     @abstractmethod
-    def statistic(self, x, y):
+    def _statistic(self, x, y):
         """
         Calulates the independence test statistic.
 
@@ -68,7 +68,7 @@ class IndependenceTest(ABC):
         permy = np.random.permutation(self.y)
 
         # calculate permuted statics, store in null distribution
-        perm_stat = self.statistic(permx, permy)
+        perm_stat = self._statistic(permx, permy)
 
         return perm_stat
 
@@ -99,7 +99,7 @@ class IndependenceTest(ABC):
         self.y = y
 
         # calculate observed test statistic
-        obs_stat = self.statistic(x, y)
+        obs_stat = self._statistic(x, y)
 
         # use all cores to create function that parallelizes over number of reps
         mapwrapper = MapWrapper(workers)
