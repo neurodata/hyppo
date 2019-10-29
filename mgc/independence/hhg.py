@@ -69,7 +69,7 @@ class HHG(IndependenceTest):
 
 
 @njit
-def _hhg(distx, disty):
+def _hhg(distx, disty):                                                     # pragma: no cover
     n = distx.shape[0]
     S = np.zeros((n, n))
 

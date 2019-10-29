@@ -68,7 +68,7 @@ class Dcorr(IndependenceTest):
 
 
 @njit
-def _center_distmat(distx):
+def _center_distmat(distx):                                     # pragma: no cover
     n = distx.shape[0]
 
     exp_distx = ((distx.sum(axis=0) / (n-2)).reshape(n, -1)
@@ -80,12 +80,12 @@ def _center_distmat(distx):
 
 
 @njit
-def _global_cov(distx, disty):
+def _global_cov(distx, disty):                                  # pragma: no cover
     return np.sum(distx @ disty)
 
 
 @njit
-def _dcorr(distx, disty):
+def _dcorr(distx, disty):                                       # pragma: no cover
     cent_distx = _center_distmat(distx)
     cent_disty = _center_distmat(disty)
 
