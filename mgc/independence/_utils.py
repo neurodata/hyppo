@@ -1,6 +1,7 @@
 import warnings
 
 import numpy as np
+from scipy.stats import chi2
 
 from .._utils import (contains_nan, check_ndarray_xy, convert_xy_float64,
                       check_reps, check_compute_distance)
@@ -62,3 +63,17 @@ class _CheckInputs:
 
         if nx <= 3 or ny <= 3:
             raise ValueError("Number of samples is too low")
+
+
+def _chi2_approx(stat, null_dist, samps):
+    mu = np.mean(null_dist)
+    sigma = np.std(null_dist)
+
+    if sigma < 10e-4 and mu < 10e-4:
+        x = 0.0
+    else:
+        x = samps*(stat - mu)/sigma + 1
+
+    pvalue = 1 - chi2.cdf(x, 1)
+
+    return pvalue
