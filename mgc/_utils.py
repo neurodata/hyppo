@@ -4,8 +4,8 @@ import numpy as np
 from scipy.spatial.distance import cdist
 
 
-# from scipy
 def contains_nan(a):
+    """Check if inputs contains NaNs"""
     try:
         # Calling np.sum to avoid creating a huge array into memory
         # e.g. np.isnan(a).any()
@@ -31,19 +31,13 @@ def contains_nan(a):
 
 
 def check_ndarray_xy(x, y):
+    """Check if x or y is an ndarray"""
     if not isinstance(x, np.ndarray) or not isinstance(y, np.ndarray):
         raise ValueError("x and y must be ndarrays")
 
 
-def check_ndarray_inputs(inputs):
-    if len(inputs) < 2:
-        raise ValueError("there must be at least 2 inputs")
-    for i in inputs:
-        if not isinstance(i, np.ndarray):
-            raise ValueError("x and y must be ndarrays")
-
-
 def convert_xy_float64(x, y):
+    """Convert x or y to np.float64 (if not already done)"""
     # convert x and y to floats
     x = np.asarray(x).astype(np.float64)
     y = np.asarray(y).astype(np.float64)
@@ -51,14 +45,14 @@ def convert_xy_float64(x, y):
     return x, y
 
 
-def convert_inputs_float64(inputs):
-    return [np.asarray(i).astype(np.float64) for i in inputs]
-
-
 def check_reps(reps):
+    """Check if reps is valid"""
+    # check if reps is an integer > than 0
     if not isinstance(reps, int) or reps < 0:
         raise ValueError(
             "Number of reps must be an integer greater than 0.")
+
+    # check if reps is under 1000 (recommended)
     elif reps < 1000:
         msg = ("The number of replications is low (under 1000), and p-value "
                 "calculations may be unreliable. Use the p-value result, with "
@@ -67,10 +61,11 @@ def check_reps(reps):
 
 
 def check_compute_distance(compute_distance):
-    # check if compute_distance if a callable()
+    """Check if compute_distance if a callable()"""
     if (not callable(compute_distance) and compute_distance is not None):
         raise ValueError("Compute_distance must be a function.")
 
 
 def euclidean(x):
+    """Default euclidean distance function calculation"""
     return cdist(x, x, metric='euclidean')

@@ -5,36 +5,39 @@ from .base import IndependenceTest
 from ._utils import _CheckInputs
 
 
-class CannCorr(IndependenceTest):
-    """
-    Compute the CCA test statistic and p-value.
+class CCA(IndependenceTest):
+    r"""
+    Class for calculating the CCA test statistic and P-value.
 
     Attributes
     ----------
     stat : float
-        The computed independence test statistic.
+        The computed CCA statistic.
     pvalue : float
-        The computed independence test p-value.
+        The computed CCA p-value.
     """
 
     def __init__(self):
         IndependenceTest.__init__(self)
 
     def _statistic(self, x, y):
-        """
-        Calulates the CCA test statistic.
+        r"""
+        Calculates the CCA test statistic.
 
         Parameters
         ----------
         x, y : ndarray
-            Input data matrices that have shapes depending on the particular
-            independence tests (check desired test class for specifics).
+            Input data matrices. `x` and `y` must have the same number of
+            samples. That is, shapes must be `(n, p)` and `(n, q)` where `n`
+            is the number of samples and `p` and `q` are the number of
+            dimensions.
 
         Returns
         -------
         stat : float
-            The computed independence test statistic.
+            The computed CCA statistic.
         """
+        # center each matrix
         centx = x - np.mean(x, axis=0)
         centy = y - np.mean(y, axis=0)
 
@@ -43,7 +46,9 @@ class CannCorr(IndependenceTest):
         varx = centx.T @ centx
         vary = centy.T @ centy
 
-        if varx.size == 1 or vary.size == 1 or covar.size == 1:
+
+        # if 1-d, don't calculate the svd
+        if varx.shape[1] == 1 or vary.shape[1] == 1 or covar.shape[1] == 1:
             covar = np.sum(covar ** 2)
             stat = np.divide(covar, np.sqrt(np.sum(varx ** 2) *
                                             np.sum(vary ** 2)))
@@ -56,23 +61,24 @@ class CannCorr(IndependenceTest):
         return stat
 
     def test(self, x, y, reps=1000, workers=-1):
-        """
-        Calulates the CCA test p-value.
+        r"""
+        Calculates the CCA test statistic.
 
         Parameters
         ----------
         x, y : ndarray
-            Input data matrices that have shapes depending on the particular
-            independence tests (check desired test class for specifics).
-        reps : int, optional
-            The number of replications used in permutation, by default 1000.
+            Input data matrices. `x` and `y` must have the same number of
+            samples. That is, shapes must be `(n, p)` and `(n, q)` where `n`
+            is the number of samples and `p` and `q` are the number of
+            dimensions.
 
         Returns
         -------
-        pvalue : float
-            The computed independence test p-value.
+        stat : float
+            The computed CCA statistic.
         """
         check_input = _CheckInputs(x, y, dim=2, reps=reps)
         x, y = check_input()
 
-        return super(CannCorr, self).test(x, y, reps, workers)
+        # use default permutation test
+        return super(CCA, self).test(x, y, reps, workers)
