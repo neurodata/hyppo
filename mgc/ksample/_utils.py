@@ -2,10 +2,8 @@ import warnings
 
 import numpy as np
 
-from .._utils import (contains_nan, check_ndarray_inputs,
-                      convert_inputs_float64, check_reps,
-                      check_compute_distance)
-from ..independence import CannCorr, Dcorr, HHG, RVCorr
+from .._utils import contains_nan
+from ..independence import CCA, Dcorr, HHG, RVCorr
 
 
 class _CheckInputs:
@@ -17,15 +15,22 @@ class _CheckInputs:
         self.indep_test = indep_test
 
     def __call__(self):
-        check_ndarray_inputs(self.inputs)
+        self._check_ndarray_inputs()
         for i in self.inputs:
             contains_nan(i)
         self.inputs = self.check_dim()
-        self.inputs = convert_inputs_float64(self.inputs)
+        self.inputs = self._convert_inputs_float64()
         self._check_indep_test()
         self._check_min_samples()
 
         return self.inputs
+
+    def _check_ndarray_inputs(self):
+        if len(self.inputs) < 2:
+            raise ValueError("there must be at least 2 inputs")
+        for i in self.inputs:
+            if not isinstance(i, np.ndarray):
+                raise ValueError("x and y must be ndarrays")
 
     def check_dim(self):
         # check if inputs are ndarrays
@@ -47,8 +52,11 @@ class _CheckInputs:
             raise ValueError("Shape mismatch, inputs must have shape "
                                 "[n, p] and [m, p].")
 
+    def _convert_inputs_float64(self):
+        return [np.asarray(i).astype(np.float64) for i in self.inputs]
+
     def _check_indep_test(self):
-        tests = [CannCorr, Dcorr, HHG, RVCorr]
+        tests = [CCA, Dcorr, HHG, RVCorr]
         if self.indep_test.__class__ not in tests:
             raise ValueError("indep_test must be CannCorr, Dcorr, HHG, "
                              "RVCorr")
