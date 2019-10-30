@@ -4,14 +4,14 @@ from numpy.testing import assert_almost_equal, assert_warns, assert_raises
 
 from ...benchmarks.ksample_sim import linear_2samp
 from .. import UnpairKSample
-from ...independence import CannCorr, Dcorr
+from ...independence import CCA, Dcorr
 
 
 class TestUnpairKSamp:
     @pytest.mark.parametrize("n, obs_stat, obs_pvalue, indep_test", [
-        (10, 0.0162, 0.693, CannCorr),
-        (100, 8.24e-5, 0.981, CannCorr),
-        (1000, 4.28e-7, 1.0, CannCorr),
+        (10, 0.0162, 0.693, CCA),
+        (100, 8.24e-5, 0.981, CCA),
+        (1000, 4.28e-7, 1.0, CCA),
         (10, 0.153, 0.091, Dcorr),
         (50, 0.0413, 0.819, Dcorr),
         (100, 0.0237, 0.296, Dcorr)
@@ -46,13 +46,13 @@ class TestUnpairKErrorWarn:
         # raises error if samples are low (< 3)
         x = np.arange(3)
         y = np.arange(3)
-        assert_raises(ValueError, UnpairKSample(CannCorr).test, [x, y])
+        assert_raises(ValueError, UnpairKSample(CCA).test, [x, y])
 
     def test_error_nans(self):
         # raises error if inputs contain NaNs
         x = np.arange(20, dtype=float)
         x[0] = np.nan
-        assert_raises(ValueError, UnpairKSample(CannCorr).test, [x, x])
+        assert_raises(ValueError, UnpairKSample(CCA).test, [x, x])
 
         y = np.arange(20)
-        assert_raises(ValueError, UnpairKSample(CannCorr).test, [x, y])
+        assert_raises(ValueError, UnpairKSample(CCA).test, [x, y])
