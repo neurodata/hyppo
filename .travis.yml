@@ -16,7 +16,10 @@ install:
 - pip install -U pytest pytest-cov codecov
 
 script:
-- pytest
+- pytest mgc/
 
 after_success:
 - codecov
+
+notifications:
+- email: false
