@@ -8,6 +8,7 @@ from .._utils import (contains_nan, check_ndarray_xy, convert_xy_float64,
 
 
 class _CheckInputs:
+    """Checks inputs for all independence tests"""
     def __init__(self, x, y, dim, reps=None, compute_distance=None):
         self.x = x
         self.y = y
@@ -30,7 +31,8 @@ class _CheckInputs:
         return self.x, self.y
 
     def check_dim_xy(self):
-        # check if x and y are ndarrays
+        """Convert x and y to proper dimensions"""
+        # for kendall, pearson, and spearman
         if self.dim == 1:
             msg = "Changing shape to (n,)"
             warnings.warn(msg, RuntimeWarning)
@@ -39,6 +41,7 @@ class _CheckInputs:
                 self.x.shape = (-1,)
                 self.y.shape = (-1,)
 
+        # for other tests
         elif self.dim > 1:
             # convert arrays of type (n,) to (n, 1)
             if self.x.ndim == 1:
@@ -51,6 +54,7 @@ class _CheckInputs:
         return self.x, self.y
 
     def _check_nd_indeptest(self):
+        """Check if number of samples is the same"""
         nx, _ = self.x.shape
         ny, _ = self.y.shape
         if nx != ny:
@@ -58,6 +62,7 @@ class _CheckInputs:
                                 "[n, p] and [n, q].")
 
     def _check_min_samples(self):
+        """Check if the number of samples is at least 3"""
         nx = self.x.shape[0]
         ny = self.y.shape[0]
 

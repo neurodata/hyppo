@@ -8,15 +8,19 @@ from .._utils import euclidean
 
 
 class IndependenceTest(ABC):
-    """
-    Base class for all tests in mgc.
+    r"""
+    A base class for an independence test.
 
     Parameters
     ----------
-    compute_distance : callable, optional
-        Function indicating distance metric (or alternatively the kernel) to
-        use. Calculates the pairwise distance for each input, by default
-        euclidean.
+    compute_distance : callable(), optional
+        A function that computes the distance or similarity among the samples
+        within each data matrix. Set to `None` if `x` and `y` are already
+        distance matrices. The default uses the euclidean norm metric. If you
+        are calling a custom function, either create the distance matrix
+        before-hand or create a function of the form `compute_distance(x)`
+        where `x` is the data matrix for which pairwise distances are
+        calculated.
 
     Attributes
     ----------
@@ -24,10 +28,6 @@ class IndependenceTest(ABC):
         The computed independence test statistic.
     pvalue : float
         The computed independence test p-value.
-    compute_distance : callable, optional
-        Function indicating distance metric (or alternatively the kernel) to
-        use. Calculates the pairwise distance for each input, by default
-        euclidean.
     """
 
     def __init__(self, compute_distance=None):
@@ -35,7 +35,7 @@ class IndependenceTest(ABC):
         self.stat = None
         self.pvalue = None
 
-        # set compute_distance kernel
+        # set compute_distance euclidean distance by default
         if not compute_distance:
             compute_distance = euclidean
         self.compute_distance = compute_distance
@@ -44,20 +44,24 @@ class IndependenceTest(ABC):
 
     @abstractmethod
     def _statistic(self, x, y):
-        """
+        r"""
         Calulates the independence test statistic.
 
         Parameters
         ----------
         x, y : ndarray
-            Input data matrices that have shapes depending on the particular
-            independence tests (check desired test class for specifics).
+            Input data matrices.
         """
 
     def _perm_stat(self, index):                                                # pragma: no cover
-        """
+        r"""
         Helper function that is used to calculate parallel permuted test
         statistics.
+
+        Paramaters
+        ----------
+        index : int
+            Iterator used for parallel statistic calculation
 
         Returns
         -------
@@ -74,14 +78,13 @@ class IndependenceTest(ABC):
 
     @abstractmethod
     def test(self, x, y, reps=1000, workers=-1):
-        """
-        Calulates the independece test p-value.
+        r"""
+        Calulates the independence test p-value.
 
         Parameters
         ----------
         x, y : ndarray
-            Input data matrices that have shapes depending on the particular
-            independence tests (check desired test class for specifics).
+            Input data matrices.
         reps : int, optional
             The number of replications used in permutation, by default 1000.
         workers : int, optional
@@ -90,16 +93,16 @@ class IndependenceTest(ABC):
 
         Returns
         -------
+        stat : float
+            The computed independence test statistic.
         pvalue : float
             The pvalue obtained via permutation.
-        null_dist : list
-            The null distribution of the permuted test statistics.
         """
         self.x = x
         self.y = y
 
         # calculate observed test statistic
-        obs_stat = self._statistic(x, y)
+        stat = self._statistic(x, y)
 
         # use all cores to create function that parallelizes over number of reps
         mapwrapper = MapWrapper(workers)
@@ -107,7 +110,7 @@ class IndependenceTest(ABC):
         self.null_dist = null_dist
 
         # calculate p-value and significant permutation map through list
-        pvalue = (null_dist >= obs_stat).sum() / reps
+        pvalue = (null_dist >= stat).sum() / reps
 
         # correct for a p-value of 0. This is because, with bootstrapping
         # permutations, a p-value of 0 is incorrect
@@ -115,4 +118,4 @@ class IndependenceTest(ABC):
             pvalue = 1 / reps
         self.pvalue = pvalue
 
-        return obs_stat, pvalue
+        return stat, pvalue
