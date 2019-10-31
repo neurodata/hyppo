@@ -10,18 +10,19 @@ jobs:
       python: 3.7
     - name: "Python 3.7 on Windows"
       os: windows
-        language: sh
-        python: "3.7"
-        before_install:
-          - choco install python3
-          - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
-          - virtualenv $HOME/venv
-          - source $HOME/venv/Scripts/activate
-          - python -m pip install pip==18.1
+      language: sh
+      python: "3.7"
+      before_install:
+        - choco install python3
+        - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
+        - virtualenv $HOME/venv
+        - source $HOME/venv/Scripts/activate
+        - python -m pip install pip==18.1
 
 branches:
   only:
   - master
+  - v0.01
 
 cache: pip
 
