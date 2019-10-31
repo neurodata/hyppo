@@ -13,8 +13,7 @@ class TestKSample:
         (100, 8.24e-5, 0.981, CCA),
         (1000, 4.28e-7, 1.0, CCA),
         (10, 0.153, 0.091, Dcorr),
-        (50, 0.0413, 0.819, Dcorr),
-        (100, 0.0237, 0.296, Dcorr)
+        (50, 0.0413, 0.819, Dcorr)
     ])
     def test_twosamp_linear_oned(self, n, obs_stat, obs_pvalue, indep_test):
         np.random.seed(123456789)
