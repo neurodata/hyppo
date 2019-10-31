@@ -28,7 +28,6 @@ matrix:
 branches:
   only:
   - master
-  - v0.01
 
 cache: pip
 
