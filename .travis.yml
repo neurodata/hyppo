@@ -4,7 +4,6 @@ python:
   - "3.5"
   - "3.6"
   - "3.7"
-  - "3.8"
 
 matrix:
   include:
@@ -20,9 +19,9 @@ matrix:
         - source .venv/bin/activate
     - os: windows
       language: sh
-      python: "3.x"
+      python: "3.7"
       before_install:
-        - choco install python3 --params "/InstallDir:C:\\Python"
+        - choco install python3 --params "/InstallDir:C:\\Python" --version 3.7.4
         - export PATH="/c/Python:/c/Python/Scripts:$PATH"
         - python -m pip install --upgrade pip wheel
 
