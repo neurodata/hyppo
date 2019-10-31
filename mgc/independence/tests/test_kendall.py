@@ -35,12 +35,6 @@ class TestKendallErrorWarn:
         y = np.arange(3)
         assert_raises(ValueError, Kendall().test, x, y)
 
-    def test_error_shape(self):
-        # raises error if number of samples different (n)
-        x = np.arange(100).reshape(25, 4)
-        y = x.reshape(10, 10)
-        assert_warns(RuntimeWarning, Kendall().test, x, y)
-
     def test_error_nans(self):
         # raises error if inputs contain NaNs
         x = np.arange(20, dtype=float)
