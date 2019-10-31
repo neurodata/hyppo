@@ -5,7 +5,7 @@ from .base import KSampleTest
 from ._utils import _CheckInputs, k_sample_transform
 
 
-class UnpairKSample(KSampleTest):
+class KSample(KSampleTest):
     """
     Compute the Dcorr test statistic and p-value.
 
@@ -42,4 +42,4 @@ class UnpairKSample(KSampleTest):
                                    compute_distance=self.compute_distance)
         inputs = check_input()
 
-        return super(UnpairKSample, self).test(inputs, reps, workers)
+        return super(KSample, self).test(inputs, reps, workers)

@@ -34,8 +34,6 @@ class _CheckInputs:
         """Convert x and y to proper dimensions"""
         # for kendall, pearson, and spearman
         if self.dim == 1:
-            msg = "Changing shape to (n,)"
-            warnings.warn(msg, RuntimeWarning)
             # check if x or y is shape (n,)
             if self.x.ndim > 1 or self.y.ndim > 1:
                 self.x.shape = (-1,)
