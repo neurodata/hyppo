@@ -4,7 +4,7 @@ from .base import IndependenceTest
 from ._utils import _CheckInputs
 
 
-class RVCorr(IndependenceTest):
+class RV(IndependenceTest):
     """
     Compute the RV test statistic and p-value.
 
@@ -73,4 +73,4 @@ class RVCorr(IndependenceTest):
         check_input = _CheckInputs(x, y, dim=2, reps=reps)
         x, y = check_input()
 
-        return super(RVCorr, self).test(x, y, reps, workers)
+        return super(RV, self).test(x, y, reps, workers)
