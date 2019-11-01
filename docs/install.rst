@@ -31,6 +31,7 @@ mgc requires the following packages:
 - numba
 - numpy
 - scipy
+- scikit-learn
 
 Hardware requirements
 ---------------------

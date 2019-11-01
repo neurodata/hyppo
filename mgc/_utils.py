@@ -60,10 +60,10 @@ def check_reps(reps):
         warnings.warn(msg, RuntimeWarning)
 
 
-def check_compute_distance(compute_distance):
-    """Check if compute_distance if a callable()"""
-    if (not callable(compute_distance) and compute_distance is not None):
-        raise ValueError("Compute_distance must be a function.")
+def check_compute_distance(compute):
+    """Check if compute distance/kernel function if a callable()"""
+    if (not callable(compute) and compute is not None):
+        raise ValueError("The compute distance/kernel must be a function.")
 
 
 def euclidean(x):
