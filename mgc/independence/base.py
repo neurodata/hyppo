@@ -8,7 +8,7 @@ from .._utils import euclidean
 
 
 class IndependenceTest(ABC):
-    r"""
+    """
     A base class for an independence test.
 
     Parameters
@@ -44,7 +44,7 @@ class IndependenceTest(ABC):
 
     @abstractmethod
     def _statistic(self, x, y):
-        r"""
+        """
         Calulates the independence test statistic.
 
         Parameters
@@ -54,7 +54,7 @@ class IndependenceTest(ABC):
         """
 
     def _perm_stat(self, index):                                                # pragma: no cover
-        r"""
+        """
         Helper function that is used to calculate parallel permuted test
         statistics.
 
@@ -78,7 +78,7 @@ class IndependenceTest(ABC):
 
     @abstractmethod
     def test(self, x, y, reps=1000, workers=-1):
-        r"""
+        """
         Calulates the independence test p-value.
 
         Parameters

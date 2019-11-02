@@ -43,8 +43,8 @@ OS Requirements
 This package is supported for all major operating systems. The following
 versions of operating systems was tested on Travis CI:
 
-- Linux: Ubuntu Xenial 16.04
-- Windows: Windows Server, version 1803
+- **Linux:** Ubuntu Xenial 16.04
+- **Windows:** Windows Server, version 1803
 
 Testing
 -------

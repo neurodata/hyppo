@@ -16,6 +16,8 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath("sphinxext"))
+from github_link import make_linkcode_resolve
 
 # -- Project information -----------------------------------------------------
 
@@ -38,7 +40,6 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.todo",
-    "sphinx.ext.viewcode",
     "sphinx.ext.mathjax",
     "numpydoc",
     "sphinx.ext.ifconfig",
@@ -46,6 +47,7 @@ extensions = [
     "sphinxcontrib.rawfiles",
     "nbsphinx",
     "sphinx.ext.intersphinx",
+    "sphinx.ext.linkcode",
 ]
 
 # -- sphinxcontrib.rawfiles
@@ -94,6 +96,23 @@ html_theme_options = {
     "collapse_navigation": False,
     "navigation_depth": 3,
 }
+
+html_context = {
+    # Enable the "Edit in GitHub link within the header of each page.
+    "display_github": True,
+    # Set the following variables to generate the resulting github URL for each page.
+    # Format Template: https://{{ github_host|default("github.com") }}/{{ github_user }}/{{ github_repo }}/blob/{{ github_version }}{{ conf_py_path }}{{ pagename }}{{ suffix }}
+    "github_user": "sampan501",
+    "github_repo": "mgc",
+    "github_version": "master/docs/",
+}
+
+linkcode_resolve = make_linkcode_resolve(
+    "mgc",
+    u"https://github.com/sampan501/"
+    "mgc/blob/{revision}/"
+    "{package}/{path}#L{lineno}",
+)
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -173,3 +192,8 @@ epub_title = project
 
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ["search.html"]
+
+
+def setup(app):
+    # to hide/show the prompt in code examples:
+    app.add_javascript("js/copybutton.js")
