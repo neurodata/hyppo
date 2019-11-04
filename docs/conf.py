@@ -49,9 +49,6 @@ extensions = [
     "sphinx.ext.linkcode",
 ]
 
-# -- sphinxcontrib.rawfiles
-rawfiles = ["CNAME"]
-
 # -- numpydoc
 # Below is needed to prevent errors
 numpydoc_show_class_members = False
