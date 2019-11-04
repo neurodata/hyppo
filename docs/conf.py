@@ -44,7 +44,6 @@ extensions = [
     "numpydoc",
     "sphinx.ext.ifconfig",
     "sphinx.ext.githubpages",
-    "sphinxcontrib.rawfiles",
     "nbsphinx",
     "sphinx.ext.intersphinx",
     "sphinx.ext.linkcode",
