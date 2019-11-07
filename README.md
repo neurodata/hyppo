@@ -13,4 +13,4 @@
 - **Issues:** [https://github.com/sampan501/mgc/issues](https://github.com/sampan501/mgc/issues)
 - **Contribution Guide:**
 
-`mgc` intends to be a comprehensive independence and k-sample testing package and runs on all major versions of operating systems. It also includes novel tests not found in other packages that operate on high dimensional and multivariate data. It is quick to install and free of charge. If you need to use high dimensional independence or k-sample testing, be sure to give `mgc` a try!
+`mgc` intends to be a comprehensive independence and k-sample testing package and runs on all major versions of operating systems. It also includes novel tests not found in other packages that operate on multivariate data. It is quick to install and free of charge. If you need to use high dimensional independence or k-sample testing, be sure to give `mgc` a try!
