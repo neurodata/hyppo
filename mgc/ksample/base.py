@@ -6,42 +6,35 @@ from scipy._lib._util import MapWrapper
 
 from .._utils import euclidean
 from ._utils import k_sample_transform
-from ..independence import Dcorr, HHG
+from ..independence import Dcorr, HHG, Hsic
 
 
 class KSampleTest(ABC):
     """
-    Base class for all tests in mgc.
+    A base class for a k-sample test.
 
     Parameters
     ----------
-    compute_distance : callable, optional
-        Function indicating distance metric (or alternatively the kernel) to
-        use. Calculates the pairwise distance for each input, by default
-        euclidean.
-
-    Attributes
-    ----------
-    stat : float
-        The computed independence test statistic.
-    pvalue : float
-        The computed independence test p-value.
-    compute_distance : callable, optional
-        Function indicating distance metric (or alternatively the kernel) to
-        use. Calculates the pairwise distance for each input, by default
-        euclidean.
+    indep_test : {CCA, Dcorr, HHG, RV, Hsic}
+        The class of the desired independence test from ``mgc.independence``.
+        The object, not an instance of the object should be passed as a
+        parameter to this class.
+    compute_distance : callable(), optional (default: euclidean)
+        A function that computes the distance or similarity among the samples
+        within each data matrix. Set to `None` if `x` and `y` are already
+        distance matrices. To call a custom function, either create the
+        distance matrix before-hand or create a function of the form
+        ``compute_distance(x)`` where `x` is the data matrix for which
+        pairwise distances are calculated.
     """
 
-    def __init__(self, indep_test, compute_distance=None):
+    def __init__(self, indep_test, compute_distance=euclidean):
         # set statistic and p-value
         self.stat = None
         self.pvalue = None
-
-        # set compute_distance kernel
-        if not compute_distance:
-            compute_distance = euclidean
         self.compute_distance = compute_distance
-        dist_tests = [Dcorr, HHG]
+
+        dist_tests = [Dcorr, HHG, Hsic]
         if indep_test in dist_tests:
             self.indep_test = indep_test(compute_distance=compute_distance)
         else:
@@ -50,15 +43,21 @@ class KSampleTest(ABC):
         super().__init__()
 
     def _perm_stat(self, index):                                            # pragma: no cover
-        """
+        r"""
         Helper function that is used to calculate parallel permuted test
         statistics.
+
+        Parameters
+        ----------
+        index : int
+            Iterator used for parallel statistic calculation
 
         Returns
         -------
         perm_stat : float
             Test statistic for each value in the null distribution.
         """
+
         permu = np.random.permutation(self.u)
         permv = np.random.permutation(self.v)
 
@@ -69,14 +68,13 @@ class KSampleTest(ABC):
 
     @abstractmethod
     def test(self, inputs, reps=1000, workers=-1):
-        """
-        Calulates the independece test p-value.
+        r"""
+        Calulates the k-sample test p-value.
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices that have shapes depending on the particular
-            independence tests (check desired test class for specifics).
+        inputs : list of ndarray
+            Input data matrices.
         reps : int, optional
             The number of replications used in permutation, by default 1000.
         workers : int, optional
@@ -85,11 +83,12 @@ class KSampleTest(ABC):
 
         Returns
         -------
+        stat : float
+            The computed k-sample test statistic.
         pvalue : float
             The pvalue obtained via permutation.
-        null_dist : list
-            The null distribution of the permuted test statistics.
         """
+
         # calculate observed test statistic
         u, v = k_sample_transform(inputs)
         self.u = u

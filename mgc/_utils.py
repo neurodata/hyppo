@@ -66,7 +66,7 @@ def check_compute_distance(compute):
         raise ValueError("The compute distance/kernel must be a function.")
 
 
-def check_inputs_distmat(x, y):
+def check_xy_distmat(x, y):
     """Check if x and y are distance matrices"""
     nx, px = x.shape
     ny, py = y.shape
@@ -74,9 +74,9 @@ def check_inputs_distmat(x, y):
         raise ValueError("Shape mismatch, x and y must be distance matrices "
                          "have shape [n, n] and [n, n].")
 
-def check_inputs_distmat(self):
+def check_inputs_distmat(inputs):
     # check if x and y are distance matrices
-    for i in self.inputs:
+    for i in inputs:
         n, p = i.shape
         if n != p or np.trace(i) != 0:
             raise ValueError("Shape mismatch, x and y must be distance matrices "

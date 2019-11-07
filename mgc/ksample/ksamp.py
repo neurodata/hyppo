@@ -1,42 +1,125 @@
 import numpy as np
 from numba import njit
 
+from .._utils import check_inputs_distmat, euclidean
 from .base import KSampleTest
 from ._utils import _CheckInputs, k_sample_transform
 
 
 class KSample(KSampleTest):
-    """
-    Compute the Dcorr test statistic and p-value.
+    r"""
+    Class for calculating the *k*-sample test statistic and p-value.
 
-    Attributes
+    A *k*-sample test tests equality in distribution among groups. Groups
+    can be of different sizes, but generally have the same dimensionality.
+    There are not many non-parametric *k*-sample tests, but this version
+    cleverly leverages the power of some of the implemented independence
+    tests to test this equality of distribution.
+
+    Parameters
     ----------
-    stat : float
-        The computed independence test statistic.
-    pvalue : float
-        The computed independence test p-value.
+    indep_test : {CCA, Dcorr, HHG, RV, Hsic}
+        The class of the desired independence test from ``mgc.independence``.
+        The object, not an instance of the object should be passed as a
+        parameter to this class.
+    compute_distance : callable(), optional (default: euclidean)
+        A function that computes the distance among the samples within each
+        data matrix. Set to `None` if `x` and `y` are already distance
+        matrices. To call a custom function, either create the distance matrix
+        before-hand or create a function of the form ``compute_distance(x)``
+        where `x` is the data matrix for which pairwise distances are
+        calculated.
+
+    Notes
+    -----
+    The ideas behind this can be found in an upcoming paper:
+
+    The *k*-sample testing problem can be thought of as a generalization of
+    the two sample testing problem. Define
+    :math:`\{ u_i \stackrel{iid}{\sim} F_U,\ i = 1, ..., n \}` and
+    :math:`\{ v_i \stackrel{iid}{\sim} F_V,\ j = 1, ..., m \}` as two groups
+    of samples deriving from different distributions with the same
+    dimensionality. Then, problem that we are testing is thus,
+
+    .. math::
+
+        H_0: F_U &= F_V \\
+        H_A: F_U &\neq F_V
+
+    The closely related independence testing problem can be generalized
+    similarly: Given a set of paired data
+    :math:`\{\left(x_i, y_i \right) \stackrel{iid}{\sim} F_{XY} \in
+    \mathbb{R}^{p + q},\ i = 1, ..., N\}`, the problem that we are testing
+    is,
+
+    .. math::
+
+        H_0: F_{XY} &= F_X F_Y \\
+        H_A: F_{XY} &\neq F_X F_Y
+
+    By manipulating the inputs of the *k*-sample test, we can create
+    concatenated versions of the inputs and another label matrix which are
+    necessarily paired. Then, any nonparametric test can be performed on
+    this data.
     """
 
-    def __init__(self, indep_test, compute_distance=None):
-        KSampleTest.__init__(self, indep_test, compute_distance=compute_distance)
+    def __init__(self, indep_test, compute_distance=euclidean):
+        KSampleTest.__init__(self, indep_test,
+                             compute_distance=compute_distance)
 
     def test(self, inputs, reps=1000, workers=-1):
-        """
-        Calulates the HHG test p-value.
+        r"""
+        Calculates the *k*-sample test statistic and p-value.
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices that have shapes depending on the particular
-            independence tests (check desired test class for specifics).
-        reps : int, optional
-            The number of replications used in permutation, by default 1000.
+        inputs : list of ndarray
+            Input data matrices. All inputs must have the same number of
+            samples. That is, the shapes must be `(n, p)` and `(m, p)` where
+            `n` and `m` are the number of samples and `p` are the number of
+            dimensions. Alternatively, inputs can be distance matrices,
+            where the shapes must all be `(n, n)`.
+        reps : int, optional (default: 1000)
+            The number of replications used to estimate the null distribution
+            when using the permutation test used to calculate the p-value.
+        workers : int, optional (default: -1)
+            The number of cores to parallelize the p-value computation over.
+            Supply -1 to use all cores available to the Process.
 
         Returns
         -------
+        stat : float
+            The computed *K*-Sample statistic.
         pvalue : float
-            The computed independence test p-value.
+            The computed *K*-Sample p-value.
+
+        Examples
+        --------
+        >>> import numpy as np
+        >>> from mgc.ksample import KSample
+        >>> from mgc.independence import Dcorr
+        >>> x = np.arange(7)
+        >>> y = x
+        >>> z = np.arange(10)
+        >>> stat, pvalue = KSample(Dcorr).test([x, y])
+        >>> '%.3f, %.1f' % (stat, pvalue)
+        '0.335, 1.0'
+
+        The number of replications can give p-values with higher confidence
+        (greater alpha levels).
+
+        >>> import numpy as np
+        >>> from mgc.ksample import KSample
+        >>> from mgc.independence import Dcorr
+        >>> x = np.arange(7)
+        >>> y = x
+        >>> z = np.ones(7)
+        >>> stat, pvalue = KSample(Dcorr).test([x, y, z], reps=10000)
+        >>> '%.3f, %.1f' % (stat, pvalue)
+        '-0.449, 1.0'
+
         """
+
         check_input = _CheckInputs(inputs=inputs,
                                    indep_test=self.indep_test,
                                    compute_distance=self.compute_distance)
