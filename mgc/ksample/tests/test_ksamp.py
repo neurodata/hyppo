@@ -2,14 +2,15 @@ import pytest
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_warns, assert_raises
 
-from ...benchmarks.ksample_sim import linear_2samp
+from ...benchmarks.indep_sim import linear
+from ...benchmarks.ksample_sim import rot_2samp
 from .. import KSample
 from ...independence import CCA, Dcorr
 
 
 class TestKSample:
     @pytest.mark.parametrize("n, obs_stat, obs_pvalue, indep_test", [
-        (10, 0.0162, 0.693, CCA),
+        (10, 0.0162, 0.414, CCA),
         (100, 8.24e-5, 0.981, CCA),
         (1000, 4.28e-7, 1.0, CCA),
         (10, 0.153, 0.091, Dcorr),
@@ -17,7 +18,7 @@ class TestKSample:
     ])
     def test_twosamp_linear_oned(self, n, obs_stat, obs_pvalue, indep_test):
         np.random.seed(123456789)
-        x, y = linear_2samp(n, 1, noise=0)
+        x, y = rot_2samp(linear, n, 1, noise=0)
         stat, pvalue = KSample(indep_test).test(x, y)
 
         assert_almost_equal(stat, obs_stat, decimal=1)

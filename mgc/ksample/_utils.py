@@ -72,6 +72,6 @@ def k_sample_transform(inputs):
     u = np.vstack(inputs)
     ns = [i.shape[0] for i in inputs]
     v_list = [np.repeat(i/(n_inputs-i), ns[i]) for i in range(n_inputs)]
-    v = np.vstack(v_list).reshape(-1, 1)
+    v = np.concatenate(v_list).reshape(-1, 1)
 
     return u, v

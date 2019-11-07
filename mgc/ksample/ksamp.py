@@ -73,7 +73,7 @@ class KSample(KSampleTest):
 
         Parameters
         ----------
-        *args : ndarray(s)
+        *args : ndarrays
             Variable length input data matrices. All inputs must have the same
             number of samples. That is, the shapes must be `(n, p)` and
             `(m, p)` where `n` and `m` are the number of samples and `p` are
