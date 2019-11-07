@@ -1,12 +1,9 @@
 import numpy as np
 
-from .indep_sim import linear
+from .indep_sim import *
 
 
-__all__ = ["linear_2samp"]
-
-
-def _k_sample_rotate2d(x, y, degree=45):
+def _k_sample_rotate2d(x, y, degree=90):
     angle = np.radians(degree)
     rot_mat = np.array([[np.cos(angle), -np.sin(angle)],
                         [np.sin(angle), np.cos(angle)]])
@@ -17,8 +14,13 @@ def _k_sample_rotate2d(x, y, degree=45):
     return x_rot, y_rot
 
 
-def linear_2samp(n, p, noise=1, low=-1, high=1):
-    x, y = linear(n, 1, noise=noise, low=low, high=high)
+def rot_2samp(sim, n, p, noise=1, low=-1, high=1):
+    """Rotated 2 sample test"""
+    sims = [linear, spiral]
+    if sim not in sims:
+        raise ValueError("Not valid simulation")
+
+    x, y = sim(n, 1, noise=noise, low=low, high=high)
     x_rot, y_rot = _k_sample_rotate2d(x, y)
     samp1 = np.hstack([x, y])
     samp2 = np.hstack([x_rot, y_rot])
