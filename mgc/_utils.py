@@ -66,6 +66,23 @@ def check_compute_distance(compute):
         raise ValueError("The compute distance/kernel must be a function.")
 
 
+def check_inputs_distmat(x, y):
+    """Check if x and y are distance matrices"""
+    nx, px = x.shape
+    ny, py = y.shape
+    if nx != px or ny != py or np.trace(x) != 0 or np.trace(y) != 0:
+        raise ValueError("Shape mismatch, x and y must be distance matrices "
+                         "have shape [n, n] and [n, n].")
+
+def check_inputs_distmat(self):
+    # check if x and y are distance matrices
+    for i in self.inputs:
+        n, p = i.shape
+        if n != p or np.trace(i) != 0:
+            raise ValueError("Shape mismatch, x and y must be distance matrices "
+                        "have shape [n, n] and [n, n].")
+
+
 def euclidean(x):
     """Default euclidean distance function calculation"""
     return cdist(x, x, metric='euclidean')
