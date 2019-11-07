@@ -110,22 +110,24 @@ class RV(IndependenceTest):
 
         Examples
         --------
+        >>> import numpy as np
         >>> from mgc.independence import RV
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = RV().test(x, y)
         >>> print(stat, pvalue)
-        1.0, 0.001
+        1.0 0.001
 
         The number of replications can give p-values with higher confidence
         (greater alpha levels).
 
+        >>> import numpy as np
         >>> from mgc.independence import RV
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = RV().test(x, y, reps=10000)
         >>> print(stat, pvalue)
-        1.0, 0.0001
+        1.0 0.0001
         """
 
         check_input = _CheckInputs(x, y, dim=2, reps=reps)

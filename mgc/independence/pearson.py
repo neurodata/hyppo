@@ -90,12 +90,13 @@ class Pearson(IndependenceTest):
 
         Examples
         --------
+        >>> import numpy as np
         >>> from mgc.independence import Pearson
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Pearson().test(x, y)
         >>> print(stat, pvalue)
-        1.0, 0.0
+        1.0 0.0
         """
 
         check_input = _CheckInputs(x, y, dim=1)

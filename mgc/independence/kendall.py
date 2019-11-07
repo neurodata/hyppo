@@ -106,12 +106,13 @@ class Kendall(IndependenceTest):
 
         Examples
         --------
+        >>> import numpy as np
         >>> from mgc.independence import Kendall
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Kendall().test(x, y)
         >>> print(stat, pvalue)
-        1.0, 0.000397
+        1.0 0.000397
         """
 
         check_input = _CheckInputs(x, y, dim=1)

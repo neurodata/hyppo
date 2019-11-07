@@ -122,22 +122,24 @@ class CCA(IndependenceTest):
 
         Examples
         --------
+        >>> import numpy as np
         >>> from mgc.independence import CCA
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = CCA().test(x, y)
         >>> print(stat, pvalue)
-        1.0, 0.001
+        1.0 0.001
 
         The number of replications can give p-values with higher confidence
         (greater alpha levels).
 
+        >>> import numpy as np
         >>> from mgc.independence import CCA
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = CCA().test(x, y, reps=10000)
         >>> print(stat, pvalue)
-        1.0, 0.0024
+        1.0 0.0024
         """
 
         check_input = _CheckInputs(x, y, dim=2, reps=reps)
