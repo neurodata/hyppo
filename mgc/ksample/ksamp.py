@@ -67,18 +67,18 @@ class KSample(KSampleTest):
         KSampleTest.__init__(self, indep_test,
                              compute_distance=compute_distance)
 
-    def test(self, inputs, reps=1000, workers=-1):
+    def test(self, *args, reps=1000, workers=-1):
         r"""
         Calculates the *k*-sample test statistic and p-value.
 
         Parameters
         ----------
-        inputs : list of ndarray
-            Input data matrices. All inputs must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(m, p)` where
-            `n` and `m` are the number of samples and `p` are the number of
-            dimensions. Alternatively, inputs can be distance matrices,
-            where the shapes must all be `(n, n)`.
+        *args : ndarray(s)
+            Variable length input data matrices. All inputs must have the same
+            number of samples. That is, the shapes must be `(n, p)` and
+            `(m, p)` where `n` and `m` are the number of samples and `p` are
+            the number of dimensions. Alternatively, inputs can be distance
+            matrices, where the shapes must all be `(n, n)`.
         reps : int, optional (default: 1000)
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
@@ -89,9 +89,9 @@ class KSample(KSampleTest):
         Returns
         -------
         stat : float
-            The computed *K*-Sample statistic.
+            The computed *k*-Sample statistic.
         pvalue : float
-            The computed *K*-Sample p-value.
+            The computed *k*-Sample p-value.
 
         Examples
         --------
@@ -101,7 +101,7 @@ class KSample(KSampleTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> z = np.arange(10)
-        >>> stat, pvalue = KSample(Dcorr).test([x, y])
+        >>> stat, pvalue = KSample(Dcorr).test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
         '0.335, 1.0'
 
@@ -114,12 +114,13 @@ class KSample(KSampleTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> z = np.ones(7)
-        >>> stat, pvalue = KSample(Dcorr).test([x, y, z], reps=10000)
+        >>> stat, pvalue = KSample(Dcorr).test(x, y, z, reps=10000)
         >>> '%.3f, %.1f' % (stat, pvalue)
         '-0.449, 1.0'
 
         """
 
+        inputs = list(args)
         check_input = _CheckInputs(inputs=inputs,
                                    indep_test=self.indep_test,
                                    compute_distance=self.compute_distance)

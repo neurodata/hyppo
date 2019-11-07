@@ -111,8 +111,8 @@ class Kendall(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Kendall().test(x, y)
-        >>> '%.1f, %.4f' % (stat, pvalue)
-        '1.0, 0.0004'
+        >>> '%.1f, %.2f' % (stat, pvalue)
+        '1.0, 0.00'
 
         """
 

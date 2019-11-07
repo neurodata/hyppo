@@ -115,8 +115,8 @@ class RV(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = RV().test(x, y)
-        >>> '%.1f, %.3f' % (stat, pvalue)
-        '1.0, 0.001'
+        >>> '%.1f, %.2f' % (stat, pvalue)
+        '1.0, 0.00'
 
         The number of replications can give p-values with higher confidence
         (greater alpha levels).
@@ -126,8 +126,8 @@ class RV(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = RV().test(x, y, reps=10000)
-        >>> '%.1f, %.3f' % (stat, pvalue)
-        '1.0, 0.002'
+        >>> '%.1f, %.2f' % (stat, pvalue)
+        '1.0, 0.00'
 
         """
 

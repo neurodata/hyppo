@@ -160,8 +160,8 @@ class Dcorr(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Dcorr().test(x, y)
-        >>> '%.1f, %.3f' % (stat, pvalue)
-        '1.0, 0.001'
+        >>> '%.1f, %.2f' % (stat, pvalue)
+        '1.0, 0.00'
 
         The number of replications can give p-values with higher confidence
         (greater alpha levels).
@@ -171,8 +171,8 @@ class Dcorr(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Dcorr().test(x, y, reps=10000)
-        >>> '%.1f, %.4f' % (stat, pvalue)
-        '1.0, 0.0008'
+        >>> '%.1f, %.2f' % (stat, pvalue)
+        '1.0, 0.00'
 
         In addition, the inputs can be distance matrices. Using this is the,
         same as before, except the ``compute_distance`` parameter must be set
@@ -184,8 +184,8 @@ class Dcorr(IndependenceTest):
         >>> y = 2 * x
         >>> dcorr = Dcorr(compute_distance=None)
         >>> stat, pvalue = dcorr.test(x, y)
-        >>> '%.1f, %.1f' % (stat, pvalue)
-        '1.0, 1.0'
+        >>> '%.1f, %.2f' % (stat, pvalue)
+        '1.0, 1.00'
 
         """
 

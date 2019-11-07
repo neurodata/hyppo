@@ -156,8 +156,8 @@ class HHG(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = HHG().test(x, y)
-        >>> '%.1f, %.3f' % (stat, pvalue)
-        '160.0, 0.001'
+        >>> '%.1f, %.2f' % (stat, pvalue)
+        '160.0, 0.00'
 
         The number of replications can give p-values with higher confidence
         (greater alpha levels).
@@ -167,8 +167,8 @@ class HHG(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = HHG().test(x, y, reps=10000)
-        >>> '%.1f, %.4f' % (stat, pvalue)
-        '160.0, 0.0001'
+        >>> '%.1f, %.2f' % (stat, pvalue)
+        '160.0, 0.00'
 
         In addition, the inputs can be distance matrices. Using this is the,
         same as before, except the ``compute_distance`` parameter must be set
@@ -180,8 +180,8 @@ class HHG(IndependenceTest):
         >>> y = 2 * x
         >>> hhg = HHG(compute_distance=None)
         >>> stat, pvalue = hhg.test(x, y)
-        >>> '%.1f, %.1f' % (stat, pvalue)
-        '0.0, 1.0'
+        >>> '%.1f, %.2f' % (stat, pvalue)
+        '0.0, 1.00'
 
         """
 

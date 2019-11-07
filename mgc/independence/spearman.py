@@ -95,8 +95,8 @@ class Spearman(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Spearman().test(x, y)
-        >>> '%.1f, %.1f' % (stat, pvalue)
-        '1.0, 0.0'
+        >>> '%.1f, %.2f' % (stat, pvalue)
+        '1.0, 0.00'
 
         """
 

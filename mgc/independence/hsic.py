@@ -156,8 +156,8 @@ class Hsic(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Hsic().test(x, y)
-        >>> '%.1f, %.3f' % (stat, pvalue)
-        '1.0, 0.001'
+        >>> '%.1f, %.2f' % (stat, pvalue)
+        '1.0, 0.00'
 
         The number of replications can give p-values with higher confidence
         (greater alpha levels).
@@ -167,8 +167,8 @@ class Hsic(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Hsic().test(x, y, reps=10000)
-        >>> '%.1f, %.3f' % (stat, pvalue)
-        '1.0, 0.002'
+        >>> '%.1f, %.2f' % (stat, pvalue)
+        '1.0, 0.00'
 
         In addition, the inputs can be distance matrices. Using this is the,
         same as before, except the ``compute_kernel`` parameter must be set
@@ -180,8 +180,8 @@ class Hsic(IndependenceTest):
         >>> y = 2 * x
         >>> hsic = Hsic(compute_kernel=None)
         >>> stat, pvalue = hsic.test(x, y)
-        >>> '%.1f, %.1f' % (stat, pvalue)
-        '1.0, 1.0'
+        >>> '%.1f, %.2f' % (stat, pvalue)
+        '1.0, 1.00'
 
         """
 
