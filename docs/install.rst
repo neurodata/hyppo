@@ -31,6 +31,7 @@ mgc requires the following packages:
 - numba
 - numpy
 - scipy
+- scikit-learn
 
 Hardware requirements
 ---------------------
@@ -39,12 +40,11 @@ the in-memory operations.
 
 OS Requirements
 ---------------
-This package is supported for *Linux* and *macOS*. However, the package has
-been tested on the following systems:
+This package is supported for all major operating systems. The following
+versions of operating systems was tested on Travis CI:
 
-- Linux: N/A
-- macOS: N/A
-- Windows: N/A
+- **Linux:** Ubuntu Xenial 16.04
+- **Windows:** Windows Server, version 1803
 
 Testing
 -------

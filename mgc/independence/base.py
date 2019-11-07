@@ -13,31 +13,19 @@ class IndependenceTest(ABC):
 
     Parameters
     ----------
-    compute_distance : callable(), optional
+    compute_distance : callable(), optional (default: euclidean)
         A function that computes the distance or similarity among the samples
         within each data matrix. Set to `None` if `x` and `y` are already
-        distance matrices. The default uses the euclidean norm metric. If you
-        are calling a custom function, either create the distance matrix
-        before-hand or create a function of the form `compute_distance(x)`
-        where `x` is the data matrix for which pairwise distances are
-        calculated.
-
-    Attributes
-    ----------
-    stat : float
-        The computed independence test statistic.
-    pvalue : float
-        The computed independence test p-value.
+        distance matrices. To call a custom function, either create the
+        distance matrix before-hand or create a function of the form
+        ``compute_distance(x)`` where `x` is the data matrix for which
+        pairwise distances are calculated.
     """
 
-    def __init__(self, compute_distance=None):
+    def __init__(self, compute_distance=euclidean):
         # set statistic and p-value
         self.stat = None
         self.pvalue = None
-
-        # set compute_distance euclidean distance by default
-        if not compute_distance:
-            compute_distance = euclidean
         self.compute_distance = compute_distance
 
         super().__init__()
@@ -58,7 +46,7 @@ class IndependenceTest(ABC):
         Helper function that is used to calculate parallel permuted test
         statistics.
 
-        Paramaters
+        Parameters
         ----------
         index : int
             Iterator used for parallel statistic calculation
@@ -68,6 +56,7 @@ class IndependenceTest(ABC):
         perm_stat : float
             Test statistic for each value in the null distribution.
         """
+
         permx = np.random.permutation(self.x)
         permy = np.random.permutation(self.y)
 
@@ -98,6 +87,7 @@ class IndependenceTest(ABC):
         pvalue : float
             The pvalue obtained via permutation.
         """
+
         self.x = x
         self.y = y
 

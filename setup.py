@@ -15,6 +15,7 @@ REQUIRED_PACKAGES = [
     "numpy>=1.17",
     "scipy>=1.3.1",
     "numba>=0.46",
+    "scikit-learn>=0.19.1",
 ]
 
 # Find mgc version.
@@ -52,7 +53,6 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
     ],
     packages=find_packages(),
     include_package_data=True,

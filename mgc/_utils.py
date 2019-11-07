@@ -60,10 +60,27 @@ def check_reps(reps):
         warnings.warn(msg, RuntimeWarning)
 
 
-def check_compute_distance(compute_distance):
-    """Check if compute_distance if a callable()"""
-    if (not callable(compute_distance) and compute_distance is not None):
-        raise ValueError("Compute_distance must be a function.")
+def check_compute_distance(compute):
+    """Check if compute distance/kernel function if a callable()"""
+    if (not callable(compute) and compute is not None):
+        raise ValueError("The compute distance/kernel must be a function.")
+
+
+def check_xy_distmat(x, y):
+    """Check if x and y are distance matrices"""
+    nx, px = x.shape
+    ny, py = y.shape
+    if nx != px or ny != py or np.trace(x) != 0 or np.trace(y) != 0:
+        raise ValueError("Shape mismatch, x and y must be distance matrices "
+                         "have shape [n, n] and [n, n].")
+
+def check_inputs_distmat(inputs):
+    # check if x and y are distance matrices
+    for i in inputs:
+        n, p = i.shape
+        if n != p or np.trace(i) != 0:
+            raise ValueError("Shape mismatch, x and y must be distance matrices "
+                        "have shape [n, n] and [n, n].")
 
 
 def euclidean(x):

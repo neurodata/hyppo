@@ -18,7 +18,7 @@ class TestKSample:
     def test_twosamp_linear_oned(self, n, obs_stat, obs_pvalue, indep_test):
         np.random.seed(123456789)
         x, y = linear_2samp(n, 1, noise=0)
-        stat, pvalue = KSample(indep_test).test([x, y])
+        stat, pvalue = KSample(indep_test).test(x, y)
 
         assert_almost_equal(stat, obs_stat, decimal=1)
         assert_almost_equal(pvalue, obs_pvalue, decimal=1)
@@ -32,26 +32,26 @@ class TestKSampleErrorWarn:
         x = np.arange(20)
         y = [5] * 20
         z = np.arange(5)
-        assert_raises(ValueError, KSample(Dcorr).test, [x, y, z])
+        assert_raises(ValueError, KSample(Dcorr).test, x, y, z)
 
     def test_error_shape(self):
         # raises error if number of samples different (n)
         x = np.arange(100).reshape(25, 4)
         y = x.reshape(10, 10)
         z = x
-        assert_raises(ValueError, KSample(Dcorr).test, [x, y, z])
+        assert_raises(ValueError, KSample(Dcorr).test, x, y, z)
 
     def test_error_lowsamples(self):
         # raises error if samples are low (< 3)
         x = np.arange(3)
         y = np.arange(3)
-        assert_raises(ValueError, KSample(CCA).test, [x, y])
+        assert_raises(ValueError, KSample(CCA).test, x, y)
 
     def test_error_nans(self):
         # raises error if inputs contain NaNs
         x = np.arange(20, dtype=float)
         x[0] = np.nan
-        assert_raises(ValueError, KSample(CCA).test, [x, x])
+        assert_raises(ValueError, KSample(CCA).test, x, x)
 
         y = np.arange(20)
-        assert_raises(ValueError, KSample(CCA).test, [x, y])
+        assert_raises(ValueError, KSample(CCA).test, x, y)

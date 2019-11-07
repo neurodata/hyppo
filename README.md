@@ -6,7 +6,7 @@
 
 `mgc` (pronounced "Magic") is an open-source software package for independence and k-sample testing.
 
-- **Installation Guide:**
+- **Installation Guide:** [https://mgic.rtfd.io/en/latest/install.html](https://mgic.rtfd.io/en/latest/install.html)
 - **Documentation:** [http://mgic.rtfd.io/](http://mgic.rtfd.io/)
 - **Tutorials:**
 - **Source Code:** [https://github.com/sampan501/mgc/tree/master/mgc](https://github.com/sampan501/mgc/tree/master/mgc)
