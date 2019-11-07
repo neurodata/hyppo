@@ -111,8 +111,9 @@ class Kendall(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Kendall().test(x, y)
-        >>> print(stat, pvalue)
-        1.0 0.000397
+        >>> '%.1f, %.4f' % (stat, pvalue)
+        '1.0, 0.0004'
+
         """
 
         check_input = _CheckInputs(x, y, dim=1)

@@ -1,7 +1,7 @@
 import numpy as np
 from numba import njit
 
-from .._utils import euclidean, check_inputs_distmat
+from .._utils import euclidean, check_xy_distmat
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 
@@ -156,8 +156,8 @@ class HHG(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = HHG().test(x, y)
-        >>> print(stat, pvalue)
-        160.0 0.001
+        >>> '%.1f, %.3f' % (stat, pvalue)
+        '160.0, 0.001'
 
         The number of replications can give p-values with higher confidence
         (greater alpha levels).
@@ -167,8 +167,8 @@ class HHG(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = HHG().test(x, y, reps=10000)
-        >>> print(stat, pvalue)
-        160.0 0.0024
+        >>> '%.1f, %.4f' % (stat, pvalue)
+        '160.0, 0.0001'
 
         In addition, the inputs can be distance matrices. Using this is the,
         same as before, except the ``compute_distance`` parameter must be set
@@ -180,8 +180,9 @@ class HHG(IndependenceTest):
         >>> y = 2 * x
         >>> hhg = HHG(compute_distance=None)
         >>> stat, pvalue = hhg.test(x, y)
-        >>> print(stat, pvalue)
-        0.0 1.0
+        >>> '%.1f, %.1f' % (stat, pvalue)
+        '0.0, 1.0'
+
         """
 
         check_input = _CheckInputs(x, y, dim=2, reps=reps,
@@ -189,7 +190,7 @@ class HHG(IndependenceTest):
         x, y = check_input()
 
         if self.is_distance:
-            check_inputs_distmat(x, y)
+            check_xy_distmat(x, y)
 
         return super(HHG, self).test(x, y, reps, workers)
 

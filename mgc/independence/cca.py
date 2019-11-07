@@ -127,8 +127,8 @@ class CCA(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = CCA().test(x, y)
-        >>> print(stat, pvalue)
-        1.0 0.001
+        >>> '%.1f, %.3f' % (stat, pvalue)
+        '1.0, 0.001'
 
         The number of replications can give p-values with higher confidence
         (greater alpha levels).
@@ -138,8 +138,9 @@ class CCA(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = CCA().test(x, y, reps=10000)
-        >>> print(stat, pvalue)
-        1.0 0.0024
+        >>> '%.1f, %.4f' % (stat, pvalue)
+        '1.0, 0.0001'
+
         """
 
         check_input = _CheckInputs(x, y, dim=2, reps=reps)

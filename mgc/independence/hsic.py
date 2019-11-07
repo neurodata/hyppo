@@ -2,7 +2,6 @@ import numpy as np
 from numba import njit
 from sklearn.metrics.pairwise import rbf_kernel
 
-from .._utils import euclidean, check_inputs_distmat
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 from . import Dcorr
@@ -157,8 +156,8 @@ class Hsic(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Hsic().test(x, y)
-        >>> print(stat, pvalue)
-        1.0 0.001
+        >>> '%.1f, %.3f' % (stat, pvalue)
+        '1.0, 0.001'
 
         The number of replications can give p-values with higher confidence
         (greater alpha levels).
@@ -168,8 +167,8 @@ class Hsic(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Hsic().test(x, y, reps=10000)
-        >>> print(stat, pvalue)
-        1.0 0.0016
+        >>> '%.1f, %.3f' % (stat, pvalue)
+        '1.0, 0.002'
 
         In addition, the inputs can be distance matrices. Using this is the,
         same as before, except the ``compute_kernel`` parameter must be set
@@ -181,8 +180,9 @@ class Hsic(IndependenceTest):
         >>> y = 2 * x
         >>> hsic = Hsic(compute_kernel=None)
         >>> stat, pvalue = hsic.test(x, y)
-        >>> print(stat, pvalue)
-        1.0 1.0
+        >>> '%.1f, %.1f' % (stat, pvalue)
+        '1.0, 1.0'
+
         """
 
         dcorr = Dcorr(compute_distance=self.compute_kernel)
