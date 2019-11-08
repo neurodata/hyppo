@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_raises, assert_warns
 
-from ...benchmarks.indep_sim import linear
+from ...sims import linear
 from .. import HHG
 
 

@@ -10,7 +10,7 @@ class TestKSampleShape:
     @pytest.mark.parametrize("n", [10, 100, 1000])
     @pytest.mark.parametrize("p", [1, 2, 3, 4, 5])
     @pytest.mark.parametrize("indep_sim", [
-        linear, spiral
+        linear, exponential, spiral, cubic
     ])
     @pytest.mark.parametrize("sim", [rot_2samp])
     def test_shapes(self, indep_sim, n, p, sim):

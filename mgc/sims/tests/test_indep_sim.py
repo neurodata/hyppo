@@ -2,14 +2,14 @@ import pytest
 import numpy as np
 from numpy.testing import assert_almost_equal
 
-from ..indep_sim import linear, spiral
+from .. import *
 
 
 class TestIndepShape:
     @pytest.mark.parametrize("n", [10, 100, 1000])
     @pytest.mark.parametrize("p", [1, 2, 3, 4, 5])
     @pytest.mark.parametrize("sim", [
-        linear, spiral
+        linear, exponential, spiral, cubic
     ])
     def test_shapes(self, n, p, sim):
         np.random.seed(123456789)

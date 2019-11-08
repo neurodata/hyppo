@@ -2,13 +2,13 @@ import pytest
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_warns, assert_raises
 
-from ...benchmarks.indep_sim import linear
+from ...sims import linear
 from .. import Dcorr
 from ..dcorr import _dcorr
 
 
 class TestDcorrStat:
-    @pytest.mark.parametrize("n", [10, 100, 1000])
+    @pytest.mark.parametrize("n", [10, 100])
     @pytest.mark.parametrize("obs_stat", [1.0])
     @pytest.mark.parametrize("obs_pvalue", [1/1000])
     def test_linear_oned(self, n, obs_stat, obs_pvalue):

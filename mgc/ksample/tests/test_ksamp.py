@@ -2,8 +2,7 @@ import pytest
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_warns, assert_raises
 
-from ...benchmarks.indep_sim import linear
-from ...benchmarks.ksample_sim import rot_2samp
+from ...sims import linear, rot_2samp
 from .. import KSample
 from ...independence import CCA, Dcorr
 

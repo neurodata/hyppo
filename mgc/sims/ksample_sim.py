@@ -16,7 +16,7 @@ def _k_sample_rotate2d(x, y, degree=90):
 
 def rot_2samp(sim, n, p, noise=1, low=-1, high=1):
     """Rotated 2 sample test"""
-    sims = [linear, spiral]
+    sims = [linear, spiral, exponential, cubic]
     if sim not in sims:
         raise ValueError("Not valid simulation")
 

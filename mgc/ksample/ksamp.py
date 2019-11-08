@@ -37,7 +37,7 @@ class KSample(KSampleTest):
     The *k*-sample testing problem can be thought of as a generalization of
     the two sample testing problem. Define
     :math:`\{ u_i \stackrel{iid}{\sim} F_U,\ i = 1, ..., n \}` and
-    :math:`\{ v_i \stackrel{iid}{\sim} F_V,\ j = 1, ..., m \}` as two groups
+    :math:`\{ v_j \stackrel{iid}{\sim} F_V,\ j = 1, ..., m \}` as two groups
     of samples deriving from different distributions with the same
     dimensionality. Then, problem that we are testing is thus,
 
@@ -48,9 +48,8 @@ class KSample(KSampleTest):
 
     The closely related independence testing problem can be generalized
     similarly: Given a set of paired data
-    :math:`\{\left(x_i, y_i \right) \stackrel{iid}{\sim} F_{XY} \in
-    \mathbb{R}^{p + q},\ i = 1, ..., N\}`, the problem that we are testing
-    is,
+    :math:`\{\left(x_i, y_i \right) \stackrel{iid}{\sim} F_{XY},
+    \ i = 1, ..., N\}`, the problem that we are testing is,
 
     .. math::
 
