@@ -31,10 +31,6 @@ def _random_uniform(n, p, low=-1, high=1):
     """ Generate random uniform data """
     return np.array(np.random.uniform(low, high, size=(n, p)))
 
-def _normalize(x, y):
-    """ Normalize data """
-    return x/np.max(np.abs(x)), y/np.max(np.abs(y))
-
 
 def linear(n, p, noise=1, low=-1, high=1):
     r"""
@@ -91,8 +87,6 @@ def linear(n, p, noise=1, low=-1, high=1):
     gauss_noise = np.random.normal(0, 1, size=(n, 1))
     kappa = int(p == 1)
     y = x @ coeffs + kappa*noise*gauss_noise
-
-    x, y = _normalize(x, y)
 
     return x, y
 
@@ -152,8 +146,6 @@ def exponential(n, p, noise=10, low=0, high=3):
     gauss_noise = np.random.normal(0, 1, size=(n, 1))
     kappa = int(p == 1)
     y = np.exp(x @ coeffs) + kappa*noise*gauss_noise
-
-    x, y = _normalize(x, y)
 
     return x, y
 
@@ -229,8 +221,6 @@ def cubic(n, p, noise=80, low=-1, high=1, cubs=[-12, 48, 128], scale=1/3):
          + cubs[0] * (x_coeffs-scale)**3
          + kappa*noise*gauss_noise)
 
-    x, y = _normalize(x, y)
-
     return x, y
 
 def joint_normal(n, p, noise=0.5):
@@ -297,8 +287,6 @@ def joint_normal(n, p, noise=0.5):
         y = samp[:, p+1:2*p] + kappa*noise*gauss_noise
     x = samp[:, 0:p]
 
-    x, y = _normalize(x, y)
-
     return x, y
 
 
@@ -336,8 +324,6 @@ def step(n, p, noise=0.1, low=-1, high=1):
     x_coeff = ((x @ coeffs) > 0) * 1
     y = x_coeff + kappa*noise*gauss_noise
 
-    x, y = _normalize(x, y)
-
     return x, y
 
 
@@ -360,8 +346,6 @@ def quadratic(n, p, noise=1, low=-1, high=1, amplitude=5):
     x_coeffs = x @ coeffs
     y = amplitude * x_coeffs ** 2 + kappa*noise*gauss_noise
 
-    x, y = _normalize(x, y)
-
     return x, y
 
 
@@ -383,8 +367,6 @@ def w_shaped(n, p, noise=0.5, low=-1, high=1):
 
     y = (4 * (((x @ coeffs) ** 2 - 0.5) ** 2 + (u @ coeffs)/500)
          + kappa*noise*gauss_noise)
-
-    x, y = _normalize(x, y)
 
     return x, y
 
@@ -454,8 +436,6 @@ def spiral(n, p, noise=0.4, low=0, high=5):
     guass_noise = np.random.normal(0, 1, size=(n, 1))
     y = y + noise*p*guass_noise
 
-    x, y = _normalize(x, y)
-
     return x, y
 
 
@@ -497,8 +477,6 @@ def uncorrelated_bernoulli(n, p, noise=0.05, prob=0.5):
         y[i] = (((2*binom[i] - 1) * coeffs.T) @ x[i, :]
                   + kappa*noise*gauss_noise[i])
 
-    x, y = _normalize(x, y)
-
     return x, y
 
 
@@ -517,8 +495,6 @@ def logarithmic(n, p, noise=3, base=2):
     kappa = int(p == 1)
 
     y = base * np.log(np.abs(x)) / np.log(base) + kappa*noise*gauss_noise
-
-    x, y = _normalize(x, y)
 
     return x, y
 
@@ -539,8 +515,6 @@ def fourth_root(n, p, noise=0.25, low=-1, high=1):
     kappa = int(p == 1)
 
     y = np.abs(x @ coeffs) ** 0.25 + 0.25*kappa*noise*gauss_noise
-
-    x, y = _normalize(x, y)
 
     return x, y
 
@@ -565,8 +539,6 @@ def _sin(n, p, noise=0.25, low=-1, high=1, period=4*np.pi):
     kappa = int(p == 1)
 
     y = np.sin(x * period) + kappa*noise*gauss_noise
-
-    x, y = _normalize(x, y)
 
     return x, y
 
@@ -600,8 +572,6 @@ def _square_diamond(n, p, noise=1, low=-1, high=1, period=-np.pi/2):
     x = u*np.cos(period) + v*np.sin(period) + 0.05*p*gauss_noise
     y = -u*np.sin(period) + v*np.cos(period)
 
-    x, y = _normalize(x, y)
-
     return x, y
 
 
@@ -628,8 +598,6 @@ def two_parabolas(n, p, noise=2, low=-1, high=1, prob=0.5):
     kappa = int(p == 1)
 
     y = ((x * coeffs) ** 2 + kappa*noise*gauss_noise) * (u-0.5)
-
-    x, y = _normalize(x, y)
 
     return x, y
 
@@ -661,9 +629,6 @@ def _circle_ellipse(n, p, noise=0.1, low=-1, high=1, radius=1):
     x = rx * x + kappa*noise*rx*gauss_noise
     y = ry * np.sin(z[:, 0].reshape(n, 1) * np.pi)
 
-    x = x / radius
-    y = y / radius
-
     return x, y
 
 
@@ -694,8 +659,6 @@ def multiplicative_noise(n, p):
     x = np.random.multivariate_normal(np.zeros(p), sig, size=(n, 1))
     y = u * x
 
-    x, y = _normalize(x, y)
-
     return x, y
 
 
@@ -712,12 +675,10 @@ def multimodal_independence(n, p, prob=0.5, sep1=3, sep2=2):
     sig = np.identity(p)
     u = np.random.multivariate_normal(np.zeros(p), sig, size=n)
     v = np.random.multivariate_normal(np.zeros(p), sig, size=n)
-    u_2 = np.random.binomial(1, prob, size=(n, 1))
-    v_2 = np.random.binomial(1, prob, size=(n, 1))
+    u_2 = np.random.binomial(1, prob, size=(n, p))
+    v_2 = np.random.binomial(1, prob, size=(n, p))
 
     x = u/sep1 + sep2*u_2 - 1
     y = v/sep1 + sep2*v_2 - 1
-
-    x, y = _normalize(x, y)
 
     return x, y
