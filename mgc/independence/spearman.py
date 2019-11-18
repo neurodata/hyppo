@@ -65,6 +65,8 @@ class Spearman(IndependenceTest):
             The computed Spearman's rho statistic.
         """
 
+        x.shape = (-1,)
+        y.shape = (-1,)
         stat, _ = spearmanr(x, y)
         self.stat = stat
 

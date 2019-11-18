@@ -65,6 +65,8 @@ class Pearson(IndependenceTest):
             The computed Pearson statistic.
         """
 
+        x.shape = (-1,)
+        y.shape = (-1,)
         stat, _ = pearsonr(x, y)
         self.stat = stat
 

@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.sparse.linalg import svds
 
 from .base import IndependenceTest
 from ._utils import _CheckInputs
@@ -84,14 +83,13 @@ class CCA(IndependenceTest):
         vary = centy.T @ centy
 
         # if 1-d, don't calculate the svd
-        if varx.shape[1] == 1 or vary.shape[1] == 1 or covar.shape[1] == 1:
+        if varx.size == 1 or vary.size == 1 or covar.size == 1:
             covar = np.sum(covar ** 2)
-            stat = np.divide(covar, np.sqrt(np.sum(varx ** 2) *
-                                            np.sum(vary ** 2)))
+            stat = covar / np.sqrt(np.sum(varx ** 2) * np.sum(vary ** 2))
         else:
-            covar = np.sum(svds(covar, 1)[1] ** 2)
-            stat = np.divide(covar, np.sqrt(np.sum(svds(varx, 1)[1] ** 2)
-                                            * np.sum(svds(vary, 1)[1] ** 2)))
+            covar = np.sum(np.linalg.svd(covar, 1)[1] ** 2)
+            stat = covar / np.sqrt(np.sum(np.linalg.svd(varx, 1)[1] ** 2)
+                                   * np.sum(np.linalg.svd(vary, 1)[1] ** 2))
         self.stat = stat
 
         return stat

@@ -81,6 +81,8 @@ class Kendall(IndependenceTest):
             The computed Kendall's tau statistic.
         """
 
+        x.shape = (-1,)
+        y.shape = (-1,)
         stat, _ = kendalltau(x, y)
         self.stat = stat
 
