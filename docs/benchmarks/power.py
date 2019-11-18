@@ -25,12 +25,6 @@ class _ParallelP(object):
 
         obs_stat = self.test._statistic(x, y)
 
-        if (self.test.__name__ == "Pearson" or
-            self.test.__name__ == "Spearman" or
-            self.test.__name__ == "Kendall"):
-            x = x.reshape(-1)
-            y = y.reshape(-1)
-
         permx = np.random.permutation(x)
         permy = np.random.permutation(y)
 
