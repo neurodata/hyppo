@@ -70,7 +70,7 @@ def _perm_test(test, sim, n=100, p=1, noise=0, reps=1000, workers=-1):
     return alt_dist, null_dist
 
 
-def power(test, sim, n=100, p=1, noise=0, alpha=0.05, reps=1000, workers=1):
+def power_sample(test, sim, n=100, p=1, noise=1, alpha=0.05, reps=1000, workers=1):
     """
     [summary]
 

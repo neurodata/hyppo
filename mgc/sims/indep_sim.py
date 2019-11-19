@@ -32,7 +32,11 @@ def _random_uniform(n, p, low=-1, high=1):
     return np.array(np.random.uniform(low, high, size=(n, p)))
 
 
-def linear(n, p, noise=1, low=-1, high=1):
+def _calc_eps(n):
+    return np.random.multivariate_normal(0, 1, size=(n, 1))
+
+
+def linear(n, p, noise=False, low=-1, high=1):
     r"""
     Simulates univariate or multivariate linear data.
 
@@ -75,7 +79,7 @@ def linear(n, p, noise=1, low=-1, high=1):
     """
 
     extra_args = [
-        (noise, float),
+        (noise, bool),
         (low, float),
         (high, float)
     ]
@@ -84,9 +88,8 @@ def linear(n, p, noise=1, low=-1, high=1):
 
     x = _random_uniform(n, p, low, high)
     coeffs = _gen_coeffs(p)
-    gauss_noise = np.random.normal(0, 1, size=(n, 1))
-    kappa = int(p == 1)
-    y = x @ coeffs + kappa*noise*gauss_noise
+    eps = _calc_eps(n)
+    y = x @ coeffs + 1*noise*eps
 
     return x, y
 
