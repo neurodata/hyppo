@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
-from scipy.spatial.distance import cdist
+from scipy.spatial.distance import cdist, squareform
 from scipy._lib._util import MapWrapper
 
 from .._utils import euclidean
@@ -49,7 +49,10 @@ class IndependenceTest(ABC):
         """Calculates permuted distance matrices"""
         x_order = np.random.permutation(self.x.shape[0])
         y_order = np.random.permutation(self.y.shape[0])
-        return self.x[x_order][:, x_order], self.y[y_order][:, y_order]
+        permx = self.x[x_order][:, x_order]
+        permy = self.y[y_order][:, y_order]
+        return (squareform(permx, force='tovector', checks=False),
+                squareform(permy, force='tovector', checks=False))
 
     def _perm_stat(self, index):                                                # pragma: no cover
         r"""
