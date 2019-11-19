@@ -124,7 +124,7 @@ class Hsic(IndependenceTest):
         distx = x
         disty = y
 
-        if self.is_kernel:
+        if not self.is_kernel:
             kernx = self.compute_kernel(x)
             kerny = self.compute_kernel(y)
             distx = np.max(kernx) - kernx
