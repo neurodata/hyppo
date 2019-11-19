@@ -28,6 +28,10 @@ class IndependenceTest(ABC):
         self.pvalue = None
         self.compute_distance = compute_distance
 
+        self.is_distance = False
+        if not compute_distance:
+            self.is_distance = True
+
         super().__init__()
 
     @abstractmethod
@@ -40,6 +44,11 @@ class IndependenceTest(ABC):
         x, y : ndarray
             Input data matrices.
         """
+
+    def _perm_distance(self, x):
+        """Calculates permuted distance matrices"""
+        order = x.shape[0]
+        return x[order][:, order]
 
     def _perm_stat(self, index):                                                # pragma: no cover
         r"""
@@ -57,8 +66,12 @@ class IndependenceTest(ABC):
             Test statistic for each value in the null distribution.
         """
 
-        permx = np.random.permutation(self.x)
-        permy = np.random.permutation(self.y)
+        if not self.is_distance:
+            permx = np.random.permutation(self.x)
+            permy = np.random.permutation(self.y)
+        else:
+            permx = self._perm_distance(self.x)
+            permy = self._perm_distance(self.y)
 
         # calculate permuted statics, store in null distribution
         perm_stat = self._statistic(permx, permy)
