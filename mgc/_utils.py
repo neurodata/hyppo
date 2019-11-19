@@ -91,4 +91,4 @@ def euclidean(x):
 
 def gaussian(x):
     """Default medial gaussian kernel similarity calculation"""
-    return rbf_kernel(x, gamma=1.0/(np.median(cdist(x, x, 'minkowski', p=1))))
+    return rbf_kernel(x, gamma=1.0/(2 * np.median(cdist(x, x, 'cityblock') ** 2)))

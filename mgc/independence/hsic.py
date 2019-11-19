@@ -99,6 +99,10 @@ class Hsic(IndependenceTest):
         self.pvalue = None
         self.compute_kernel = compute_kernel
 
+        self.is_kernel = False
+        if not compute_kernel:
+            self.is_kernel = True
+
     def _statistic(self, x, y):
         r"""
         Helper function that calculates the Hsic test statistic.
@@ -118,8 +122,15 @@ class Hsic(IndependenceTest):
             The computed Hsic statistic.
         """
 
-        dcorr = Dcorr(compute_distance=self.compute_kernel)
-        stat = dcorr._statistic(x, y)
+        distx = x
+        disty = y
+
+        if self.is_kernel:
+            distx = np.max(self.compute_kernel(x)) - self.compute_kernel(x)
+            disty = np.max(self.compute_kernel(y)) - self.compute_kernel(y)
+
+        dcorr = Dcorr(compute_distance=None)
+        stat = dcorr._statistic(distx, disty)
         self.stat = stat
 
         return stat
@@ -186,8 +197,15 @@ class Hsic(IndependenceTest):
 
         """
 
-        dcorr = Dcorr(compute_distance=self.compute_kernel)
-        stat, pvalue = dcorr.test(x, y, reps=reps, workers=workers)
+        distx = x
+        disty = y
+
+        if self.is_kernel:
+            distx = np.max(self.compute_kernel(x)) - self.compute_kernel(x)
+            disty = np.max(self.compute_kernel(y)) - self.compute_kernel(y)
+
+        dcorr = Dcorr(compute_distance=None)
+        stat, pvalue = dcorr.test(distx, disty, reps=reps, workers=workers)
         self.stat = stat
         self.pvalue = pvalue
 
