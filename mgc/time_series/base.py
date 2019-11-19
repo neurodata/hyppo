@@ -79,7 +79,7 @@ class TimeSeriesTest(ABC):
         return perm_stat
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=-1):
+    def test(self, x, y, reps=1000, workers=1):
         """
         Calulates the independece test p-value.
 

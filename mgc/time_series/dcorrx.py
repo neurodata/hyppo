@@ -64,7 +64,7 @@ class DcorrX(TimeSeriesTest):
 
         return stat, opt_lag
 
-    def test(self, x, y, reps=1000, workers=-1):
+    def test(self, x, y, reps=1000, workers=1):
         """
         Calulates the HHG test p-value.
 

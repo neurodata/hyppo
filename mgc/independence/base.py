@@ -66,7 +66,7 @@ class IndependenceTest(ABC):
         return perm_stat
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=-1):
+    def test(self, x, y, reps=1000, workers=1):
         r"""
         Calulates the independence test p-value.
 
@@ -76,7 +76,7 @@ class IndependenceTest(ABC):
             Input data matrices.
         reps : int, optional
             The number of replications used in permutation, by default 1000.
-        workers : int, optional
+        workers : int, optional (default: 1)
             Evaluates method using `multiprocessing.Pool <multiprocessing>`).
             Supply `-1` to use all cores available to the Process.
 

@@ -31,9 +31,8 @@ class _ParallelP(object):
         # calculate permuted stats, store in null distribution
         perm_stat = self.test._statistic(permx, permy)
 
-        if self.test.__name__ == "Pearson":
-            obs_stat = np.abs(obs_stat)
-            perm_stat = np.abs(perm_stat)
+        obs_stat = np.abs(obs_stat)
+        perm_stat = np.abs(perm_stat)
 
         return obs_stat, perm_stat
 
@@ -71,7 +70,7 @@ def _perm_test(test, sim, n=100, p=1, noise=0, reps=1000, workers=-1):
     return alt_dist, null_dist
 
 
-def power(test, sim, n=100, p=1, noise=0, alpha=0.05, reps=1000, workers=-1):
+def power(test, sim, n=100, p=1, noise=0, alpha=0.05, reps=1000, workers=1):
     """
     [summary]
 
@@ -97,5 +96,8 @@ def power(test, sim, n=100, p=1, noise=0, alpha=0.05, reps=1000, workers=-1):
                                      reps=reps, workers=workers)
     cutoff = np.sort(null_dist)[ceil(reps * (1-alpha))]
     empirical_power = (alt_dist >= cutoff).sum() / reps
+
+    if empirical_power == 0:
+        empirical_power = 1 / reps
 
     return empirical_power

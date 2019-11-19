@@ -16,9 +16,8 @@ class KSampleTest(ABC):
     Parameters
     ----------
     indep_test : {CCA, Dcorr, HHG, RV, Hsic}
-        The class of the desired independence test from ``mgc.independence``.
-        The object, not an instance of the object should be passed as a
-        parameter to this class.
+        The class corresponding to the desired independence test from
+        ``mgc.independence``.
     compute_distance : callable(), optional (default: euclidean)
         A function that computes the distance or similarity among the samples
         within each data matrix. Set to `None` if `x` and `y` are already
@@ -67,7 +66,7 @@ class KSampleTest(ABC):
         return perm_stat
 
     @abstractmethod
-    def test(self, inputs, reps=1000, workers=-1):
+    def test(self, inputs, reps=1000, workers=1):
         r"""
         Calulates the k-sample test p-value.
 
@@ -77,7 +76,7 @@ class KSampleTest(ABC):
             Input data matrices.
         reps : int, optional
             The number of replications used in permutation, by default 1000.
-        workers : int, optional
+        workers : int, optional (default: 1)
             Evaluates method using `multiprocessing.Pool <multiprocessing>`).
             Supply `-1` to use all cores available to the Process.
 

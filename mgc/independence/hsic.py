@@ -118,12 +118,12 @@ class Hsic(IndependenceTest):
         """
 
         dcorr = Dcorr(compute_distance=self.compute_kernel)
-        stat = dcorr.test(x, y)[0]
+        stat = dcorr._statistic(x, y)
         self.stat = stat
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=-1):
+    def test(self, x, y, reps=1000, workers=1):
         r"""
         Calculates the Hsic test statistic and p-value.
 
@@ -138,7 +138,7 @@ class Hsic(IndependenceTest):
         reps : int, optional (default: 1000)
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        workers : int, optional (default: -1)
+        workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
 

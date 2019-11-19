@@ -3,6 +3,7 @@ from numba import njit
 
 from .._utils import check_inputs_distmat, euclidean
 from .base import KSampleTest
+from ..independence import *
 from ._utils import _CheckInputs, k_sample_transform
 
 
@@ -18,10 +19,9 @@ class KSample(KSampleTest):
 
     Parameters
     ----------
-    indep_test : {CCA, Dcorr, HHG, RV, Hsic}
-        The class of the desired independence test from ``mgc.independence``.
-        The object, not an instance of the object should be passed as a
-        parameter to this class.
+    indep_test : {"CCA", "Dcorr", "HHG", "RV", "Hsic"}
+        A string corresponding to the desired independence test from
+        ``mgc.independence``.
     compute_distance : callable(), optional (default: euclidean)
         A function that computes the distance among the samples within each
         data matrix. Set to `None` if `x` and `y` are already distance
@@ -63,10 +63,23 @@ class KSample(KSampleTest):
     """
 
     def __init__(self, indep_test, compute_distance=euclidean):
+        test_names = {
+            "pearson" : Pearson,
+            "rv" : RV,
+            "cca" : CCA,
+            "kendall" : Kendall,
+            "spearman" : Spearman,
+            "hhg" : HHG,
+            "hsic" : Hsic,
+            "dcorr" : Dcorr
+        }
+        if not test_names[indep_test]:
+            raise ValueError("Test is not a valid independence test")
+        indep_test = test_names[indep_test]
         KSampleTest.__init__(self, indep_test,
                              compute_distance=compute_distance)
 
-    def test(self, *args, reps=1000, workers=-1):
+    def test(self, *args, reps=1000, workers=1):
         r"""
         Calculates the *k*-sample test statistic and p-value.
 
@@ -81,7 +94,7 @@ class KSample(KSampleTest):
         reps : int, optional (default: 1000)
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        workers : int, optional (default: -1)
+        workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
 
@@ -96,11 +109,10 @@ class KSample(KSampleTest):
         --------
         >>> import numpy as np
         >>> from mgc.ksample import KSample
-        >>> from mgc.independence import Dcorr
         >>> x = np.arange(7)
         >>> y = x
         >>> z = np.arange(10)
-        >>> stat, pvalue = KSample(Dcorr).test(x, y)
+        >>> stat, pvalue = KSample("Dcorr").test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
         '0.335, 1.0'
 
@@ -109,11 +121,10 @@ class KSample(KSampleTest):
 
         >>> import numpy as np
         >>> from mgc.ksample import KSample
-        >>> from mgc.independence import Dcorr
         >>> x = np.arange(7)
         >>> y = x
         >>> z = np.ones(7)
-        >>> stat, pvalue = KSample(Dcorr).test(x, y, z, reps=10000)
+        >>> stat, pvalue = KSample("Dcorr").test(x, y, z, reps=10000)
         >>> '%.3f, %.1f' % (stat, pvalue)
         '-0.449, 1.0'
 
