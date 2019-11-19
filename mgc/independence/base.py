@@ -45,10 +45,11 @@ class IndependenceTest(ABC):
             Input data matrices.
         """
 
-    def _perm_distance(self, x):
+    def _perm_distance(self):
         """Calculates permuted distance matrices"""
-        order = x.shape[0]
-        return x[order][:, order]
+        x_order = np.random.permutation(self.x.shape[0])
+        y_order = np.random.permutation(self.y.shape[0])
+        return self.x[x_order][:, x_order], self.y[y_order][:, y_order]
 
     def _perm_stat(self, index):                                                # pragma: no cover
         r"""
@@ -70,8 +71,7 @@ class IndependenceTest(ABC):
             permx = np.random.permutation(self.x)
             permy = np.random.permutation(self.y)
         else:
-            permx = self._perm_distance(self.x)
-            permy = self._perm_distance(self.y)
+            permx, permy = self._perm_distance()
 
         # calculate permuted statics, store in null distribution
         perm_stat = self._statistic(permx, permy)
