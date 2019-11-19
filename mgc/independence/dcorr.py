@@ -206,9 +206,9 @@ def _center_distmat(distx):                                                     
     n = distx.shape[0]
 
     # double centered distance matrices (unbiased version)
-    exp_distx = (np.repeat((distx.sum(axis=0) / (n-2)), n).reshape(n, -1)
-                + np.repeat((distx.sum(axis=1) / (n-2)), n).reshape(-1, n)
-                - distx.sum() / ((n-1) * (n-2)))
+    exp_distx = ((distx.sum(axis=0) / (n-2)).T
+                 + (distx.sum(axis=1) / (n-2)).T
+                 - distx.sum() / ((n-1) * (n-2)))
     cent_distx = distx - exp_distx
 
     return cent_distx
