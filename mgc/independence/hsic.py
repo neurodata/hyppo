@@ -94,13 +94,13 @@ class Hsic(IndependenceTest):
 
     def __init__(self, compute_kernel=gaussian):
         # set statistic and p-value
-        self.stat = None
-        self.pvalue = None
         self.compute_kernel = compute_kernel
 
         self.is_kernel = False
         if not compute_kernel:
             self.is_kernel = True
+
+        IndependenceTest.__init__(self, compute_distance=compute_kernel)
 
     def _statistic(self, x, y):
         r"""
@@ -125,8 +125,10 @@ class Hsic(IndependenceTest):
         disty = y
 
         if self.is_kernel:
-            distx = np.max(self.compute_kernel(x)) - self.compute_kernel(x)
-            disty = np.max(self.compute_kernel(y)) - self.compute_kernel(y)
+            kernx = self.compute_kernel(x)
+            kerny = self.compute_kernel(y)
+            distx = np.max(kernx) - kernx
+            disty = np.max(kerny) - kerny
 
         dcorr = Dcorr(compute_distance=None)
         stat = dcorr._statistic(distx, disty)
