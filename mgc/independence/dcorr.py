@@ -223,9 +223,9 @@ def _dcorr(distx, disty):                                                       
     cent_disty = _center_distmat(disty)
 
     # calculate covariances and variances
-    covar = np.sum(cent_distx @ cent_disty.T)
-    varx = np.sum(cent_distx @ cent_distx.T)
-    vary = np.sum(cent_disty @ cent_disty.T)
+    covar = np.sum(np.multiply(cent_distx, cent_disty.T))
+    varx = np.sum(np.multiply(cent_distx, cent_distx.T))
+    vary = np.sum(np.multiply(cent_disty, cent_disty.T))
 
     # stat is 0 with negative variances (would make denominator undefined)
     if varx <= 0 or vary <= 0:
