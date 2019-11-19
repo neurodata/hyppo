@@ -206,8 +206,8 @@ def _center_distmat(distx):                                                     
     n = distx.shape[0]
 
     # dokuble centered distance matrices (unbiased version)
-    exp_distx = ((distx.sum(axis=0) *  n/(n-2)).reshape(n, -1)
-                + (distx.sum(axis=1) * n/(n-2)).reshape(-1, n)
+    exp_distx = ((distx.sum(axis=0) / (n-2)).reshape(n, -1)
+                + (distx.sum(axis=1) / (n-2)).reshape(-1, n)
                 - distx.sum() / ((n-1) * (n-2)))
     cent_distx = distx - exp_distx
 
