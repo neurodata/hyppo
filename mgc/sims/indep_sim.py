@@ -33,7 +33,7 @@ def _random_uniform(n, p, low=-1, high=1):
 
 
 def _calc_eps(n):
-    return np.random.multivariate_normal(0, 1, size=(n, 1))
+    return np.random.normal(0, 1, size=(n, 1))
 
 
 def linear(n, p, noise=False, low=-1, high=1):
