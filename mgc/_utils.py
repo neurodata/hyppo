@@ -2,6 +2,7 @@ import warnings
 
 import numpy as np
 from scipy.spatial.distance import cdist
+from sklearn.metrics.pairwise import rbf_kernel
 
 
 def contains_nan(a):
@@ -86,3 +87,8 @@ def check_inputs_distmat(inputs):
 def euclidean(x):
     """Default euclidean distance function calculation"""
     return cdist(x, x, metric='euclidean')
+
+
+def gaussian(x):
+    """Default medial gaussian kernel similarity calculation"""
+    return rbf_kernel(x, gamma=1.0/(np.median(euclidean(x))))

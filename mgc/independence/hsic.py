@@ -1,10 +1,11 @@
 import numpy as np
 from numba import njit
-from sklearn.metrics.pairwise import rbf_kernel
 
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 from . import Dcorr
+
+from .._utils import gaussian
 
 
 class Hsic(IndependenceTest):
@@ -92,7 +93,7 @@ class Hsic(IndependenceTest):
                 11(Apr), 1391-1423.
     """
 
-    def __init__(self, compute_kernel=rbf_kernel):
+    def __init__(self, compute_kernel=gaussian):
         # set statistic and p-value
         self.stat = None
         self.pvalue = None
