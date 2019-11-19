@@ -4,8 +4,7 @@ from numba import njit
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 from . import Dcorr
-
-from .._utils import gaussian
+from .._utils import gaussian, check_xy_distmat
 
 
 class Hsic(IndependenceTest):
@@ -197,16 +196,11 @@ class Hsic(IndependenceTest):
 
         """
 
-        distx = x
-        disty = y
+        check_input = _CheckInputs(x, y, dim=2, reps=reps,
+                                   compute_distance=self.compute_kernel)
+        x, y = check_input()
 
         if self.is_kernel:
-            distx = np.max(self.compute_kernel(x)) - self.compute_kernel(x)
-            disty = np.max(self.compute_kernel(y)) - self.compute_kernel(y)
+            check_xy_distmat(x, y)
 
-        dcorr = Dcorr(compute_distance=None)
-        stat, pvalue = dcorr.test(distx, disty, reps=reps, workers=workers)
-        self.stat = stat
-        self.pvalue = pvalue
-
-        return stat, pvalue
+        return super(Hsic, self).test(x, y, reps, workers)
