@@ -317,7 +317,8 @@ def step(n, p, noise=False, low=-1, high=1):
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
 
-    noise = p > 1
+    if p > 1:
+        noise = True
     x = _random_uniform(n, p, low, high)
     coeffs = _gen_coeffs(p)
     eps = _calc_eps(n)
@@ -422,7 +423,8 @@ def spiral(n, p, noise=False, low=0, high=5):
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
 
-    noise = p > 1
+    if p > 1:
+        noise = True
     unif = _random_uniform(n, p=1, low=low, high=high)
     x = np.zeros((n, p))
     x[:, 0] = np.cos(unif[:, 0] * np.pi)
@@ -611,7 +613,8 @@ def _circle_ellipse(n, p, noise=False, low=-1, high=1, radius=1):
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
 
-    noise = p > 1
+    if p > 1:
+        noise = True
     x = _random_uniform(n, p, low, high)
     rx = radius * np.ones((n, p))
     unif = _random_uniform(n, p, low, high)
