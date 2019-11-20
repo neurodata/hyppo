@@ -224,7 +224,7 @@ def cubic(n, p, noise=False, low=-1, high=1, cubs=[-12, 48, 128], scale=1/3):
 
     return x, y
 
-def joint_normal(n, p, noise=True):
+def joint_normal(n, p, noise=False):
     r"""
     Simulates univariate or multivariate spiral data.
 
@@ -285,7 +285,7 @@ def joint_normal(n, p, noise=True):
 
     eps = _calc_eps(n)
     x = np.random.multivariate_normal(np.zeros(2*p), covT, n)
-    y = x[:, p+1:2*p] + 0.5*noise*eps
+    y = x[:, p:2*p] + 0.5*noise*eps
     x = x[:, :p]
 
     return x, y
@@ -430,7 +430,7 @@ def spiral(n, p, noise=False, low=0, high=5):
         x[:, i+1] = np.multiply(x[:, i], np.cos(unif[:, i+1] * np.pi))
         x[:, i] = np.multiply(x[:, i], np.sin(unif[:, i+1] * np.pi))
     x = np.multiply(unif, x)
-    y = np.multiply(unif, np.sin(unif[:, 0] * np.pi))
+    y = np.multiply(unif[:, 0], np.sin(unif[:, 0] * np.pi)).reshape(n, 1)
 
     eps = _calc_eps(n)
     y = y + 0.4*p*noise*eps
