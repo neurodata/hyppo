@@ -613,7 +613,7 @@ def _circle_ellipse(n, p, noise=False, low=-1, high=1, radius=1):
 
     noise = p > 1
     x = _random_uniform(n, p, low, high)
-    rx = radius * np.ones(n, p))
+    rx = radius * np.ones((n, p))
     unif = _random_uniform(n, p, low, high)
     sig = np.identity(p)
     gauss_noise = np.random.multivariate_normal(np.zeros(p), sig, size=n)
