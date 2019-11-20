@@ -9,21 +9,23 @@ from scipy._lib._util import MapWrapper
 
 class oneSample(DiscriminabilityTest):
     r"""
-     A class that performs a one-sample test for whether the discriminability differs from random chance.
-     Performs a test of whether an observed discriminability is significantly different from chance, as described in [#1Dscr].
-     With :math: `D_X` the sample discriminability of :math: `X`:
-     
-     ..math::
+     A class that performs a one-sample test for whether the discriminability differs from random chance,
+     as described in [1]. With :math:`D_X` as the sample discriminability of :math:`X`, it tests whether:
+
+     .. math::
         H_0: D_X = D_0
+
      and
-     ..math::
+
+     .. math::
         H_A: D_X > D_0 
     
-    where D_0 is the discriminability that would be observed by random chance.
+    where :math:`D_0` is the discriminability that would be observed by random chance.
     
     References
     ----------
-     .. [#1Dscr] Eric W. Bridgeford, et al. "Optimal Decisions for Reference Pipelines and Datasets: Applications in Connectomics." Bioarxiv (2019).
+    .. [#1Dscr] Eric W. Bridgeford, et al. "Optimal Decisions for Reference 
+                Pipelines and Datasets: Applications in Connectomics." Bioarxiv (2019).
     """
 
     def __init__(self):
@@ -35,7 +37,7 @@ class oneSample(DiscriminabilityTest):
 
     def test(self, X, Y, isDist = False, remove_isolates=True, reps=1000, workers=-1):
         r"""
-        Calculates the Discriminability one sample test statistic and p-value.
+        Calculates the test statistic and p-value for Discriminability one sample test.
 
         Parameters
         ----------

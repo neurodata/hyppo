@@ -4,7 +4,8 @@ Reference
 *********
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
+   dscr
    independence
    ksample
