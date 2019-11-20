@@ -94,7 +94,7 @@ def linear(n, p, noise=False, low=-1, high=1):
     return x, y
 
 
-def exponential(n, p, noise=10, low=0, high=3):
+def exponential(n, p, noise=False, low=0, high=3):
     r"""
     Simulates univariate or multivariate exponential data.
 
@@ -137,7 +137,7 @@ def exponential(n, p, noise=10, low=0, high=3):
     """
 
     extra_args = [
-        (noise, float),
+        (noise, bool),
         (low, float),
         (high, float)
     ]
@@ -146,14 +146,13 @@ def exponential(n, p, noise=10, low=0, high=3):
 
     x = _random_uniform(n, p, low, high)
     coeffs = _gen_coeffs(p)
-    gauss_noise = np.random.normal(0, 1, size=(n, 1))
-    kappa = int(p == 1)
-    y = np.exp(x @ coeffs) + kappa*noise*gauss_noise
+    eps = _calc_eps(n)
+    y = np.exp(x @ coeffs) + 10*noise*eps
 
     return x, y
 
 
-def cubic(n, p, noise=80, low=-1, high=1, cubs=[-12, 48, 128], scale=1/3):
+def cubic(n, p, noise=False, low=-1, high=1, cubs=[-12, 48, 128], scale=1/3):
     r"""
     Simulates univariate or multivariate cubic data.
 
@@ -204,7 +203,7 @@ def cubic(n, p, noise=80, low=-1, high=1, cubs=[-12, 48, 128], scale=1/3):
     """
 
     extra_args = [
-        (noise, float),
+        (noise, bool),
         (low, float),
         (high, float),
         (cubs, list),
@@ -215,18 +214,17 @@ def cubic(n, p, noise=80, low=-1, high=1, cubs=[-12, 48, 128], scale=1/3):
 
     x = _random_uniform(n, p, low, high)
     coeffs = _gen_coeffs(p)
-    gauss_noise = np.random.normal(0, 1, size=(n, 1))
-    kappa = int(p == 1)
+    eps = _calc_eps(n)
 
-    x_coeffs = x @ coeffs
-    y = (cubs[2] * (x_coeffs-scale)**3
-         + cubs[1] * (x_coeffs-scale)**2
-         + cubs[0] * (x_coeffs-scale)**3
-         + kappa*noise*gauss_noise)
+    x_coeffs = x @ coeffs - scale
+    y = (cubs[2] * x_coeffs**3
+         + cubs[1] * x_coeffs**2
+         + cubs[0] * x_coeffs**3
+         + 80*noise*eps)
 
     return x, y
 
-def joint_normal(n, p, noise=0.5):
+def joint_normal(n, p, noise=True):
     r"""
     Simulates univariate or multivariate spiral data.
 
@@ -270,30 +268,30 @@ def joint_normal(n, p, noise=0.5):
 
     """
 
+    if p > 10:
+        raise ValueError("Covariance matrix for p>10 is not positive"
+                         "semi-definite")
+
     extra_args = [
-        (noise, float)
+        (noise, bool)
     ]
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
 
-    gauss_noise = np.random.normal(0, 1, size=(n, 1))
-    kappa = int(p == 1)
     rho = 1 / (2*p)
-    sig = np.identity(2*p)
-    sig[p:2*p, 0:p] = rho
-    sig[0:p, p:2*p] = rho
+    cov1 = np.concatenate((np.identity(p), rho*np.ones((p, p))), axis=1)
+    cov2 = np.concatenate((rho*np.ones((p, p)), np.identity(p)), axis=1)
+    covT = np.concatenate((cov1.T, cov2.T), axis=1)
 
-    samp = np.random.multivariate_normal(np.zeros(2*p), sig, size=n)
-    if p == 1:
-        y = samp[:, p:2*p] + kappa*noise*gauss_noise
-    else:
-        y = samp[:, p+1:2*p] + kappa*noise*gauss_noise
-    x = samp[:, 0:p]
+    eps = _calc_eps(n)
+    x = np.random.multivariate_normal(np.zeros(2*p), covT, n)
+    y = x[:, p+1:2*p] + 0.5*noise*eps
+    x = x[:, :p]
 
     return x, y
 
 
-def step(n, p, noise=0.1, low=-1, high=1):
+def step(n, p, noise=False, low=-1, high=1):
     r"""
     [summary]
 
@@ -312,50 +310,28 @@ def step(n, p, noise=0.1, low=-1, high=1):
     """
 
     extra_args = [
-        (noise, float),
+        (noise, bool),
         (low, float),
         (high, float)
     ]
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
 
+    noise = p > 1
     x = _random_uniform(n, p, low, high)
     coeffs = _gen_coeffs(p)
-    gauss_noise = np.random.normal(0, 1, size=(n, 1))
-    kappa = int(p == 1)
+    eps = _calc_eps(n)
 
     x_coeff = ((x @ coeffs) > 0) * 1
-    y = x_coeff + kappa*noise*gauss_noise
+    y = x_coeff + noise*eps
 
     return x, y
 
 
-def quadratic(n, p, noise=1, low=-1, high=1, amplitude=5):
+def quadratic(n, p, noise=False, low=-1, high=1):
 
     extra_args = [
-        (noise, float),
-        (low, float),
-        (high, float),
-        (amplitude, float)
-    ]
-    check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
-
-    x = _random_uniform(n, p, low, high)
-    coeffs = _gen_coeffs(p)
-    gauss_noise = np.random.uniform(0, 1, size=(n, 1))
-    kappa = int(p == 1)
-
-    x_coeffs = x @ coeffs
-    y = amplitude * x_coeffs ** 2 + kappa*noise*gauss_noise
-
-    return x, y
-
-
-def w_shaped(n, p, noise=0.5, low=-1, high=1):
-
-    extra_args = [
-        (noise, float),
+        (noise, bool),
         (low, float),
         (high, float)
     ]
@@ -363,18 +339,38 @@ def w_shaped(n, p, noise=0.5, low=-1, high=1):
     check_in(*extra_args)
 
     x = _random_uniform(n, p, low, high)
-    u = _random_uniform(n, p, low, high)
     coeffs = _gen_coeffs(p)
-    gauss_noise = np.random.normal(0, 1, size=(n, 1))
-    kappa = int(p == 1)
+    eps = _calc_eps(n)
 
-    y = (4 * (((x @ coeffs) ** 2 - 0.5) ** 2 + (u @ coeffs)/500)
-         + kappa*noise*gauss_noise)
+    x_coeffs = x @ coeffs
+    y = x_coeffs ** 2 + 0.5*noise*eps
 
     return x, y
 
 
-def spiral(n, p, noise=0.4, low=0, high=5):
+def w_shaped(n, p, noise=False, low=-1, high=1):
+
+    extra_args = [
+        (noise, bool),
+        (low, float),
+        (high, float)
+    ]
+    check_in = _CheckInputs(n, p)
+    check_in(*extra_args)
+
+    x = _random_uniform(n, p, low, high)
+    u = _random_uniform(n, p, 0, 1)
+    coeffs = _gen_coeffs(p)
+    eps = _calc_eps(n)
+
+    x_coeffs = x @ coeffs
+    u_coeffs = u @ coeffs
+    y = 4 * ((x_coeffs**2 - 0.5) ** 2 + u_coeffs/500) + 0.5*noise*eps
+
+    return x, y
+
+
+def spiral(n, p, noise=False, low=0, high=5):
     r"""
     Simulates univariate or multivariate spiral data.
 
@@ -419,30 +415,30 @@ def spiral(n, p, noise=0.4, low=0, high=5):
     """
 
     extra_args = [
-        (noise, float),
+        (noise, bool),
         (low, float),
         (high, float)
     ]
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
 
+    noise = p > 1
     unif = _random_uniform(n, p=1, low=low, high=high)
-    sinusoid = np.cos(np.pi * unif).reshape(-1, 1)
-    y = unif * np.sin(np.pi * unif).reshape(-1, 1)
-
     x = np.zeros((n, p))
-    if p > 1:
-        for i in range(p-1):
-            x[:, i] = np.squeeze(y * (sinusoid ** i))
-    x[:, p-1] = np.squeeze(unif * sinusoid)
+    x[:, 0] = np.cos(unif[:, 1] * np.pi)
+    for i in range(p - 1):
+        x[:, i+1] = np.multiply(x[:, i], np.cos(unif[:, i+1] * np.pi))
+        x[:, i] = np.multiply(x[:, i], np.sin(unif[:, i+1] * np.pi))
+    x = np.multiply(unif, x)
+    y = np.multiply(unif, np.sin(unif[:, 1] * np.pi))
 
-    guass_noise = np.random.normal(0, 1, size=(n, 1))
-    y = y + noise*p*guass_noise
+    eps = _calc_eps(n)
+    y = y + 0.4*p*noise*eps
 
     return x, y
 
 
-def uncorrelated_bernoulli(n, p, noise=0.05, prob=0.5):
+def uncorrelated_bernoulli(n, p, noise=False, prob=0.5):
     """
     [summary]
 
@@ -459,53 +455,48 @@ def uncorrelated_bernoulli(n, p, noise=0.05, prob=0.5):
     """
 
     extra_args = [
-        (noise, float),
+        (noise, bool),
         (prob, float)
     ]
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
 
-    kappa = int(p == 1)
     binom = np.random.binomial(1, prob, size=(n, 1))
-    sig = np.identity(p) * p
+    sig = np.identity(p)
     gauss_noise = np.random.multivariate_normal(np.zeros(p), sig, size=n)
 
-    x = np.random.binomial(1, prob, size=(n, p)) + noise*gauss_noise
+    x = np.random.binomial(1, prob, size=(n, p)) + 0.5*noise*gauss_noise
     coeffs = _gen_coeffs(p)
 
-    gauss_noise = np.random.normal(0, 1, size=(n, 1))
-    y = np.empty(shape=(n, 1))
-    y[:] = np.nan
-    for i in range(n):
-        y[i] = (((2*binom[i] - 1) * coeffs.T) @ x[i, :]
-                  + kappa*noise*gauss_noise[i])
+    eps = _calc_eps(n)
+    x_coeffs = x @ coeffs
+    y = binom*2 - 1
+    y = np.multiply(x_coeffs, y) + 0.5*noise*eps
 
     return x, y
 
 
-def logarithmic(n, p, noise=3, base=2):
+def logarithmic(n, p, noise=False):
 
     extra_args = [
-        (noise, float),
-        (base, int)
+        (noise, bool)
     ]
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
 
     sig = np.identity(p)
     x = np.random.multivariate_normal(np.zeros(p), sig, size=n)
-    gauss_noise = np.random.normal(0, 1, size=(n, 1))
-    kappa = int(p == 1)
+    eps = _calc_eps(n)
 
-    y = base * np.log(np.abs(x)) / np.log(base) + kappa*noise*gauss_noise
+    y = np.log(x ** 2) + 3*noise*eps
 
     return x, y
 
 
-def fourth_root(n, p, noise=0.25, low=-1, high=1):
+def fourth_root(n, p, noise=False, low=-1, high=1):
 
     extra_args = [
-        (noise, float),
+        (noise, bool),
         (low, float),
         (high, float)
     ]
@@ -513,19 +504,19 @@ def fourth_root(n, p, noise=0.25, low=-1, high=1):
     check_in(*extra_args)
 
     x = _random_uniform(n, p, low, high)
-    gauss_noise = np.random.normal(0, 1, size=(n, 1))
+    eps = _calc_eps(n)
     coeffs = _gen_coeffs(p)
-    kappa = int(p == 1)
 
-    y = np.abs(x @ coeffs) ** 0.25 + 0.25*kappa*noise*gauss_noise
+    x_coeffs = x @ coeffs
+    y = np.abs(x_coeffs) ** 0.25 + 0.25*noise*eps
 
     return x, y
 
 
-def _sin(n, p, noise=0.25, low=-1, high=1, period=4*np.pi):
+def _sin(n, p, noise=False, low=-1, high=1, period=4*np.pi):
 
     extra_args = [
-        (noise, float),
+        (noise, bool),
         (low, float),
         (high, float),
         (period, float)
@@ -534,32 +525,36 @@ def _sin(n, p, noise=0.25, low=-1, high=1, period=4*np.pi):
     check_in(*extra_args)
 
     x = _random_uniform(n, p, low, high)
-    if p > 1 or noise > 0:
+    if p > 1 or noise:
         sig = np.identity(p)
         v = np.random.multivariate_normal(np.zeros(p), sig, size=n)
         x = x + 0.02*p*v
-    gauss_noise = np.random.normal(0, 1, size=(n, 1))
-    kappa = int(p == 1)
+    eps = _calc_eps(n)
 
-    y = np.sin(x * period) + kappa*noise*gauss_noise
+    if period == 4*np.pi:
+        cc = 1
+    else:
+        cc = 0.5
+
+    y = np.sin(x * period) + cc*noise*eps
 
     return x, y
 
 
-def sin_four_pi(n, p, noise=0.25, low=-1, high=1):
+def sin_four_pi(n, p, noise=False, low=-1, high=1):
 
     return _sin(n, p, noise=noise, low=low, high=high, period=4*np.pi)
 
 
-def sin_sixteen_pi(n, p, noise=0.25, low=-1, high=1):
+def sin_sixteen_pi(n, p, noise=False, low=-1, high=1):
 
     return _sin(n, p, noise=noise, low=low, high=high, period=16*np.pi)
 
 
-def _square_diamond(n, p, noise=1, low=-1, high=1, period=-np.pi/2):
+def _square_diamond(n, p, noise=False, low=-1, high=1, period=-np.pi/2):
 
     extra_args = [
-        (noise, float),
+        (noise, bool),
         (low, float),
         (high, float),
         (period, float)
@@ -580,13 +575,13 @@ def _square_diamond(n, p, noise=1, low=-1, high=1, period=-np.pi/2):
 
 def square(n, p, noise=1, low=-1, high=1):
 
-    return _square_diamond(n, p, noise=noise, low=low, high=high, period=-np.pi/2)
+    return _square_diamond(n, p, noise=noise, low=low, high=high, period=-np.pi/8)
 
 
-def two_parabolas(n, p, noise=2, low=-1, high=1, prob=0.5):
+def two_parabolas(n, p, noise=False, low=-1, high=1, prob=0.5):
 
     extra_args = [
-        (noise, float),
+        (noise, bool),
         (low, float),
         (high, float),
         (prob, float)
@@ -597,18 +592,18 @@ def two_parabolas(n, p, noise=2, low=-1, high=1, prob=0.5):
     x = _random_uniform(n, p, low, high)
     coeffs = _gen_coeffs(p)
     u = np.random.binomial(1, prob, size=(n, 1))
-    gauss_noise = _random_uniform(n, p, low=0, high=1)
-    kappa = int(p == 1)
+    rand_noise = _random_uniform(n, p, low=0, high=1)
 
-    y = ((x * coeffs) ** 2 + kappa*noise*gauss_noise) * (u-0.5)
+    x_coeffs = x @ coeffs
+    y = (x_coeffs**2 + 2*noise*rand_noise) * (u-0.5)
 
     return x, y
 
 
-def _circle_ellipse(n, p, noise=0.1, low=-1, high=1, radius=1):
+def _circle_ellipse(n, p, noise=False, low=-1, high=1, radius=1):
 
     extra_args = [
-        (noise, float),
+        (noise, bool),
         (low, float),
         (high, float),
         (radius, float)
@@ -616,21 +611,21 @@ def _circle_ellipse(n, p, noise=0.1, low=-1, high=1, radius=1):
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
 
-    kappa = int(p == 1)
+    noise = p > 1
     x = _random_uniform(n, p, low, high)
     rx = radius * np.ones(shape=(n, p))
-    z = _random_uniform(n, p, low, high)
+    unif = _random_uniform(n, p, low, high)
     sig = np.identity(p)
     gauss_noise = np.random.multivariate_normal(np.zeros(p), sig, size=n)
 
-    ry = np.ones(shape=(n, p))
-    x[:, 0] = np.cos(z[:, 0] * np.pi)
+    ry = np.ones(n, p)
+    x[:, 0] = np.cos(unif[:, 0] * np.pi)
     for i in range(p - 1):
-        x[:, i+1] = x[:, i] * np.cos(z[:, i+1] * np.pi)
-        x[:, i] = x[:, i] * np.sin(z[:, i+1] * np.pi)
+        x[:, i+1] = x[:, i] * np.cos(unif[:, i+1] * np.pi)
+        x[:, i] = x[:, i] * np.sin(unif[:, i+1] * np.pi)
 
-    x = rx * x + kappa*noise*rx*gauss_noise
-    y = ry * np.sin(z[:, 0].reshape(n, 1) * np.pi)
+    x = rx * x + 0.4*noise*rx*gauss_noise
+    y = ry * np.sin(unif[:, 0].reshape(n, 1) * np.pi)
 
     return x, y
 
@@ -657,10 +652,9 @@ def multiplicative_noise(n, p):
     check_in(*extra_args)
 
     sig = np.identity(p)
-    u = np.random.multivariate_normal(np.zeros(p), sig, size=(n, 1))
-
     x = np.random.multivariate_normal(np.zeros(p), sig, size=(n, 1))
-    y = u * x
+    y = np.random.multivariate_normal(np.zeros(p), sig, size=(n, 1))
+    y = np.multiply(x, y)
 
     return x, y
 
