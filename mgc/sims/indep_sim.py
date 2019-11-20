@@ -652,8 +652,8 @@ def multiplicative_noise(n, p):
     check_in(*extra_args)
 
     sig = np.identity(p)
-    x = np.random.multivariate_normal(np.zeros(p), sig, size=(n, 1))
-    y = np.random.multivariate_normal(np.zeros(p), sig, size=(n, 1))
+    x = np.random.multivariate_normal(np.zeros(p), sig, size=n)
+    y = np.random.multivariate_normal(np.zeros(p), sig, size=n)
     y = np.multiply(x, y)
 
     return x, y
