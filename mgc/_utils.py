@@ -2,6 +2,7 @@ import warnings
 
 import numpy as np
 from scipy.spatial.distance import cdist
+from sklearn.metrics.pairwise import rbf_kernel
 
 
 def contains_nan(a):
@@ -90,5 +91,6 @@ def euclidean(x):
 
 def gaussian(x):
     """Default medial gaussian kernel similarity calculation"""
-    return (np.exp(-cdist(x, x, 'sqeuclidean')/(2 *
-            np.median(cdist(x, x, 'cityblock') ** 2))))
+    l1 = np.fill_diagonal(cdist(x, x, 'cityblock'), np.nan)
+    sigma = 1.0 / (2 * np.nanmedian(l1 ** 2))
+    return rbf_kernel(x, x, gamma=sigma)
