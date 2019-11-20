@@ -127,8 +127,8 @@ class Hsic(IndependenceTest):
         if not self.is_kernel:
             kernx = self.compute_kernel(x)
             kerny = self.compute_kernel(y)
-            distx = np.max(kernx) - kernx
-            disty = np.max(kerny) - kerny
+            distx = np.max(np.abs(kernx)) - kernx
+            disty = np.max(np.abs(kerny)) - kerny
 
         dcorr = Dcorr(compute_distance=None)
         stat = dcorr._statistic(distx, disty)
