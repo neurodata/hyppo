@@ -70,7 +70,7 @@ def _perm_test(test, sim, n=100, p=1, noise=False, reps=1000, workers=-1):
     return alt_dist, null_dist
 
 
-def power_sample(test, sim, n=100, p=1, noise=True, alpha=0.05, reps=1000, workers=1):
+def power(test, sim, n=100, p=1, noise=True, alpha=0.05, reps=1000, workers=1):
     """
     [summary]
 
@@ -101,3 +101,55 @@ def power_sample(test, sim, n=100, p=1, noise=True, alpha=0.05, reps=1000, worke
         empirical_power = 1 / reps
 
     return empirical_power
+
+
+def power_sample(test, sim, n=100, p=1, noise=True, alpha=0.05, reps=1000, workers=1):
+    """
+    [summary]
+
+    Parameters
+    ----------
+    test : [type]
+        [description]
+    sim : [type]
+        [description]
+    n : int, optional
+        [description], by default 100
+    p : int, optional
+        [description], by default 1
+    noise : int, optional
+        [description], by default 0
+    reps : int, optional
+        [description], by default 1000
+    alpha : float, optional
+        [description], by default 0.05
+    """
+
+    return power(test, sim, n=n, p=p, noise=noise, alpha=alpha, reps=reps,
+                 workers=workers)
+
+
+def power_dim(test, sim, n=100, p=1, noise=False, alpha=0.05, reps=1000, workers=1):
+    """
+    [summary]
+
+    Parameters
+    ----------
+    test : [type]
+        [description]
+    sim : [type]
+        [description]
+    n : int, optional
+        [description], by default 100
+    p : int, optional
+        [description], by default 1
+    noise : int, optional
+        [description], by default 0
+    reps : int, optional
+        [description], by default 1000
+    alpha : float, optional
+        [description], by default 0.05
+    """
+
+    return power(test, sim, n=n, p=p, noise=noise, alpha=alpha, reps=reps,
+                 workers=workers)

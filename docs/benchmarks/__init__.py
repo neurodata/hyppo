@@ -1,3 +1,3 @@
-from .power import power_sample
+from .power import power_sample, power_dim
 
-__all__ = ["power_sample"]
+__all__ = ["power_sample", "power_dim"]
