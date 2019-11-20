@@ -1,3 +1,3 @@
-from .power import indep_power_sampsize
+from .power import power_sample
 
-__all__ = ["indep_power_sampsize"]
+__all__ = ["power_sample"]
