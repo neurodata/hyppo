@@ -41,16 +41,16 @@ class oneSample(DiscriminabilityTest):
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices. `x` and `y` must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
-            `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, `x` and `y` can be distance matrices,
-            where the shapes must both be `(n, n)`.
+        X : ndarray
+
+            * An :math:`n \times d` dimensional data matrix with :math:`n` samples in :math:`d` dimensions, if flag :math:`(isDist = Flase)` 
+
+            * An :math:`n \times n` dimensional distance matrix if :math:`X` is a distance matrix. Use flag :math:`(isDist = True)`
+            
         isDist : Boolean, optional (default: False)
-                 Whether `x` is a distance matrix.
+                 Whether `X` is a distance matrix or not.
         remove_isolates : Boolean, optional (default: True)
-                          whether remove the samples with single instance.
+                          whether remove the samples with single instance or not.
         reps : int, optional (default: 1000)
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
