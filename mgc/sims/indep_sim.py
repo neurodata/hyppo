@@ -425,14 +425,17 @@ def spiral(n, p, noise=False, low=0, high=5):
 
     if p > 1:
         noise = True
-    unif = _random_uniform(n, p=1, low=low, high=high)
+    rx = _random_uniform(n, p=1, low=low, high=high)
+    ry = rx
+    rx = np.repeat(rx, p, axis=1)
+    z = rx
     x = np.zeros((n, p))
-    x[:, 0] = np.cos(unif[:, 0] * np.pi)
+    x[:, 0] = np.cos(z[:, 0] * np.pi)
     for i in range(p - 1):
-        x[:, i+1] = np.multiply(x[:, i], np.cos(unif[:, i+1] * np.pi))
-        x[:, i] = np.multiply(x[:, i], np.sin(unif[:, i+1] * np.pi))
-    x = np.multiply(unif, x)
-    y = np.multiply(unif[:, 0], np.sin(unif[:, 0] * np.pi)).reshape(n, 1)
+        x[:, i+1] = np.multiply(x[:, i], np.cos(z[:, i+1] * np.pi))
+        x[:, i] = np.multiply(x[:, i], np.sin(z[:, i+1] * np.pi))
+    x = np.multiply(rx, x)
+    y = np.multiply(ry, np.sin(z[:, 0].reshape(-1, 1) * np.pi))
 
     eps = _calc_eps(n)
     y = y + 0.4*p*noise*eps
