@@ -1,5 +1,5 @@
 from sklearn.metrics import euclidean_distances
-from sklearn.utils import check_X_y
+from ._utils import _CheckInputs
 import numpy as np
 import random
 from .base import DiscriminabilityTest
@@ -66,7 +66,8 @@ class oneSample(DiscriminabilityTest):
             The computed one sample test p-value.
         """
 
-        check_X_y(X, Y, accept_sparse=True)
+        check_input = _CheckInputs(X, Y, reps = reps)
+        X, Y = check_input()
 
         _, counts = np.unique(Y, return_counts=True)
 
