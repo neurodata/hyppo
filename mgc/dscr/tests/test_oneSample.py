@@ -7,19 +7,21 @@ class TestOneSample:
     def test_same_one(self):
         x = np.ones((100,2),dtype=float)
         y = np.concatenate((np.zeros(50),np.ones(50)), axis= 0)
+        y = y.reshape(-1,1)
 
         np.random.seed(123456789)
         obs_stat = 0.5
         obs_p = 1
-        oneSamp = oneSample()
-        stat, p = oneSamp.test(x,y) 
+        stat, p = oneSample().test(x,y) 
 
+        print(stat,p)
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(p, obs_p, decimal=2)
 
     def test_diff_one(self):
         x = np.concatenate((np.zeros((50,2)) ,np.ones((50,2))), axis=0)
         y = np.concatenate((np.zeros(50),np.ones(50)), axis= 0)
+        y = y.reshape(-1,1)
 
         np.random.seed(123456789)
         obs_stat = 1.0
@@ -42,7 +44,7 @@ class TestOneSampleWarn:
         assert_raises(ValueError, oneSample().test, x, x)
 
         y = np.arange(20)
-        assert_raises(ValueError, oneSample.test, x, y)
+        assert_raises(ValueError, oneSample().test, x, y)
 
     @pytest.mark.parametrize("reps", [
         -1,    # reps is negative
@@ -50,11 +52,17 @@ class TestOneSampleWarn:
     ])
     def test_error_reps(self, reps):
         # raises error if reps is negative
-        x = np.arange(20)
-        assert_raises(ValueError, oneSample().test, x, x, reps=reps)
+        x = np.ones((100,2),dtype=float)
+        y = np.concatenate((np.zeros(50),np.ones(50)), axis= 0)
+        y = y.reshape(-1,1)
+
+        assert_raises(ValueError, oneSample().test, x, y, reps=reps)
 
     def test_warns_reps(self):
         # raises warning when reps is less than 1000
-        x = np.arange(20)
+        x = np.ones((100,2),dtype=float)
+        y = np.concatenate((np.zeros(50),np.ones(50)), axis= 0)
+        y = y.reshape(-1,1)
+
         reps = 100
-        assert_warns(RuntimeWarning, oneSample().test, x, x, reps=reps)
+        assert_warns(RuntimeWarning, oneSample().test, x, y, reps=reps)

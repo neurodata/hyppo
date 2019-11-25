@@ -14,6 +14,7 @@ class _CheckInputs:
         check_X_y(self.X, self.Y, accept_sparse=True)
         self.check_reps()
 
+        return self.X, self.Y
 
     def check_reps(self):
         """Check if reps is valid"""
