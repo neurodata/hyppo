@@ -13,8 +13,7 @@ class TestOneSample:
         obs_stat = 0.5
         obs_p = 1
         stat, p = oneSample().test(x,y) 
-
-        print(stat,p)
+        
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(p, obs_p, decimal=2)
 
