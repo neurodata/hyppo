@@ -7,7 +7,6 @@ class TestOneSample:
     def test_same_one(self):
         x = np.ones((100,2),dtype=float)
         y = np.concatenate((np.zeros(50),np.ones(50)), axis= 0)
-        y = y.reshape(-1,1)
 
         np.random.seed(123456789)
         obs_stat = 0.5
@@ -20,7 +19,6 @@ class TestOneSample:
     def test_diff_one(self):
         x = np.concatenate((np.zeros((50,2)) ,np.ones((50,2))), axis=0)
         y = np.concatenate((np.zeros(50),np.ones(50)), axis= 0)
-        y = y.reshape(-1,1)
 
         np.random.seed(123456789)
         obs_stat = 1.0
@@ -53,7 +51,6 @@ class TestOneSampleWarn:
         # raises error if reps is negative
         x = np.ones((100,2),dtype=float)
         y = np.concatenate((np.zeros(50),np.ones(50)), axis= 0)
-        y = y.reshape(-1,1)
 
         assert_raises(ValueError, oneSample().test, x, y, reps=reps)
 
@@ -61,7 +58,6 @@ class TestOneSampleWarn:
         # raises warning when reps is less than 1000
         x = np.ones((100,2),dtype=float)
         y = np.concatenate((np.zeros(50),np.ones(50)), axis= 0)
-        y = y.reshape(-1,1)
 
         reps = 100
         assert_warns(RuntimeWarning, oneSample().test, x, y, reps=reps)
