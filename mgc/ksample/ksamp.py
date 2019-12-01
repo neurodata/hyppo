@@ -79,7 +79,7 @@ class KSample(KSampleTest):
         KSampleTest.__init__(self, indep_test,
                              compute_distance=compute_distance)
 
-    def test(self, *args, reps=1000, workers=1):
+    def test(self, *args, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the *k*-sample test statistic and p-value.
 
@@ -97,6 +97,10 @@ class KSample(KSampleTest):
         workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
+        random_state : int or np.random.RandomState instance, optional
+            If already a RandomState instance, use it.
+            If seed is an int, return a new RandomState instance seeded with seed.
+            If None, use np.random.RandomState. Default is None.
 
         Returns
         -------
@@ -136,4 +140,4 @@ class KSample(KSampleTest):
                                    compute_distance=self.compute_distance)
         inputs = check_input()
 
-        return super(KSample, self).test(inputs, reps, workers)
+        return super(KSample, self).test(inputs, reps, workers, random_state)

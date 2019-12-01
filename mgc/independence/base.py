@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 from scipy.spatial.distance import cdist, squareform
-from scipy._lib._util import MapWrapper
+from scipy._lib._util import check_random_state, MapWrapper
 
 from .._utils import euclidean
 
@@ -56,9 +56,8 @@ class IndependenceTest(ABC):
         perm_stat : float
             Test statistic for each value in the null distribution.
         """
-
-        permx = np.random.permutation(self.x)
-        permy = np.random.permutation(self.y)
+        permx = self.rngs[index].permutation(self.x)
+        permy = self.rngs[index].permutation(self.y)
 
         # calculate permuted statics, store in null distribution
         perm_stat = self._statistic(permx, permy)
@@ -66,7 +65,7 @@ class IndependenceTest(ABC):
         return perm_stat
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calulates the independence test p-value.
 
@@ -79,6 +78,10 @@ class IndependenceTest(ABC):
         workers : int, optional (default: 1)
             Evaluates method using `multiprocessing.Pool <multiprocessing>`).
             Supply `-1` to use all cores available to the Process.
+        random_state : int or np.random.RandomState instance, optional
+            If already a RandomState instance, use it.
+            If seed is an int, return a new RandomState instance seeded with seed.
+            If None, use np.random.RandomState. Default is None.
 
         Returns
         -------
@@ -93,6 +96,11 @@ class IndependenceTest(ABC):
 
         # calculate observed test statistic
         stat = self._statistic(x, y)
+
+        # set seeds
+        random_state = check_random_state(random_state)
+        seeds = random_state.permutation(np.arange(reps))
+        self.rngs = [check_random_state(seeds[i]) for i in range(reps)]
 
         # use all cores to create function that parallelizes over number of reps
         mapwrapper = MapWrapper(workers)

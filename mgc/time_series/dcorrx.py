@@ -64,7 +64,7 @@ class DcorrX(TimeSeriesTest):
 
         return stat, opt_lag
 
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         """
         Calulates the HHG test p-value.
 
@@ -75,6 +75,10 @@ class DcorrX(TimeSeriesTest):
             independence tests (check desired test class for specifics).
         reps : int, optional
             The number of replications used in permutation, by default 1000.
+        random_state : int or np.random.RandomState instance, optional
+            If already a RandomState instance, use it.
+            If seed is an int, return a new RandomState instance seeded with seed.
+            If None, use np.random.RandomState. Default is None.
 
         Returns
         -------
@@ -87,4 +91,4 @@ class DcorrX(TimeSeriesTest):
                                    compute_distance=self.compute_distance)
         x, y = check_input()
 
-        return super(DcorrX, self).test(x, y, reps, workers)
+        return super(DcorrX, self).test(x, y, reps, workers, random_state)

@@ -5,6 +5,7 @@ from scipy.spatial.distance import cdist
 from sklearn.metrics.pairwise import rbf_kernel
 
 
+# from scipy
 def contains_nan(a):
     """Check if inputs contains NaNs"""
     try:

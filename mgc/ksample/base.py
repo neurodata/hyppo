@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 from scipy.spatial.distance import cdist
-from scipy._lib._util import MapWrapper
+from scipy._lib._util import check_random_state, MapWrapper
 
 from .._utils import euclidean
 from ._utils import k_sample_transform
@@ -57,8 +57,8 @@ class KSampleTest(ABC):
             Test statistic for each value in the null distribution.
         """
 
-        permu = np.random.permutation(self.u)
-        permv = np.random.permutation(self.v)
+        permu = self.rngs[index].permutation(self.u)
+        permv = self.rngs[index].permutation(self.v)
 
         # calculate permuted statics, store in null distribution
         perm_stat = self.indep_test._statistic(permu, permv)
@@ -66,7 +66,7 @@ class KSampleTest(ABC):
         return perm_stat
 
     @abstractmethod
-    def test(self, inputs, reps=1000, workers=1):
+    def test(self, inputs, reps=1000, workers=1, random_state=None):
         r"""
         Calulates the k-sample test p-value.
 
@@ -79,6 +79,10 @@ class KSampleTest(ABC):
         workers : int, optional (default: 1)
             Evaluates method using `multiprocessing.Pool <multiprocessing>`).
             Supply `-1` to use all cores available to the Process.
+        random_state : int or np.random.RandomState instance, optional
+            If already a RandomState instance, use it.
+            If seed is an int, return a new RandomState instance seeded with seed.
+            If None, use np.random.RandomState. Default is None.
 
         Returns
         -------
@@ -93,6 +97,11 @@ class KSampleTest(ABC):
         self.u = u
         self.v = v
         obs_stat = self.indep_test._statistic(u, v)
+
+        # set seeds
+        random_state = check_random_state(random_state)
+        seeds = random_state.permutation(np.arange(reps))
+        self.rngs = [check_random_state(seeds[i]) for i in range(reps)]
 
         # use all cores to create function that parallelizes over number of reps
         mapwrapper = MapWrapper(workers)

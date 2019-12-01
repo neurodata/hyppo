@@ -123,7 +123,7 @@ class HHG(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the HHG test statistic and p-value.
 
@@ -141,6 +141,10 @@ class HHG(IndependenceTest):
         workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
+        random_state : int or np.random.RandomState instance, (default: None)
+            If already a RandomState instance, use it.
+            If seed is an int, return a new RandomState instance seeded with seed.
+            If None, use np.random.RandomState.
 
         Returns
         -------
@@ -192,7 +196,7 @@ class HHG(IndependenceTest):
         if self.is_distance:
             check_xy_distmat(x, y)
 
-        return super(HHG, self).test(x, y, reps, workers)
+        return super(HHG, self).test(x, y, reps, workers, random_state)
 
 
 @njit
