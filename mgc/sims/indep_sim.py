@@ -23,16 +23,17 @@ class _CheckInputs:
 
 
 def _gen_coeffs(p):
-    """ Calculates coefficients polynomials """
+    """Calculates coefficients polynomials"""
     return np.array([1/(i+1) for i in range(p)]).reshape(-1, 1)
 
 
 def _random_uniform(n, p, low=-1, high=1):
-    """ Generate random uniform data """
+    """Generate random uniform data"""
     return np.array(np.random.uniform(low, high, size=(n, p)))
 
 
 def _calc_eps(n):
+    """Calculate noise"""
     return np.random.normal(0, 1, size=(n, 1))
 
 
@@ -75,9 +76,7 @@ def linear(n, p, noise=False, low=-1, high=1):
     >>> x, y = linear(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 1)
-
     """
-
     extra_args = [
         (noise, bool),
         (low, float),
@@ -133,9 +132,7 @@ def exponential(n, p, noise=False, low=0, high=3):
     >>> x, y = exponential(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 1)
-
     """
-
     extra_args = [
         (noise, bool),
         (low, float),
@@ -199,9 +196,7 @@ def cubic(n, p, noise=False, low=-1, high=1, cubs=[-12, 48, 128], scale=1/3):
     >>> x, y = cubic(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 1)
-
     """
-
     extra_args = [
         (noise, bool),
         (low, float),
@@ -265,9 +260,7 @@ def joint_normal(n, p, noise=False):
     >>> x, y = spiral(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 1)
-
     """
-
     if p > 10:
         raise ValueError("Covariance matrix for p>10 is not positive"
                          "semi-definite")
@@ -308,7 +301,6 @@ def step(n, p, noise=False, low=-1, high=1):
     high : int, optional
         [description], by default 1
     """
-
     extra_args = [
         (noise, bool),
         (low, float),
@@ -412,9 +404,7 @@ def spiral(n, p, noise=False, low=0, high=5):
     >>> x, y = spiral(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 1)
-
     """
-
     extra_args = [
         (noise, bool),
         (low, float),
@@ -458,7 +448,6 @@ def uncorrelated_bernoulli(n, p, noise=False, prob=0.5):
     prob : float, optional
         [description], by default 0.5
     """
-
     extra_args = [
         (noise, bool),
         (prob, float)

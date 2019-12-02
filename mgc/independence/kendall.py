@@ -80,7 +80,6 @@ class Kendall(IndependenceTest):
         stat : float
             The computed Kendall's tau statistic.
         """
-
         x.shape = (-1,)
         y.shape = (-1,)
         stat, _ = kendalltau(x, y)
@@ -115,9 +114,7 @@ class Kendall(IndependenceTest):
         >>> stat, pvalue = Kendall().test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
-
         """
-
         check_input = _CheckInputs(x, y, dim=1)
         x, y = check_input()
         stat, pvalue = kendalltau(x, y)

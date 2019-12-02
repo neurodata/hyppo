@@ -72,7 +72,6 @@ class CCA(IndependenceTest):
         stat : float
             The computed CCA statistic.
         """
-
         # center each matrix
         centx = x - np.mean(x, axis=0)
         centy = y - np.mean(y, axis=0)
@@ -142,9 +141,7 @@ class CCA(IndependenceTest):
         >>> stat, pvalue = CCA().test(x, y, reps=10000)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
-
         """
-
         check_input = _CheckInputs(x, y, dim=2, reps=reps)
         x, y = check_input()
 

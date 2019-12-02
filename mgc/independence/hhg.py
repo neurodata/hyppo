@@ -109,7 +109,6 @@ class HHG(IndependenceTest):
         stat : float
             The computed HHG statistic.
         """
-
         distx = x
         disty = y
 
@@ -186,9 +185,7 @@ class HHG(IndependenceTest):
         >>> stat, pvalue = hhg.test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '0.0, 1.00'
-
         """
-
         check_input = _CheckInputs(x, y, dim=2, reps=reps,
                                    compute_distance=self.compute_distance)
         x, y = check_input()

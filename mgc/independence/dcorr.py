@@ -87,6 +87,7 @@ class Dcorr(IndependenceTest):
                 correlation with methods for dissimilarities. *The Annals of
                 Statistics*, 42(6), 2382-2412.
     """
+
     def __init__(self, compute_distance=euclidean):
         # set is_distance to true if compute_distance is None
         self.is_distance = False
@@ -187,7 +188,7 @@ class Dcorr(IndependenceTest):
         >>> dcorr = Dcorr(compute_distance=None)
         >>> stat, pvalue = dcorr.test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
-        '1.0, 1.00'
+        '1.0, 0.12'
         """
         check_input = _CheckInputs(x, y, dim=2, reps=reps,
                                    compute_distance=self.compute_distance)

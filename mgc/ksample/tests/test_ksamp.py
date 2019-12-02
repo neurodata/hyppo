@@ -17,7 +17,7 @@ class TestKSample:
     ])
     def test_twosamp_linear_oned(self, n, obs_stat, obs_pvalue, indep_test):
         np.random.seed(123456789)
-        x, y = rot_2samp(linear, n, 1, noise=0)
+        x, y = rot_2samp(linear, n, 1)
         stat, pvalue = KSample(indep_test).test(x, y)
 
         assert_almost_equal(stat, obs_stat, decimal=1)

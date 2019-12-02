@@ -68,7 +68,6 @@ class RV(IndependenceTest):
         stat : float
             The computed RV statistic.
         """
-
         centx = x - np.mean(x, axis=0)
         centy = y - np.mean(y, axis=0)
 
@@ -132,9 +131,7 @@ class RV(IndependenceTest):
         >>> stat, pvalue = RV().test(x, y, reps=10000)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
-
         """
-
         check_input = _CheckInputs(x, y, dim=2, reps=reps)
         x, y = check_input()
 
