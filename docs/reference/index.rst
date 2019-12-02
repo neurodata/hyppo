@@ -8,3 +8,4 @@ Reference
 
    independence
    ksample
+   sims

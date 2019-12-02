@@ -1,10 +1,10 @@
 import numpy as np
 from numba import njit
-from sklearn.metrics.pairwise import rbf_kernel
 
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 from . import Dcorr
+from .._utils import gaussian, check_xy_distmat
 
 
 class Hsic(IndependenceTest):
@@ -92,11 +92,15 @@ class Hsic(IndependenceTest):
                 11(Apr), 1391-1423.
     """
 
-    def __init__(self, compute_kernel=rbf_kernel):
+    def __init__(self, compute_kernel=gaussian):
         # set statistic and p-value
-        self.stat = None
-        self.pvalue = None
         self.compute_kernel = compute_kernel
+
+        self.is_kernel = False
+        if not compute_kernel:
+            self.is_kernel = True
+
+        IndependenceTest.__init__(self, compute_distance=compute_kernel)
 
     def _statistic(self, x, y):
         r"""
@@ -116,14 +120,22 @@ class Hsic(IndependenceTest):
         stat : float
             The computed Hsic statistic.
         """
+        distx = x
+        disty = y
 
-        dcorr = Dcorr(compute_distance=self.compute_kernel)
-        stat = dcorr.test(x, y)[0]
+        if not self.is_kernel:
+            kernx = self.compute_kernel(x)
+            kerny = self.compute_kernel(y)
+            distx = np.max(np.abs(kernx)) - kernx
+            disty = np.max(np.abs(kerny)) - kerny
+
+        dcorr = Dcorr(compute_distance=None)
+        stat = dcorr._statistic(distx, disty)
         self.stat = stat
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=-1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the Hsic test statistic and p-value.
 
@@ -138,9 +150,13 @@ class Hsic(IndependenceTest):
         reps : int, optional (default: 1000)
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        workers : int, optional (default: -1)
+        workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
+        random_state : int or np.random.RandomState instance, (default: None)
+            If already a RandomState instance, use it.
+            If seed is an int, return a new RandomState instance seeded with seed.
+            If None, use np.random.RandomState.
 
         Returns
         -------
@@ -181,13 +197,13 @@ class Hsic(IndependenceTest):
         >>> hsic = Hsic(compute_kernel=None)
         >>> stat, pvalue = hsic.test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
-        '1.0, 1.00'
-
+        '1.0, 0.12'
         """
+        check_input = _CheckInputs(x, y, dim=2, reps=reps,
+                                   compute_distance=self.compute_kernel)
+        x, y = check_input()
 
-        dcorr = Dcorr(compute_distance=self.compute_kernel)
-        stat, pvalue = dcorr.test(x, y, reps=reps, workers=workers)
-        self.stat = stat
-        self.pvalue = pvalue
+        if self.is_kernel:
+            check_xy_distmat(x, y)
 
-        return stat, pvalue
+        return super(Hsic, self).test(x, y, reps, workers, random_state)

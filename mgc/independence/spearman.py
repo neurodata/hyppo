@@ -64,7 +64,8 @@ class Spearman(IndependenceTest):
         stat : float
             The computed Spearman's rho statistic.
         """
-
+        x.shape = (-1,)
+        y.shape = (-1,)
         stat, _ = spearmanr(x, y)
         self.stat = stat
 
@@ -97,9 +98,7 @@ class Spearman(IndependenceTest):
         >>> stat, pvalue = Spearman().test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
-
         """
-
         check_input = _CheckInputs(x, y, dim=1)
         x, y = check_input()
         stat, pvalue = spearmanr(x, y)
