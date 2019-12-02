@@ -578,7 +578,7 @@ def _square_diamond(n, p, noise=False, low=-1, high=1, period=-np.pi/2):
     return x, y
 
 
-def square(n, p, noise=1, low=-1, high=1):
+def square(n, p, noise=False, low=-1, high=1):
 
     return _square_diamond(n, p, noise=noise, low=low, high=high, period=-np.pi/8)
 
@@ -636,17 +636,17 @@ def _circle_ellipse(n, p, noise=False, low=-1, high=1, radius=1):
     return x, y
 
 
-def circle(n, p, noise=0.1, low=-1, high=1):
+def circle(n, p, noise=False, low=-1, high=1):
 
     return _circle_ellipse(n, p, noise=noise, low=low, high=high, radius=1)
 
 
-def ellipse(n, p, noise=0.1, low=-1, high=1):
+def ellipse(n, p, noise=False, low=-1, high=1):
 
     return _circle_ellipse(n, p, noise=noise, low=low, high=high, radius=5)
 
 
-def diamond(n, p, noise=1, low=-1, high=1):
+def diamond(n, p, noise=False, low=-1, high=1):
 
     return _square_diamond(n, p, noise=noise, low=low, high=high, period=-np.pi/4)
 
