@@ -1,20 +1,21 @@
 import numpy as np
 from math import ceil
 
-from scipy._lib._util import MapWrapper
+from scipy._lib._util import check_random_state, MapWrapper
 
 
 class _ParallelP(object):
     """
     Helper function to calculate parallel power.
     """
-    def __init__(self, test, sim, n, p, noise):
+    def __init__(self, test, sim, n, p, noise, rngs):
         self.test = test()
         self.sim = sim
 
         self.n = n
         self.p = p
         self.noise = noise
+        self.rngs = rngs
 
     def __call__(self, index):
         if (self.sim.__name__ == "multiplicative_noise" or
@@ -25,8 +26,8 @@ class _ParallelP(object):
 
         obs_stat = self.test._statistic(x, y)
 
-        permx = np.random.permutation(x)
-        permy = np.random.permutation(y)
+        permx = self.rngs[index].permutation(x)
+        permy = self.rngs[index].permutation(y)
 
         # calculate permuted stats, store in null distribution
         perm_stat = self.test._statistic(permx, permy)
@@ -37,7 +38,8 @@ class _ParallelP(object):
         return obs_stat, perm_stat
 
 
-def _perm_test(test, sim, n=100, p=1, noise=False, reps=1000, workers=-1):
+def _perm_test(test, sim, n=100, p=1, noise=False, reps=1000, workers=-1,
+               random_state=None):
     r"""
     Helper function that calculates the statistical.
 
@@ -59,18 +61,25 @@ def _perm_test(test, sim, n=100, p=1, noise=False, reps=1000, workers=-1):
     null_dist : list
         The approximated null distribution.
     """
+    # set seeds
+    random_state = check_random_state(random_state)
+    seeds = random_state.permutation(np.arange(reps))
+    rngs = [check_random_state(seeds[i]) for i in range(reps)]
 
     # use all cores to create function that parallelizes over number of reps
     mapwrapper = MapWrapper(workers)
-    parallelp = _ParallelP(test=test, sim=sim, n=n, p=p, noise=noise)
-    alt_dist, null_dist = map(list, zip(*list(mapwrapper(parallelp, range(reps)))))
+    parallelp = _ParallelP(test=test, sim=sim, n=n, p=p, noise=noise,
+                           rngs=rngs)
+    alt_dist, null_dist = map(list, zip(*list(mapwrapper(parallelp,
+                                                         range(reps)))))
     alt_dist = np.array(alt_dist)
     null_dist = np.array(null_dist)
 
     return alt_dist, null_dist
 
 
-def power(test, sim, n=100, p=1, noise=True, alpha=0.05, reps=1000, workers=1):
+def power(test, sim, n=100, p=1, noise=True, alpha=0.05, reps=1000, workers=1,
+          random_state=None):
     """
     [summary]
 
@@ -93,7 +102,8 @@ def power(test, sim, n=100, p=1, noise=True, alpha=0.05, reps=1000, workers=1):
     """
 
     alt_dist, null_dist = _perm_test(test, sim, n=n, p=p, noise=noise,
-                                     reps=reps, workers=workers)
+                                     reps=reps, workers=workers,
+                                     random_state=random_state)
     cutoff = np.sort(null_dist)[ceil(reps * (1-alpha))]
     empirical_power = (alt_dist >= cutoff).sum() / reps
 
@@ -103,7 +113,8 @@ def power(test, sim, n=100, p=1, noise=True, alpha=0.05, reps=1000, workers=1):
     return empirical_power
 
 
-def power_sample(test, sim, n=100, p=1, noise=True, alpha=0.05, reps=1000, workers=1):
+def power_sample(test, sim, n=100, p=1, noise=True, alpha=0.05, reps=1000,
+                 workers=1, random_state=None):
     """
     [summary]
 
@@ -126,10 +137,11 @@ def power_sample(test, sim, n=100, p=1, noise=True, alpha=0.05, reps=1000, worke
     """
 
     return power(test, sim, n=n, p=p, noise=noise, alpha=alpha, reps=reps,
-                 workers=workers)
+                 workers=workers, random_state=random_state)
 
 
-def power_dim(test, sim, n=100, p=1, noise=False, alpha=0.05, reps=1000, workers=1):
+def power_dim(test, sim, n=100, p=1, noise=False, alpha=0.05, reps=1000,
+              workers=1, random_state=None):
     """
     [summary]
 
@@ -152,4 +164,4 @@ def power_dim(test, sim, n=100, p=1, noise=False, alpha=0.05, reps=1000, workers
     """
 
     return power(test, sim, n=n, p=p, noise=noise, alpha=alpha, reps=reps,
-                 workers=workers)
+                 workers=workers, random_state=random_state)
