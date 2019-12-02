@@ -15,7 +15,7 @@ class discriminabilityTest(ABC):
         super().__init__()
 
 
-    def _statistic(self, X, Y, isDist = False, remove_isolates=True, return_rdfs=False):
+    def _statistic(self, X, Y, is_dist = False, remove_isolates=True, return_rdfs=False):
         r"""
         Calulates the independence test statistic.
             
@@ -31,14 +31,14 @@ class discriminabilityTest(ABC):
             idx = np.isin(Y, uniques[counts != 1])
             labels = Y[idx]
             
-            if ~isDist:
+            if ~is_dist:
                 X = X[idx]
             else:
                 X = X[np.ix_(idx, idx)]
         else:
             labels = Y
 
-        if ~isDist:
+        if ~is_dist:
             dissimilarities = euclidean_distances(X)
         else:
             dissimilarities = X

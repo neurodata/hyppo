@@ -15,7 +15,7 @@ class _CheckInputs:
         self.check_reps()
 
         return self.X, self.Y
-
+    
     def check_reps(self):
         """Check if reps is valid"""
 

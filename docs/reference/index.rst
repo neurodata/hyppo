@@ -6,6 +6,6 @@ Reference
 .. toctree::
    :maxdepth: 3
 
-   dscr
+   discrim
    independence
    ksample
