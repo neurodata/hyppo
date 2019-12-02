@@ -87,7 +87,6 @@ class Dcorr(IndependenceTest):
                 correlation with methods for dissimilarities. *The Annals of
                 Statistics*, 42(6), 2382-2412.
     """
-
     def __init__(self, compute_distance=euclidean):
         # set is_distance to true if compute_distance is None
         self.is_distance = False
@@ -114,7 +113,6 @@ class Dcorr(IndependenceTest):
         stat : float
             The computed Dcorr statistic.
         """
-
         distx = x
         disty = y
 
@@ -190,9 +188,7 @@ class Dcorr(IndependenceTest):
         >>> stat, pvalue = dcorr.test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 1.00'
-
         """
-
         check_input = _CheckInputs(x, y, dim=2, reps=reps,
                                    compute_distance=self.compute_distance)
         x, y = check_input()
@@ -206,12 +202,11 @@ class Dcorr(IndependenceTest):
 @njit
 def _center_distmat(distx):                                                     # pragma: no cover
     """Centers the distance matrices"""
-
     n = distx.shape[0]
 
     # double centered distance matrices (unbiased version)
-    exp_distx = ((distx.sum(axis=0) / (n-2)).reshape(1, -1)
-                 + (distx.sum(axis=1) / (n-2)).reshape(-1, 1)
+    exp_distx = (np.repeat((distx.sum(axis=0) / (n-2)), n).reshape(-1, n).T
+                 + np.repeat((distx.sum(axis=1) / (n-2)), n).reshape(-1, n)
                  - distx.sum() / ((n-1) * (n-2)))
     cent_distx = distx - exp_distx
 
@@ -221,7 +216,6 @@ def _center_distmat(distx):                                                     
 @njit
 def _dcorr(distx, disty):                                                       # pragma: no cover
     """Calculate the Dcorr test statistic"""
-
     # center distance matrices
     cent_distx = _center_distmat(distx)
     cent_disty = _center_distmat(disty)

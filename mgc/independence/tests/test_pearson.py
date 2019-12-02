@@ -12,7 +12,7 @@ class TestPearsonStat:
     @pytest.mark.parametrize("obs_pvalue", [1/1000])
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
-        x, y = linear(n, 1, noise=0)
+        x, y = linear(n, 1)
         stat, pvalue = Pearson().test(x, y)
 
         assert_almost_equal(stat, obs_stat, decimal=2)
