@@ -3,7 +3,7 @@ from numba import njit
 
 from .._utils import check_inputs_distmat, euclidean
 from .base import KSampleTest
-from ..independence import *
+from ..independence import CCA, Dcorr, HHG, RV, Hsic
 from ._utils import _CheckInputs, k_sample_transform
 
 
@@ -64,16 +64,13 @@ class KSample(KSampleTest):
 
     def __init__(self, indep_test, compute_distance=euclidean):
         test_names = {
-            "pearson" : Pearson,
-            "rv" : RV,
-            "cca" : CCA,
-            "kendall" : Kendall,
-            "spearman" : Spearman,
-            "hhg" : HHG,
-            "hsic" : Hsic,
-            "dcorr" : Dcorr
+            RV.__name__ : RV,
+            CCA.__name__ : CCA,
+            HHG.__name__ : HHG,
+            Hsic.__name__ : Hsic,
+            Dcorr.__name__ : Dcorr
         }
-        if not test_names[indep_test]:
+        if indep_test not in test_names.keys():
             raise ValueError("Test is not a valid independence test")
         indep_test = test_names[indep_test]
         KSampleTest.__init__(self, indep_test,
@@ -118,7 +115,7 @@ class KSample(KSampleTest):
         >>> z = np.arange(10)
         >>> stat, pvalue = KSample("Dcorr").test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
-        '0.335, 1.0'
+        '0.009, 1.0'
 
         The number of replications can give p-values with higher confidence
         (greater alpha levels).
@@ -130,7 +127,7 @@ class KSample(KSampleTest):
         >>> z = np.ones(7)
         >>> stat, pvalue = KSample("Dcorr").test(x, y, z, reps=10000)
         >>> '%.3f, %.1f' % (stat, pvalue)
-        '-0.449, 1.0'
+        '0.282, 0.0'
         """
         inputs = list(args)
         check_input = _CheckInputs(inputs=inputs,
