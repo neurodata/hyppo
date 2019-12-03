@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 from scipy.spatial.distance import cdist
-from scipy._lib._util import MapWrapper
+from scipy._lib._util import check_random_state, MapWrapper
 
 from .._utils import euclidean
 
@@ -67,7 +67,7 @@ class TimeSeriesTest(ABC):
         """
         n = self.distx.shape[0]
         perm_index = np.r_[[np.arange(t, t+self.block_size) for t in
-                            np.random.choice(n,
+                            self.rngs[index].choice(n,
                             n//self.block_size + 1)]].flatten()[:n]
         perm_index = np.mod(perm_index, n)
         permx = self.distx[np.ix_(perm_index, perm_index)]
@@ -79,7 +79,7 @@ class TimeSeriesTest(ABC):
         return perm_stat
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=-1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         """
         Calulates the independece test p-value.
 
@@ -93,6 +93,10 @@ class TimeSeriesTest(ABC):
         workers : int, optional
             Evaluates method using `multiprocessing.Pool <multiprocessing>`).
             Supply `-1` to use all cores available to the Process.
+        random_state : int or np.random.RandomState instance, optional
+            If already a RandomState instance, use it.
+            If seed is an int, return a new RandomState instance seeded with seed.
+            If None, use np.random.RandomState. Default is None.
 
         Returns
         -------
@@ -106,6 +110,11 @@ class TimeSeriesTest(ABC):
 
         # calculate observed test statistic
         obs_stat = self._statistic(x, y)
+
+        # set seeds
+        random_state = check_random_state(random_state)
+        seeds = random_state.permutation(np.arange(reps))
+        self.rngs = [check_random_state(seeds[i]) for i in range(reps)]
 
         n = x.shape[0]
         self.block_size = int(np.ceil(np.sqrt(n)))

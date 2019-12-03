@@ -9,3 +9,4 @@ Reference
    discrim
    independence
    ksample
+   sims

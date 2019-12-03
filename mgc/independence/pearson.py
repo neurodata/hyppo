@@ -64,7 +64,8 @@ class Pearson(IndependenceTest):
         stat : float
             The computed Pearson statistic.
         """
-
+        x.shape = (-1,)
+        y.shape = (-1,)
         stat, _ = pearsonr(x, y)
         self.stat = stat
 
@@ -97,9 +98,7 @@ class Pearson(IndependenceTest):
         >>> stat, pvalue = Pearson().test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
-
         """
-
         check_input = _CheckInputs(x, y, dim=1)
         x, y = check_input()
         stat, pvalue = pearsonr(x, y)

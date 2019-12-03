@@ -3,6 +3,7 @@ from numba import njit
 
 from .._utils import check_inputs_distmat, euclidean
 from .base import KSampleTest
+from ..independence import CCA, Dcorr, HHG, RV, Hsic
 from ._utils import _CheckInputs, k_sample_transform
 
 
@@ -18,10 +19,9 @@ class KSample(KSampleTest):
 
     Parameters
     ----------
-    indep_test : {CCA, Dcorr, HHG, RV, Hsic}
-        The class of the desired independence test from ``mgc.independence``.
-        The object, not an instance of the object should be passed as a
-        parameter to this class.
+    indep_test : {"CCA", "Dcorr", "HHG", "RV", "Hsic"}
+        A string corresponding to the desired independence test from
+        ``mgc.independence``.
     compute_distance : callable(), optional (default: euclidean)
         A function that computes the distance among the samples within each
         data matrix. Set to `None` if `x` and `y` are already distance
@@ -37,7 +37,7 @@ class KSample(KSampleTest):
     The *k*-sample testing problem can be thought of as a generalization of
     the two sample testing problem. Define
     :math:`\{ u_i \stackrel{iid}{\sim} F_U,\ i = 1, ..., n \}` and
-    :math:`\{ v_i \stackrel{iid}{\sim} F_V,\ j = 1, ..., m \}` as two groups
+    :math:`\{ v_j \stackrel{iid}{\sim} F_V,\ j = 1, ..., m \}` as two groups
     of samples deriving from different distributions with the same
     dimensionality. Then, problem that we are testing is thus,
 
@@ -48,9 +48,8 @@ class KSample(KSampleTest):
 
     The closely related independence testing problem can be generalized
     similarly: Given a set of paired data
-    :math:`\{\left(x_i, y_i \right) \stackrel{iid}{\sim} F_{XY} \in
-    \mathbb{R}^{p + q},\ i = 1, ..., N\}`, the problem that we are testing
-    is,
+    :math:`\{\left(x_i, y_i \right) \stackrel{iid}{\sim} F_{XY},
+    \ i = 1, ..., N\}`, the problem that we are testing is,
 
     .. math::
 
@@ -64,10 +63,20 @@ class KSample(KSampleTest):
     """
 
     def __init__(self, indep_test, compute_distance=euclidean):
+        test_names = {
+            RV.__name__ : RV,
+            CCA.__name__ : CCA,
+            HHG.__name__ : HHG,
+            Hsic.__name__ : Hsic,
+            Dcorr.__name__ : Dcorr
+        }
+        if indep_test not in test_names.keys():
+            raise ValueError("Test is not a valid independence test")
+        indep_test = test_names[indep_test]
         KSampleTest.__init__(self, indep_test,
                              compute_distance=compute_distance)
 
-    def test(self, *args, reps=1000, workers=-1):
+    def test(self, *args, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the *k*-sample test statistic and p-value.
 
@@ -82,9 +91,13 @@ class KSample(KSampleTest):
         reps : int, optional (default: 1000)
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        workers : int, optional (default: -1)
+        workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
+        random_state : int or np.random.RandomState instance, optional
+            If already a RandomState instance, use it.
+            If seed is an int, return a new RandomState instance seeded with seed.
+            If None, use np.random.RandomState. Default is None.
 
         Returns
         -------
@@ -97,33 +110,29 @@ class KSample(KSampleTest):
         --------
         >>> import numpy as np
         >>> from mgc.ksample import KSample
-        >>> from mgc.independence import Dcorr
         >>> x = np.arange(7)
         >>> y = x
         >>> z = np.arange(10)
-        >>> stat, pvalue = KSample(Dcorr).test(x, y)
+        >>> stat, pvalue = KSample("Dcorr").test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
-        '0.335, 1.0'
+        '0.009, 1.0'
 
         The number of replications can give p-values with higher confidence
         (greater alpha levels).
 
         >>> import numpy as np
         >>> from mgc.ksample import KSample
-        >>> from mgc.independence import Dcorr
         >>> x = np.arange(7)
         >>> y = x
         >>> z = np.ones(7)
-        >>> stat, pvalue = KSample(Dcorr).test(x, y, z, reps=10000)
+        >>> stat, pvalue = KSample("Dcorr").test(x, y, z, reps=10000)
         >>> '%.3f, %.1f' % (stat, pvalue)
-        '-0.449, 1.0'
-
+        '0.282, 0.0'
         """
-
         inputs = list(args)
         check_input = _CheckInputs(inputs=inputs,
                                    indep_test=self.indep_test,
                                    compute_distance=self.compute_distance)
         inputs = check_input()
 
-        return super(KSample, self).test(inputs, reps, workers)
+        return super(KSample, self).test(inputs, reps, workers, random_state)
