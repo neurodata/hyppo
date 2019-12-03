@@ -111,11 +111,11 @@ class TimeSeriesTest(ABC):
         # calculate observed test statistic
         obs_stat = self._statistic(x, y)
 
-        # set seeds
+        # generate seeds for each rep (change to new parallel random number
+        # capabilities in numpy >= 1.17+)
         random_state = check_random_state(random_state)
-        seeds = random_state.permutation(np.arange(reps))
-        self.rngs = [check_random_state(seeds[i]) for i in range(reps)]
-
+        self.rngs = [np.random.RandomState(random_state.randint(1<<32, size=4,
+                     dtype=np.uint32)) for _ in range(reps)]
         n = x.shape[0]
         self.block_size = int(np.ceil(np.sqrt(n)))
 
