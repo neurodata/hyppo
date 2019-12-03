@@ -73,11 +73,9 @@ class DiscrimTwoSample(DiscriminabilityTest):
         X1, Y = check_input()
         
         _, counts = np.unique(Y, return_counts=True)
-
         if (counts != 1).sum() <= 1:
             msg = "You have passed a vector containing only a single unique sample id."
             raise ValueError(msg)
-
 
         check_input = _CheckInputs(X2, Y, reps = reps)
         X2, Y = check_input()
@@ -85,7 +83,6 @@ class DiscrimTwoSample(DiscriminabilityTest):
         if X1.shape[0] != X2.shape[0]:
             msg = "The input matrices do not have the same number of rows."
             raise ValueError(msg)
-
 
         self.X1 = X1
         self.X2 = X2
