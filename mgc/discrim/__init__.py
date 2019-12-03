@@ -1,4 +1,4 @@
-from .oneSample import oneSample
-from .twoSample import twoSample
+from .discrimOneSample import DiscrimOneSample
+from .discrimTwoSample import DiscrimTwoSample
 
-__all__ = ["oneSample", "twoSample"]
+__all__ = ["discrimOneSample", "twoSample"]

@@ -2,11 +2,11 @@ from sklearn.metrics import euclidean_distances
 from ._utils import _CheckInputs
 import numpy as np
 import random
-from .base import discriminabilityTest
+from .base import DiscriminabilityTest
 from scipy._lib._util import MapWrapper
 
 
-class twoSample(discriminabilityTest):
+class DiscrimTwoSample(DiscriminabilityTest):
     r"""
      A class that performs a two-sample test for whether the discriminability is different for that of
      one dataset vs another, as described in [1]. With :math:`\hat D_{X_1}` the sample discriminability of
@@ -29,8 +29,7 @@ class twoSample(discriminabilityTest):
     """
 
     def __init__(self):
-        discriminabilityTest.__init__(self)
-
+        DiscriminabilityTest.__init__(self)
 
     def test(self, X1, X2, Y, remove_isolates=True, reps=1000, alt="greater", workers=-1):
         r"""
@@ -46,29 +45,29 @@ class twoSample(discriminabilityTest):
 
             * An :math:`n \times d` dimensional data matrix with :math:`n` samples in :math:`d` dimensions. Should not be a distance matrix.
 
-        Y :               ndarray
-                          A vector containing the sample ids for our :math:`n` samples. Should be matched such that :math:`Y[i]` 
-                          is the corresponding label for :math:`X1[i,]` and :math:`X2[i,]`.
+        Y : ndarray
+            A vector containing the sample ids for our :math:`n` samples. Should be matched such that :math:`Y[i]` 
+            is the corresponding label for :math:`X1[i,]` and :math:`X2[i,]`.
         remove_isolates : Boolean, optional (default: True)
-                          whether remove the samples with single instance or not.
-        reps :            int, optional (default: 1000)
-                          The number of replications used to estimate the null distribution
-                          when using the permutation test used to calculate the p-value.
-        alt :             string, optional(default: "greater")
-                          The alternative hypothesis for the test. Can be that first dataset is more discriminable (alt = "greater"),
-                          less discriminable (alt = "less") or just non-equal (alt = "neq").
-        workers :         int, optional (default: -1)
-                          The number of cores to parallelize the p-value computation over.
-                          Supply -1 to use all cores available to the Process.
+            whether remove the samples with single instance or not.
+        reps : int, optional (default: 1000)
+            The number of replications used to estimate the null distribution
+            when using the permutation test used to calculate the p-value.
+        alt : string, optional(default: "greater")
+            The alternative hypothesis for the test. Can be that first dataset is more discriminable (alt = "greater"),
+            less discriminable (alt = "less") or just non-equal (alt = "neq").
+        workers : int, optional (default: -1)
+            The number of cores to parallelize the p-value computation over.
+            Supply -1 to use all cores available to the Process.
 
         Returns
         -------
-        D1 :     float
-                 The computed discriminability score for :math:`X_1`.
-        D2 :     float
-                 The computed discriminability score for :math:`X_2`.
+        D1 : float
+            The computed discriminability score for :math:`X_1`.
+        D2 : float
+            The computed discriminability score for :math:`X_2`.
         pvalue : float
-                 The computed two sample test p-value.
+            The computed two sample test p-value.
         """
         check_input = _CheckInputs(X1, Y, reps = reps)
         X1, Y = check_input()
@@ -82,14 +81,8 @@ class twoSample(discriminabilityTest):
 
         check_input = _CheckInputs(X2, Y, reps = reps)
         X2, Y = check_input()
-
-        _, counts_ = np.unique(Y, return_counts=True)
-
-        if (counts_ != 1).sum() <= 1:
-            msg = "You have passed a vector containing only a single unique sample id."
-            raise ValueError(msg)
         
-        if (counts != 1).sum() != (counts_ != 1).sum():
+        if X1.shape[0] != X2.shape[0]:
             msg = "The input matrices do not have the same number of rows."
             raise ValueError(msg)
 
@@ -98,8 +91,8 @@ class twoSample(discriminabilityTest):
         self.X2 = X2
         self.Y = Y
         
-        self.D1_ = super(twoSample,self)._statistic(self.X1, self.Y,is_dist = False, remove_isolates = remove_isolates, return_rdfs=False)
-        self.D2_ = super(twoSample,self)._statistic(self.X2, self.Y,is_dist = False, remove_isolates = remove_isolates, return_rdfs=False)
+        self.D1_ = super(DiscrimTwoSample,self)._statistic(self.X1, self.Y,is_dist = False, remove_isolates = remove_isolates)
+        self.D2_ = super(DiscrimTwoSample,self)._statistic(self.X2, self.Y,is_dist = False, remove_isolates = remove_isolates)
         self.Da_ = self.D1_ - self.D2_
 
         # use all cores to create function that parallelizes over number of reps
@@ -121,7 +114,7 @@ class twoSample(discriminabilityTest):
         elif alt == "less":
             p = (self.diffNull <= self.Da_).mean()
         elif alt == "neq":
-            p = (abs(self.diffNull) >= abs(self.Da_).mean())
+            p = (abs(self.diffNull) >= abs(self.Da_)).mean()
         else:
             msg = "You have not entered a valid alternative."
             raise ValueError(msg)
@@ -129,8 +122,6 @@ class twoSample(discriminabilityTest):
         self.pvalue_ = (p*reps + 1)/(1 + reps)
 
         return self.D1_, self.D2_, self.pvalue_
-
-
 
     def getConvexComb(self, X):
         N, _ = X.shape
@@ -146,7 +137,7 @@ class twoSample(discriminabilityTest):
         permx2 = self.getConvexComb(self.X2)
         permy = self.Y
 
-        perm_stat1 = super(twoSample,self)._statistic(permx1, permy)
-        perm_stat2 = super(twoSample,self)._statistic(permx2, permy)
+        perm_stat1 = super(DiscrimTwoSample,self)._statistic(permx1, permy)
+        perm_stat2 = super(DiscrimTwoSample,self)._statistic(permx2, permy)
 
         return perm_stat1, perm_stat2

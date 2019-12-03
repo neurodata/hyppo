@@ -1,7 +1,7 @@
 import warnings
-import numpy as np 
-from sklearn.utils import check_X_y
-
+import numpy as np
+from .._utils import (contains_nan, check_ndarray_xy, convert_xy_float64,
+                      check_reps)
 
 class _CheckInputs:
     """Checks inputs for discriminability tests"""
@@ -11,21 +11,14 @@ class _CheckInputs:
         self.reps = reps
 
     def __call__(self):
-        check_X_y(self.X, self.Y, accept_sparse=True)
-        self.check_reps()
-
+        check_ndarray_xy(self.X, self.Y)
+        contains_nan(self.X)
+        contains_nan(self.Y)
+        self.X, self.Y = convert_xy_float64(self.X, self.Y)
+        
+        if self.reps:
+            check_reps(self.reps)
+        
         return self.X, self.Y
     
-    def check_reps(self):
-        """Check if reps is valid"""
 
-        # check if reps is an integer > than 0
-        if not isinstance(self.reps, int) or self.reps < 0:
-           raise ValueError("Number of reps must be an integer greater than 0.")
-
-        # check if reps is under 1000 (recommended)
-        elif self.reps < 1000:
-            msg = ("The number of replications is low (under 1000), and p-value "
-                    "calculations may be unreliable. Use the p-value result, with "
-                    "caution!")
-            warnings.warn(msg, RuntimeWarning)

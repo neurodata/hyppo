@@ -5,8 +5,8 @@ Discriminability
 
 Discriminability one sample test
 --------------------------------
-.. autoclass:: oneSample
+.. autoclass:: DiscrimOneSample
 
 Discriminability two sample test
 --------------------------------
-.. autoclass:: twoSample
+.. autoclass:: DiscrimTwoSample

@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_warns, assert_raises
-from .. import oneSample
+from .. import DiscrimOneSample
 
 class TestOneSample:
     def test_same_one(self):
@@ -11,7 +11,7 @@ class TestOneSample:
         np.random.seed(123456789)
         obs_stat = 0.5
         obs_p = 1
-        stat, p = oneSample().test(x,y) 
+        stat, p = DiscrimOneSample().test(x,y) 
         
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(p, obs_p, decimal=2)
@@ -23,8 +23,7 @@ class TestOneSample:
         np.random.seed(123456789)
         obs_stat = 1.0
         obs_p = 0.001
-        oneSamp = oneSample()
-        stat, p = oneSamp.test(x,y) 
+        stat, p = DiscrimOneSample().test(x,y) 
 
         assert_almost_equal(stat, obs_stat, decimal=3)
         assert_almost_equal(p, obs_p, decimal=3)
@@ -33,15 +32,26 @@ class TestOneSample:
 class TestOneSampleWarn:
     """ Tests errors and warnings derived from one sample test.
     """
+    def test_error_ndarray(self):
+        X = list(np.ones((100,2),dtype=float))
+        Y = list(np.concatenate((np.zeros(50),np.ones(50)), axis= 0))
+
+        assert_raises(ValueError, DiscrimOneSample().test, X, Y)
+
+    def test_error_one_id(self):
+        X = np.ones((100,2),dtype=float)
+        Y = np.ones((100,1))
+
+        assert_raises(ValueError, DiscrimOneSample().test, X, Y)
 
     def test_error_nans(self):
         # raises error if inputs contain NaNs
         x = np.arange(20, dtype=float)
         x[0] = np.nan
-        assert_raises(ValueError, oneSample().test, x, x)
+        assert_raises(ValueError, DiscrimOneSample().test, x, x)
 
         y = np.arange(20)
-        assert_raises(ValueError, oneSample().test, x, y)
+        assert_raises(ValueError, DiscrimOneSample().test, x, y)
 
     @pytest.mark.parametrize("reps", [
         -1,    # reps is negative
@@ -52,7 +62,7 @@ class TestOneSampleWarn:
         x = np.ones((100,2),dtype=float)
         y = np.concatenate((np.zeros(50),np.ones(50)), axis= 0)
 
-        assert_raises(ValueError, oneSample().test, x, y, reps=reps)
+        assert_raises(ValueError, DiscrimOneSample().test, x, y, reps=reps)
 
     def test_warns_reps(self):
         # raises warning when reps is less than 1000
@@ -60,4 +70,4 @@ class TestOneSampleWarn:
         y = np.concatenate((np.zeros(50),np.ones(50)), axis= 0)
 
         reps = 100
-        assert_warns(RuntimeWarning, oneSample().test, x, y, reps=reps)
+        assert_warns(RuntimeWarning, DiscrimOneSample().test, x, y, reps=reps)

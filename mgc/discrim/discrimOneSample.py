@@ -2,12 +2,12 @@ from sklearn.metrics import euclidean_distances
 from ._utils import _CheckInputs
 import numpy as np
 import random
-from .base import discriminabilityTest
+from .base import DiscriminabilityTest
 from scipy._lib._util import MapWrapper
 
 
 
-class oneSample(discriminabilityTest):
+class DiscrimOneSample(DiscriminabilityTest):
     r"""
      A class that performs a one-sample test for whether the discriminability 
      differs from random chance, as described in [1]. Discriminability index 
@@ -34,9 +34,7 @@ class oneSample(discriminabilityTest):
     """
 
     def __init__(self):
-        discriminabilityTest.__init__(self)
-
-
+        DiscriminabilityTest.__init__(self)
 
     def test(self, X, Y, is_dist = False, remove_isolates=True, reps=1000, workers=-1):
         r"""
@@ -53,23 +51,23 @@ class oneSample(discriminabilityTest):
         Y : ndarray
             a vector containing the sample ids for our :math:`n` samples.
             
-        is_dist :         Boolean, optional (default: False)
-                          Whether `X` is a distance matrix or not.
+        is_dist : Boolean, optional (default: False)
+            Whether `X` is a distance matrix or not.
         remove_isolates : Boolean, optional (default: True)
-                          whether remove the samples with single instance or not.
-        reps :            int, optional (default: 1000)
-                          The number of replications used to estimate the null distribution
-                          when using the permutation test used to calculate the p-value.
-        workers :         int, optional (default: -1)
-                          The number of cores to parallelize the p-value computation over.
-                          Supply -1 to use all cores available to the Process.
+            whether remove the samples with single instance or not.
+        reps : int, optional (default: 1000)
+            The number of replications used to estimate the null distribution
+            when using the permutation test used to calculate the p-value.
+        workers : int, optional (default: -1)
+            The number of cores to parallelize the p-value computation over.
+            Supply -1 to use all cores available to the Process.
 
         Returns
         -------
-        stat :   float
-                 The computed Discriminability statistic.
+        stat : float
+            The computed Discriminability statistic.
         pvalue : float
-                 The computed one sample test p-value.
+            The computed one sample test p-value.
         """
 
         check_input = _CheckInputs(X, Y, reps = reps)
@@ -85,7 +83,7 @@ class oneSample(discriminabilityTest):
         self.X = X
         self.Y = Y
         
-        stat = super(oneSample,self)._statistic(self.X, self.Y,is_dist, remove_isolates, return_rdfs=False)
+        stat = super(DiscrimOneSample,self)._statistic(self.X, self.Y,is_dist, remove_isolates)
         self.stat_ = stat
 
         # use all cores to create function that parallelizes over number of reps
@@ -104,13 +102,10 @@ class oneSample(discriminabilityTest):
 
         return stat, pvalue
 
-
-
-
     def _perm_stat(self, index):
         permx = self.X
         permy = np.random.permutation(self.Y)
 
-        perm_stat = super(oneSample,self)._statistic(permx, permy)
+        perm_stat = super(DiscrimOneSample,self)._statistic(permx, permy)
 
         return perm_stat
