@@ -26,11 +26,11 @@ class _ParallelP(object):
 
         obs_stat = self.test._statistic(x, y)
 
-        permx = self.rngs[index].permutation(x)
+        # permx = self.rngs[index].permutation(x)
         permy = self.rngs[index].permutation(y)
 
         # calculate permuted stats, store in null distribution
-        perm_stat = self.test._statistic(permx, permy)
+        perm_stat = self.test._statistic(x, permy)
 
         obs_stat = np.abs(obs_stat)
         perm_stat = np.abs(perm_stat)
@@ -63,8 +63,8 @@ def _perm_test(test, sim, n=100, p=1, noise=False, reps=1000, workers=-1,
     """
     # set seeds
     random_state = check_random_state(random_state)
-    seeds = random_state.permutation(np.arange(reps))
-    rngs = [check_random_state(seeds[i]) for i in range(reps)]
+    rngs = [np.random.RandomState(random_state.randint(1 << 32, size=4,
+                                  dtype=np.uint32)) for _ in range(reps)]
 
     # use all cores to create function that parallelizes over number of reps
     mapwrapper = MapWrapper(workers)
@@ -165,3 +165,6 @@ def power_dim(test, sim, n=100, p=1, noise=False, alpha=0.05, reps=1000,
 
     return power(test, sim, n=n, p=p, noise=noise, alpha=alpha, reps=reps,
                  workers=workers, random_state=random_state)
+
+def power_2samp_dim():
+    pass
