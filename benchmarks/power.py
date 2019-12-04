@@ -26,11 +26,11 @@ class _ParallelP(object):
 
         obs_stat = self.test._statistic(x, y)
 
-        # permx = self.rngs[index].permutation(x)
+        permx = self.rngs[index].permutation(x)
         permy = self.rngs[index].permutation(y)
 
         # calculate permuted stats, store in null distribution
-        perm_stat = self.test._statistic(x, permy)
+        perm_stat = self.test._statistic(permx, permy)
 
         obs_stat = np.abs(obs_stat)
         perm_stat = np.abs(perm_stat)
