@@ -93,6 +93,5 @@ def euclidean(x):
 def gaussian(x):
     """Default medial gaussian kernel similarity calculation"""
     l1 = cdist(x, x, 'cityblock')
-    np.fill_diagonal(l1,  np.nan)
-    gamma = 1.0 / (2 * (np.nanmedian(l1)**2))
+    gamma = 1.0 / (2 * (np.median(l1[l1!=0]) ** 2))
     return np.exp(-gamma * cdist(x, x, 'sqeuclidean'))
