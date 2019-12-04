@@ -114,8 +114,8 @@ class TimeSeriesTest(ABC):
         # generate seeds for each rep (change to new parallel random number
         # capabilities in numpy >= 1.17+)
         random_state = check_random_state(random_state)
-        self.rngs = [np.random.RandomState(random_state.randint(1<<32, size=4,
-                     dtype=np.uint32)) for _ in range(reps)]
+        self.rngs = [np.random.RandomState(random_state.randint(1 << 32,
+                     size=4, dtype=np.uint32)) for _ in range(reps)]
         n = x.shape[0]
         self.block_size = int(np.ceil(np.sqrt(n)))
 
