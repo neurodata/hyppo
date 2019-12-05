@@ -210,6 +210,7 @@ def _center_distmat(distx):                                                     
                  + np.repeat((distx.sum(axis=1) / (n-2)), n).reshape(-1, n)
                  - distx.sum() / ((n-1) * (n-2)))
     cent_distx = distx - exp_distx
+    np.fill_diagonal(cent_distx, 0)
 
     return cent_distx
 
