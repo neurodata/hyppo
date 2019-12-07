@@ -175,7 +175,7 @@ class Dcorr(IndependenceTest):
         >>> y = x
         >>> stat, pvalue = Dcorr().test(x, y, reps=10000)
         >>> '%.1f, %.2f' % (stat, pvalue)
-        '1.0, 0.00'
+        '0.0, 1.00'
 
         In addition, the inputs can be distance matrices. Using this is the,
         same as before, except the ``compute_distance`` parameter must be set

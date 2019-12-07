@@ -184,7 +184,7 @@ class Hsic(IndependenceTest):
         >>> y = x
         >>> stat, pvalue = Hsic().test(x, y, reps=10000)
         >>> '%.1f, %.2f' % (stat, pvalue)
-        '1.0, 0.00'
+        '0.0, 1.00'
 
         In addition, the inputs can be distance matrices. Using this is the,
         same as before, except the ``compute_kernel`` parameter must be set
