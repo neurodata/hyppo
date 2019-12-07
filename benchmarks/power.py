@@ -190,7 +190,7 @@ def power_dim(
     random_state=None,
 ):
     """
-    [summary]
+    hello
 
     Parameters
     ----------
