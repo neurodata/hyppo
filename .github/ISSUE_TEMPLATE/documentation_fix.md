@@ -1,17 +1,25 @@
 ---
-name: Documentation fix
-about: Suggest a fix to the documentation
-title: ''
-labels: documentation
-assignees: ''
+name: Documentation Fix
+about: Create a report to help us improve the documentation of mgc
+label: documentation
 
 ---
 
-**Is your documentation change related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+<!--
+Thank you for taking the time to file a bug report.
+Please fill in the fields below, deleting the sections that
+don't apply to your issue. You can view the final output
+by clicking the preview button above.
+Note: This is a comment, and won't appear in the output.
+-->
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+My issue is about ...
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+#### Snapshot of documentation error:
+<!--
+Post an image of the documentation issue
+-->
+
+```
+Sample code to reproduce the problem
+```
