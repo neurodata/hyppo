@@ -188,7 +188,7 @@ class Dcorr(IndependenceTest):
         >>> dcorr = Dcorr(compute_distance=None)
         >>> stat, pvalue = dcorr.test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
-        '1.0, 0.12'
+        '0.0, 1.00'
         """
         check_input = _CheckInputs(x, y, dim=2, reps=reps,
                                    compute_distance=self.compute_distance)
