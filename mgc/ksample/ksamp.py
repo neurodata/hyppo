@@ -127,7 +127,7 @@ class KSample(KSampleTest):
         >>> z = np.ones(7)
         >>> stat, pvalue = KSample("Dcorr").test(x, y, z, reps=10000)
         >>> '%.3f, %.1f' % (stat, pvalue)
-        '0.282, 0.0'
+        '0.224, 0.0'
         """
         inputs = list(args)
         check_input = _CheckInputs(inputs=inputs,
