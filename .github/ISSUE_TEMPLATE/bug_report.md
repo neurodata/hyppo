@@ -1,26 +1,43 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: bug
-assignees: ''
-template: bug_report.md
+name: Bug Report
+about: Create a report to help us improve mgc
+label: bug
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+<!--
+Thank you for taking the time to file a bug report.
+Please fill in the fields below, deleting the sections that
+don't apply to your issue. You can view the final output
+by clicking the preview button above.
+Note: This is a comment, and won't appear in the output.
+-->
 
-**To Reproduce**
-Steps to reproduce the behavior.
+My issue is about ...
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+#### Reproducing code example:
+<!--
+If you place your code between the triple backticks below,
+it will be rendered as a code block.
+-->
 
-**Desktop (please complete the following information):**
- - OS: [e.g. macOS]
- - Python Version [e.g. 3.7.3]
- - Package Version [e.g. 0.0.1]
+```
+Sample code to reproduce the problem
+```
 
-**Additional context**
-Add any other context about the problem here.
+#### Error message
+<!-- If any, paste the *full* error message inside a code block
+as above (starting from line Traceback)
+-->
+
+```
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  ...
+```
+
+#### Version information
+
+- OS: [e.g. macOS]
+- Python Version [e.g. 3.7.3]
+- Package Version [e.g. 0.0.1]
