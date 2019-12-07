@@ -7,6 +7,8 @@ assignees: ''
 
 ---
 
+Closes #[Issue number] <!-- This should be the link -->
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
