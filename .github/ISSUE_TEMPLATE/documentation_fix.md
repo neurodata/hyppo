@@ -4,6 +4,7 @@ about: Suggest a fix to the documentation
 title: ''
 labels: documentation
 assignees: ''
+template: documentation_fix.md
 
 ---
 
