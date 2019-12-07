@@ -98,10 +98,11 @@ class KSampleTest(ABC):
         self.v = v
         obs_stat = self.indep_test._statistic(u, v)
 
-        # set seeds
+        # generate seeds for each rep (change to new parallel random number
+        # capabilities in numpy >= 1.17+)
         random_state = check_random_state(random_state)
-        seeds = random_state.permutation(np.arange(reps))
-        self.rngs = [check_random_state(seeds[i]) for i in range(reps)]
+        self.rngs = [np.random.RandomState(random_state.randint(1 << 32,
+                     size=4, dtype=np.uint32)) for _ in range(reps)]
 
         # use all cores to create function that parallelizes over number of reps
         mapwrapper = MapWrapper(workers)
