@@ -19,3 +19,5 @@ My issue is about ...
 <!--
 Post an image of the documentation issue
 -->
+
+#### Additional context
