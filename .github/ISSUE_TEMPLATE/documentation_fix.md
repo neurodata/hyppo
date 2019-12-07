@@ -19,7 +19,3 @@ My issue is about ...
 <!--
 Post an image of the documentation issue
 -->
-
-```
-Sample code to reproduce the problem
-```
