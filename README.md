@@ -1,8 +1,9 @@
 # mgc
 
-[![Build Status](https://travis-ci.org/sampan501/mgc.svg?branch=master)](https://travis-ci.org/sampan501/mgc)
-[![codecov](https://codecov.io/gh/sampan501/mgc/branch/master/graph/badge.svg)](https://codecov.io/gh/sampan501/mgc)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://travis-ci.org/neurodata/mgc.svg?branch=master)](https://travis-ci.org/neurodata/mgc)
+[![codecov](https://codecov.io/gh/neurodata/mgc/branch/master/graph/badge.svg)](https://codecov.io/gh/neurodata/mgc)
+[![License](https://img.shields.io/github/license/neurodata/mgc)](https://img.shields.io/github/license/neurodata/mgc)
+[![PyPI version](https://img.shields.io/pypi/v/mgc.svg)](https://pypi.org/project/mgc/)
 
 `mgc` (pronounced "Magic") is an open-source software package for independence and k-sample testing.
 

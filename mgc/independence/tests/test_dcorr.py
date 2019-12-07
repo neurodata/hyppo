@@ -10,7 +10,7 @@ from ..dcorr import _dcorr
 class TestDcorrStat:
     @pytest.mark.parametrize("n", [100, 200])
     @pytest.mark.parametrize("obs_stat", [1.0])
-    @pytest.mark.parametrize("obs_pvalue", [1/1000])
+    @pytest.mark.parametrize("obs_pvalue", [1 / 1000])
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
         x, y = linear(n, 1)
@@ -19,19 +19,20 @@ class TestDcorrStat:
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(pvalue, obs_pvalue, decimal=2)
 
-    @pytest.mark.parametrize("distx, obs_stat", [
-        (np.identity(100), 1.0),
-        (np.zeros((100, 100)), 0.0)
-    ])
+    @pytest.mark.parametrize(
+        "distx, obs_stat", [(np.identity(100), 1.0), (np.zeros((100, 100)), 0.0)]
+    )
     def test_local_dcorr(self, distx, obs_stat):
         disty = distx
 
         stat = _dcorr(distx, disty)
         assert_almost_equal(stat, obs_stat)
 
+
 class TestDcorrErrorWarn:
     """ Tests errors and warnings derived from MGC.
     """
+
     def test_error_notndarray(self):
         # raises error if x or y is not a ndarray
         x = np.arange(20)
@@ -67,10 +68,9 @@ class TestDcorrErrorWarn:
         dcorr = Dcorr(compute_distance=compute_distance)
         assert_raises(ValueError, dcorr.test, x, x)
 
-    @pytest.mark.parametrize("reps", [
-        -1,    # reps is negative
-        '1',   # reps is not integer
-    ])
+    @pytest.mark.parametrize(
+        "reps", [-1, "1"]  # reps is negative  # reps is not integer
+    )
     def test_error_reps(self, reps):
         # raises error if reps is negative
         x = np.arange(20)

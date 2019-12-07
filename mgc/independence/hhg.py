@@ -186,8 +186,9 @@ class HHG(IndependenceTest):
         >>> '%.1f, %.2f' % (stat, pvalue)
         '0.0, 1.00'
         """
-        check_input = _CheckInputs(x, y, dim=2, reps=reps,
-                                   compute_distance=self.compute_distance)
+        check_input = _CheckInputs(
+            x, y, dim=2, reps=reps, compute_distance=self.compute_distance
+        )
         x, y = check_input()
 
         if self.is_distance:
@@ -197,7 +198,7 @@ class HHG(IndependenceTest):
 
 
 @njit
-def _hhg(distx, disty):                                                     # pragma: no cover
+def _hhg(distx, disty):  # pragma: no cover
     """Calculate the HHG test statistic"""
 
     n = distx.shape[0]
@@ -215,9 +216,9 @@ def _hhg(distx, disty):                                                     # pr
                 t21 = np.sum((1 - a) * b)
                 t22 = np.sum((1 - a) * (1 - b))
 
-                denom = (t11+t12) * (t21+t22) * (t11+t21) * (t12+t22)
+                denom = (t11 + t12) * (t21 + t22) * (t11 + t21) * (t12 + t22)
                 if denom > 0:
-                    S[i, j] = ((n-2) * (t12*t21 - t11*t22) ** 2) / denom
+                    S[i, j] = ((n - 2) * (t12 * t21 - t11 * t22) ** 2) / denom
 
     stat = np.sum(S)
 

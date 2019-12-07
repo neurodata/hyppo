@@ -8,10 +8,10 @@ from ...independence import CCA, Dcorr
 
 
 class TestKSample:
-    @pytest.mark.parametrize("n, obs_stat, obs_pvalue, indep_test", [
-        (1000, 4.28e-7, 1.0, CCA.__name__),
-        (100, 8.24e-5, 0.001, Dcorr.__name__)
-    ])
+    @pytest.mark.parametrize(
+        "n, obs_stat, obs_pvalue, indep_test",
+        [(1000, 4.28e-7, 1.0, CCA.__name__), (100, 8.24e-5, 0.001, Dcorr.__name__)],
+    )
     def test_twosamp_linear_oned(self, n, obs_stat, obs_pvalue, indep_test):
         np.random.seed(123456789)
         x, y = rot_2samp(linear, n, 1)
@@ -24,6 +24,7 @@ class TestKSample:
 class TestKSampleErrorWarn:
     """ Tests errors and warnings derived from MGC.
     """
+
     def test_error_notndarray(self):
         # raises error if x or y is not a ndarray
         x = np.arange(20)

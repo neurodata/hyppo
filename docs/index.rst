@@ -63,6 +63,7 @@ Documentation
    :caption: Useful Links
 
    mgc @ GitHub <https://github.com/neurodata/mgc>
+   mgc @ PyPi <https://pypi.org/project/mgc/>
    Issue Tracker <https://github.com/neurodata/mgc/issues>
 
 

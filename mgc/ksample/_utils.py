@@ -7,8 +7,7 @@ from ..independence import CCA, Dcorr, HHG, RV, Hsic
 
 
 class _CheckInputs:
-    def __init__(self, inputs, indep_test, reps=None,
-                 compute_distance=None):
+    def __init__(self, inputs, indep_test, reps=None, compute_distance=None):
         self.inputs = inputs
         self.compute_distance = compute_distance
         self.reps = reps
@@ -49,8 +48,9 @@ class _CheckInputs:
 
     def _check_nd_ksampletest(self, dims):
         if len(set(dims)) > 1:
-            raise ValueError("Shape mismatch, inputs must have shape "
-                                "[n, p] and [m, p].")
+            raise ValueError(
+                "Shape mismatch, inputs must have shape " "[n, p] and [m, p]."
+            )
 
     def _convert_inputs_float64(self):
         return [np.asarray(i).astype(np.float64) for i in self.inputs]
@@ -58,8 +58,9 @@ class _CheckInputs:
     def _check_indep_test(self):
         tests = [CCA, Dcorr, HHG, RV, Hsic]
         if self.indep_test.__class__ not in tests:
-            raise ValueError("indep_test must be CannCorr, Dcorr, HHG, "
-                             "RVCorr, or Hsic")
+            raise ValueError(
+                "indep_test must be CannCorr, Dcorr, HHG, " "RVCorr, or Hsic"
+            )
 
     def _check_min_samples(self):
         for i in self.inputs:

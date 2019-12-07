@@ -8,6 +8,7 @@ class _ParallelP(object):
     """
     Helper function to calculate parallel power.
     """
+
     def __init__(self, test, sim, n, p, noise, rngs):
         self.test = test()
         self.sim = sim
@@ -18,8 +19,10 @@ class _ParallelP(object):
         self.rngs = rngs
 
     def __call__(self, index):
-        if (self.sim.__name__ == "multiplicative_noise" or
-            self.sim.__name__ == "multimodal_independence"):
+        if (
+            self.sim.__name__ == "multiplicative_noise"
+            or self.sim.__name__ == "multimodal_independence"
+        ):
             x, y = self.sim(self.n, self.p)
         else:
             x, y = self.sim(self.n, self.p, noise=self.noise)
@@ -38,8 +41,9 @@ class _ParallelP(object):
         return obs_stat, perm_stat
 
 
-def _perm_test(test, sim, n=100, p=1, noise=False, reps=1000, workers=-1,
-               random_state=None):
+def _perm_test(
+    test, sim, n=100, p=1, noise=False, reps=1000, workers=-1, random_state=None
+):
     r"""
     Helper function that calculates the statistical.
 
@@ -63,23 +67,32 @@ def _perm_test(test, sim, n=100, p=1, noise=False, reps=1000, workers=-1,
     """
     # set seeds
     random_state = check_random_state(random_state)
-    rngs = [np.random.RandomState(random_state.randint(1 << 32, size=4,
-                                  dtype=np.uint32)) for _ in range(reps)]
+    rngs = [
+        np.random.RandomState(random_state.randint(1 << 32, size=4, dtype=np.uint32))
+        for _ in range(reps)
+    ]
 
     # use all cores to create function that parallelizes over number of reps
     mapwrapper = MapWrapper(workers)
-    parallelp = _ParallelP(test=test, sim=sim, n=n, p=p, noise=noise,
-                           rngs=rngs)
-    alt_dist, null_dist = map(list, zip(*list(mapwrapper(parallelp,
-                                                         range(reps)))))
+    parallelp = _ParallelP(test=test, sim=sim, n=n, p=p, noise=noise, rngs=rngs)
+    alt_dist, null_dist = map(list, zip(*list(mapwrapper(parallelp, range(reps)))))
     alt_dist = np.array(alt_dist)
     null_dist = np.array(null_dist)
 
     return alt_dist, null_dist
 
 
-def power(test, sim, n=100, p=1, noise=True, alpha=0.05, reps=1000, workers=1,
-          random_state=None):
+def power(
+    test,
+    sim,
+    n=100,
+    p=1,
+    noise=True,
+    alpha=0.05,
+    reps=1000,
+    workers=1,
+    random_state=None,
+):
     """
     [summary]
 
@@ -101,10 +114,17 @@ def power(test, sim, n=100, p=1, noise=True, alpha=0.05, reps=1000, workers=1,
         [description], by default 0.05
     """
 
-    alt_dist, null_dist = _perm_test(test, sim, n=n, p=p, noise=noise,
-                                     reps=reps, workers=workers,
-                                     random_state=random_state)
-    cutoff = np.sort(null_dist)[ceil(reps * (1-alpha))]
+    alt_dist, null_dist = _perm_test(
+        test,
+        sim,
+        n=n,
+        p=p,
+        noise=noise,
+        reps=reps,
+        workers=workers,
+        random_state=random_state,
+    )
+    cutoff = np.sort(null_dist)[ceil(reps * (1 - alpha))]
     empirical_power = (alt_dist >= cutoff).sum() / reps
 
     if empirical_power == 0:
@@ -113,8 +133,17 @@ def power(test, sim, n=100, p=1, noise=True, alpha=0.05, reps=1000, workers=1,
     return empirical_power
 
 
-def power_sample(test, sim, n=100, p=1, noise=True, alpha=0.05, reps=1000,
-                 workers=1, random_state=None):
+def power_sample(
+    test,
+    sim,
+    n=100,
+    p=1,
+    noise=True,
+    alpha=0.05,
+    reps=1000,
+    workers=1,
+    random_state=None,
+):
     """
     [summary]
 
@@ -136,12 +165,30 @@ def power_sample(test, sim, n=100, p=1, noise=True, alpha=0.05, reps=1000,
         [description], by default 0.05
     """
 
-    return power(test, sim, n=n, p=p, noise=noise, alpha=alpha, reps=reps,
-                 workers=workers, random_state=random_state)
+    return power(
+        test,
+        sim,
+        n=n,
+        p=p,
+        noise=noise,
+        alpha=alpha,
+        reps=reps,
+        workers=workers,
+        random_state=random_state,
+    )
 
 
-def power_dim(test, sim, n=100, p=1, noise=False, alpha=0.05, reps=1000,
-              workers=1, random_state=None):
+def power_dim(
+    test,
+    sim,
+    n=100,
+    p=1,
+    noise=False,
+    alpha=0.05,
+    reps=1000,
+    workers=1,
+    random_state=None,
+):
     """
     [summary]
 
@@ -163,8 +210,18 @@ def power_dim(test, sim, n=100, p=1, noise=False, alpha=0.05, reps=1000,
         [description], by default 0.05
     """
 
-    return power(test, sim, n=n, p=p, noise=noise, alpha=alpha, reps=reps,
-                 workers=workers, random_state=random_state)
+    return power(
+        test,
+        sim,
+        n=n,
+        p=p,
+        noise=noise,
+        alpha=alpha,
+        reps=reps,
+        workers=workers,
+        random_state=random_state,
+    )
+
 
 def power_2samp_dim():
     pass

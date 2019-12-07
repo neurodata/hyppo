@@ -77,8 +77,9 @@ class RV(IndependenceTest):
         vary = centy.T @ centy
 
         covar = np.trace(covar @ covar.T)
-        stat = np.divide(covar, np.sqrt(np.trace(varx @ varx)) *
-                         np.sqrt(np.trace(vary @ vary)))
+        stat = np.divide(
+            covar, np.sqrt(np.trace(varx @ varx)) * np.sqrt(np.trace(vary @ vary))
+        )
         self.stat = stat
 
         return stat
