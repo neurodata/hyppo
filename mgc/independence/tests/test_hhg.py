@@ -7,12 +7,10 @@ from .. import HHG
 
 
 class TestHHGStat:
-    @pytest.mark.parametrize("n, obs_stat", [
-        (10, 560.0),
-        (50, 112800.0),
-        (100, 950600.0)
-    ])
-    @pytest.mark.parametrize("obs_pvalue", [1/1000])
+    @pytest.mark.parametrize(
+        "n, obs_stat", [(10, 560.0), (50, 112800.0), (100, 950600.0)]
+    )
+    @pytest.mark.parametrize("obs_pvalue", [1 / 1000])
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
         x, y = linear(n, 1)
@@ -25,6 +23,7 @@ class TestHHGStat:
 class TestHHGErrorWarn:
     """ Tests errors and warnings derived from MGC.
     """
+
     def test_error_notndarray(self):
         # raises error if x or y is not a ndarray
         x = np.arange(20)
@@ -60,10 +59,9 @@ class TestHHGErrorWarn:
         hhg = HHG(compute_distance=compute_distance)
         assert_raises(ValueError, hhg.test, x, x)
 
-    @pytest.mark.parametrize("reps", [
-        -1,    # reps is negative
-        '1',   # reps is not integer
-    ])
+    @pytest.mark.parametrize(
+        "reps", [-1, "1"]  # reps is negative  # reps is not integer
+    )
     def test_error_reps(self, reps):
         # raises error if reps is negative
         x = np.arange(20)

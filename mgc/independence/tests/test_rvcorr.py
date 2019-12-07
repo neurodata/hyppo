@@ -9,7 +9,7 @@ from .. import RV
 class TestRVStat:
     @pytest.mark.parametrize("n", [10, 100, 1000])
     @pytest.mark.parametrize("obs_stat", [1.0])
-    @pytest.mark.parametrize("obs_pvalue", [1/1000])
+    @pytest.mark.parametrize("obs_pvalue", [1 / 1000])
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
         x, y = linear(n, 1)
@@ -22,6 +22,7 @@ class TestRVStat:
 class TestRVErrorWarn:
     """ Tests errors and warnings derived from MGC.
     """
+
     def test_error_notndarray(self):
         # raises error if x or y is not a ndarray
         x = np.arange(20)
@@ -50,10 +51,9 @@ class TestRVErrorWarn:
         y = np.arange(20)
         assert_raises(ValueError, RV().test, x, y)
 
-    @pytest.mark.parametrize("reps", [
-        -1,    # reps is negative
-        '1',   # reps is not integer
-    ])
+    @pytest.mark.parametrize(
+        "reps", [-1, "1"]  # reps is negative  # reps is not integer
+    )
     def test_error_reps(self, reps):
         # raises error if reps is negative
         x = np.arange(20)
