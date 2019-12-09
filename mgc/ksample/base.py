@@ -56,12 +56,10 @@ class KSampleTest(ABC):
         perm_stat : float
             Test statistic for each value in the null distribution.
         """
-
-        permu = self.rngs[index].permutation(self.u)
         permv = self.rngs[index].permutation(self.v)
 
         # calculate permuted statics, store in null distribution
-        perm_stat = self.indep_test._statistic(permu, permv)
+        perm_stat = self.indep_test._statistic(self.u, permv)
 
         return perm_stat
 

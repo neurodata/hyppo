@@ -56,11 +56,10 @@ class IndependenceTest(ABC):
         perm_stat : float
             Test statistic for each value in the null distribution.
         """
-        permx = self.rngs[index].permutation(self.x)
         permy = self.rngs[index].permutation(self.y)
 
         # calculate permuted statics, store in null distribution
-        perm_stat = self._statistic(permx, permy)
+        perm_stat = self._statistic(self.x, permy)
 
         return perm_stat
 
