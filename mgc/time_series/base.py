@@ -73,11 +73,10 @@ class TimeSeriesTest(ABC):
             ]
         ].flatten()[:n]
         perm_index = np.mod(perm_index, n)
-        permx = self.distx[np.ix_(perm_index, perm_index)]
         permy = self.disty[np.ix_(perm_index, perm_index)]
 
         # calculate permuted statics, store in null distribution
-        perm_stat = self._statistic(permx, permy)
+        perm_stat = self._statistic(self.distx, permy)
 
         return perm_stat
 
