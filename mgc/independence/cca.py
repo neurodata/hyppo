@@ -87,8 +87,10 @@ class CCA(IndependenceTest):
             stat = covar / np.sqrt(np.sum(varx ** 2) * np.sum(vary ** 2))
         else:
             covar = np.sum(np.linalg.svd(covar, 1)[1] ** 2)
-            stat = covar / np.sqrt(np.sum(np.linalg.svd(varx, 1)[1] ** 2)
-                                   * np.sum(np.linalg.svd(vary, 1)[1] ** 2))
+            stat = covar / np.sqrt(
+                np.sum(np.linalg.svd(varx, 1)[1] ** 2)
+                * np.sum(np.linalg.svd(vary, 1)[1] ** 2)
+            )
         self.stat = stat
 
         return stat

@@ -2,14 +2,18 @@ import warnings
 
 import numpy as np
 
-from .._utils import (contains_nan, check_ndarray_xy, convert_xy_float64,
-                      check_reps, check_compute_distance)
+from .._utils import (
+    contains_nan,
+    check_ndarray_xy,
+    convert_xy_float64,
+    check_reps,
+    check_compute_distance,
+)
 from ..independence import Dcorr
 
 
 class _CheckInputs:
-    def __init__(self, x, y, max_lag=None, reps=None,
-                 compute_distance=None):
+    def __init__(self, x, y, max_lag=None, reps=None, compute_distance=None):
         self.x = x
         self.y = y
         self.max_lag = max_lag
@@ -48,8 +52,9 @@ class _CheckInputs:
         ny = self.y.shape[0]
 
         if nx != ny:
-            raise ValueError("Shape mismatch, x and y must have shape "
-                                "[n, p] and [n, q].")
+            raise ValueError(
+                "Shape mismatch, x and y must have shape " "[n, p] and [n, q]."
+            )
 
     def _check_max_lag(self):
         if not self.max_lag:

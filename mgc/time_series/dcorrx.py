@@ -37,8 +37,9 @@ class DcorrX(TimeSeriesTest):
         stat : float
             The computed independence test statistic.
         """
-        check_input = _CheckInputs(x, y, max_lag=self.max_lag,
-                                   compute_distance=self.compute_distance)
+        check_input = _CheckInputs(
+            x, y, max_lag=self.max_lag, compute_distance=self.compute_distance
+        )
         x, y = check_input()
 
         distx = self.compute_distance(x)
@@ -51,11 +52,11 @@ class DcorrX(TimeSeriesTest):
         dep_lag.append(np.maximum(0, dcorr_stat))
 
         n = distx.shape[0]
-        for j in range(1, max_lag+1):
+        for j in range(1, max_lag + 1):
             slice_distx = distx[j:n, j:n]
-            slice_disty = disty[0:(n-j), 0:(n-j)]
+            slice_disty = disty[0 : (n - j), 0 : (n - j)]
             stat = dcorr._statistic(slice_distx, slice_disty)
-            dep_lag.append((n-j) * np.maximum(0, stat) / n)
+            dep_lag.append((n - j) * np.maximum(0, stat) / n)
 
         opt_lag = np.argmax(dep_lag)
         stat = np.sum(dep_lag)
@@ -85,10 +86,9 @@ class DcorrX(TimeSeriesTest):
         pvalue : float
             The computed independence test p-value.
         """
-        check_input = _CheckInputs(x,
-                                   y,
-                                   max_lag=self.max_lag,
-                                   compute_distance=self.compute_distance)
+        check_input = _CheckInputs(
+            x, y, max_lag=self.max_lag, compute_distance=self.compute_distance
+        )
         x, y = check_input()
 
         return super(DcorrX, self).test(x, y, reps, workers, random_state)

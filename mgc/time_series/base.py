@@ -55,7 +55,7 @@ class TimeSeriesTest(ABC):
             independence tests (check desired test class for specifics).
         """
 
-    def _perm_stat(self, index):                                                # pragma: no cover
+    def _perm_stat(self, index):  # pragma: no cover
         """
         Helper function that is used to calculate parallel permuted test
         statistics.
@@ -66,9 +66,12 @@ class TimeSeriesTest(ABC):
             Test statistic for each value in the null distribution.
         """
         n = self.distx.shape[0]
-        perm_index = np.r_[[np.arange(t, t+self.block_size) for t in
-                            self.rngs[index].choice(n,
-                            n//self.block_size + 1)]].flatten()[:n]
+        perm_index = np.r_[
+            [
+                np.arange(t, t + self.block_size)
+                for t in self.rngs[index].choice(n, n // self.block_size + 1)
+            ]
+        ].flatten()[:n]
         perm_index = np.mod(perm_index, n)
         permx = self.distx[np.ix_(perm_index, perm_index)]
         permy = self.disty[np.ix_(perm_index, perm_index)]
@@ -111,11 +114,15 @@ class TimeSeriesTest(ABC):
         # calculate observed test statistic
         obs_stat = self._statistic(x, y)
 
-        # set seeds
+        # generate seeds for each rep (change to new parallel random number
+        # capabilities in numpy >= 1.17+)
         random_state = check_random_state(random_state)
-        seeds = random_state.permutation(np.arange(reps))
-        self.rngs = [check_random_state(seeds[i]) for i in range(reps)]
-
+        self.rngs = [
+            np.random.RandomState(
+                random_state.randint(1 << 32, size=4, dtype=np.uint32)
+            )
+            for _ in range(reps)
+        ]
         n = x.shape[0]
         self.block_size = int(np.ceil(np.sqrt(n)))
 

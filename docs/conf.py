@@ -26,7 +26,7 @@ copyright = "2018"
 authors = u"Sambit Panda"
 
 # The short X.Y version
-# Find GraSPy version.
+# Find mgc version.
 PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 for line in open(os.path.join(PROJECT_PATH, "..", "mgc", "__init__.py")):
     if line.startswith("__version__ = "):
@@ -88,10 +88,7 @@ import sphinx_rtd_theme
 
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-html_theme_options = {
-    "collapse_navigation": False,
-    "navigation_depth": 3,
-}
+html_theme_options = {"collapse_navigation": False, "navigation_depth": 3}
 
 html_context = {
     # Enable the "Edit in GitHub link within the header of each page.
@@ -145,9 +142,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-    (master_doc, "mgc.tex", "mgc Documentation", authors, "manual")
-]
+latex_documents = [(master_doc, "mgc.tex", "mgc Documentation", authors, "manual")]
 
 # -- Options for manual page output ------------------------------------------
 

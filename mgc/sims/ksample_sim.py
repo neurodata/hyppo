@@ -3,27 +3,55 @@ import numpy as np
 from .indep_sim import *
 
 
-_SIMS = [linear, spiral, exponential, cubic, joint_normal, step, quadratic,
-         w_shaped, uncorrelated_bernoulli, logarithmic, fourth_root,
-         sin_four_pi, sin_sixteen_pi, two_parabolas, circle, ellipse, diamond,
-         multiplicative_noise, square, multimodal_independence]
+_SIMS = [
+    linear,
+    spiral,
+    exponential,
+    cubic,
+    joint_normal,
+    step,
+    quadratic,
+    w_shaped,
+    uncorrelated_bernoulli,
+    logarithmic,
+    fourth_root,
+    sin_four_pi,
+    sin_sixteen_pi,
+    two_parabolas,
+    circle,
+    ellipse,
+    diamond,
+    multiplicative_noise,
+    square,
+    multimodal_independence,
+]
 
 
 def _normalize(x, y):
-    return x/np.max(np.abs(x)), y/np.max(np.abs(y))
+    return x / np.max(np.abs(x)), y / np.max(np.abs(y))
 
 
 def _2samp_rotate(sim, x, y, p, degree=90):
     angle = np.radians(degree)
-    if sim.__name__ in ["joint_normal", "logarithmic", "sin_four_pi",
-                        "sin_sixteen_pi", "two_parabolas", "square",
-                        "diamond", "circle", "ellipse",
-                        "multiplicative_noise", "multimodal_independence"]:
-        rot_mat = np.identity(2*p)
+    if sim.__name__ in [
+        "joint_normal",
+        "logarithmic",
+        "sin_four_pi",
+        "sin_sixteen_pi",
+        "two_parabolas",
+        "square",
+        "diamond",
+        "circle",
+        "ellipse",
+        "multiplicative_noise",
+        "multimodal_independence",
+    ]:
+        rot_mat = np.identity(2 * p)
     else:
-        rot_mat = np.identity(p+1)
-    rot_mat[np.ix_((0,-1),(0,-1))] = np.array([[np.cos(angle), -np.sin(angle)],
-                                               [np.sin(angle), np.cos(angle)]])
+        rot_mat = np.identity(p + 1)
+    rot_mat[np.ix_((0, -1), (0, -1))] = np.array(
+        [[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]]
+    )
     data = np.hstack([x, y])
     rot_data = (rot_mat @ data.T).T
     x_rot, y_rot = np.hsplit(rot_data, 2)

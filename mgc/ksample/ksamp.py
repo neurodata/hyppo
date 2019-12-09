@@ -64,17 +64,16 @@ class KSample(KSampleTest):
 
     def __init__(self, indep_test, compute_distance=euclidean):
         test_names = {
-            RV.__name__ : RV,
-            CCA.__name__ : CCA,
-            HHG.__name__ : HHG,
-            Hsic.__name__ : Hsic,
-            Dcorr.__name__ : Dcorr
+            RV.__name__: RV,
+            CCA.__name__: CCA,
+            HHG.__name__: HHG,
+            Hsic.__name__: Hsic,
+            Dcorr.__name__: Dcorr,
         }
         if indep_test not in test_names.keys():
             raise ValueError("Test is not a valid independence test")
         indep_test = test_names[indep_test]
-        KSampleTest.__init__(self, indep_test,
-                             compute_distance=compute_distance)
+        KSampleTest.__init__(self, indep_test, compute_distance=compute_distance)
 
     def test(self, *args, reps=1000, workers=1, random_state=None):
         r"""
@@ -115,7 +114,7 @@ class KSample(KSampleTest):
         >>> z = np.arange(10)
         >>> stat, pvalue = KSample("Dcorr").test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
-        '0.009, 1.0'
+        '-0.136, 1.0'
 
         The number of replications can give p-values with higher confidence
         (greater alpha levels).
@@ -127,12 +126,14 @@ class KSample(KSampleTest):
         >>> z = np.ones(7)
         >>> stat, pvalue = KSample("Dcorr").test(x, y, z, reps=10000)
         >>> '%.3f, %.1f' % (stat, pvalue)
-        '0.282, 0.0'
+        '0.224, 0.0'
         """
         inputs = list(args)
-        check_input = _CheckInputs(inputs=inputs,
-                                   indep_test=self.indep_test,
-                                   compute_distance=self.compute_distance)
+        check_input = _CheckInputs(
+            inputs=inputs,
+            indep_test=self.indep_test,
+            compute_distance=self.compute_distance,
+        )
         inputs = check_input()
 
         return super(KSample, self).test(inputs, reps, workers, random_state)
