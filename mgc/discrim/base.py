@@ -13,6 +13,7 @@ class DiscriminabilityTest(ABC):
         self.pvalue_ = None
         super().__init__()
 
+    #@abstractmethod
     def _statistic(self, X, Y, is_dist = False, remove_isolates=True):
         r"""
         Calulates the independence test statistic.
@@ -69,7 +70,6 @@ class DiscriminabilityTest(ABC):
 
         return out
     
-    @abstractmethod
     def _perm_stat(self, index):
         r"""
         Helper function that is used to calculate parallel permuted test
@@ -84,4 +84,9 @@ class DiscriminabilityTest(ABC):
         -------
         perm_stat : float
             Test statistic for each value in the null distribution.
+        """
+
+    @abstractmethod
+    def test(self):
+        """
         """

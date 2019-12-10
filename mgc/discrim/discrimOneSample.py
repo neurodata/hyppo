@@ -10,23 +10,35 @@ from scipy._lib._util import MapWrapper
 class DiscrimOneSample(DiscriminabilityTest):
     r"""
      A class that performs a one-sample test for whether the discriminability 
-     differs from random chance, as described in [1]. Discriminability index 
-     is a masure of whether a data acquisition and preprocessing pipeline is 
-     more discriminable among different subjects. The key insight is that each
-     measurement of the same item should be more similar to other measurements 
-     of that item, as compared to measurements of any other item. 
-     With :math:`D_X` as the sample discriminability of :math:`X`, it tests whether:
+     differs from random chance, as described in [#1Dscr]_.
+     
+     Discriminability index is a masure of whether a data acquisition and 
+     preprocessing pipeline is more discriminable among different subjects.
+     The key insight is that each measurement of the same item should be more 
+     similar to other measurements of that item, as compared to measurements 
+     of any other item. 
+    
+    See Also
+    --------
+    DiscrimTwoSample : Two sample test for comparing the discriminability of two data
+    
+    Notes
+    -----
+    With :math:`D_X` as the sample discriminability of :math:`X`, one sample test verifies 
+    whether
+    
+     .. math::
+
+         H_0: D_X = D_0
+
+    and
 
      .. math::
-        H_0: D_X = D_0
 
-     and
-
-     .. math::
-        H_A: D_X > D_0 
+         H_A: D_X > D_0 
     
     where :math:`D_0` is the discriminability that would be observed by random chance.
-    
+
     References
     ----------
     .. [#1Dscr] Eric W. Bridgeford, et al. "Optimal Decisions for Reference 
@@ -36,6 +48,11 @@ class DiscrimOneSample(DiscriminabilityTest):
     def __init__(self):
         DiscriminabilityTest.__init__(self)
 
+    def _statistic(self):
+        """
+        """
+        
+
     def test(self, X, Y, is_dist = False, remove_isolates=True, reps=1000, workers=-1):
         r"""
         Calculates the test statistic and p-value for Discriminability one sample test.
@@ -44,9 +61,10 @@ class DiscrimOneSample(DiscriminabilityTest):
         ----------
         X : ndarray
 
-            * An :math:`n \times d` data matrix with :math:`n` samples in :math:`d` dimensions, if flag :math:`(is\_dist = Flase)` 
+            * An `(n, d)` data matrix with `n` samples in `d` dimensions,
+              if flag `(is\_dist = Flase)`
 
-            * An :math:`n \times n` distance matrix, if flag :math:`(is\_dist = True)`
+            * An `(n, n)` distance matrix, if flag `(is\_dist = True)`
             
         Y : ndarray
             a vector containing the sample ids for our :math:`n` samples.
@@ -70,7 +88,7 @@ class DiscrimOneSample(DiscriminabilityTest):
             The computed one sample test p-value.
         """
 
-        check_input = _CheckInputs(X, Y, reps = reps)
+        check_input = _CheckInputs(X, Y, reps=reps)
         X, Y = check_input()
 
         _, counts = np.unique(Y, return_counts=True)
@@ -79,11 +97,10 @@ class DiscrimOneSample(DiscriminabilityTest):
             msg = "You have passed a vector containing only a single unique sample id."
             raise ValueError(msg)
 
-
         self.X = X
         self.Y = Y
         
-        stat = super(DiscrimOneSample,self)._statistic(self.X, self.Y,is_dist, remove_isolates)
+        stat = super(DiscrimOneSample,self)._statistic(self.X, self.Y, is_dist, remove_isolates)
         self.stat_ = stat
 
         # use all cores to create function that parallelizes over number of reps

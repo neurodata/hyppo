@@ -107,6 +107,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
                 self.diffNull.append(self.null_dist[i][0] - self.null_dist[j][1])
                 self.diffNull.append(self.null_dist[j][1] - self.null_dist[i][0])
         
+
         self.diffNull = np.asarray(self.diffNull)
 
         if alt == "greater":
