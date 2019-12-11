@@ -38,7 +38,10 @@ class _CheckInputs:
         for i in self.inputs:
             # convert arrays of type (n,) to (n, 1)
             if i.ndim == 1:
-                i.shape = (-1, 1)
+                i = i[:, np.newaxis]
+            elif i.ndim != 2:
+                raise ValueError("Expected a 2-D array `i`, found shape "
+                                "{}".format(i.shape))
             dims.append(i.shape[1])
             new_inputs.append(i)
 
