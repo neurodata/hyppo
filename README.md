@@ -4,12 +4,13 @@
 [![codecov](https://codecov.io/gh/neurodata/mgc/branch/master/graph/badge.svg)](https://codecov.io/gh/neurodata/mgc)
 [![PyPI version](https://img.shields.io/pypi/v/mgc.svg)](https://pypi.org/project/mgc/)
 [![License](https://img.shields.io/github/license/neurodata/mgc)](https://img.shields.io/github/license/neurodata/mgc)
+[![arXiv shield](https://img.shields.io/badge/arXiv-1907.02088-red.svg?style=flat)](https://arxiv.org/abs/1907.02088)
 
 `mgc` (pronounced "Magic") is an open-source software package for independence and k-sample testing.
 
 - **Installation Guide:** [https://mgc.neurodata.io/install.html](https://mgc.neurodata.io/install.html)
 - **Documentation:** [https://mgc.neurodata.io/](https://mgc.neurodata.io/)
-- **Tutorials:**
+- **Tutorials:** [https://mgc.neurodata.io/tutorials.html](https://mgc.neurodata.io/tutorials.html)
 - **Source Code:** [https://github.com/neurodata/mgc/tree/master/mgc](https://github.com/neurodata/mgc/tree/master/mgc)
 - **Issues:** [https://github.com/neurodata/mgc/issues](https://github.com/neurodata/mgc/issues)
 - **Contribution Guide:**
