@@ -11,7 +11,7 @@ an issue if you have found a bug or wish to see a feature implemented.
 
 In case you experience issues using this package, do not hesitate to submit a
 ticket to the
-`Bug Tracker <https://github.com/neurodata/mgc/issues>`_. You are
+`Issue Tracker <https://github.com/neurodata/mgc/issues>`_. You are
 also welcome to post feature requests or pull requests.
 
 It is recommended to check that your issue complies with the
@@ -108,7 +108,7 @@ Pull Request Checklist
 We recommended that your contribution complies with the following rules
 before you submit a pull request:
 
--  Follow the `coding-guidelines <#guidelines>`__.
+-  Follow the `coding-guidelines <#coding-guidelines>`__.
 -  Give your pull request a helpful title that summarises what your
    contribution does. In some cases ``Fix <ISSUE TITLE>`` is enough.
    ``Fix #<ISSUE NUMBER>`` is not enough.
