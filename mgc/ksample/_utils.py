@@ -40,8 +40,9 @@ class _CheckInputs:
             if i.ndim == 1:
                 i = i[:, np.newaxis]
             elif i.ndim != 2:
-                raise ValueError("Expected a 2-D array `i`, found shape "
-                                "{}".format(i.shape))
+                raise ValueError(
+                    "Expected a 2-D array `i`, found shape " "{}".format(i.shape)
+                )
             dims.append(i.shape[1])
             new_inputs.append(i)
 
