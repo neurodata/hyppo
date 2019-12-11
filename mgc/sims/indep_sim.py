@@ -879,7 +879,7 @@ def two_parabolas(n, p, noise=False, low=-1, high=1, prob=0.5):
 
     Notes
     -----
-    Two Parabolas :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`:
+    Two Parabolas :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
 
     .. math::
 
@@ -891,7 +891,7 @@ def two_parabolas(n, p, noise=False, low=-1, high=1, prob=0.5):
     >>> from mgc.sims import two_parabolas
     >>> x, y = two_parabolas(100, 2)
     >>> print(x.shape, y.shape)
-    (100, 2) (100, 1)
+    (100, 2) (100, 2)
     """
     extra_args = [(noise, bool), (low, float), (high, float), (prob, float)]
     check_in = _CheckInputs(n, p)
