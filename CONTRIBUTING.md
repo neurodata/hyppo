@@ -30,7 +30,7 @@ Quick links
 
 * [Submitting a bug report or feature request](http://mgc.neurodata.io/contributing.html#submitting-a-bug-report-or-a-feature-request)
 * [Contributing code](http://mgc.neurodata.io/contributing.html#contributing-code)
-* [Coding guidelines](http://mgc.neurodata.io/contributing.html#guidelines)
+* [Coding guidelines](http://mgc.neurodata.io/contributing.html#coding-guidelines)
 
 Code of Conduct
 ---------------

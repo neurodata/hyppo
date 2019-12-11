@@ -147,11 +147,8 @@ before you submit a pull request:
       $ pip install black
       $ black path/to/module.py
 
-Guidelines
-----------
-
 Coding Guidelines
-~~~~~~~~~~~~~~~~~
+-----------------
 
 Uniformly formatted code makes it easier to share code ownership. ``mgc``
 package closely follows the official Python guidelines detailed in
@@ -159,7 +156,7 @@ package closely follows the official Python guidelines detailed in
 code should be formatted and indented. Please read it and follow it.
 
 Docstring Guidelines
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
 Properly formatted docstrings is required for documentation generation
 by Sphinx. The pygraphstats package closely follows the numpydoc
