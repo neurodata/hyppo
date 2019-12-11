@@ -56,6 +56,7 @@ Documentation
 
    install
    reference/index
+   tutorials
    license
 
 .. toctree::

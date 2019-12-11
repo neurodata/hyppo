@@ -95,14 +95,14 @@ html_context = {
     "display_github": True,
     # Set the following variables to generate the resulting github URL for each page.
     # Format Template: https://{{ github_host|default("github.com") }}/{{ github_user }}/{{ github_repo }}/blob/{{ github_version }}{{ conf_py_path }}{{ pagename }}{{ suffix }}
-    "github_user": "sampan501",
+    "github_user": "neurodata",
     "github_repo": "mgc",
     "github_version": "master/docs/",
 }
 
 linkcode_resolve = make_linkcode_resolve(
     "mgc",
-    u"https://github.com/sampan501/"
+    u"https://github.com/neurodata/"
     "mgc/blob/{revision}/"
     "{package}/{path}#L{lineno}",
 )
