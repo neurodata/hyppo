@@ -55,8 +55,9 @@ Documentation
    :maxdepth: 1
 
    install
-   reference/index
    tutorials
+   reference/index
+   contributing
    license
 
 .. toctree::
