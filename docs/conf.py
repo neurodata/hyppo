@@ -14,6 +14,7 @@
 #
 import os
 import sys
+import shutil
 
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath("sphinxext"))
@@ -95,14 +96,14 @@ html_context = {
     "display_github": True,
     # Set the following variables to generate the resulting github URL for each page.
     # Format Template: https://{{ github_host|default("github.com") }}/{{ github_user }}/{{ github_repo }}/blob/{{ github_version }}{{ conf_py_path }}{{ pagename }}{{ suffix }}
-    "github_user": "sampan501",
+    "github_user": "neurodata",
     "github_repo": "mgc",
     "github_version": "master/docs/",
 }
 
 linkcode_resolve = make_linkcode_resolve(
     "mgc",
-    u"https://github.com/sampan501/"
+    u"https://github.com/neurodata/"
     "mgc/blob/{revision}/"
     "{package}/{path}#L{lineno}",
 )
@@ -188,3 +189,24 @@ epub_exclude_files = ["search.html"]
 def setup(app):
     # to hide/show the prompt in code examples:
     app.add_javascript("js/copybutton.js")
+
+
+# -- Jupyter Notebook --------------------------------------------------------
+
+
+def all_but_ipynb(dir, contents):
+    result = []
+    for c in contents:
+        if os.path.isfile(os.path.join(dir, c)) and (not c.endswith(".ipynb")):
+            result += [c]
+    return result
+
+
+shutil.rmtree(
+    os.path.join(PROJECT_PATH, "..", "docs/tutorials/benchmarks"), ignore_errors=True
+)
+shutil.copytree(
+    os.path.join(PROJECT_PATH, "..", "benchmarks"),
+    os.path.join(PROJECT_PATH, "..", "docs/tutorials/benchmarks"),
+    ignore=all_but_ipynb,
+)

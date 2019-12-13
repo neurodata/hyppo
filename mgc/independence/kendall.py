@@ -31,7 +31,7 @@ class Kendall(IndependenceTest):
     Let :math:`x` and :math:`y` be :math:`(n, 1)` samples of random variables
     :math:`X` and :math:`Y`. Define :math:`(x_i, y_i)` and :math:`(x_j, y_j)`
     as concordant if the ranks agree: :math:`x_i > x_j` and :math:`y_i > y_j`
-    or `x_i > x_j` and :math:`y_i < y_j`. They are discordant if the ranks
+    or :math:`x_i > x_j` and :math:`y_i < y_j`. They are discordant if the ranks
     disagree: :math:`x_i > x_j` and :math:`y_i < y_j` or :math:`x_i < x_j` and
     :math:`y_i > y_j`. If :math:`x_i > x_j` and :math:`y_i < y_j`, the pair is
     said to be tied. Let :math:`n_c` and :math:`n_d` be the number of
@@ -44,8 +44,8 @@ class Kendall(IndependenceTest):
 
     Further, define :math:`n_1 = \sum_i \frac{t_i (t_i - 1)}{2}`,
     :math:`n_2 = \sum_j \frac{u_j (u_j - 1)}{2}`, :math:`t_i` be the number of
-    tied values in the :math:`i`th group and :math:`u_j` be the number of tied
-    values in the :math:`j`th group. Then, the statistic is [#2Kend]_,
+    tied values in the :math:`i`-th group and :math:`u_j` be the number of tied
+    values in the :math:`j`-th group. Then, the statistic is [#2Kend]_,
 
     .. math::
 

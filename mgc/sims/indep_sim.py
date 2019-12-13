@@ -50,8 +50,8 @@ def linear(n, p, noise=False, low=-1, high=1):
         The number of samples desired by the simulation.
     p : int
         The number of dimensions desired by the simulation.
-    noise : float, (default: 1)
-        The noise amplitude of the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
     low : float, (default: -1)
         The lower limit of the uniform distribution simulated from.
     high : float, (default: -1)
@@ -102,8 +102,8 @@ def exponential(n, p, noise=False, low=0, high=3):
         The number of samples desired by the simulation.
     p : int
         The number of dimensions desired by the simulation.
-    noise : float, (default: 10)
-        The noise amplitude of the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
     low : float, (default: 0)
         The lower limit of the uniform distribution simulated from.
     high : float, (default: 3)
@@ -154,8 +154,8 @@ def cubic(n, p, noise=False, low=-1, high=1, cubs=[-12, 48, 128], scale=1 / 3):
         The number of samples desired by the simulation.
     p : int
         The number of dimensions desired by the simulation.
-    noise : float, (default: 80)
-        The noise amplitude of the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
     low : float, (default: -1)
         The lower limit of the uniform distribution simulated from.
     high : float, (default: -1)
@@ -219,7 +219,7 @@ def cubic(n, p, noise=False, low=-1, high=1, cubs=[-12, 48, 128], scale=1 / 3):
 
 def joint_normal(n, p, noise=False):
     r"""
-    Simulates univariate or multivariate spiral data.
+    Simulates univariate or multivariate joint-normal data.
 
     Parameters
     ----------
@@ -227,37 +227,34 @@ def joint_normal(n, p, noise=False):
         The number of samples desired by the simulation.
     p : int
         The number of dimensions desired by the simulation.
-    noise : int, (default: 0.4)
-        The noise amplitude of the simulation.
-    low : float, (default: 0)
-        The lower limit of the uniform distribution simulated from.
-    high : float, (default: 5)
-        The upper limit of the uniform distribution simulated from.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
 
     Returns
     -------
     x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, 1)`
+        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
         where `n` is the number of samples and `p` is the number of
         dimensions.
 
     Notes
     -----
-    Spiral :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`: For
-    :math:`U \sim \mathcal{U}(0, 5)`, :math:`\epsilon \sim \mathcal{N}(0, 1)`
+    Joint Normal :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`: Let
+    :math:`\rho = \frac{1}{2} p`, :math:`I_p` be the identity matrix of size
+    :math:`p \times p`, :math:`J_p` be the matrix of ones of size
+    :math:`p \times p` and
+    :math:`\Sigma = \begin{bmatrix} I_p & \rho J_p \\ \rho J_p & (1 + 0.5\kappa) I_p \end{bmatrix}`. Then,
 
     .. math::
 
-        X_{|d|} &= U \sin(\pi U) \cos^d(\pi U)\ \mathrm{for}\ d = 1,...,p-1 \\
-        X_{|p|} &= U \cos^p(\pi U) \\
-        Y &= U \sin(\pi U) + 0.4 p \epsilon
+        (X, Y) \sim \mathcal{N}(0, \Sigma)
 
     Examples
     --------
-    >>> from mgc.sims import spiral
-    >>> x, y = spiral(100, 2)
+    >>> from mgc.sims import joint_normal
+    >>> x, y = joint_normal(100, 2)
     >>> print(x.shape, y.shape)
-    (100, 2) (100, 1)
+    (100, 2) (100, 2)
     """
     if p > 10:
         raise ValueError("Covariance matrix for p>10 is not positive" "semi-definite")
@@ -281,20 +278,45 @@ def joint_normal(n, p, noise=False):
 
 def step(n, p, noise=False, low=-1, high=1):
     r"""
-    [summary]
+    Simulates univariate or multivariate step data.
 
     Parameters
     ----------
-    n : [type]
-        [description]
-    p : [type]
-        [description]
-    noise : float, optional
-        [description], by default 0.1
-    low : int, optional
-        [description], by default -1
-    high : int, optional
-        [description], by default 1
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
+    low : float, (default: -1)
+        The lower limit of the uniform distribution simulated from.
+    high : float, (default: -1)
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x, y : ndarray
+        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, 1)`
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
+
+    Notes
+    -----
+    Step :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`:
+
+    .. math::
+
+        X &\sim \mathcal{U}(-1, 1)^p \\
+        Y &= \mathbb{1}_{w^T X > 0} + \epsilon
+
+    where :math:`\mathbb{1}` is the indicator function.
+
+    Examples
+    --------
+    >>> from mgc.sims import step
+    >>> x, y = step(100, 2)
+    >>> print(x.shape, y.shape)
+    (100, 2) (100, 1)
     """
     extra_args = [(noise, bool), (low, float), (high, float)]
     check_in = _CheckInputs(n, p)
@@ -313,7 +335,45 @@ def step(n, p, noise=False, low=-1, high=1):
 
 
 def quadratic(n, p, noise=False, low=-1, high=1):
+    r"""
+    Simulates univariate or multivariate quadratic data.
 
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
+    low : float, (default: -1)
+        The lower limit of the uniform distribution simulated from.
+    high : float, (default: -1)
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x, y : ndarray
+        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, 1)`
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
+
+    Notes
+    -----
+    Quadratic :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`:
+
+    .. math::
+
+        X &\sim \mathcal{U}(-1, 1)^p \\
+        Y &= (w^T X)^2 + 0.5 \kappa \epsilon
+
+    Examples
+    --------
+    >>> from mgc.sims import quadratic
+    >>> x, y = quadratic(100, 2)
+    >>> print(x.shape, y.shape)
+    (100, 2) (100, 1)
+    """
     extra_args = [(noise, bool), (low, float), (high, float)]
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
@@ -329,7 +389,47 @@ def quadratic(n, p, noise=False, low=-1, high=1):
 
 
 def w_shaped(n, p, noise=False, low=-1, high=1):
+    r"""
+    Simulates univariate or multivariate quadratic data.
 
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
+    low : float, (default: -1)
+        The lower limit of the uniform distribution simulated from.
+    high : float, (default: -1)
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x, y : ndarray
+        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, 1)`
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
+
+    Notes
+    -----
+    W-Shaped :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`:
+    :math:`\mathcal{U}(-1, 1)^p`,
+
+    .. math::
+
+        X &\sim \mathcal{U}(-1, 1)^p \\
+        Y &= \left[ \left( (w^T X)^2 - \frac{1}{2} \right)^2
+                            + \frac{w^T U}{500} \right] + 0.5 \kappa \epsilon
+
+    Examples
+    --------
+    >>> from mgc.sims import w_shaped
+    >>> x, y = w_shaped(100, 2)
+    >>> print(x.shape, y.shape)
+    (100, 2) (100, 1)
+    """
     extra_args = [(noise, bool), (low, float), (high, float)]
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
@@ -356,8 +456,8 @@ def spiral(n, p, noise=False, low=0, high=5):
         The number of samples desired by the simulation.
     p : int
         The number of dimensions desired by the simulation.
-    noise : int, (default: 0.4)
-        The noise amplitude of the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
     low : float, (default: 0)
         The lower limit of the uniform distribution simulated from.
     high : float, (default: 5)
@@ -372,7 +472,7 @@ def spiral(n, p, noise=False, low=0, high=5):
 
     Notes
     -----
-    Spiral :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`: For
+    Spiral :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`:
     :math:`U \sim \mathcal{U}(0, 5)`, :math:`\epsilon \sim \mathcal{N}(0, 1)`
 
     .. math::
@@ -413,19 +513,44 @@ def spiral(n, p, noise=False, low=0, high=5):
 
 
 def uncorrelated_bernoulli(n, p, noise=False, prob=0.5):
-    """
-    [summary]
+    r"""
+    Simulates univariate or multivariate uncorrelated Bernoulli data.
 
     Parameters
     ----------
-    n : [type]
-        [description]
-    p : [type]
-        [description]
-    noise : float, optional
-        [description], by default 0.05
-    prob : float, optional
-        [description], by default 0.5
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
+    prob : float, (default: 0.5)
+        The probability of the bernoulli distribution simulated from.
+
+    Returns
+    -------
+    x, y : ndarray
+        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, 1)`
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
+
+    Notes
+    -----
+    Uncorrelated Bernoulli :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`:
+    :math:`U \sim \mathcal{B}(0.5)`, :math:`\epsilon_1 \sim \mathcal{N}(0, I_p)`,
+    :math:`\epsilon_2 \sim \mathcal{N}(0, 1)`,
+
+    .. math::
+
+        X &= \mathcal{B}(0.5)^p + 0.5 \epsilon_1 \\
+        Y &= (2U - 1) w^T X + 0.5 \epsilon_2
+
+    Examples
+    --------
+    >>> from mgc.sims import uncorrelated_bernoulli
+    >>> x, y = uncorrelated_bernoulli(100, 2)
+    >>> print(x.shape, y.shape)
+    (100, 2) (100, 1)
     """
     extra_args = [(noise, bool), (prob, float)]
     check_in = _CheckInputs(n, p)
@@ -447,7 +572,43 @@ def uncorrelated_bernoulli(n, p, noise=False, prob=0.5):
 
 
 def logarithmic(n, p, noise=False):
+    r"""
+    Simulates univariate or multivariate logarithmic data.
 
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
+
+    Returns
+    -------
+    x, y : ndarray
+        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
+
+    Notes
+    -----
+    Logarithmic :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
+    :math:`\epsilon \sim \mathcal{N}(0, I_p)`,
+
+    .. math::
+
+        X &\sim \mathcal{N}(0, I_p) \\
+        Y_{|d|} &= 2 \log_2 (|X_{|d|}|) + 3 \kappa \epsilon_{|d|}
+                   \ \mathrm{for}\ d = 1, ..., p
+
+    Examples
+    --------
+    >>> from mgc.sims import logarithmic
+    >>> x, y = logarithmic(100, 2)
+    >>> print(x.shape, y.shape)
+    (100, 2) (100, 2)
+    """
     extra_args = [(noise, bool)]
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
@@ -462,7 +623,45 @@ def logarithmic(n, p, noise=False):
 
 
 def fourth_root(n, p, noise=False, low=-1, high=1):
+    r"""
+    Simulates univariate or multivariate fourth root data.
 
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
+    low : float, (default: -1)
+        The lower limit of the uniform distribution simulated from.
+    high : float, (default: -1)
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x, y : ndarray
+        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, 1)`
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
+
+    Notes
+    -----
+    Fourth Root :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`:
+
+    .. math::
+
+        X &\sim \mathcal{U}(-1, 1)^p \\
+        Y &= |w^T X|^\frac{1}{4} + \frac{\kappa}{4} \epsilon
+
+    Examples
+    --------
+    >>> from mgc.sims import fourth_root
+    >>> x, y = fourth_root(100, 2)
+    >>> print(x.shape, y.shape)
+    (100, 2) (100, 1)
+    """
     extra_args = [(noise, bool), (low, float), (high, float)]
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
@@ -478,7 +677,7 @@ def fourth_root(n, p, noise=False, low=-1, high=1):
 
 
 def _sin(n, p, noise=False, low=-1, high=1, period=4 * np.pi):
-
+    """Helper function to calculate sine simulation"""
     extra_args = [(noise, bool), (low, float), (high, float), (period, float)]
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
@@ -501,17 +700,97 @@ def _sin(n, p, noise=False, low=-1, high=1, period=4 * np.pi):
 
 
 def sin_four_pi(n, p, noise=False, low=-1, high=1):
+    r"""
+    Simulates univariate or multivariate sine 4 :math:`\pi` data.
 
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
+    low : float, (default: -1)
+        The lower limit of the uniform distribution simulated from.
+    high : float, (default: -1)
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x, y : ndarray
+        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
+
+    Notes
+    -----
+    Sine 4:math:`\pi` :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
+    :math:`U \sim \mathcal{U}(-1, 1)`, :math:`V \sim \mathcal{N}(0, 1)^p`,
+    :math:`\theta = 4 \pi`,
+
+    .. math::
+
+        X_{|d|} &= U + 0.02 p V_{|d|}\ \mathrm{for}\ d = 1, ..., p \\
+        Y &= \sin (\theta X) + \kappa \epsilon
+
+    Examples
+    --------
+    >>> from mgc.sims import sin_four_pi
+    >>> x, y = sin_four_pi(100, 2)
+    >>> print(x.shape, y.shape)
+    (100, 2) (100, 2)
+    """
     return _sin(n, p, noise=noise, low=low, high=high, period=4 * np.pi)
 
 
 def sin_sixteen_pi(n, p, noise=False, low=-1, high=1):
+    r"""
+    Simulates univariate or multivariate sine 16 :math:`\pi` data.
 
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
+    low : float, (default: -1)
+        The lower limit of the uniform distribution simulated from.
+    high : float, (default: -1)
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x, y : ndarray
+        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
+
+    Notes
+    -----
+    Sine 16:math:`\pi` :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
+    :math:`U \sim \mathcal{U}(-1, 1)`, :math:`V \sim \mathcal{N}(0, 1)^p`,
+    :math:`\theta = 16 \pi`,
+
+    .. math::
+
+        X_{|d|} &= U + 0.02 p V_{|d|}\ \mathrm{for}\ d = 1, ..., p \\
+        Y &= \sin (\theta X) + \kappa \epsilon
+
+    Examples
+    --------
+    >>> from mgc.sims import sin_sixteen_pi
+    >>> x, y = sin_sixteen_pi(100, 2)
+    >>> print(x.shape, y.shape)
+    (100, 2) (100, 2)
+    """
     return _sin(n, p, noise=noise, low=low, high=high, period=16 * np.pi)
 
 
 def _square_diamond(n, p, noise=False, low=-1, high=1, period=-np.pi / 2):
-
+    """Helper function to calculate square/diamond simulation"""
     extra_args = [(noise, bool), (low, float), (high, float), (period, float)]
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
@@ -528,12 +807,92 @@ def _square_diamond(n, p, noise=False, low=-1, high=1, period=-np.pi / 2):
 
 
 def square(n, p, noise=False, low=-1, high=1):
+    r"""
+    Simulates univariate or multivariate square data.
 
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
+    low : float, (default: -1)
+        The lower limit of the uniform distribution simulated from.
+    high : float, (default: -1)
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x, y : ndarray
+        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
+
+    Notes
+    -----
+    Square :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
+    :math:`U \sim \mathcal{U}(-1, 1)`, :math:`V \sim \mathcal{N}(0, 1)^p`,
+    :math:`\theta = -\frac{\pi}{8}`,
+
+    .. math::
+
+        X_{|d|} &= U \cos(\theta) + V \sin(\theta) + 0.05 p \epsilon_{|d|}\ \mathrm{for}\ d = 1, ..., p \\
+        Y_{|d|} &= -U \sin(\theta) + V \cos(\theta)
+
+    Examples
+    --------
+    >>> from mgc.sims import square
+    >>> x, y = square(100, 2)
+    >>> print(x.shape, y.shape)
+    (100, 2) (100, 2)
+    """
     return _square_diamond(n, p, noise=noise, low=low, high=high, period=-np.pi / 8)
 
 
 def two_parabolas(n, p, noise=False, low=-1, high=1, prob=0.5):
+    r"""
+    Simulates univariate or multivariate two parabolas data.
 
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
+    low : float, (default: -1)
+        The lower limit of the uniform distribution simulated from.
+    high : float, (default: -1)
+        The upper limit of the uniform distribution simulated from.
+    prob : float, (default: 0.5)
+        The probability of the bernoulli distribution simulated from.
+
+    Returns
+    -------
+    x, y : ndarray
+        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, 1)`
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
+
+    Notes
+    -----
+    Two Parabolas :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
+
+    .. math::
+
+        X &\sim \mathcal{U}(-1, 1)^p \\
+        Y &= ((w^T X)^2 + 2 \kappa \epsilon) \times \left( U = \frac{1}{2} \right)
+
+    Examples
+    --------
+    >>> from mgc.sims import two_parabolas
+    >>> x, y = two_parabolas(100, 2)
+    >>> print(x.shape, y.shape)
+    (100, 2) (100, 2)
+    """
     extra_args = [(noise, bool), (low, float), (high, float), (prob, float)]
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
@@ -550,7 +909,7 @@ def two_parabolas(n, p, noise=False, low=-1, high=1, prob=0.5):
 
 
 def _circle_ellipse(n, p, noise=False, low=-1, high=1, radius=1):
-
+    """Helper function to calculate circle/ellipse simulation"""
     extra_args = [(noise, bool), (low, float), (high, float), (radius, float)]
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
@@ -576,22 +935,177 @@ def _circle_ellipse(n, p, noise=False, low=-1, high=1, radius=1):
 
 
 def circle(n, p, noise=False, low=-1, high=1):
+    r"""
+    Simulates univariate or multivariate circle data.
 
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
+    low : float, (default: -1)
+        The lower limit of the uniform distribution simulated from.
+    high : float, (default: -1)
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x, y : ndarray
+        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
+
+    Notes
+    -----
+    Circle :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
+    :math:`U \sim \mathcal{U}(-1, 1)^p`, :math:`\epsilon \sim \mathcal{N}(0, I_p)`,
+    :math:`r = 1`,
+
+    .. math::
+
+        X_{|d|} &= r \left( \sin(\pi U_{|d+1|}) \prod_{j=1}^d \cos(\pi U_{|j|}) + 0.4 \epsilon_{|d|} \right)\ \mathrm{for}\ d = 1, ..., p-1 \\
+        X_{|d|} &= r \left( \prod_{j=1}^p \cos(\pi U_{|j|}) + 0.4 \epsilon_{|p|} \right) \\
+        Y_{|d|} &= \sin(\pi U_{|1|})
+
+    Examples
+    --------
+    >>> from mgc.sims import circle
+    >>> x, y = circle(100, 2)
+    >>> print(x.shape, y.shape)
+    (100, 2) (100, 2)
+    """
     return _circle_ellipse(n, p, noise=noise, low=low, high=high, radius=1)
 
 
 def ellipse(n, p, noise=False, low=-1, high=1):
+    r"""
+    Simulates univariate or multivariate ellipse data.
 
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
+    low : float, (default: -1)
+        The lower limit of the uniform distribution simulated from.
+    high : float, (default: -1)
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x, y : ndarray
+        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
+
+    Notes
+    -----
+    Ellipse :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
+    :math:`U \sim \mathcal{U}(-1, 1)^p`, :math:`\epsilon \sim \mathcal{N}(0, I_p)`,
+    :math:`r = 5`,
+
+    .. math::
+
+        X_{|d|} &= r \left( \sin(\pi U_{|d+1|}) \prod_{j=1}^d \cos(\pi U_{|j|}) + 0.4 \epsilon_{|d|} \right)\ \mathrm{for}\ d = 1, ..., p-1 \\
+        X_{|d|} &= r \left( \prod_{j=1}^p \cos(\pi U_{|j|}) + 0.4 \epsilon_{|p|} \right) \\
+        Y_{|d|} &= \sin(\pi U_{|1|})
+
+    Examples
+    --------
+    >>> from mgc.sims import ellipse
+    >>> x, y = ellipse(100, 2)
+    >>> print(x.shape, y.shape)
+    (100, 2) (100, 2)
+    """
     return _circle_ellipse(n, p, noise=noise, low=low, high=high, radius=5)
 
 
 def diamond(n, p, noise=False, low=-1, high=1):
+    r"""
+    Simulates univariate or multivariate diamond data.
 
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
+    low : float, (default: -1)
+        The lower limit of the uniform distribution simulated from.
+    high : float, (default: -1)
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x, y : ndarray
+        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
+
+    Notes
+    -----
+    Diamond :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
+    :math:`U \sim \mathcal{U}(-1, 1)`, :math:`V \sim \mathcal{N}(0, 1)^p`,
+    :math:`\theta = -\frac{\pi}{4}`,
+
+    .. math::
+
+        X_{|d|} &= U \cos(\theta) + V \sin(\theta) + 0.05 p \epsilon_{|d|}\ \mathrm{for}\ d = 1, ..., p \\
+        Y_{|d|} &= -U \sin(\theta) + V \cos(\theta)
+
+    Examples
+    --------
+    >>> from mgc.sims import diamond
+    >>> x, y = diamond(100, 2)
+    >>> print(x.shape, y.shape)
+    (100, 2) (100, 2)
+    """
     return _square_diamond(n, p, noise=noise, low=low, high=high, period=-np.pi / 4)
 
 
 def multiplicative_noise(n, p):
+    r"""
+    Simulates univariate or multivariate multiplicative noise data.
 
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+
+    Returns
+    -------
+    x, y : ndarray
+        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
+
+    Notes
+    -----
+    Multiplicative Noise :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
+    :math:`\U \sim \mathcal{N}(0, I_p)`,
+
+    .. math::
+
+        X &\sim \mathcal{N}(0, I_p) \\
+        Y_{|d|} &= U_{|d|} X_{|d|}\ \mathrm{for}\ d = 1, ..., p
+
+    Examples
+    --------
+    >>> from mgc.sims import multiplicative_noise
+    >>> x, y = multiplicative_noise(100, 2)
+    >>> print(x.shape, y.shape)
+    (100, 2) (100, 2)
+    """
     extra_args = []
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)
@@ -605,7 +1119,45 @@ def multiplicative_noise(n, p):
 
 
 def multimodal_independence(n, p, prob=0.5, sep1=3, sep2=2):
+    r"""
+    Simulates univariate or multimodal independence data.
 
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    prob : float, (default: 0.5)
+        The probability of the bernoulli distribution simulated from.
+    sep1, sep2: float, (default: 3, 2)
+        The separation between clusters of normally distributed data.
+
+    Returns
+    -------
+    x, y : ndarray
+        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
+
+    Notes
+    -----
+    Multimodal Independence :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
+    :math:`U \sim \mathcal{N}(0, I_p)`, :math:`V \sim \mathcal{N}(0, I_p)`,
+    :math:`U^\prime \sim \mathcal{B}(0.5)^p`, :math:`V^\prime \sim \mathcal{B}(0.5)^p`,
+
+    .. math::
+
+        X &= \frac{U}{3} + 2 U^\prime - 1 \\
+        Y &= \frac{V}{3} + 2 V^\prime - 1
+
+    Examples
+    --------
+    >>> from mgc.sims import multimodal_independence
+    >>> x, y = multimodal_independence(100, 2)
+    >>> print(x.shape, y.shape)
+    (100, 2) (100, 2)
+    """
     extra_args = [(prob, float), (sep1, float), (sep2, float)]
     check_in = _CheckInputs(n, p)
     check_in(*extra_args)

@@ -49,9 +49,17 @@ class _CheckInputs:
         elif self.dim > 1:
             # convert arrays of type (n,) to (n, 1)
             if self.x.ndim == 1:
-                self.x.shape = (-1, 1)
+                self.x = self.x[:, np.newaxis]
+            elif self.x.ndim != 2:
+                raise ValueError(
+                    "Expected a 2-D array `x`, found shape " "{}".format(self.x.shape)
+                )
             if self.y.ndim == 1:
-                self.y.shape = (-1, 1)
+                self.y = self.y[:, np.newaxis]
+            elif self.y.ndim != 2:
+                raise ValueError(
+                    "Expected a 2-D array `y`, found shape " "{}".format(self.y.shape)
+                )
 
             self._check_nd_indeptest()
 
