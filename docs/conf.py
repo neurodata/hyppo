@@ -14,6 +14,7 @@
 #
 import os
 import sys
+import shutil
 
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath("sphinxext"))
@@ -188,3 +189,24 @@ epub_exclude_files = ["search.html"]
 def setup(app):
     # to hide/show the prompt in code examples:
     app.add_javascript("js/copybutton.js")
+
+
+# -- Jupyter Notebook --------------------------------------------------------
+
+
+def all_but_ipynb(dir, contents):
+    result = []
+    for c in contents:
+        if os.path.isfile(os.path.join(dir, c)) and (not c.endswith(".ipynb")):
+            result += [c]
+    return result
+
+
+shutil.rmtree(
+    os.path.join(PROJECT_PATH, "..", "docs/tutorials/benchmarks"), ignore_errors=True
+)
+shutil.copytree(
+    os.path.join(PROJECT_PATH, "..", "benchmarks"),
+    os.path.join(PROJECT_PATH, "..", "docs/tutorials/benchmarks"),
+    ignore=all_but_ipynb,
+)

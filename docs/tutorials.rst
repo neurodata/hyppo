@@ -11,4 +11,3 @@ between implemented tests in statistical power and computational performance.
 
    tutorials/benchmarks/indep_power_sampsize
    tutorials/benchmarks/indep_power_dimension
-   tutorials/benchmarks/simulations
