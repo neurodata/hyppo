@@ -29,11 +29,10 @@ class _ParallelP(object):
 
         obs_stat = self.test._statistic(x, y)
 
-        permx = self.rngs[index].permutation(x)
         permy = self.rngs[index].permutation(y)
 
         # calculate permuted stats, store in null distribution
-        perm_stat = self.test._statistic(permx, permy)
+        perm_stat = self.test._statistic(x, permy)
 
         obs_stat = np.abs(obs_stat)
         perm_stat = np.abs(perm_stat)
@@ -42,7 +41,7 @@ class _ParallelP(object):
 
 
 def _perm_test(
-    test, sim, n=100, p=1, noise=False, reps=1000, workers=-1, random_state=None
+    test, sim, n=100, p=1, noise=False, reps=1000, workers=1, random_state=None
 ):
     r"""
     Helper function that calculates the statistical.
@@ -221,7 +220,3 @@ def power_dim(
         workers=workers,
         random_state=random_state,
     )
-
-
-def power_2samp_dim():
-    pass
