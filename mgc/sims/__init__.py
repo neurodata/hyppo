@@ -24,4 +24,5 @@ __all__ = [
     "multimodal_independence",
     "rot_2samp",
     "trans_2samp",
+    "gaussian_3samp",
 ]
