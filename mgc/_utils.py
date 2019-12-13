@@ -37,7 +37,7 @@ def contains_nan(a):
 def check_ndarray_xy(x, y):
     """Check if x or y is an ndarray"""
     if not isinstance(x, np.ndarray) or not isinstance(y, np.ndarray):
-        raise ValueError("x and y must be ndarrays")
+        raise TypeError("x and y must be ndarrays")
 
 
 def convert_xy_float64(x, y):

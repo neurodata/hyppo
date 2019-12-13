@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
-from scipy.spatial.distance import cdist
 from scipy._lib._util import check_random_state, MapWrapper
 
 from .._utils import euclidean
