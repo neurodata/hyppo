@@ -115,8 +115,12 @@ def gaussian_3samp(n, epsilon, case=1):
     elif case == 2:
         epsilons = [0, 0, epsilon]
     elif case == 3:
-        means = [0, -epsilon/2, epsilon/2]
-        epsilons = [(np.sqrt(3)/3) * epsilon, -(np.sqrt(3)/6) * epsilon, -(np.sqrt(3)/6) * epsilon]
+        means = [0, -epsilon / 2, epsilon / 2]
+        epsilons = [
+            (np.sqrt(3) / 3) * epsilon,
+            -(np.sqrt(3) / 6) * epsilon,
+            -(np.sqrt(3) / 6) * epsilon,
+        ]
     else:
         raise ValueError("Not valid case, must be 1, 2, or 3")
 
