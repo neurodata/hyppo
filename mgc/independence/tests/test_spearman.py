@@ -27,8 +27,8 @@ class TestSpearmanErrorWarn:
         # raises error if x or y is not a ndarray
         x = np.arange(20)
         y = [5] * 20
-        assert_raises(ValueError, Spearman().test, x, y)
-        assert_raises(ValueError, Spearman().test, y, x)
+        assert_raises(TypeError, Spearman().test, x, y)
+        assert_raises(TypeError, Spearman().test, y, x)
 
     def test_error_lowsamples(self):
         # raises error if samples are low (< 3)

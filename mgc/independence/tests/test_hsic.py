@@ -27,8 +27,8 @@ class TestHsicErrorWarn:
         # raises error if x or y is not a ndarray
         x = np.arange(20)
         y = [5] * 20
-        assert_raises(ValueError, Hsic().test, x, y)
-        assert_raises(ValueError, Hsic().test, y, x)
+        assert_raises(TypeError, Hsic().test, x, y)
+        assert_raises(TypeError, Hsic().test, y, x)
 
     def test_error_shape(self):
         # raises error if number of samples different (n)
