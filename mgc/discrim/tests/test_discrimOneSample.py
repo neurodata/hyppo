@@ -37,7 +37,7 @@ class TestOneSample:
 class TestOneSampleWarn:
     """ Tests errors and warnings derived from one sample test.
     """
-    
+
     def test_error_one_id(self):
         X = np.ones((100, 2), dtype=float)
         Y = np.ones((100, 1))
