@@ -85,9 +85,9 @@ def sim_matrix(model, X):
     terminals = model.apply(X)
     ntrees = terminals.shape[1]
 
-    proxMat = 1*np.equal.outer(terminals[:, 0], terminals[:, 0])
+    proxMat = 1 * np.equal.outer(terminals[:, 0], terminals[:, 0])
     for i in range(1, ntrees):
-        proxMat += 1*np.equal.outer(terminals[:, i], terminals[:, i])
+        proxMat += 1 * np.equal.outer(terminals[:, i], terminals[:, i])
     proxMat = proxMat / ntrees
 
     return proxMat

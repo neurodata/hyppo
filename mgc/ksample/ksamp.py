@@ -70,8 +70,8 @@ class KSample(KSampleTest):
             HHG.__name__: HHG,
             Hsic.__name__: Hsic,
             Dcorr.__name__: Dcorr,
-            DcorrRF.__name__ : DcorrRF,
-            HsicRF.__name__ : HsicRF
+            DcorrRF.__name__: DcorrRF,
+            HsicRF.__name__: HsicRF,
         }
         if indep_test not in test_names.keys():
             raise ValueError("Test is not a valid independence test")
