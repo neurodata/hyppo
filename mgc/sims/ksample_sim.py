@@ -27,10 +27,6 @@ _SIMS = [
 ]
 
 
-def _normalize(x, y):
-    return x / np.max(np.abs(x)), y / np.max(np.abs(y))
-
-
 def _2samp_rotate(sim, x, y, p, degree=90):
     angle = np.radians(degree)
     if sim.__name__ in [
@@ -67,13 +63,11 @@ def rot_2samp(sim, n, p, noise=True, degree=90):
     if sim.__name__ == "multimodal_independence":
         x, y = sim(n, p)
         x_rot, y_rot = sim(n, p)
-        x, y = _normalize(x, y)
     else:
         if sim.__name__ == "multiplicative_noise":
             x, y = sim(n, p)
         else:
             x, y = sim(n, p, noise=noise)
-        x, y = _normalize(x, y)
         x_rot, y_rot = _2samp_rotate(sim, x, y, p, degree=degree)
     samp1 = np.hstack([x, y])
     samp2 = np.hstack([x_rot, y_rot])
@@ -88,14 +82,12 @@ def trans_2samp(sim, n, p, noise=False, trans=0.45):
 
     if sim.__name__ == "multimodal_independence":
         x, y = sim(n, p)
-        x, y = _normalize(x, y)
         x_trans, y_trans = sim(n, p)
     else:
         if sim.__name__ == "multiplicative_noise":
             x, y = sim(n, p)
         else:
             x, y = sim(n, p, noise=noise)
-        x, y = _normalize(x, y)
         degree = np.random.randint(90)
         x_trans, y_trans = _2samp_rotate(sim, x, y, p, degree=degree)
         x_trans += trans
