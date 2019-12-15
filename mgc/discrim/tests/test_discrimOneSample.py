@@ -37,13 +37,7 @@ class TestOneSample:
 class TestOneSampleWarn:
     """ Tests errors and warnings derived from one sample test.
     """
-
-    def test_error_ndarray(self):
-        X = list(np.ones((100, 2), dtype=float))
-        Y = list(np.concatenate((np.zeros(50), np.ones(50)), axis=0))
-
-        assert_raises(ValueError, DiscrimOneSample().test, X, Y)
-
+    
     def test_error_one_id(self):
         X = np.ones((100, 2), dtype=float)
         Y = np.ones((100, 1))
