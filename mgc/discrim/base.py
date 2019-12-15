@@ -3,18 +3,18 @@ from sklearn.utils import check_X_y
 import numpy as np
 from .._utils import euclidean
 
+
 class DiscriminabilityTest(ABC):
     r"""
     A base class for a Discriminability test.
-    
     """
-    
+
     def __init__(self):
         self.pvalue_ = None
         super().__init__()
 
-    #@abstractmethod
-    def _statistic(self, X, Y, is_dist = False, remove_isolates=True):
+    # @abstractmethod
+    def _statistic(self, x, y):
         r"""
         Calulates the independence test statistic.
             
@@ -24,32 +24,15 @@ class DiscriminabilityTest(ABC):
             Input data matrices.
         """
 
-        uniques, counts = np.unique(Y, return_counts=True)
-        
-        if remove_isolates:
-            idx = np.isin(Y, uniques[counts != 1])
-            labels = Y[idx]
-            
-            if not is_dist:
-                X = X[idx]
-            else:
-                X = X[np.ix_(idx, idx)]
-        else:
-            labels = Y
-
-        if not is_dist:
-            dissimilarities = euclidean(X)
-        else:
-            dissimilarities = X
-
-        rdfs = self._discr_rdf(dissimilarities, labels)
+        rdfs = self._discr_rdf(x, y)
         stat = np.nanmean(rdfs)
 
         return stat
 
     def _discr_rdf(self, dissimilarities, labels):
-    
+        # calculates test statistics distribution
         rdfs = []
+
         for i, label in enumerate(labels):
             di = dissimilarities[i]
 
@@ -61,7 +44,9 @@ class DiscriminabilityTest(ABC):
             idx[i] = False
             Dii = di[idx]
 
-            rdf = [1 - ((Dij < d).sum() + 0.5 * (Dij == d).sum()) / Dij.size for d in Dii]
+            rdf = [
+                1 - ((Dij < d).sum() + 0.5 * (Dij == d).sum()) / Dij.size for d in Dii
+            ]
             rdfs.append(rdf)
 
         out = np.full((len(rdfs), max(map(len, rdfs))), np.nan)
@@ -69,7 +54,7 @@ class DiscriminabilityTest(ABC):
             out[i, : len(rdf)] = rdf
 
         return out
-    
+
     def _perm_stat(self, index):
         r"""
         Helper function that is used to calculate parallel permuted test

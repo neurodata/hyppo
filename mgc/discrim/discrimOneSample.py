@@ -6,18 +6,24 @@ from .base import DiscriminabilityTest
 from scipy._lib._util import MapWrapper
 
 
-
 class DiscrimOneSample(DiscriminabilityTest):
     r"""
      A class that performs a one-sample test for whether the discriminability 
      differs from random chance, as described in [#1Dscr]_.
      
-     Discriminability index is a masure of whether a data acquisition and 
+     Discriminability index is a measure of whether a data acquisition and 
      preprocessing pipeline is more discriminable among different subjects.
      The key insight is that each measurement of the same item should be more 
      similar to other measurements of that item, as compared to measurements 
      of any other item. 
     
+    Parameters
+    ---------- 
+    is_dist : Boolean, optional (default: False)
+        whether `x` is a distance matrix or not.
+    remove_isolates : Boolean, optional (default: True)
+        whether remove the samples with single instance or not.
+
     See Also
     --------
     DiscrimTwoSample : Two sample test for comparing the discriminability of two data
@@ -45,34 +51,35 @@ class DiscrimOneSample(DiscriminabilityTest):
                 Pipelines and Datasets: Applications in Connectomics." Bioarxiv (2019).
     """
 
-    def __init__(self):
+    def __init__(self, is_dist=False, remove_isolates=True):
+        # set is_distance to true if compute_distance is None
+        self.is_distance = is_dist
+        self.remove_isolates = remove_isolates
         DiscriminabilityTest.__init__(self)
 
-    def _statistic(self):
+    def _statistic(self, x, y):
         """
+        Helper function that calculates the discriminability test statistics.
         """
-        
+        stat_ = super(DiscrimOneSample, self)._statistic(x, y)
 
-    def test(self, X, Y, is_dist = False, remove_isolates=True, reps=1000, workers=-1):
+        return stat_
+
+    def test(self, x, y, reps=1000, workers=-1):
         r"""
         Calculates the test statistic and p-value for Discriminability one sample test.
 
         Parameters
         ----------
-        X : ndarray
+        x: ndarray
 
             * An `(n, d)` data matrix with `n` samples in `d` dimensions,
               if flag `(is\_dist = Flase)`
 
             * An `(n, n)` distance matrix, if flag `(is\_dist = True)`
             
-        Y : ndarray
+        y : ndarray
             a vector containing the sample ids for our :math:`n` samples.
-            
-        is_dist : Boolean, optional (default: False)
-            Whether `X` is a distance matrix or not.
-        remove_isolates : Boolean, optional (default: True)
-            whether remove the samples with single instance or not.
         reps : int, optional (default: 1000)
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
@@ -86,43 +93,54 @@ class DiscrimOneSample(DiscriminabilityTest):
             The computed Discriminability statistic.
         pvalue : float
             The computed one sample test p-value.
+
+        Examples
+        --------
+        >>> import numpy as np
+        >>> from mgc.discrim import DiscrimOneSample
+        >>> x = np.concatenate((np.zeros((50,2)) ,np.ones((50,2))), axis=0)
+        >>> y = np.concatenate((np.zeros(50),np.ones(50)), axis= 0)
+        >>> stat, p = DiscrimOneSample().test(x,y)
+        >>> '%1f, %1f' % (stat, p)
+        '1.0, 0.001'
         """
 
-        check_input = _CheckInputs(X, Y, reps=reps)
-        X, Y = check_input()
+        check_input = _CheckInputs(
+            [x],
+            y,
+            reps=reps,
+            is_dist=self.is_distance,
+            remove_isolates=self.remove_isolates,
+        )
+        x, y = check_input()
 
-        _, counts = np.unique(Y, return_counts=True)
+        self.x = np.asarray(x[0])
+        self.y = y
 
-        if (counts != 1).sum() <= 1:
-            msg = "You have passed a vector containing only a single unique sample id."
-            raise ValueError(msg)
-
-        self.X = X
-        self.Y = Y
-        
-        stat = super(DiscrimOneSample,self)._statistic(self.X, self.Y, is_dist, remove_isolates)
+        stat = self._statistic(self.x, self.y)
         self.stat_ = stat
 
         # use all cores to create function that parallelizes over number of reps
         mapwrapper = MapWrapper(workers)
         null_dist = np.array(list(mapwrapper(self._perm_stat, range(reps))))
         self.null_dist = null_dist
-        
+
         # calculate p-value and significant permutation map through list
-        pvalue = ((null_dist >= stat).sum() + 1) / (reps + 1)
+        pvalue = ((null_dist >= stat).sum()) / reps
 
         # correct for a p-value of 0. This is because, with bootstrapping
         # permutations, a p-value of 0 is incorrect
         if pvalue == 0:
             pvalue = 1 / reps
+
         self.pvalue_ = pvalue
 
         return stat, pvalue
 
     def _perm_stat(self, index):
-        permx = self.X
-        permy = np.random.permutation(self.Y)
+        permx = self.x
+        permy = np.random.permutation(self.y)
 
-        perm_stat = super(DiscrimOneSample,self)._statistic(permx, permy)
+        perm_stat = self._statistic(permx, permy)
 
         return perm_stat
