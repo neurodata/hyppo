@@ -6,8 +6,7 @@ from .. import DiscrimOneSample
 
 class TestOneSample:
     def test_same_one(self):
-        # matches test calculated statistics and p-value for
-        # indiscriminable subjects
+        # matches test calculated statistics and p-value for indiscriminable subjects
         x = np.ones((100, 2), dtype=float)
         y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
 
@@ -20,8 +19,7 @@ class TestOneSample:
         assert_almost_equal(p, obs_p, decimal=2)
 
     def test_diff_one(self):
-        # matches test calculated statistics and p-value for
-        # discriminable subjects
+        # matches test calculated statistics and p-value for discriminable subjects
         x = np.concatenate((np.zeros((50, 2)), np.ones((50, 2))), axis=0)
         y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
 
@@ -39,6 +37,7 @@ class TestOneSampleWarn:
     """
 
     def test_error_one_id(self):
+        # checks whether y has only one id
         X = np.ones((100, 2), dtype=float)
         Y = np.ones((100, 1))
 

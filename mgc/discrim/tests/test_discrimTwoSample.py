@@ -15,14 +15,14 @@ class TestTwoSample:
         obs_D1 = 0.5
         obs_D2 = 1.0
         obs_p = 1.0
-        D1, D2, p = DiscrimTwoSample().test(x1, x2, y)
+        D1, D2, p = DiscrimTwoSample().test(x1, x2, y, alt='greater')
 
         assert_almost_equal(D1, obs_D1, decimal=2)
         assert_almost_equal(D2, obs_D2, decimal=2)
         assert_almost_equal(p, obs_p, decimal=2)
 
-    def test_lesser(self):
-        # test whether discriminability for x1 is lesser than it is for x2
+    def test_less(self):
+        # test whether discriminability for x1 is less than it is for x2
         x1 = np.ones((100, 2), dtype=float)
         x2 = np.concatenate((np.zeros((50, 2)), np.ones((50, 2))), axis=0)
         y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
@@ -31,14 +31,14 @@ class TestTwoSample:
         obs_D1 = 0.5
         obs_D2 = 1.0
         obs_p = 0.000999000999000999
-        D1, D2, p = DiscrimTwoSample().test(x1, x2, y, alt="less")
+        D1, D2, p = DiscrimTwoSample().test(x1, x2, y, alt='less')
 
         assert_almost_equal(D1, obs_D1, decimal=2)
         assert_almost_equal(D2, obs_D2, decimal=2)
         assert_almost_equal(p, obs_p, decimal=4)
 
     def test_neq(self):
-        # test whether discriminability for x1 is not equal compared to it is for x2
+        # test whether discriminability for x1 is not equal compared to discriminability for x2
         x1 = np.ones((100, 2), dtype=float)
         x2 = np.concatenate((np.zeros((50, 2)), np.ones((50, 2))), axis=0)
         y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
@@ -67,7 +67,7 @@ class TestTwoSampleWarn:
 
         assert_raises(ValueError, DiscrimTwoSample().test, x1, x2, y)
 
-    def test_error_inequal_row(self):
+    def test_error_unequal_row(self):
         # checks x1 & x2 for unequal number of instances
         x1 = np.ones((99, 2), dtype=float)
         x2 = np.concatenate((np.zeros((50, 2)), np.ones((50, 2))), axis=0)

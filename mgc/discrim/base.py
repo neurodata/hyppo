@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from sklearn.utils import check_X_y
 import numpy as np
 from .._utils import euclidean
 
@@ -55,6 +54,7 @@ class DiscriminabilityTest(ABC):
 
         return out
 
+    @abstractmethod
     def _perm_stat(self, index):
         r"""
         Helper function that is used to calculate parallel permuted test
@@ -73,5 +73,7 @@ class DiscriminabilityTest(ABC):
 
     @abstractmethod
     def test(self):
-        """
+        r"""
+        Calculates the test statistic and p-value for Discriminability one sample 
+        and two sample test.
         """

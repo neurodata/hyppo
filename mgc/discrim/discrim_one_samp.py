@@ -1,4 +1,3 @@
-from sklearn.metrics import euclidean_distances
 from ._utils import _CheckInputs
 import numpy as np
 import random
@@ -8,21 +7,23 @@ from scipy._lib._util import MapWrapper
 
 class DiscrimOneSample(DiscriminabilityTest):
     r"""
-     A class that performs a one-sample test for whether the discriminability 
-     differs from random chance, as described in [#1Dscr]_.
+     A class that performs a one-sample test for discriminability.whether the discriminability 
+     differs from random chance. 
      
      Discriminability index is a measure of whether a data acquisition and 
      preprocessing pipeline is more discriminable among different subjects.
      The key insight is that each measurement of the same item should be more 
      similar to other measurements of that item, as compared to measurements 
-     of any other item. 
+     of any other item. One sample test measures whether the discriminability 
+     for a dataset differs from random chance. More details can be described 
+     in [#1Dscr]_.
     
     Parameters
     ---------- 
-    is_dist : Boolean, optional (default: False)
+    is_dist : Bool, optional (default: False)
         whether `x` is a distance matrix or not.
-    remove_isolates : Boolean, optional (default: True)
-        whether remove the samples with single instance or not.
+    remove_isolates : Bool, optional (default: True)
+        whether to remove the measurements with single instance or not.
 
     See Also
     --------
@@ -30,8 +31,8 @@ class DiscrimOneSample(DiscriminabilityTest):
     
     Notes
     -----
-    With :math:`D_X` as the sample discriminability of :math:`X`, one sample test verifies 
-    whether
+    With :math:`D_X` as the sample discriminability of :math:`X`, 
+    one sample test verifies whether
     
      .. math::
 
@@ -72,11 +73,9 @@ class DiscrimOneSample(DiscriminabilityTest):
         Parameters
         ----------
         x: ndarray
-
-            * An `(n, d)` data matrix with `n` samples in `d` dimensions,
-              if flag `(is\_dist = Flase)`
-
-            * An `(n, n)` distance matrix, if flag `(is\_dist = True)`
+            An `(n, d)` data matrix with `n` samples in `d` dimensions,
+            if flag is_dist = Flase and an `(n, n)` distance matrix,
+            if flag is_dist = True
             
         y : ndarray
             a vector containing the sample ids for our :math:`n` samples.
@@ -90,7 +89,7 @@ class DiscrimOneSample(DiscriminabilityTest):
         Returns
         -------
         stat : float
-            The computed Discriminability statistic.
+            The computed discriminability statistic.
         pvalue : float
             The computed one sample test p-value.
 
@@ -101,8 +100,8 @@ class DiscrimOneSample(DiscriminabilityTest):
         >>> x = np.concatenate((np.zeros((50,2)) ,np.ones((50,2))), axis=0)
         >>> y = np.concatenate((np.zeros(50),np.ones(50)), axis= 0)
         >>> stat, p = DiscrimOneSample().test(x,y)
-        >>> '%1f, %1f' % (stat, p)
-        '1.000000, 0.001000'
+        >>> '%.1f, %.2f' % (stat, p)
+        '1.0, 0.00'
         """
 
         check_input = _CheckInputs(
@@ -118,7 +117,7 @@ class DiscrimOneSample(DiscriminabilityTest):
         self.y = y
 
         stat = self._statistic(self.x, self.y)
-        self.stat_ = stat
+        self.stat = stat
 
         # use all cores to create function that parallelizes over number of reps
         mapwrapper = MapWrapper(workers)
@@ -138,9 +137,8 @@ class DiscrimOneSample(DiscriminabilityTest):
         return stat, pvalue
 
     def _perm_stat(self, index):
-        permx = self.x
         permy = np.random.permutation(self.y)
 
-        perm_stat = self._statistic(permx, permy)
+        perm_stat = self._statistic(self.x, permy)
 
         return perm_stat
