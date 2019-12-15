@@ -90,6 +90,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
             The computed discriminability score for :math:`x_2`.
         pvalue : float
             The computed two sample test p-value.
+<<<<<<< HEAD
 
         Examples
         --------
@@ -117,6 +118,30 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
         self.D1_ = self._statistic(self.x1, y)
         self.D2_ = self._statistic(self.x2, y)
+=======
+        """
+        check_input = _CheckInputs(X1, Y, reps = reps)
+        X1, Y = check_input()
+        
+        _, counts = np.unique(Y, return_counts=True)
+        if (counts != 1).sum() <= 1:
+            msg = "You have passed a vector containing only a single unique sample id."
+            raise ValueError(msg)
+
+        check_input = _CheckInputs(X2, Y, reps = reps)
+        X2, Y = check_input()
+        
+        if X1.shape[0] != X2.shape[0]:
+            msg = "The input matrices do not have the same number of rows."
+            raise ValueError(msg)
+
+        self.X1 = X1
+        self.X2 = X2
+        self.Y = Y
+        
+        self.D1_ = super(DiscrimTwoSample,self)._statistic(self.X1, self.Y,is_dist = False, remove_isolates = remove_isolates)
+        self.D2_ = super(DiscrimTwoSample,self)._statistic(self.X2, self.Y,is_dist = False, remove_isolates = remove_isolates)
+>>>>>>> e548b039020c0e8302f79c51f04e56ad1e365c99
         self.Da_ = self.D1_ - self.D2_
 
         # use all cores to create function that parallelizes over number of reps

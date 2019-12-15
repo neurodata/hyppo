@@ -3,12 +3,18 @@ import warnings
 import numpy as np
 from scipy.stats import chi2
 
-from .._utils import (contains_nan, check_ndarray_xy, convert_xy_float64,
-                      check_reps, check_compute_distance)
+from .._utils import (
+    contains_nan,
+    check_ndarray_xy,
+    convert_xy_float64,
+    check_reps,
+    check_compute_distance,
+)
 
 
 class _CheckInputs:
     """Checks inputs for all independence tests"""
+
     def __init__(self, x, y, dim, reps=None, compute_distance=None):
         self.x = x
         self.y = y
@@ -43,9 +49,17 @@ class _CheckInputs:
         elif self.dim > 1:
             # convert arrays of type (n,) to (n, 1)
             if self.x.ndim == 1:
-                self.x.shape = (-1, 1)
+                self.x = self.x[:, np.newaxis]
+            elif self.x.ndim != 2:
+                raise ValueError(
+                    "Expected a 2-D array `x`, found shape " "{}".format(self.x.shape)
+                )
             if self.y.ndim == 1:
-                self.y.shape = (-1, 1)
+                self.y = self.y[:, np.newaxis]
+            elif self.y.ndim != 2:
+                raise ValueError(
+                    "Expected a 2-D array `y`, found shape " "{}".format(self.y.shape)
+                )
 
             self._check_nd_indeptest()
 
@@ -56,8 +70,9 @@ class _CheckInputs:
         nx, _ = self.x.shape
         ny, _ = self.y.shape
         if nx != ny:
-            raise ValueError("Shape mismatch, x and y must have shape "
-                                "[n, p] and [n, q].")
+            raise ValueError(
+                "Shape mismatch, x and y must have shape " "[n, p] and [n, q]."
+            )
 
     def _check_min_samples(self):
         """Check if the number of samples is at least 3"""
@@ -75,7 +90,7 @@ def _chi2_approx(stat, null_dist, samps):
     if sigma < 10e-4 and mu < 10e-4:
         x = 0.0
     else:
-        x = samps*(stat - mu)/sigma + 1
+        x = samps * (stat - mu) / sigma + 1
 
     pvalue = 1 - chi2.cdf(x, 1)
 

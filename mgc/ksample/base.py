@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
-from scipy.spatial.distance import cdist
-from scipy._lib._util import MapWrapper
+from scipy._lib._util import check_random_state, MapWrapper
 
 from .._utils import euclidean
 from ._utils import k_sample_transform
@@ -16,9 +15,8 @@ class KSampleTest(ABC):
     Parameters
     ----------
     indep_test : {CCA, Dcorr, HHG, RV, Hsic}
-        The class of the desired independence test from ``mgc.independence``.
-        The object, not an instance of the object should be passed as a
-        parameter to this class.
+        The class corresponding to the desired independence test from
+        ``mgc.independence``.
     compute_distance : callable(), optional (default: euclidean)
         A function that computes the distance or similarity among the samples
         within each data matrix. Set to `None` if `x` and `y` are already
@@ -42,7 +40,7 @@ class KSampleTest(ABC):
 
         super().__init__()
 
-    def _perm_stat(self, index):                                            # pragma: no cover
+    def _perm_stat(self, index):  # pragma: no cover
         r"""
         Helper function that is used to calculate parallel permuted test
         statistics.
@@ -57,17 +55,15 @@ class KSampleTest(ABC):
         perm_stat : float
             Test statistic for each value in the null distribution.
         """
-
-        permu = np.random.permutation(self.u)
-        permv = np.random.permutation(self.v)
+        permv = self.rngs[index].permutation(self.v)
 
         # calculate permuted statics, store in null distribution
-        perm_stat = self.indep_test._statistic(permu, permv)
+        perm_stat = self.indep_test._statistic(self.u, permv)
 
         return perm_stat
 
     @abstractmethod
-    def test(self, inputs, reps=1000, workers=-1):
+    def test(self, inputs, reps=1000, workers=1, random_state=None):
         r"""
         Calulates the k-sample test p-value.
 
@@ -77,9 +73,13 @@ class KSampleTest(ABC):
             Input data matrices.
         reps : int, optional
             The number of replications used in permutation, by default 1000.
-        workers : int, optional
+        workers : int, optional (default: 1)
             Evaluates method using `multiprocessing.Pool <multiprocessing>`).
             Supply `-1` to use all cores available to the Process.
+        random_state : int or np.random.RandomState instance, optional
+            If already a RandomState instance, use it.
+            If seed is an int, return a new RandomState instance seeded with seed.
+            If None, use np.random.RandomState. Default is None.
 
         Returns
         -------
@@ -94,6 +94,16 @@ class KSampleTest(ABC):
         self.u = u
         self.v = v
         obs_stat = self.indep_test._statistic(u, v)
+
+        # generate seeds for each rep (change to new parallel random number
+        # capabilities in numpy >= 1.17+)
+        random_state = check_random_state(random_state)
+        self.rngs = [
+            np.random.RandomState(
+                random_state.randint(1 << 32, size=4, dtype=np.uint32)
+            )
+            for _ in range(reps)
+        ]
 
         # use all cores to create function that parallelizes over number of reps
         mapwrapper = MapWrapper(workers)

@@ -14,6 +14,7 @@
 #
 import os
 import sys
+import shutil
 
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath("sphinxext"))
@@ -26,7 +27,7 @@ copyright = "2018"
 authors = u"Sambit Panda"
 
 # The short X.Y version
-# Find GraSPy version.
+# Find mgc version.
 PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 for line in open(os.path.join(PROJECT_PATH, "..", "mgc", "__init__.py")):
     if line.startswith("__version__ = "):
@@ -88,24 +89,21 @@ import sphinx_rtd_theme
 
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-html_theme_options = {
-    "collapse_navigation": False,
-    "navigation_depth": 3,
-}
+html_theme_options = {"collapse_navigation": False, "navigation_depth": 3}
 
 html_context = {
     # Enable the "Edit in GitHub link within the header of each page.
     "display_github": True,
     # Set the following variables to generate the resulting github URL for each page.
     # Format Template: https://{{ github_host|default("github.com") }}/{{ github_user }}/{{ github_repo }}/blob/{{ github_version }}{{ conf_py_path }}{{ pagename }}{{ suffix }}
-    "github_user": "sampan501",
+    "github_user": "neurodata",
     "github_repo": "mgc",
     "github_version": "master/docs/",
 }
 
 linkcode_resolve = make_linkcode_resolve(
     "mgc",
-    u"https://github.com/sampan501/"
+    u"https://github.com/neurodata/"
     "mgc/blob/{revision}/"
     "{package}/{path}#L{lineno}",
 )
@@ -145,9 +143,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-    (master_doc, "mgc.tex", "mgc Documentation", authors, "manual")
-]
+latex_documents = [(master_doc, "mgc.tex", "mgc Documentation", authors, "manual")]
 
 # -- Options for manual page output ------------------------------------------
 
@@ -193,3 +189,24 @@ epub_exclude_files = ["search.html"]
 def setup(app):
     # to hide/show the prompt in code examples:
     app.add_javascript("js/copybutton.js")
+
+
+# -- Jupyter Notebook --------------------------------------------------------
+
+
+def all_but_ipynb(dir, contents):
+    result = []
+    for c in contents:
+        if os.path.isfile(os.path.join(dir, c)) and (not c.endswith(".ipynb")):
+            result += [c]
+    return result
+
+
+shutil.rmtree(
+    os.path.join(PROJECT_PATH, "..", "docs/tutorials/benchmarks"), ignore_errors=True
+)
+shutil.copytree(
+    os.path.join(PROJECT_PATH, "..", "benchmarks"),
+    os.path.join(PROJECT_PATH, "..", "docs/tutorials/benchmarks"),
+    ignore=all_but_ipynb,
+)

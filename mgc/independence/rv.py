@@ -68,7 +68,6 @@ class RV(IndependenceTest):
         stat : float
             The computed RV statistic.
         """
-
         centx = x - np.mean(x, axis=0)
         centy = y - np.mean(y, axis=0)
 
@@ -78,13 +77,14 @@ class RV(IndependenceTest):
         vary = centy.T @ centy
 
         covar = np.trace(covar @ covar.T)
-        stat = np.divide(covar, np.sqrt(np.trace(varx @ varx)) *
-                         np.sqrt(np.trace(vary @ vary)))
+        stat = np.divide(
+            covar, np.sqrt(np.trace(varx @ varx)) * np.sqrt(np.trace(vary @ vary))
+        )
         self.stat = stat
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=-1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the RV test statistic and p-value.
 
@@ -97,9 +97,13 @@ class RV(IndependenceTest):
         reps : int, optional (default: 1000)
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        workers : int, optional (default: -1)
+        workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
+        random_state : int or np.random.RandomState instance, (default: None)
+            If already a RandomState instance, use it.
+            If seed is an int, return a new RandomState instance seeded with seed.
+            If None, use np.random.RandomState.
 
         Returns
         -------
@@ -128,10 +132,8 @@ class RV(IndependenceTest):
         >>> stat, pvalue = RV().test(x, y, reps=10000)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
-
         """
-
         check_input = _CheckInputs(x, y, dim=2, reps=reps)
         x, y = check_input()
 
-        return super(RV, self).test(x, y, reps, workers)
+        return super(RV, self).test(x, y, reps, workers, random_state)

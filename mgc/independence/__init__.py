@@ -7,5 +7,4 @@ from .hhg import HHG
 from .dcorr import Dcorr
 from .hsic import Hsic
 
-__all__ = ["Pearson", "RV", "CCA", "Kendall", "Spearman", "HHG",
-           "Dcorr", "Hsic"]
+__all__ = ["Pearson", "RV", "CCA", "Kendall", "Spearman", "HHG", "Dcorr", "Hsic"]

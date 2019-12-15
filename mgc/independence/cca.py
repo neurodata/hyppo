@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.sparse.linalg import svds
 
 from .base import IndependenceTest
 from ._utils import _CheckInputs
@@ -73,7 +72,6 @@ class CCA(IndependenceTest):
         stat : float
             The computed CCA statistic.
         """
-
         # center each matrix
         centx = x - np.mean(x, axis=0)
         centy = y - np.mean(y, axis=0)
@@ -84,19 +82,20 @@ class CCA(IndependenceTest):
         vary = centy.T @ centy
 
         # if 1-d, don't calculate the svd
-        if varx.shape[1] == 1 or vary.shape[1] == 1 or covar.shape[1] == 1:
+        if varx.size == 1 or vary.size == 1 or covar.size == 1:
             covar = np.sum(covar ** 2)
-            stat = np.divide(covar, np.sqrt(np.sum(varx ** 2) *
-                                            np.sum(vary ** 2)))
+            stat = covar / np.sqrt(np.sum(varx ** 2) * np.sum(vary ** 2))
         else:
-            covar = np.sum(svds(covar, 1)[1] ** 2)
-            stat = np.divide(covar, np.sqrt(np.sum(svds(varx, 1)[1] ** 2)
-                                            * np.sum(svds(vary, 1)[1] ** 2)))
+            covar = np.sum(np.linalg.svd(covar, 1)[1] ** 2)
+            stat = covar / np.sqrt(
+                np.sum(np.linalg.svd(varx, 1)[1] ** 2)
+                * np.sum(np.linalg.svd(vary, 1)[1] ** 2)
+            )
         self.stat = stat
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=-1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the CCA test statistic and p-value.
 
@@ -109,9 +108,13 @@ class CCA(IndependenceTest):
         reps : int, optional (default: 1000)
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        workers : int, optional (default: -1)
+        workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
+        random_state : int or np.random.RandomState instance, (default: None)
+            If already a RandomState instance, use it.
+            If seed is an int, return a new RandomState instance seeded with seed.
+            If None, use np.random.RandomState.
 
         Returns
         -------
@@ -140,11 +143,9 @@ class CCA(IndependenceTest):
         >>> stat, pvalue = CCA().test(x, y, reps=10000)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
-
         """
-
         check_input = _CheckInputs(x, y, dim=2, reps=reps)
         x, y = check_input()
 
         # use default permutation test
-        return super(CCA, self).test(x, y, reps, workers)
+        return super(CCA, self).test(x, y, reps, workers, random_state)

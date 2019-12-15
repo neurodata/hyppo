@@ -2,31 +2,33 @@ import pytest
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_warns, assert_raises
 
-from ...benchmarks.indep_sim import linear
+from ...sims import linear
 from .. import Hsic
 
 
 class TestHsicStat:
-    @pytest.mark.parametrize("n", [10, 100, 1000])
+    @pytest.mark.parametrize("n", [100, 200])
     @pytest.mark.parametrize("obs_stat", [1.0])
-    @pytest.mark.parametrize("obs_pvalue", [1/1000])
+    @pytest.mark.parametrize("obs_pvalue", [1 / 1000])
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
-        x, y = linear(n, 1, noise=0)
+        x, y = linear(n, 1)
         stat, pvalue = Hsic().test(x, y)
 
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(pvalue, obs_pvalue, decimal=2)
 
+
 class TestHsicErrorWarn:
     """ Tests errors and warnings derived from MGC.
     """
+
     def test_error_notndarray(self):
         # raises error if x or y is not a ndarray
         x = np.arange(20)
         y = [5] * 20
-        assert_raises(ValueError, Hsic().test, x, y)
-        assert_raises(ValueError, Hsic().test, y, x)
+        assert_raises(TypeError, Hsic().test, x, y)
+        assert_raises(TypeError, Hsic().test, y, x)
 
     def test_error_shape(self):
         # raises error if number of samples different (n)
@@ -56,10 +58,9 @@ class TestHsicErrorWarn:
         hsic = Hsic(compute_kernel=compute_kernel)
         assert_raises(ValueError, hsic.test, x, x)
 
-    @pytest.mark.parametrize("reps", [
-        -1,    # reps is negative
-        '1',   # reps is not integer
-    ])
+    @pytest.mark.parametrize(
+        "reps", [-1, "1"]  # reps is negative  # reps is not integer
+    )
     def test_error_reps(self, reps):
         # raises error if reps is negative
         x = np.arange(20)

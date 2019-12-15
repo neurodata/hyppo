@@ -109,7 +109,6 @@ class HHG(IndependenceTest):
         stat : float
             The computed HHG statistic.
         """
-
         distx = x
         disty = y
 
@@ -123,7 +122,7 @@ class HHG(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=-1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the HHG test statistic and p-value.
 
@@ -138,9 +137,13 @@ class HHG(IndependenceTest):
         reps : int, optional (default: 1000)
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        workers : int, optional (default: -1)
+        workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
+        random_state : int or np.random.RandomState instance, (default: None)
+            If already a RandomState instance, use it.
+            If seed is an int, return a new RandomState instance seeded with seed.
+            If None, use np.random.RandomState.
 
         Returns
         -------
@@ -182,21 +185,20 @@ class HHG(IndependenceTest):
         >>> stat, pvalue = hhg.test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '0.0, 1.00'
-
         """
-
-        check_input = _CheckInputs(x, y, dim=2, reps=reps,
-                                   compute_distance=self.compute_distance)
+        check_input = _CheckInputs(
+            x, y, dim=2, reps=reps, compute_distance=self.compute_distance
+        )
         x, y = check_input()
 
         if self.is_distance:
             check_xy_distmat(x, y)
 
-        return super(HHG, self).test(x, y, reps, workers)
+        return super(HHG, self).test(x, y, reps, workers, random_state)
 
 
 @njit
-def _hhg(distx, disty):                                                     # pragma: no cover
+def _hhg(distx, disty):  # pragma: no cover
     """Calculate the HHG test statistic"""
 
     n = distx.shape[0]
@@ -214,9 +216,9 @@ def _hhg(distx, disty):                                                     # pr
                 t21 = np.sum((1 - a) * b)
                 t22 = np.sum((1 - a) * (1 - b))
 
-                denom = (t11+t12) * (t21+t22) * (t11+t21) * (t12+t22)
+                denom = (t11 + t12) * (t21 + t22) * (t11 + t21) * (t12 + t22)
                 if denom > 0:
-                    S[i, j] = ((n-2) * (t12*t21 - t11*t22) ** 2) / denom
+                    S[i, j] = ((n - 2) * (t12 * t21 - t11 * t22) ** 2) / denom
 
     stat = np.sum(S)
 

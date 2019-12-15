@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
-from scipy.spatial.distance import cdist
-from scipy._lib._util import MapWrapper
+from scipy._lib._util import check_random_state, MapWrapper
 
 from .._utils import euclidean
 
@@ -55,7 +54,7 @@ class TimeSeriesTest(ABC):
             independence tests (check desired test class for specifics).
         """
 
-    def _perm_stat(self, index):                                                # pragma: no cover
+    def _perm_stat(self, index):  # pragma: no cover
         """
         Helper function that is used to calculate parallel permuted test
         statistics.
@@ -66,20 +65,22 @@ class TimeSeriesTest(ABC):
             Test statistic for each value in the null distribution.
         """
         n = self.distx.shape[0]
-        perm_index = np.r_[[np.arange(t, t+self.block_size) for t in
-                            np.random.choice(n,
-                            n//self.block_size + 1)]].flatten()[:n]
+        perm_index = np.r_[
+            [
+                np.arange(t, t + self.block_size)
+                for t in self.rngs[index].choice(n, n // self.block_size + 1)
+            ]
+        ].flatten()[:n]
         perm_index = np.mod(perm_index, n)
-        permx = self.distx[np.ix_(perm_index, perm_index)]
         permy = self.disty[np.ix_(perm_index, perm_index)]
 
         # calculate permuted statics, store in null distribution
-        perm_stat = self._statistic(permx, permy)
+        perm_stat = self._statistic(self.distx, permy)
 
         return perm_stat
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=-1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         """
         Calulates the independece test p-value.
 
@@ -93,6 +94,10 @@ class TimeSeriesTest(ABC):
         workers : int, optional
             Evaluates method using `multiprocessing.Pool <multiprocessing>`).
             Supply `-1` to use all cores available to the Process.
+        random_state : int or np.random.RandomState instance, optional
+            If already a RandomState instance, use it.
+            If seed is an int, return a new RandomState instance seeded with seed.
+            If None, use np.random.RandomState. Default is None.
 
         Returns
         -------
@@ -107,6 +112,15 @@ class TimeSeriesTest(ABC):
         # calculate observed test statistic
         obs_stat = self._statistic(x, y)
 
+        # generate seeds for each rep (change to new parallel random number
+        # capabilities in numpy >= 1.17+)
+        random_state = check_random_state(random_state)
+        self.rngs = [
+            np.random.RandomState(
+                random_state.randint(1 << 32, size=4, dtype=np.uint32)
+            )
+            for _ in range(reps)
+        ]
         n = x.shape[0]
         self.block_size = int(np.ceil(np.sqrt(n)))
 

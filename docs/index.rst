@@ -5,7 +5,7 @@
 Overview of mgc_
 ===================
 
-.. _mgc: https://mgic.readthedocs.io/en/latest/
+.. _mgc: https://mgc.neurodata.io/
 
 ``mgc`` (pronounced "Magic") is an open-source software package for
 independence and k-sample testing.
@@ -38,7 +38,7 @@ Free software
 
 ``mgc`` is free software; you can redistribute it and/or modify it under the
 terms of the :doc:`MIT </license>`.  We welcome contributions. Join us on
-`GitHub <https://github.com/sampan501/mgc>`_.
+`GitHub <https://github.com/neurodata/mgc>`_.
 
 History
 -------
@@ -55,15 +55,18 @@ Documentation
    :maxdepth: 1
 
    install
+   tutorials
    reference/index
+   contributing
    license
 
 .. toctree::
    :maxdepth: 1
    :caption: Useful Links
 
-   mgc @ GitHub <https://github.com/sampan501/mgc>
-   Issue Tracker <https://github.com/sampan501/mgc/issues>
+   mgc @ GitHub <https://github.com/neurodata/mgc>
+   mgc @ PyPi <https://pypi.org/project/mgc/>
+   Issue Tracker <https://github.com/neurodata/mgc/issues>
 
 
 Indices and tables

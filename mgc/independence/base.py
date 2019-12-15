@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
-from scipy.spatial.distance import cdist
-from scipy._lib._util import MapWrapper
+from scipy._lib._util import check_random_state, MapWrapper
 
 from .._utils import euclidean
 
@@ -41,7 +40,7 @@ class IndependenceTest(ABC):
             Input data matrices.
         """
 
-    def _perm_stat(self, index):                                                # pragma: no cover
+    def _perm_stat(self, index):  # pragma: no cover
         r"""
         Helper function that is used to calculate parallel permuted test
         statistics.
@@ -56,17 +55,15 @@ class IndependenceTest(ABC):
         perm_stat : float
             Test statistic for each value in the null distribution.
         """
-
-        permx = np.random.permutation(self.x)
-        permy = np.random.permutation(self.y)
+        permy = self.rngs[index].permutation(self.y)
 
         # calculate permuted statics, store in null distribution
-        perm_stat = self._statistic(permx, permy)
+        perm_stat = self._statistic(self.x, permy)
 
         return perm_stat
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=-1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calulates the independence test p-value.
 
@@ -76,9 +73,13 @@ class IndependenceTest(ABC):
             Input data matrices.
         reps : int, optional
             The number of replications used in permutation, by default 1000.
-        workers : int, optional
+        workers : int, optional (default: 1)
             Evaluates method using `multiprocessing.Pool <multiprocessing>`).
             Supply `-1` to use all cores available to the Process.
+        random_state : int or np.random.RandomState instance, optional
+            If already a RandomState instance, use it.
+            If seed is an int, return a new RandomState instance seeded with seed.
+            If None, use np.random.RandomState. Default is None.
 
         Returns
         -------
@@ -93,6 +94,16 @@ class IndependenceTest(ABC):
 
         # calculate observed test statistic
         stat = self._statistic(x, y)
+
+        # generate seeds for each rep (change to new parallel random number
+        # capabilities in numpy >= 1.17+)
+        random_state = check_random_state(random_state)
+        self.rngs = [
+            np.random.RandomState(
+                random_state.randint(1 << 32, size=4, dtype=np.uint32)
+            )
+            for _ in range(reps)
+        ]
 
         # use all cores to create function that parallelizes over number of reps
         mapwrapper = MapWrapper(workers)

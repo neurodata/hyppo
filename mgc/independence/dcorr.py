@@ -114,7 +114,6 @@ class Dcorr(IndependenceTest):
         stat : float
             The computed Dcorr statistic.
         """
-
         distx = x
         disty = y
 
@@ -127,7 +126,7 @@ class Dcorr(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=-1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the Dcorr test statistic and p-value.
 
@@ -142,9 +141,13 @@ class Dcorr(IndependenceTest):
         reps : int, optional (default: 1000)
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        workers : int, optional (default: -1)
+        workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
+        random_state : int or np.random.RandomState instance, (default: None)
+            If already a RandomState instance, use it.
+            If seed is an int, return a new RandomState instance seeded with seed.
+            If None, use np.random.RandomState.
 
         Returns
         -------
@@ -185,47 +188,47 @@ class Dcorr(IndependenceTest):
         >>> dcorr = Dcorr(compute_distance=None)
         >>> stat, pvalue = dcorr.test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
-        '1.0, 1.00'
-
+        '0.0, 1.00'
         """
-
-        check_input = _CheckInputs(x, y, dim=2, reps=reps,
-                                   compute_distance=self.compute_distance)
+        check_input = _CheckInputs(
+            x, y, dim=2, reps=reps, compute_distance=self.compute_distance
+        )
         x, y = check_input()
 
         if self.is_distance:
             check_xy_distmat(x, y)
 
-        return super(Dcorr, self).test(x, y, reps, workers)
+        return super(Dcorr, self).test(x, y, reps, workers, random_state)
 
 
 @njit
-def _center_distmat(distx):                                                     # pragma: no cover
+def _center_distmat(distx):  # pragma: no cover
     """Centers the distance matrices"""
-
     n = distx.shape[0]
 
-    # dokuble centered distance matrices (unbiased version)
-    exp_distx = ((distx.sum(axis=0) / (n-2)).reshape(n, -1)
-                + (distx.sum(axis=1) / (n-2)).reshape(n, -1)
-                - distx.sum() / ((n-1) * (n-2)))
+    # double centered distance matrices (unbiased version)
+    exp_distx = (
+        np.repeat((distx.sum(axis=0) / (n - 2)), n).reshape(-1, n).T
+        + np.repeat((distx.sum(axis=1) / (n - 2)), n).reshape(-1, n)
+        - distx.sum() / ((n - 1) * (n - 2))
+    )
     cent_distx = distx - exp_distx
+    np.fill_diagonal(cent_distx, 0)
 
     return cent_distx
 
 
 @njit
-def _dcorr(distx, disty):                                                       # pragma: no cover
+def _dcorr(distx, disty):  # pragma: no cover
     """Calculate the Dcorr test statistic"""
-
     # center distance matrices
     cent_distx = _center_distmat(distx)
     cent_disty = _center_distmat(disty)
 
     # calculate covariances and variances
-    covar = np.sum(cent_distx @ cent_disty.T)
-    varx = np.sum(cent_distx @ cent_distx.T)
-    vary = np.sum(cent_disty @ cent_disty.T)
+    covar = np.sum(np.multiply(cent_distx, cent_disty.T))
+    varx = np.sum(np.multiply(cent_distx, cent_distx.T))
+    vary = np.sum(np.multiply(cent_disty, cent_disty.T))
 
     # stat is 0 with negative variances (would make denominator undefined)
     if varx <= 0 or vary <= 0:

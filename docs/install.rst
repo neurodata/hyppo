@@ -20,7 +20,7 @@ You can manually download ``mgc`` by cloning the git repo master version and
 running the ``setup.py`` file. That is, unzip the compressed package folder
 and run the following from the top-level source directory using the Terminal::
 
-    $ git clone https://github.com/sampan501/mgc
+    $ git clone https://github.com/neurodata/mgc
     $ cd mgc
     $ python3 setup.py install
 
