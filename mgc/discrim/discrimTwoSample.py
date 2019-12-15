@@ -100,7 +100,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
         >>> y = np.concatenate((np.zeros(50),np.ones(50)), axis= 0)
         >>> D1, D2, p = DiscrimTwoSample().test(x1,x2,y) 
         >>> '%1f, %lf, %lf' % (D1, D2, p)
-        '0.5, 1.0, 1.0'
+        '0.500000, 1.000000, 1.000000'
         """
 
         check_input = _CheckInputs(

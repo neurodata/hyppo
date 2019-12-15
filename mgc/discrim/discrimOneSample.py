@@ -102,7 +102,7 @@ class DiscrimOneSample(DiscriminabilityTest):
         >>> y = np.concatenate((np.zeros(50),np.ones(50)), axis= 0)
         >>> stat, p = DiscrimOneSample().test(x,y)
         >>> '%1f, %1f' % (stat, p)
-        '1.0, 0.001'
+        '1.000000, 0.001000'
         """
 
         check_input = _CheckInputs(
