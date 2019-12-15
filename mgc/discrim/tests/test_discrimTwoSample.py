@@ -15,7 +15,7 @@ class TestTwoSample:
         obs_D1 = 0.5
         obs_D2 = 1.0
         obs_p = 1.0
-        D1, D2, p = DiscrimTwoSample().test(x1, x2, y, alt='greater')
+        D1, D2, p = DiscrimTwoSample().test(x1, x2, y, alt="greater")
 
         assert_almost_equal(D1, obs_D1, decimal=2)
         assert_almost_equal(D2, obs_D2, decimal=2)
@@ -31,7 +31,7 @@ class TestTwoSample:
         obs_D1 = 0.5
         obs_D2 = 1.0
         obs_p = 0.000999000999000999
-        D1, D2, p = DiscrimTwoSample().test(x1, x2, y, alt='less')
+        D1, D2, p = DiscrimTwoSample().test(x1, x2, y, alt="less")
 
         assert_almost_equal(D1, obs_D1, decimal=2)
         assert_almost_equal(D2, obs_D2, decimal=2)

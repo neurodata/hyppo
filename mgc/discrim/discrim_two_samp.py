@@ -55,7 +55,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
         return stat
 
-    def test(self, x1, x2, y, reps=1000, alt='neq', workers=-1):
+    def test(self, x1, x2, y, reps=1000, alt="neq", workers=-1):
         r"""
         Calculates the test statistic and p-value for Discriminability two sample test.
 
@@ -129,11 +129,11 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
         self.diff_null = np.asarray(self.diff_null)
 
-        if alt == 'greater':
+        if alt == "greater":
             pvalue = (self.diff_null > self.da).mean()
-        elif alt == 'less':
+        elif alt == "less":
             pvalue = (self.diff_null < self.da).mean()
-        elif alt == 'neq':
+        elif alt == "neq":
             pvalue = (abs(self.diff_null) > abs(self.da)).mean()
         else:
             msg = "You have not entered a valid alternative."
