@@ -27,8 +27,8 @@ class TestRVErrorWarn:
         # raises error if x or y is not a ndarray
         x = np.arange(20)
         y = [5] * 20
-        assert_raises(ValueError, RV().test, x, y)
-        assert_raises(ValueError, RV().test, y, x)
+        assert_raises(TypeError, RV().test, x, y)
+        assert_raises(TypeError, RV().test, y, x)
 
     def test_error_shape(self):
         # raises error if number of samples different (n)

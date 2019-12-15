@@ -37,8 +37,8 @@ class TestDcorrErrorWarn:
         # raises error if x or y is not a ndarray
         x = np.arange(20)
         y = [5] * 20
-        assert_raises(ValueError, Dcorr().test, x, y)
-        assert_raises(ValueError, Dcorr().test, y, x)
+        assert_raises(TypeError, Dcorr().test, x, y)
+        assert_raises(TypeError, Dcorr().test, y, x)
 
     def test_error_shape(self):
         # raises error if number of samples different (n)

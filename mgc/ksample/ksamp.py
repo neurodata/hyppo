@@ -4,6 +4,7 @@ from numba import njit
 from .._utils import check_inputs_distmat, euclidean
 from .base import KSampleTest
 from ..independence import CCA, Dcorr, HHG, RV, Hsic
+from ..random_forest import DcorrRF, HsicRF
 from ._utils import _CheckInputs, k_sample_transform
 
 
@@ -69,6 +70,8 @@ class KSample(KSampleTest):
             HHG.__name__: HHG,
             Hsic.__name__: Hsic,
             Dcorr.__name__: Dcorr,
+            DcorrRF.__name__: DcorrRF,
+            HsicRF.__name__: HsicRF,
         }
         if indep_test not in test_names.keys():
             raise ValueError("Test is not a valid independence test")

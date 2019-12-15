@@ -27,8 +27,8 @@ class TestKendallErrorWarn:
         # raises error if x or y is not a ndarray
         x = np.arange(20)
         y = [5] * 20
-        assert_raises(ValueError, Kendall().test, x, y)
-        assert_raises(ValueError, Kendall().test, y, x)
+        assert_raises(TypeError, Kendall().test, x, y)
+        assert_raises(TypeError, Kendall().test, y, x)
 
     def test_error_lowsamples(self):
         # raises error if samples are low (< 3)
