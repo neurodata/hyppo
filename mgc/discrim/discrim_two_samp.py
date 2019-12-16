@@ -118,16 +118,8 @@ class DiscrimTwoSample(DiscriminabilityTest):
         # use all cores to create function that parallelizes over number of reps
         mapwrapper = MapWrapper(workers)
         null_dist = np.array(list(mapwrapper(self._perm_stat, range(reps))))
-        self.null_dist = null_dist
 
-        self.diff_null = []
-
-        for i in range(0, reps - 1):
-            for j in range(i + 1, reps):
-                self.diff_null.append(self.null_dist[i][0] - self.null_dist[j][1])
-                self.diff_null.append(self.null_dist[j][1] - self.null_dist[i][0])
-
-        self.diff_null = np.asarray(self.diff_null)
+        self.diff_null = np.asarray(calculate_diff_null(null_dist, reps))
 
         if alt == "greater":
             pvalue = (self.diff_null > self.da).mean()
@@ -164,3 +156,16 @@ class DiscrimTwoSample(DiscriminabilityTest):
         perm_stat2 = self._statistic(permx2, permy)
 
         return perm_stat1, perm_stat2
+
+
+@njit
+def calculate_diff_null(null_dist, reps):
+    # helper function to claculate the distribution of the difference under null
+    diff_null = []
+
+    for i in range(0, reps - 1):
+        for j in range(i + 1, reps):
+            diff_null.append(null_dist[i][0] - null_dist[j][1])
+            diff_null.append(null_dist[j][1] - null_dist[i][0])
+
+    return diff_null

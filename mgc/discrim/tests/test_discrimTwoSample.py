@@ -12,13 +12,13 @@ class TestTwoSample:
         y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
 
         np.random.seed(123456789)
-        obs_D1 = 0.5
-        obs_D2 = 1.0
+        obs_d1 = 0.5
+        obs_d2 = 1.0
         obs_p = 1.0
-        D1, D2, p = DiscrimTwoSample().test(x1, x2, y, alt="greater")
+        d1, d2, p = DiscrimTwoSample().test(x1, x2, y, alt="greater")
 
-        assert_almost_equal(D1, obs_D1, decimal=2)
-        assert_almost_equal(D2, obs_D2, decimal=2)
+        assert_almost_equal(d1, obs_d1, decimal=2)
+        assert_almost_equal(d2, obs_d2, decimal=2)
         assert_almost_equal(p, obs_p, decimal=2)
 
     def test_less(self):
@@ -28,13 +28,13 @@ class TestTwoSample:
         y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
 
         np.random.seed(123456789)
-        obs_D1 = 0.5
-        obs_D2 = 1.0
+        obs_d1 = 0.5
+        obs_d2 = 1.0
         obs_p = 0.000999000999000999
-        D1, D2, p = DiscrimTwoSample().test(x1, x2, y, alt="less")
+        d1, d2, p = DiscrimTwoSample().test(x1, x2, y, alt="less")
 
-        assert_almost_equal(D1, obs_D1, decimal=2)
-        assert_almost_equal(D2, obs_D2, decimal=2)
+        assert_almost_equal(d1, obs_d1, decimal=2)
+        assert_almost_equal(d2, obs_d2, decimal=2)
         assert_almost_equal(p, obs_p, decimal=4)
 
     def test_neq(self):
@@ -44,13 +44,13 @@ class TestTwoSample:
         y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
 
         np.random.seed(123456789)
-        obs_D1 = 0.5
-        obs_D2 = 1.0
+        obs_d1 = 0.5
+        obs_d2 = 1.0
         obs_p = 0.000999000999000999
-        D1, D2, p = DiscrimTwoSample().test(x1, x2, y, alt="neq")
+        d1, d2, p = DiscrimTwoSample().test(x1, x2, y, alt="neq")
 
-        assert_almost_equal(D1, obs_D1, decimal=2)
-        assert_almost_equal(D2, obs_D2, decimal=2)
+        assert_almost_equal(d1, obs_d1, decimal=2)
+        assert_almost_equal(d2, obs_d2, decimal=2)
         assert_almost_equal(p, obs_p, decimal=4)
 
 
