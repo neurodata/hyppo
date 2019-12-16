@@ -11,7 +11,7 @@ class DcorrRF(RandomForestTest):
     Class for calculating the random forest based Dcorr test statistic and p-value.
     """
 
-    def __init__(self, ntrees=500):
+    def __init__(self, ntrees=100):
         self.ntrees = ntrees
         RandomForestTest.__init__(self)
 
