@@ -20,9 +20,9 @@ class DiscrimOneSample(DiscriminabilityTest):
     
     Parameters
     ---------- 
-    is_dist : Bool, optional (default: False)
+    is_dist : bool, optional (default: False)
         whether `x` is a distance matrix or not.
-    remove_isolates : Bool, optional (default: True)
+    remove_isolates : bool, optional (default: True)
         whether to remove the measurements with single instance or not.
 
     See Also
