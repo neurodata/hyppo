@@ -42,7 +42,7 @@ class _ParallelP(object):
 
 
 def _perm_test(
-    test, sim, n=100, p=1, noise=False, reps=1000, workers=1, random_state=None
+    test, sim, n=100, p=1, noise=False, reps=100, workers=1, random_state=None
 ):
     r"""
     Helper function that calculates the statistical.
@@ -89,7 +89,7 @@ def power(
     p=1,
     noise=True,
     alpha=0.05,
-    reps=1000,
+    reps=100,
     workers=1,
     random_state=None,
 ):
@@ -140,7 +140,7 @@ def power_sample(
     p=1,
     noise=True,
     alpha=0.05,
-    reps=1000,
+    reps=100,
     workers=1,
     random_state=None,
 ):
@@ -185,7 +185,7 @@ def power_dim(
     p=1,
     noise=False,
     alpha=0.05,
-    reps=1000,
+    reps=100,
     workers=1,
     random_state=None,
 ):

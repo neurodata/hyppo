@@ -35,7 +35,7 @@ class _ParallelP3Samp(object):
 
 
 def _perm_test_3samp(
-    test, n=100, epsilon=0, case=1, reps=1000, workers=1, random_state=None
+    test, n=100, epsilon=0, case=1, reps=100, workers=1, random_state=None
 ):
     r"""
     Helper function that calculates the statistical.
@@ -76,7 +76,7 @@ def _perm_test_3samp(
 
 
 def power_3samp_epsilon(
-    test, n=100, epsilon=0, case=1, alpha=0.05, reps=1000, workers=1, random_state=None
+    test, n=100, epsilon=0, case=1, alpha=0.05, reps=100, workers=1, random_state=None
 ):
     alt_dist, null_dist = _perm_test_3samp(
         test,
