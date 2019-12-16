@@ -7,8 +7,7 @@ from scipy._lib._util import MapWrapper
 
 class DiscrimOneSample(DiscriminabilityTest):
     r"""
-     A class that performs a one-sample test for discriminability.whether the discriminability 
-     differs from random chance. 
+     A class that performs a one-sample test for discriminability.
      
      Discriminability index is a measure of whether a data acquisition and 
      preprocessing pipeline is more discriminable among different subjects.
