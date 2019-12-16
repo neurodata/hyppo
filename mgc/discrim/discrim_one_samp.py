@@ -62,9 +62,9 @@ class DiscrimOneSample(DiscriminabilityTest):
         """
         Helper function that calculates the discriminability test statistics.
         """
-        stat_ = super(DiscrimOneSample, self)._statistic(x, y)
+        stat = super(DiscrimOneSample, self)._statistic(x, y)
 
-        return stat_
+        return stat
 
     def test(self, x, y, reps=1000, workers=-1):
         r"""
