@@ -34,7 +34,7 @@ class _ParallelP(object):
         # calculate permuted stats, store in null distribution
         perm_stat = self.test._statistic(x, permy)
 
-        if test.__name__ == "Pearson":
+        if self.test.__name__ == "Pearson":
             obs_stat = np.abs(obs_stat)
             perm_stat = np.abs(perm_stat)
 

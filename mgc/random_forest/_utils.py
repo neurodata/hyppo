@@ -2,7 +2,7 @@ import warnings
 
 import numpy as np
 from scipy.stats import chi2
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestClassifier
 
 from .._utils import (
     contains_nan,
@@ -95,9 +95,8 @@ def sim_matrix(model, X):
 
 def rf_xmat(x, y, ntrees):
     y = y.reshape(-1)
-    clf = RandomForestRegressor(n_estimators=ntrees)
+    clf = RandomForestClassifier(n_estimators=ntrees)
     clf.fit(x, y)
-    x = 1 - sim_matrix(clf, x)
-    x = np.sqrt(x)
+    x = sim_matrix(clf, x)
 
     return x

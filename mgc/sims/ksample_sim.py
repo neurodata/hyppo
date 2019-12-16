@@ -75,7 +75,7 @@ def rot_2samp(sim, n, p, noise=True, degree=90):
     return samp1, samp2
 
 
-def trans_2samp(sim, n, p, noise=False, trans=0.45):
+def trans_2samp(sim, n, p, noise=False, trans=0.3):
     """Translated 2 sample test"""
     if sim not in _SIMS:
         raise ValueError("Not valid simulation")
@@ -89,8 +89,8 @@ def trans_2samp(sim, n, p, noise=False, trans=0.45):
         else:
             x, y = sim(n, p, noise=noise)
         degree = np.random.randint(90)
-        x_trans, y_trans = _2samp_rotate(sim, x, y, p, degree=degree)
         x_trans += trans
+        x_trans, y_trans = _2samp_rotate(sim, x_trans, y, p, degree=degree)
     samp1 = np.hstack([x, y])
     samp2 = np.hstack([x_trans, y_trans])
 
