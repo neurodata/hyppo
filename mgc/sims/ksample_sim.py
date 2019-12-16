@@ -45,7 +45,7 @@ def _2samp_rotate(sim, x, y, p, degree=90):
         rot_mat = np.identity(2 * p)
     else:
         rot_mat = np.identity(p + 1)
-    rot_mat[np.ix_((0, -1), (0, -1))] = np.array(
+    rot_mat[np.ix_((0, 1), (0, 1))] = np.array(
         [[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]]
     )
     data = np.hstack([x, y])

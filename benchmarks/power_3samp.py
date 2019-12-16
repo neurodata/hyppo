@@ -31,9 +31,6 @@ class _ParallelP3Samp(object):
         # calculate permuted stats, store in null distribution
         perm_stat = self.test._statistic(u, permv)
 
-        obs_stat = np.abs(obs_stat)
-        perm_stat = np.abs(perm_stat)
-
         return obs_stat, perm_stat
 
 
