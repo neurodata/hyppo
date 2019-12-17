@@ -7,47 +7,42 @@ from scipy._lib._util import MapWrapper
 
 class DiscrimOneSample(DiscriminabilityTest):
     r"""
-     A class that performs a one-sample test for discriminability.
-     
-     Discriminability index is a measure of whether a data acquisition and 
-     preprocessing pipeline is more discriminable among different subjects.
-     The key insight is that each measurement of the same item should be more 
-     similar to other measurements of that item, as compared to measurements 
-     of any other item. One sample test measures whether the discriminability 
-     for a dataset differs from random chance. More details can be described 
-     in [#1Dscr]_.
-    
+    A class that performs a one sample test of discriminability.
+
+    Discriminability index is a measure of whether a data acquisition and
+    preprocessing pipeline is more discriminable among different subjects.
+    The key insight is that each repeated mesurements of the same item should
+    be the more similar to one another than measurements between different
+    items. The one sample test measures whether the discriminability
+    for a dataset differs from random chance. More details are in [#1Dscr]_.
+
     Parameters
-    ---------- 
+    ----------
     is_dist : bool, optional (default: False)
-        whether `x` is a distance matrix or not.
+        Whether `x1` and `x2` are distance matrices or not.
     remove_isolates : bool, optional (default: True)
-        whether to remove the measurements with single instance or not.
+        Whether to remove the measurements with a single instance or not.
 
     See Also
     --------
-    DiscrimTwoSample : Two sample test for comparing the discriminability of two data
-    
+    DiscrimTwoSample : Two sample test for discriminability of a two different
+                       measurements.
+
     Notes
     -----
-    With :math:`D_X` as the sample discriminability of :math:`X`, 
-    one sample test verifies whether
-    
-     .. math::
+    With :math:`D_x` as the sample discriminability of :math:`x`,
+    one sample test performs the following test,
 
-         H_0: D_X = D_0
+    .. math::
 
-    and
+        H_0: D_x &= D_0 \\
+        H_A: D_x &> D_0
 
-     .. math::
-
-         H_A: D_X > D_0 
-    
     where :math:`D_0` is the discriminability that would be observed by random chance.
 
     References
     ----------
-    .. [#1Dscr] Eric W. Bridgeford, et al. "Optimal Decisions for Reference 
+    .. [#1Dscr] Eric W. Bridgeford, et al. "Optimal Decisions for Reference
                 Pipelines and Datasets: Applications in Connectomics." Bioarxiv (2019).
     """
 
@@ -60,6 +55,20 @@ class DiscrimOneSample(DiscriminabilityTest):
     def _statistic(self, x, y):
         """
         Helper function that calculates the discriminability test statistics.
+
+        Parameters
+        ----------
+        x, y : ndarray
+            Input data matrices. `x` and `y` must have the same number of
+            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+            `n` is the number of samples and `p` and `q` are the number of
+            dimensions. Alternatively, `x` and `y` can be distance matrices,
+            where the shapes must both be `(n, n)`.
+
+        Returns
+        -------
+        stat : float
+            The computed two sample discriminability statistic.
         """
         stat = super(DiscrimOneSample, self)._statistic(x, y)
 
@@ -71,13 +80,13 @@ class DiscrimOneSample(DiscriminabilityTest):
 
         Parameters
         ----------
-        x: ndarray
-            An `(n, d)` data matrix with `n` samples in `d` dimensions,
-            if flag is_dist = Flase and an `(n, n)` distance matrix,
-            if flag is_dist = True
-            
+        x : ndarray
+            Input data matrices. `x` must have shape `(n, p)` `n` is the number of
+            samples and `p` are the number of dimensions. Alternatively, `x` can be
+            distance matrices, where the shape must be `(n, n)`, and ``is_dist`` must
+            set to ``True`` in this case.
         y : ndarray
-            a vector containing the sample ids for our :math:`n` samples.
+            A vector containing the sample ids for our :math:`n` samples.
         reps : int, optional (default: 1000)
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
@@ -96,10 +105,10 @@ class DiscrimOneSample(DiscriminabilityTest):
         --------
         >>> import numpy as np
         >>> from mgc.discrim import DiscrimOneSample
-        >>> x = np.concatenate((np.zeros((50,2)) ,np.ones((50,2))), axis=0)
-        >>> y = np.concatenate((np.zeros(50),np.ones(50)), axis= 0)
-        >>> stat, p = DiscrimOneSample().test(x,y)
-        >>> '%.1f, %.2f' % (stat, p)
+        >>> x = np.concatenate([np.zeros((50, 2)), np.ones((50, 2))], axis=0)
+        >>> y = np.concatenate([np.zeros(50), np.ones(50)], axis=0)
+        >>> stat, pvalue = DiscrimOneSample().test(x, y)
+        >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
         """
 
@@ -135,7 +144,21 @@ class DiscrimOneSample(DiscriminabilityTest):
 
         return stat, pvalue
 
-    def _perm_stat(self, index):
+    def _perm_stat(self, index):  # pragma: no cover
+        r"""
+        Helper function that is used to calculate parallel permuted test
+        statistics.
+
+        Parameters
+        ----------
+        index : int
+            Iterator used for parallel statistic calculation
+
+        Returns
+        -------
+        perm_stat : float
+            Test statistic for each value in the null distribution.
+        """
         permy = np.random.permutation(self.y)
 
         perm_stat = self._statistic(self.x, permy)

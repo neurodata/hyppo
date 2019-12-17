@@ -13,9 +13,11 @@ class TestPearsonStat:
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
         x, y = linear(n, 1)
-        stat, pvalue = Pearson().test(x, y)
+        stat1 = Pearson()._statistic(x, y)
+        stat2, pvalue = Pearson().test(x, y)
 
-        assert_almost_equal(stat, obs_stat, decimal=2)
+        assert_almost_equal(stat1, obs_stat, decimal=2)
+        assert_almost_equal(stat2, obs_stat, decimal=2)
         assert_almost_equal(pvalue, obs_pvalue, decimal=2)
 
 

@@ -102,7 +102,7 @@ class TestTwoSampleWarn:
         assert_raises(ValueError, DiscrimTwoSample().test, x1, x2, y, alt="abc")
 
     @pytest.mark.parametrize(
-        "reps", [-1, "1",]  # reps is negative  # reps is not integer
+        "reps", [-1, "1"]  # reps is negative  # reps is not integer
     )
     def test_error_reps(self, reps):
         # raises error if reps is negative
