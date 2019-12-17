@@ -20,7 +20,8 @@ class KSample(KSampleTest):
 
     Parameters
     ----------
-    indep_test : {"CCA", "Dcorr", "HHG", "RV", "Hsic"}
+    indep_test : {"CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC", "DcorrRF", "HsicRF",
+                  "MGCRF"}
         A string corresponding to the desired independence test from
         ``mgc.independence``.
     compute_distance : callable(), optional (default: euclidean)
