@@ -5,7 +5,7 @@ from scipy._lib._util import check_random_state, MapWrapper
 
 from .._utils import euclidean
 from ._utils import k_sample_transform
-from ..independence import Dcorr, HHG, Hsic
+from ..independence import Dcorr, HHG, Hsic, MGC
 
 
 class KSampleTest(ABC):
@@ -32,7 +32,7 @@ class KSampleTest(ABC):
         self.pvalue = None
         self.compute_distance = compute_distance
 
-        dist_tests = [Dcorr, HHG, Hsic]
+        dist_tests = [Dcorr, HHG, Hsic, MGC]
         if indep_test in dist_tests:
             self.indep_test = indep_test(compute_distance=compute_distance)
         else:
