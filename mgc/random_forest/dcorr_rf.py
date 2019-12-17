@@ -11,7 +11,7 @@ class DcorrRF(RandomForestTest):
     Class for calculating the random forest based Dcorr test statistic and p-value.
     """
 
-    def __init__(self, ntrees=100):
+    def __init__(self, ntrees=500):
         self.ntrees = ntrees
         RandomForestTest.__init__(self)
 
@@ -21,7 +21,7 @@ class DcorrRF(RandomForestTest):
 
         y must be categorical
         """
-        simx = rf_xmat(x, y, self.ntrees)
+        simx = np.sqrt(1 - rf_xmat(x, y, self.ntrees))
         simy = euclidean(y)
         stat = Dcorr(compute_distance=None)._statistic(simx, simy)
         self.stat = stat

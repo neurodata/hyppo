@@ -12,7 +12,7 @@ class HsicRF(RandomForestTest):
     Class for calculating the random forest based Hsic test statistic and p-value.
     """
 
-    def __init__(self, ntrees=100):
+    def __init__(self, ntrees=500):
         self.ntrees = ntrees
         RandomForestTest.__init__(self)
 
@@ -20,7 +20,7 @@ class HsicRF(RandomForestTest):
         r"""
         Helper function that calculates the random forest based Hsic test statistic.
         """
-        simx = rf_xmat(x, y, self.ntrees)
+        simx = np.sqrt(rf_xmat(x, y, self.ntrees))
         simy = gaussian(y)
         stat = Hsic(compute_kernel=None)._statistic(simx, simy)
         self.stat = stat
