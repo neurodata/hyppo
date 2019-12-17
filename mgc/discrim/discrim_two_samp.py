@@ -8,38 +8,39 @@ from scipy._lib._util import MapWrapper
 
 class DiscrimTwoSample(DiscriminabilityTest):
     r"""
-     A class that compares the discriminability of two dataset.
-     
-     Two sample test measures whether the discriminability is different for 
-     one dataset than that of another. More details can be described in [#1Dscr]_.
-    
+    A class that compares the discriminability of two datasets.
+
+    Two sample test measures whether the discriminability is different for
+    one dataset compared to another. More details can be described in [#1Dscr]_.
+
     Parameters
-    ---------- 
+    ----------
     is_dist : bool, optional (default: False)
-        whether `x1` and `x2` are distance matrices or not.
+        Whether `x1` and `x2` are distance matrices or not.
     remove_isolates : bool, optional (default: True)
-        whether to remove the measurements with single instance or not.
+        Whether to remove the measurements with a single instance or not.
 
     See Also
     --------
-    DiscrimOneSample : One sample test for accessing discriminability of a single measurement
-    
+    DiscrimOneSample : One sample test for discriminability of a single measurement
+
     Notes
     -----
-    With :math:`\hat D_{X_1}` the sample discriminability of one approach, 
-    and :math:`\hat D_{X_2}` the sample discriminability of another approach:
-    
-     .. math::
-
-         H_0: D_{X_1} = D_{X_2}
-
-    and
+    Let :math:`\hat D_{x_1}` denote the sample discriminability of one approach,
+    and :math:`\hat D_{x_2}` denote the sample discriminability of another approach. Then,
 
      .. math::
 
-         H_A: D_{X_1} > D_{X_2}  
-    
-    Also implemented are tests of :math:`<` and :math:`\neq`.
+         H_0: D_{x_1} &= D_{x_2}
+         H_A: D_{x_1} &> D_{x_2}
+
+    Alternatively, tests can be done for :math:`D_{x_1} &< D_{x_2}` and
+    :math:`D_{x_1} &\neq D_{x_2}`.
+
+    References
+    ----------
+    .. [#1Dscr] Eric W. Bridgeford, et al. "Optimal Decisions for Reference
+                Pipelines and Datasets: Applications in Connectomics." Bioarxiv (2019).
     """
 
     def __init__(self, is_dist=False, remove_isolates=True):
@@ -49,7 +50,21 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
     def _statistic(self, x, y):
         """
-        Helper function that calculates the discriminability test statistics.
+        Helper function that calculates the discriminability test statistic.
+
+        Parameters
+        ----------
+        x, y : ndarray
+            Input data matrices. `x` and `y` must have the same number of
+            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+            `n` is the number of samples and `p` and `q` are the number of
+            dimensions. Alternatively, `x` and `y` can be distance matrices,
+            where the shapes must both be `(n, n)`.
+
+        Returns
+        -------
+        stat : float
+            The computed two sample discriminability statistic.
         """
         stat = super(DiscrimTwoSample, self)._statistic(x, y)
 
@@ -57,23 +72,29 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
     def test(self, x1, x2, y, reps=1000, alt="neq", workers=-1):
         r"""
-        Calculates the test statistic and p-value for Discriminability two sample test.
+        Calculates the test statistic and p-value for a two sample test for
+        discriminability.
 
         Parameters
         ----------
         x1, x2 : ndarray
-            An `(n, d)` data matrix with `n` samples in `d` dimensions,
-            if flag is_dist = Flase and an `(n, n)` distance matrix,
-            if flag is_dist = True
+            Input data matrices. `x1` and `x2` must have the same number of
+            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+            `n` is the number of samples and `p` and `q` are the number of
+            dimensions. Alternatively, `x1` and `x2` can be distance matrices,
+            where the shapes must both be `(n, n)`, and ``is_dist`` must set
+            to ``True`` in this case.
         y : ndarray
-            A vector containing the sample ids for our :math:`n` samples. Should be matched such that :math:`y[i]` 
-            is the corresponding label for :math:`x_1[i,]` and :math:`x_2[i,]`.
+            A vector containing the sample ids for our `n` samples. Should be matched
+            to the inputs such that ``y[i]`` is the corresponding label for ``x_1[i, :]``
+            and ``x_2[i, :]``.
         reps : int, optional (default: 1000)
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        alt : options: {'greater', 'less', 'neq'}, default: 'neq'
-            The alternative hypothesis for the test. Can be that first dataset is more discriminable (alt = "greater"),
-            less discriminable (alt = "less") or just non-equal (alt = "neq").
+        alt : {"greater", "less", "neq"} (default: "neq")
+            The alternative hypothesis for the test. Can test that first dataset is more
+            discriminable (alt = "greater"), less discriminable (alt = "less") or unequal
+            discriminability (alt = "neq").
         workers : int, optional (default: -1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
@@ -81,9 +102,9 @@ class DiscrimTwoSample(DiscriminabilityTest):
         Returns
         -------
         d1 : float
-            The computed discriminability score for `x_1`.
+            The computed discriminability score for ``x1``.
         d2 : float
-            The computed discriminability score for `x_2`.
+            The computed discriminability score for ``x2``.
         pvalue : float
             The computed two sample test p-value.
 
@@ -91,11 +112,11 @@ class DiscrimTwoSample(DiscriminabilityTest):
         --------
         >>> import numpy as np
         >>> from mgc.discrim import DiscrimTwoSample
-        >>> x1 = np.ones((100,2),dtype=float)
-        >>> x2 = np.concatenate((np.zeros((50,2)),np.ones((50,2))), axis=0)
-        >>> y = np.concatenate((np.zeros(50),np.ones(50)), axis=0)
-        >>> d1, d2, p = DiscrimTwoSample().test(x1,x2,y) 
-        >>> '%.1f, %.1f, %.2f' % (d1, d2, p)
+        >>> x1 = np.ones((100,2), dtype=float)
+        >>> x2 = np.concatenate([np.zeros((50, 2)), np.ones((50, 2))], axis=0)
+        >>> y = np.concatenate([np.zeros(50), np.ones(50)], axis=0)
+        >>> discrim1, discrim2, pvalue = DiscrimTwoSample().test(x1, x2, y)
+        >>> '%.1f, %.1f, %.2f' % (discrim1, discrim2, pvalue)
         '0.5, 1.0, 0.00'
         """
 
@@ -139,6 +160,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
         return self.d1, self.d2, self.pvalue
 
     def _get_convex_comb(self, x):
+        """Get random convex combination of input x."""
         n, _ = x.shape
 
         q1 = np.random.choice(n, n)
@@ -147,20 +169,33 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
         return (lamda * (x[q1]).T + (1 - lamda) * (x[q2]).T).T
 
-    def _perm_stat(self, index):
+    def _perm_stat(self, index):  # pragma: no cover
+        r"""
+        Helper function that is used to calculate parallel permuted test
+        statistics.
+
+        Parameters
+        ----------
+        index : int
+            Iterator used for parallel statistic calculation
+
+        Returns
+        -------
+        perm_stat1, perm_stat2 : float
+            Test statistic for each value in the null distribution.
+        """
         permx1 = self._get_convex_comb(self.x1)
         permx2 = self._get_convex_comb(self.x2)
-        permy = self.y
 
-        perm_stat1 = self._statistic(permx1, permy)
-        perm_stat2 = self._statistic(permx2, permy)
+        perm_stat1 = self._statistic(permx1, self.y)
+        perm_stat2 = self._statistic(permx2, self.y)
 
         return perm_stat1, perm_stat2
 
 
 @njit
 def calculate_diff_null(null_dist, reps):
-    # helper function to claculate the distribution of the difference under null
+    """Helper function to claculate the distribution of the difference under null."""
     diff_null = []
 
     for i in range(0, reps - 1):
