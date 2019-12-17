@@ -31,7 +31,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
     .. math::
 
-        H_0: D_{x_1} &= D_{x_2}
+        H_0: D_{x_1} &= D_{x_2} \\
         H_A: D_{x_1} &> D_{x_2}
 
     Alternatively, tests can be done for :math:`D_{x_1} < D_{x_2}` and
