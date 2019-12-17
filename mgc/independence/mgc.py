@@ -206,7 +206,7 @@ class MGC(IndependenceTest):
         >>> y = x
         >>> stat, pvalue, _ = MGC().test(x, y, reps=10000)
         >>> '%.1f, %.3f' % (stat, pvalue)
-        '1.0, 0.00'1
+        '1.0, 0.000'
 
         In addition, the inputs can be distance matrices. Using this is the,
         same as before, except the ``compute_distance`` parameter must be set
