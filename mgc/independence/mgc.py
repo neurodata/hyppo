@@ -193,7 +193,7 @@ class MGC(IndependenceTest):
         >>> from mgc.independence import MGC
         >>> x = np.arange(100)
         >>> y = x
-        >>> stat, pvalue = MGC().test(x, y)
+        >>> stat, pvalue, _ = MGC().test(x, y)
         >>> '%.1f, %.3f' % (stat, pvalue)
         '1.0, 0.001'
 
@@ -204,7 +204,7 @@ class MGC(IndependenceTest):
         >>> from mgc.independence import MGC
         >>> x = np.arange(100)
         >>> y = x
-        >>> stat, pvalue = MGC().test(x, y, reps=10000)
+        >>> stat, pvalue, _ = MGC().test(x, y, reps=10000)
         >>> '%.1f, %.3f' % (stat, pvalue)
         '1.0, 0.00'1
 
@@ -217,7 +217,7 @@ class MGC(IndependenceTest):
         >>> x = np.ones((10, 10)) - np.identity(10)
         >>> y = 2 * x
         >>> mgc = MGC(compute_distance=None)
-        >>> stat, pvalue = mgc.test(x, y)
+        >>> stat, pvalue, _ = mgc.test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '0.0, 1.00'
         """

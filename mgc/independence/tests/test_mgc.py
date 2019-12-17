@@ -34,8 +34,8 @@ class TestMGCStat(object):
     @pytest.mark.parametrize(
         "sim, obs_stat, obs_pvalue",
         [
-            (linear, 0.184, 1 / 1000),  # test linear simulation
-            (spiral, 0.0190, 0.117),  # test spiral simulation
+            (linear, 0.463, 1 / 1000),  # test linear simulation
+            (spiral, 0.091, 0.117),  # test spiral simulation
         ],
     )
     def test_fived(self, sim, obs_stat, obs_pvalue):
