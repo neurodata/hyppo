@@ -29,18 +29,13 @@ class DiscrimTwoSample(DiscriminabilityTest):
     Let :math:`\hat D_{x_1}` denote the sample discriminability of one approach,
     and :math:`\hat D_{x_2}` denote the sample discriminability of another approach. Then,
 
-     .. math::
+    .. math::
 
-         H_0: D_{x_1} &= D_{x_2}
-         H_A: D_{x_1} &> D_{x_2}
+        H_0: D_{x_1} &= D_{x_2}
+        H_A: D_{x_1} &> D_{x_2}
 
-    Alternatively, tests can be done for :math:`D_{x_1} &< D_{x_2}` and
-    :math:`D_{x_1} &\neq D_{x_2}`.
-
-    References
-    ----------
-    .. [#1Dscr] Eric W. Bridgeford, et al. "Optimal Decisions for Reference
-                Pipelines and Datasets: Applications in Connectomics." Bioarxiv (2019).
+    Alternatively, tests can be done for :math:`D_{x_1} < D_{x_2}` and
+    :math:`D_{x_1} \neq D_{x_2}`.
     """
 
     def __init__(self, is_dist=False, remove_isolates=True):

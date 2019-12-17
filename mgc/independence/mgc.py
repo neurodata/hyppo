@@ -52,7 +52,7 @@ class MGC(IndependenceTest):
     Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
     :math:`X` and :math:`Y`. Let :math:`D^x` be the :math:`n \times n`
     distance matrix of :math:`x` and :math:`D^y` be the :math:`n \times n` be
-    the distance matrix of :math:`y`. #. :math:`D^x` and :math:`D^y` are
+    the distance matrix of :math:`y`. :math:`D^x` and :math:`D^y` are
     modified to be mean zero columnwise. This results in two
     :math:`n \times n` distance matrices :math:`A` and :math:`B` (the
     centering and unbiased modification) [3]_.

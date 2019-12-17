@@ -3,10 +3,10 @@ Discriminability
 
 .. currentmodule:: mgc.discrim
 
-Discriminability one sample test
+Discriminability One Sample Test
 --------------------------------
 .. autoclass:: DiscrimOneSample
 
-Discriminability two sample test
+Discriminability Two Sample Test
 --------------------------------
 .. autoclass:: DiscrimTwoSample

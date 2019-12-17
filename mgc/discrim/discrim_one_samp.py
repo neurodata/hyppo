@@ -33,10 +33,10 @@ class DiscrimOneSample(DiscriminabilityTest):
     With :math:`D_x` as the sample discriminability of :math:`x`,
     one sample test performs the following test,
 
-     .. math::
+    .. math::
 
-         H_0: D_x &= D_0
-         H_A: D_x &> D_0
+        H_0: D_x &= D_0
+        H_A: D_x &> D_0
 
     where :math:`D_0` is the discriminability that would be observed by random chance.
 
