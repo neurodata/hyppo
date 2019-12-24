@@ -13,7 +13,7 @@ URL = "https://github.com/sampan501/mgc"
 MINIMUM_PYTHON_VERSION = 3, 5  # Minimum of Python 3.5
 REQUIRED_PACKAGES = [
     "numpy>=1.17",
-    "scipy>=1.3.1",
+    "scipy>=1.4.0",
     "numba>=0.46",
     "scikit-learn>=0.19.1",
 ]

@@ -8,4 +8,5 @@ Reference
 
    independence
    ksample
+   discrim
    sims

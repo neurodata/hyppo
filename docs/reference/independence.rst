@@ -3,6 +3,10 @@ Independence
 
 .. currentmodule:: mgc.independence
 
+Multiscale Graph Correlation (MGC)
+----------------------------------
+.. autoclass:: MGC
+
 Distance Correlation (Dcorr)
 ----------------------------
 .. autoclass:: Dcorr
