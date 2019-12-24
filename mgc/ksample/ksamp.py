@@ -4,7 +4,7 @@ from numba import njit
 from .._utils import check_inputs_distmat, euclidean
 from .base import KSampleTest
 from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC
-from ..random_forest import DcorrRF, HsicRF, MGCRF
+from ..random_forest import MGCRF
 from ._utils import _CheckInputs, k_sample_transform
 
 
@@ -20,8 +20,7 @@ class KSample(KSampleTest):
 
     Parameters
     ----------
-    indep_test : {"CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC", "DcorrRF", "HsicRF",
-                  "MGCRF"}
+    indep_test : {"CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC", "MGCRF"}
         A string corresponding to the desired independence test from
         ``mgc.independence``.
     compute_distance : callable(), optional (default: euclidean)
@@ -71,8 +70,6 @@ class KSample(KSampleTest):
             HHG.__name__: HHG,
             Hsic.__name__: Hsic,
             Dcorr.__name__: Dcorr,
-            DcorrRF.__name__: DcorrRF,
-            HsicRF.__name__: HsicRF,
             MGC.__name__: MGC,
             MGCRF.__name__: MGCRF,
         }

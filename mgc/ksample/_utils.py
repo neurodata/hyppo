@@ -4,7 +4,7 @@ import numpy as np
 
 from .._utils import contains_nan
 from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC
-from ..random_forest import DcorrRF, HsicRF, MGCRF
+from ..random_forest import MGCRF
 
 
 class _CheckInputs:
@@ -61,10 +61,10 @@ class _CheckInputs:
         return [np.asarray(i).astype(np.float64) for i in self.inputs]
 
     def _check_indep_test(self):
-        tests = [CCA, Dcorr, HHG, RV, Hsic, DcorrRF, HsicRF, MGC, MGCRF]
+        tests = [CCA, Dcorr, HHG, RV, Hsic, MGC, MGCRF]
         if self.indep_test.__class__ not in tests:
             raise ValueError(
-                "indep_test must be CannCorr, Dcorr, HHG, RVCorr, Hsic, DcorrRF, HsicRF, MGC, or MGCRF"
+                "indep_test must be CannCorr, Dcorr, HHG, RVCorr, Hsic, MGC, or MGCRF"
             )
 
     def _check_min_samples(self):
