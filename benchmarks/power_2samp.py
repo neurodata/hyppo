@@ -254,7 +254,7 @@ def power_2samp_angle(
     p=1,
     angle=90,
     trans=0,
-    noise=False,
+    noise=True,
     alpha=0.05,
     reps=1000,
     workers=1,
