@@ -136,10 +136,7 @@ class MGC(IndependenceTest):
             The computed MGC statistic.
         """
         with warnings.catch_warnings():
-            warnings.filterwarnings(
-                "ignore",
-                message="The number of replications is low (under 1000), and p-value calculations may be unreliable. Use the p-value result, with caution!",
-            )
+            warnings.filterwarnings("ignore")
             mgc = multiscale_graphcorr(
                 x, y, compute_distance=self.compute_distance, reps=1
             )

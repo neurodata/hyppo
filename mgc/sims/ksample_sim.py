@@ -50,12 +50,28 @@ def _2samp_rotate(sim, x, y, p, degree=90):
     )
     data = np.hstack([x, y])
     rot_data = (rot_mat @ data.T).T
-    x_rot, y_rot = np.hsplit(rot_data, 2)
+
+    if sim.__name__ in [
+        "joint_normal",
+        "logarithmic",
+        "sin_four_pi",
+        "sin_sixteen_pi",
+        "two_parabolas",
+        "square",
+        "diamond",
+        "circle",
+        "ellipse",
+        "multiplicative_noise",
+        "multimodal_independence",
+    ]:
+        x_rot, y_rot = np.hsplit(rot_data, [p-1])
+    else:
+        x_rot, y_rot = np.hsplit(rot_data, 2)
 
     return x_rot, y_rot
 
 
-def rot_2samp(sim, n, p, noise=True, degree=90):
+def rot_2samp(sim, n, p, noise=True, degree=90, trans=0):
     """Rotated 2 sample test"""
     if sim not in _SIMS:
         raise ValueError("Not valid simulation")
@@ -75,7 +91,7 @@ def rot_2samp(sim, n, p, noise=True, degree=90):
     return samp1, samp2
 
 
-def trans_2samp(sim, n, p, noise=False, trans=0.3):
+def trans_2samp(sim, n, p, noise=False, degree=90, trans=0.3):
     """Translated 2 sample test"""
     if sim not in _SIMS:
         raise ValueError("Not valid simulation")
@@ -88,8 +104,7 @@ def trans_2samp(sim, n, p, noise=False, trans=0.3):
             x, y = sim(n, p)
         else:
             x, y = sim(n, p, noise=noise)
-        degree = np.random.randint(90)
-        x_trans += trans
+        x_trans = x + trans
         x_trans, y_trans = _2samp_rotate(sim, x_trans, y, p, degree=degree)
     samp1 = np.hstack([x, y])
     samp2 = np.hstack([x_trans, y_trans])
