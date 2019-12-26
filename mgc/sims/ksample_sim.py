@@ -64,9 +64,9 @@ def _2samp_rotate(sim, x, y, p, degree=90):
         "multiplicative_noise",
         "multimodal_independence",
     ]:
-        x_rot, y_rot = np.hsplit(rot_data, [p-1])
-    else:
         x_rot, y_rot = np.hsplit(rot_data, 2)
+    else:
+        x_rot, y_rot = np.hsplit(rot_data, [p-1])
 
     return x_rot, y_rot
 
