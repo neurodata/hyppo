@@ -46,6 +46,7 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
     else:
         rot_mat = np.identity(p + 1)
     if pow_type == "dim":
+        angle = np.random.random_sample() * angle
         rot_mat[np.ix_((0, -1), (0, -1))] = np.array(
             [[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]]
         )
