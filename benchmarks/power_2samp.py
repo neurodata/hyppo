@@ -203,7 +203,7 @@ def power_2samp_dimension(
     p=1,
     angle=90,
     trans=0.3,
-    noise=False,
+    noise=True,
     alpha=0.05,
     reps=1000,
     workers=1,

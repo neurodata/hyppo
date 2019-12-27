@@ -27,7 +27,7 @@ _SIMS = [
 ]
 
 
-def _2samp_rotate(sim, x, y, p, degree=90):
+def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
     angle = np.radians(degree)
     if sim.__name__ in [
         "joint_normal",
@@ -45,9 +45,16 @@ def _2samp_rotate(sim, x, y, p, degree=90):
         rot_mat = np.identity(2 * p)
     else:
         rot_mat = np.identity(p + 1)
-    rot_mat[np.ix_((0, 1), (0, 1))] = np.array(
-        [[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]]
-    )
+    if pow_type == "dim":
+        rot_mat[np.ix_((0, -1), (0, -1))] = np.array(
+            [[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]]
+        )
+    elif pow_type == "samp":
+        rot_mat[np.ix_((0, 1), (0, 1))] = np.array(
+            [[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]]
+        )
+    else:
+        raise ValueError("pow_type not a valid flag ('dim', 'samp')")
     data = np.hstack([x, y])
     rot_data = (rot_mat @ data.T).T
 
@@ -84,14 +91,14 @@ def rot_2samp(sim, n, p, noise=True, degree=90, trans=0):
             x, y = sim(n, p)
         else:
             x, y = sim(n, p, noise=noise)
-        x_rot, y_rot = _2samp_rotate(sim, x, y, p, degree=degree)
+        x_rot, y_rot = _2samp_rotate(sim, x, y, p, degree=degree, pow_type="samp")
     samp1 = np.hstack([x, y])
     samp2 = np.hstack([x_rot, y_rot])
 
     return samp1, samp2
 
 
-def trans_2samp(sim, n, p, noise=False, degree=90, trans=0.3):
+def trans_2samp(sim, n, p, noise=True, degree=90, trans=0.3):
     """Translated 2 sample test"""
     if sim not in _SIMS:
         raise ValueError("Not valid simulation")
@@ -105,7 +112,7 @@ def trans_2samp(sim, n, p, noise=False, degree=90, trans=0.3):
         else:
             x, y = sim(n, p, noise=noise)
         x_trans = x + trans
-        x_trans, y_trans = _2samp_rotate(sim, x_trans, y, p, degree=degree)
+        x_trans, y_trans = _2samp_rotate(sim, x_trans, y, p, degree=degree, pow_type="dim")
     samp1 = np.hstack([x, y])
     samp2 = np.hstack([x_trans, y_trans])
 
