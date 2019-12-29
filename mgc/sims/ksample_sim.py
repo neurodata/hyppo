@@ -29,7 +29,7 @@ _SIMS = [
 
 def _normalize(x, y):
     """Normalize input data matricies."""
-    return x / np.max(np.abs(x)), y / np.max(np.abs(y))
+    return np.divide(x, np.max(np.abs(x))), np.divide(y, np.max(np.abs(y)))
 
 
 def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
@@ -79,7 +79,7 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
     ]:
         x_rot, y_rot = np.hsplit(rot_data, 2)
     else:
-        x_rot, y_rot = np.hsplit(rot_data, [p-1])
+        x_rot, y_rot = np.hsplit(rot_data, [-1])
 
     return x_rot, y_rot
 
