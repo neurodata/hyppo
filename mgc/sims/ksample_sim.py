@@ -27,6 +27,11 @@ _SIMS = [
 ]
 
 
+def _normalize(x, y):
+    """Normalize input data matricies."""
+    return x / np.max(np.abs(x)), y / np.max(np.abs(y))
+
+
 def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
     angle = np.radians(degree)
     if sim.__name__ in [
@@ -114,6 +119,10 @@ def trans_2samp(sim, n, p, noise=True, degree=90, trans=0.3):
             x, y = sim(n, p, noise=noise)
         x_trans = x + trans
         x_trans, y_trans = _2samp_rotate(sim, x_trans, y, p, degree=degree, pow_type="dim")
+
+        x, y = _normalize(x, y)
+        x_trans, y_trans = _normalize(x_trans, y_trans)
+
     samp1 = np.hstack([x, y])
     samp2 = np.hstack([x_trans, y_trans])
 
