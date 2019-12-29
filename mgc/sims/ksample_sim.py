@@ -29,12 +29,15 @@ _SIMS = [
 
 def _normalize(x, y):
     """Normalize input data matricies."""
-    return np.divide(x, np.max(np.abs(x))), np.divide(y, np.max(np.abs(y)))
+    x[:, 0] = x[:, 0] / np.max(np.abs(x[:, 0]))
+    y[:, 0] = y[:, 0] / np.max(np.abs(y[:, 0]))
+    return x, y
 
 
 def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
     angle = np.radians(degree)
-    if sim.__name__ in [
+    data = np.hstack([x, y])
+    same_shape = [
         "joint_normal",
         "logarithmic",
         "sin_four_pi",
@@ -46,22 +49,42 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
         "ellipse",
         "multiplicative_noise",
         "multimodal_independence",
-    ]:
-        rot_mat = np.identity(2 * p)
+    ]
+    if sim.__name__ in same_shape:
+        rot_shape = 2 * p
     else:
-        rot_mat = np.identity(p + 1)
+        rot_shape = p + 1
+    rot_mat = np.identity(rot_shape)
     if pow_type == "dim":
-        angle = np.random.random_sample() * angle
-        rot_mat[np.ix_((0, -1), (0, -1))] = np.array(
-            [[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]]
-        )
+        if sim.__name__ not in [
+            "exponential",
+            "cubic",
+            "spiral",
+            "uncorrelated_bernoulli",
+            "fourth_root",
+            "circle",
+        ]:
+            for i in range(rot_shape):
+                mat = np.random.normal(size=(rot_shape, 1))
+                mat = mat / np.sqrt(np.sum(mat ** 2))
+                if i == 0:
+                    rot = mat
+                else:
+                    rot = np.hstack([rot, mat])
+                rot_mat, _ = np.linalg.qr(rot)
+                if (p % 2) == 1:
+                    rot_mat[0] *= -1
+        else:
+            angle = np.random.random_sample() * angle
+            rot_mat[np.ix_((0, -1), (0, -1))] = np.array(
+                [[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]]
+            )
     elif pow_type == "samp":
         rot_mat[np.ix_((0, 1), (0, 1))] = np.array(
             [[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]]
         )
     else:
         raise ValueError("pow_type not a valid flag ('dim', 'samp')")
-    data = np.hstack([x, y])
     rot_data = (rot_mat @ data.T).T
 
     if sim.__name__ in [
@@ -117,11 +140,10 @@ def trans_2samp(sim, n, p, noise=True, degree=90, trans=0.3):
             x, y = sim(n, p)
         else:
             x, y = sim(n, p, noise=noise)
-        x_trans = x + trans
-        x_trans, y_trans = _2samp_rotate(sim, x_trans, y, p, degree=degree, pow_type="dim")
-
         x, y = _normalize(x, y)
-        x_trans, y_trans = _normalize(x_trans, y_trans)
+        x_trans, y_trans = _2samp_rotate(sim, x, y, p, degree=degree, pow_type="dim")
+        x_trans[:, 0] += trans
+        y_trans[:, 0] = y_trans[:, -1]
 
     samp1 = np.hstack([x, y])
     samp2 = np.hstack([x_trans, y_trans])
