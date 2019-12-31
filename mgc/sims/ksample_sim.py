@@ -150,7 +150,12 @@ def trans_2samp(sim, n, p, noise=True, degree=90, trans=0.3):
     return samp1, samp2
 
 
-def gaussian_3samp(n, epsilon, case=1):
+def gaussian_3samp(n, epsilon=1, weight=0, case=1):
+    old_case = case
+    if case == 4:
+        case = 2
+    else:
+        case = 3
     cov = np.identity(2)
     means = [0] * 3
     epsilons = [epsilon] * 3
@@ -171,5 +176,9 @@ def gaussian_3samp(n, epsilon, case=1):
 
     total_means = list(zip(means, epsilons))
     sims = [np.random.multivariate_normal(mean, cov, n) for mean in total_means]
+    if old_case == 4:
+        sims[-1] = weight * sims[-1] + (1 - weight) * np.random.multivariate_normal(total_means[-1], cov * 2, n)
+    elif old_case == 5:
+        sims = [weight * sims[i] + (1 - weight) * np.random.multivariate_normal(total_means[i], cov * 2, n) for i in range(len(sims))]
 
     return sims
