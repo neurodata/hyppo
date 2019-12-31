@@ -126,7 +126,7 @@ def rot_2samp(sim, n, p, noise=True, degree=90, trans=0):
     return samp1, samp2
 
 
-def trans_2samp(sim, n, p, noise=True, degree=90, trans=0.3):
+def trans_2samp(sim, n, p, noise=True, degree=30, trans=0.3):
     """Translated 2 sample test"""
     if sim not in _SIMS:
         raise ValueError("Not valid simulation")
