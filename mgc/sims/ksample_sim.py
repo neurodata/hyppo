@@ -154,7 +154,7 @@ def gaussian_3samp(n, epsilon=1, weight=0, case=1):
     old_case = case
     if case == 4:
         case = 2
-    else:
+    elif case == 5:
         case = 3
     cov = np.identity(2)
     means = [0] * 3
