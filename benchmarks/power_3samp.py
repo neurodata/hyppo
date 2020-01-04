@@ -22,7 +22,7 @@ class _ParallelP3Samp(object):
         self.rngs = rngs
 
     def __call__(self, index):
-        if self.case in [4, 5]:
+        if self.case not in [4, 5]:
             x, y, z = gaussian_3samp(self.n, epsilon=self.epsilon, case=self.case)
         else:
             x, y, z = gaussian_3samp(self.n, weight=self.weight, case=self.case)

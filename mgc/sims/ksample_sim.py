@@ -126,7 +126,7 @@ def rot_2samp(sim, n, p, noise=True, degree=90, trans=0):
     return samp1, samp2
 
 
-def trans_2samp(sim, n, p, noise=True, degree=30, trans=0.3):
+def trans_2samp(sim, n, p, noise=True, degree=90, trans=0.3):
     """Translated 2 sample test"""
     if sim not in _SIMS:
         raise ValueError("Not valid simulation")
@@ -152,21 +152,21 @@ def trans_2samp(sim, n, p, noise=True, degree=30, trans=0.3):
 
 def gaussian_3samp(n, epsilon=1, weight=0, case=1):
     old_case = case
-    if case == 4:
+    if old_case == 4:
         case = 2
-    elif case == 5:
+    elif old_case == 5:
         case = 3
-    cov = np.identity(2)
-    means = [0] * 3
-    epsilons = [epsilon] * 3
+    sigma = np.identity(2)
+    mu1 = [0] * 3
+    mu2 = [epsilon] * 3
 
     if case == 1:
         pass
     elif case == 2:
-        epsilons = [0, 0, epsilon]
+        mu2 = [0, 0, epsilon]
     elif case == 3:
-        means = [0, -epsilon / 2, epsilon / 2]
-        epsilons = [
+        mu1 = [0, -epsilon / 2, epsilon / 2]
+        mu2 = [
             (np.sqrt(3) / 3) * epsilon,
             -(np.sqrt(3) / 6) * epsilon,
             -(np.sqrt(3) / 6) * epsilon,
@@ -174,11 +174,11 @@ def gaussian_3samp(n, epsilon=1, weight=0, case=1):
     else:
         raise ValueError("Not valid case, must be 1, 2, or 3")
 
-    total_means = list(zip(means, epsilons))
-    sims = [np.random.multivariate_normal(mean, cov, n) for mean in total_means]
+    means = list(zip(mu1, mu2))
+    sims = [np.random.multivariate_normal(mean, sigma, n) for mean in means]
     if old_case == 4:
-        sims[-1] = weight * sims[-1] + (1 - weight) * np.random.multivariate_normal(total_means[-1], cov * 2, n)
+        sims[-1] = (1 - weight) * sims[-1] + weight * np.random.multivariate_normal(means[-1], sigma * 2, n)
     elif old_case == 5:
-        sims = [weight * sims[i] + (1 - weight) * np.random.multivariate_normal(total_means[i], cov * 2, n) for i in range(len(sims))]
+        sims = [(1 - weight) * sims[i] + weight * np.random.multivariate_normal(means[i], sigma * 2, n) for i in range(len(sims))]
 
     return sims

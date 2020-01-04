@@ -201,7 +201,7 @@ def power_2samp_dimension(
     sim,
     n=100,
     p=1,
-    angle=30,
+    angle=90,
     trans=0,
     noise=False,
     alpha=0.05,
