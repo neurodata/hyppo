@@ -101,7 +101,7 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
     ]:
         x_rot, y_rot = np.hsplit(rot_data, 2)
     else:
-        x_rot, y_rot = np.hsplit(rot_data, [-1])
+        x_rot, y_rot = np.hsplit(rot_data, [-p])
 
     return x_rot, y_rot
 
