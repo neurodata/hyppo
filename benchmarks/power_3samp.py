@@ -25,7 +25,7 @@ class _ParallelP3Samp(object):
         if self.case not in [4, 5]:
             x, y, z = gaussian_3samp(self.n, epsilon=self.epsilon, case=self.case)
         else:
-            x, y, z = gaussian_3samp(self.n, weight=self.weight, case=self.case)
+            x, y, z = gaussian_3samp(self.n, epsilon=self.epsilon, weight=self.weight, case=self.case)
         u, v = k_sample_transform([x, y, z])
 
         obs_stat = self.test._statistic(u, v)
