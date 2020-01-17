@@ -97,7 +97,6 @@ def rf_xmat(x, y, ntrees):
     y = y.reshape(-1)
     clf = RandomForestRegressor(n_estimators=ntrees)
     clf.fit(x, y)
-    x = 1 - sim_matrix(clf, x)
-    x = np.sqrt(x)
+    x = sim_matrix(clf, x)
 
     return x

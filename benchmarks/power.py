@@ -11,6 +11,7 @@ class _ParallelP(object):
 
     def __init__(self, test, sim, n, p, noise, rngs):
         self.test = test()
+        self.test_name = test.__name__
         self.sim = sim
 
         self.n = n
@@ -34,8 +35,9 @@ class _ParallelP(object):
         # calculate permuted stats, store in null distribution
         perm_stat = self.test._statistic(x, permy)
 
-        obs_stat = np.abs(obs_stat)
-        perm_stat = np.abs(perm_stat)
+        if self.test_name == "Pearson":
+            obs_stat = np.abs(obs_stat)
+            perm_stat = np.abs(perm_stat)
 
         return obs_stat, perm_stat
 

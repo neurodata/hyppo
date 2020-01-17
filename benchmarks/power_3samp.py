@@ -12,16 +12,20 @@ class _ParallelP3Samp(object):
     Helper function to calculate parallel power.
     """
 
-    def __init__(self, test, n, epsilon, case, rngs):
+    def __init__(self, test, n, epsilon=1, weight=0, case=1, rngs=[]):
         self.test = test()
 
         self.n = n
         self.epsilon = epsilon
+        self.weight = weight
         self.case = case
         self.rngs = rngs
 
     def __call__(self, index):
-        x, y, z = gaussian_3samp(self.n, self.epsilon, self.case)
+        if self.case not in [4, 5]:
+            x, y, z = gaussian_3samp(self.n, epsilon=self.epsilon, case=self.case)
+        else:
+            x, y, z = gaussian_3samp(self.n, weight=self.weight, case=self.case)
         u, v = k_sample_transform([x, y, z])
 
         obs_stat = self.test._statistic(u, v)
@@ -31,14 +35,11 @@ class _ParallelP3Samp(object):
         # calculate permuted stats, store in null distribution
         perm_stat = self.test._statistic(u, permv)
 
-        obs_stat = np.abs(obs_stat)
-        perm_stat = np.abs(perm_stat)
-
         return obs_stat, perm_stat
 
 
 def _perm_test_3samp(
-    test, n=100, epsilon=0, case=1, reps=1000, workers=1, random_state=None
+    test, n=100, epsilon=1, weight=0, case=1, reps=1000, workers=1, random_state=None
 ):
     r"""
     Helper function that calculates the statistical.
@@ -70,7 +71,7 @@ def _perm_test_3samp(
 
     # use all cores to create function that parallelizes over number of reps
     mapwrapper = MapWrapper(workers)
-    parallelp = _ParallelP3Samp(test, n, epsilon, case, rngs)
+    parallelp = _ParallelP3Samp(test, n, epsilon, weight, case, rngs)
     alt_dist, null_dist = map(list, zip(*list(mapwrapper(parallelp, range(reps)))))
     alt_dist = np.array(alt_dist)
     null_dist = np.array(null_dist)
@@ -78,13 +79,22 @@ def _perm_test_3samp(
     return alt_dist, null_dist
 
 
-def power_3samp_epsilon(
-    test, n=100, epsilon=0, case=1, alpha=0.05, reps=1000, workers=1, random_state=None
+def power_3samp_epsweight(
+    test,
+    n=100,
+    epsilon=0.5,
+    weight=0,
+    case=1,
+    alpha=0.05,
+    reps=1000,
+    workers=1,
+    random_state=None,
 ):
     alt_dist, null_dist = _perm_test_3samp(
         test,
         n=n,
         epsilon=epsilon,
+        weight=weight,
         case=case,
         reps=reps,
         workers=workers,
