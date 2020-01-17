@@ -80,7 +80,15 @@ def _perm_test_3samp(
 
 
 def power_3samp_epsweight(
-    test, n=100, epsilon=0.5, weight=0, case=1, alpha=0.05, reps=1000, workers=1, random_state=None
+    test,
+    n=100,
+    epsilon=0.5,
+    weight=0,
+    case=1,
+    alpha=0.05,
+    reps=1000,
+    workers=1,
+    random_state=None,
 ):
     alt_dist, null_dist = _perm_test_3samp(
         test,

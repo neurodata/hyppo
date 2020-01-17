@@ -28,9 +28,18 @@ class _ParallelP(object):
             self.sim.__name__ == "multiplicative_noise"
             or self.sim.__name__ == "multimodal_independence"
         ):
-            x, y = self.ksim(self.sim, self.n, self.p, degree=self.angle, trans=self.trans)
+            x, y = self.ksim(
+                self.sim, self.n, self.p, degree=self.angle, trans=self.trans
+            )
         else:
-            x, y = self.ksim(self.sim, self.n, self.p, noise=self.noise, degree=self.angle, trans=self.trans)
+            x, y = self.ksim(
+                self.sim,
+                self.n,
+                self.p,
+                noise=self.noise,
+                degree=self.angle,
+                trans=self.trans,
+            )
 
         u, v = k_sample_transform([x, y])
         obs_stat = self.test._statistic(u, v)
@@ -44,8 +53,17 @@ class _ParallelP(object):
 
 
 def _perm_test(
-    test, ksim, sim, n=100, p=1, noise=False, reps=1000, workers=1, random_state=None,
-    angle=90, trans=0
+    test,
+    ksim,
+    sim,
+    n=100,
+    p=1,
+    noise=False,
+    reps=1000,
+    workers=1,
+    random_state=None,
+    angle=90,
+    trans=0,
 ):
     r"""
     Helper function that calculates the statistical.
@@ -78,7 +96,15 @@ def _perm_test(
     # use all cores to create function that parallelizes over number of reps
     mapwrapper = MapWrapper(workers)
     parallelp = _ParallelP(
-        test=test, ksim=ksim, sim=sim, n=n, p=p, noise=noise, rngs=rngs, angle=angle, trans=trans,
+        test=test,
+        ksim=ksim,
+        sim=sim,
+        n=n,
+        p=p,
+        noise=noise,
+        rngs=rngs,
+        angle=angle,
+        trans=trans,
     )
     alt_dist, null_dist = map(list, zip(*list(mapwrapper(parallelp, range(reps)))))
     alt_dist = np.array(alt_dist)

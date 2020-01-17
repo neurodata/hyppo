@@ -177,8 +177,14 @@ def gaussian_3samp(n, epsilon=1, weight=0, case=1):
     means = list(zip(mu1, mu2))
     sims = [np.random.multivariate_normal(mean, sigma, n) for mean in means]
     if old_case == 4:
-        sims[-1] = (1 - weight) * sims[-1] + weight * np.random.multivariate_normal(means[-1], sigma * 1.5, n)
+        sims[-1] = (1 - weight) * sims[-1] + weight * np.random.multivariate_normal(
+            means[-1], sigma * 1.5, n
+        )
     elif old_case == 5:
-        sims = [(1 - weight) * sims[i] + weight * np.random.multivariate_normal(means[i], sigma * 1.5, n) for i in range(len(sims))]
+        sims = [
+            (1 - weight) * sims[i]
+            + weight * np.random.multivariate_normal(means[i], sigma * 1.5, n)
+            for i in range(len(sims))
+        ]
 
     return sims
