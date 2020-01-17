@@ -76,7 +76,12 @@ class _CheckInputs:
 def k_sample_transform(inputs):
     n_inputs = len(inputs)
     u = np.vstack(inputs)
-    ns = [i.shape[0] for i in inputs]
-    v = np.concatenate([np.repeat(i, ns[i]) for i in range(n_inputs)]).reshape(-1, 1)
+    vs = []
+    for i in range(n_inputs):
+        n = inputs[i].shape[0]
+        encode = np.zeros(shape=(n, n_inputs))
+        encode[:, i] = np.ones(shape=n)
+        vs.append(encode)
+    v = np.concatenate(vs)
 
     return u, v
