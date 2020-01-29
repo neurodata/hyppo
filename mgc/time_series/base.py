@@ -88,9 +88,14 @@ class TimeSeriesTest(ABC):
         stat = self._statistic(x, y)
 
         # calculate null distribution
-        null_dist = np.array(Parallel(n_jobs=workers)(
-            [delayed(_perm_stat)(self._statistic, self.distx, self.disty) for rep in range(reps)]
-        ))
+        null_dist = np.array(
+            Parallel(n_jobs=workers)(
+                [
+                    delayed(_perm_stat)(self._statistic, self.distx, self.disty)
+                    for rep in range(reps)
+                ]
+            )
+        )
         pvalue = (null_dist >= stat).sum() / reps
 
         # correct for a p-value of 0. This is because, with bootstrapping
@@ -106,10 +111,7 @@ def _perm_stat(calc_stat, distx, disty):
     n = distx.shape[0]
     block_size = int(np.ceil(np.sqrt(n)))
     perm_index = np.r_[
-        [
-            np.arange(t, t + block_size)
-            for t in np.random.choice(n, n // block_size + 1)
-        ]
+        [np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]
     ].flatten()[:n]
     perm_index = np.mod(perm_index, n)
     permy = disty[np.ix_(perm_index, perm_index)]

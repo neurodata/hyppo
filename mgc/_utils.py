@@ -122,9 +122,11 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1):
     stat = calc_stat(x, y)
 
     # calculate null distribution
-    null_dist = np.array(Parallel(n_jobs=workers)(
-        [delayed(_perm_stat)(calc_stat, x, y) for rep in range(reps)]
-    ))
+    null_dist = np.array(
+        Parallel(n_jobs=workers)(
+            [delayed(_perm_stat)(calc_stat, x, y) for rep in range(reps)]
+        )
+    )
     pvalue = (null_dist >= stat).sum() / reps
 
     # correct for a p-value of 0. This is because, with bootstrapping
