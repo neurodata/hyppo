@@ -102,7 +102,7 @@ class TimeSeriesTest(ABC):
         return stat, pvalue
 
 
-def _perm_stat(calc_stat, distx, disty, block_size):
+def _perm_stat(calc_stat, distx, disty):
     n = distx.shape[0]
     block_size = int(np.ceil(np.sqrt(n)))
     perm_index = np.r_[
