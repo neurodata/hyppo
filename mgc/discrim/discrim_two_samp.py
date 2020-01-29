@@ -190,7 +190,10 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
 @njit
 def calculate_diff_null(null_dist, reps):
-    """Helper function to claculate the distribution of the difference under null."""
+    """
+    Helper function to calculate the distribution of thedifference under
+    null.
+    """
     diff_null = []
 
     for i in range(0, reps - 1):

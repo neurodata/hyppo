@@ -12,11 +12,11 @@ class DiscriminabilityTest(ABC):
         self.pvalue_ = None
         super().__init__()
 
-    # @abstractmethod
+    @abstractmethod
     def _statistic(self, x, y):
         r"""
         Calulates the independence test statistic.
-            
+
         Parameters
         ----------
         x, y : ndarray
@@ -54,17 +54,16 @@ class DiscriminabilityTest(ABC):
 
         return out
 
-    @abstractmethod
     def _perm_stat(self, index):
         r"""
         Helper function that is used to calculate parallel permuted test
         statistics.
-            
+
         Parameters
         ----------
         index : int
             Iterator used for parallel statistic calculation
-            
+
         Returns
         -------
         perm_stat : float
@@ -74,6 +73,6 @@ class DiscriminabilityTest(ABC):
     @abstractmethod
     def test(self):
         r"""
-        Calculates the test statistic and p-value for Discriminability one sample 
+        Calculates the test statistic and p-value for Discriminability one sample
         and two sample test.
         """
