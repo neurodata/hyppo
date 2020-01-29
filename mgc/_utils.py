@@ -1,8 +1,9 @@
 import warnings
+from joblib import Parallel, delayed
 
 import numpy as np
+from scipy._lib._util import check_random_state
 from scipy.spatial.distance import cdist
-from sklearn.metrics.pairwise import rbf_kernel
 
 
 # from scipy
@@ -103,3 +104,34 @@ def gaussian(x):
     l1 = cdist(x, x, "cityblock")
     gamma = 1.0 / (2 * (np.median(l1[l1 != 0]) ** 2))
     return np.exp(-gamma * cdist(x, x, "sqeuclidean"))
+
+
+# p-value computation
+def _perm_stat(calc_stat, x, y):
+    permy = np.random.permutation(y)
+    perm_stat = calc_stat(x, permy)
+
+    return perm_stat
+
+
+def perm_test(calc_stat, x, y, reps=1000, workers=1):
+    """
+    Calculate the p-value via permutation
+    """
+    # calculate observed test statistic
+    stat = calc_stat(x, y)
+
+    # calculate null distribution
+    null_dist = np.array(
+        Parallel(n_jobs=workers)(
+            [delayed(_perm_stat)(calc_stat, x, y) for rep in range(reps)]
+        )
+    )
+    pvalue = (null_dist >= stat).sum() / reps
+
+    # correct for a p-value of 0. This is because, with bootstrapping
+    # permutations, a p-value of 0 is incorrect
+    if pvalue == 0:
+        pvalue = 1 / reps
+
+    return stat, pvalue

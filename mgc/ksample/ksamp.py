@@ -1,7 +1,7 @@
 import numpy as np
 from numba import njit
 
-from .._utils import check_inputs_distmat, euclidean
+from .._utils import euclidean
 from .base import KSampleTest
 from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC
 from ..random_forest import MGCRF
@@ -78,7 +78,25 @@ class KSample(KSampleTest):
         indep_test = test_names[indep_test]
         KSampleTest.__init__(self, indep_test, compute_distance=compute_distance)
 
-    def test(self, *args, reps=1000, workers=1, random_state=None):
+    def _statistic(self, *args):
+        r"""
+        Calulates the *k*-sample test statistic.
+
+        Parameters
+        ----------
+        *args : ndarrays
+            Variable length input data matrices. All inputs must have the same
+            number of samples. That is, the shapes must be `(n, p)` and
+            `(m, p)` where `n` and `m` are the number of samples and `p` are
+            the number of dimensions. Alternatively, inputs can be distance
+            matrices, where the shapes must all be `(n, n)`.
+        """
+        inputs = list(args)
+        u, v = k_sample_transform(inputs)
+
+        return self.indep_test._statistic(u, v)
+
+    def test(self, *args, reps=1000, workers=1):
         r"""
         Calculates the *k*-sample test statistic and p-value.
 
@@ -96,10 +114,6 @@ class KSample(KSampleTest):
         workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
-        random_state : int or np.random.RandomState instance, optional
-            If already a RandomState instance, use it.
-            If seed is an int, return a new RandomState instance seeded with seed.
-            If None, use np.random.RandomState. Default is None.
 
         Returns
         -------
@@ -138,5 +152,6 @@ class KSample(KSampleTest):
             compute_distance=self.compute_distance,
         )
         inputs = check_input()
+        u, v = k_sample_transform(inputs)
 
-        return super(KSample, self).test(inputs, reps, workers, random_state)
+        return self.indep_test.test(u, v, reps, workers)
