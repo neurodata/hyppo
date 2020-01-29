@@ -123,7 +123,7 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1):
 
     # calculate null distribution
     null_dist = np.array(Parallel(n_jobs=workers)(
-        [delayed(_perm_stat)(calc_stat, x, y) for rep in reps]
+        [delayed(_perm_stat)(calc_stat, x, y) for rep in range(reps)]
     ))
     pvalue = (null_dist >= stat).sum() / reps
 

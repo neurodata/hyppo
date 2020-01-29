@@ -89,7 +89,7 @@ class TimeSeriesTest(ABC):
 
         # calculate null distribution
         null_dist = np.array(Parallel(n_jobs=workers)(
-            [delayed(_perm_stat)(self._statistic, self.distx, self.disty) for rep in reps]
+            [delayed(_perm_stat)(self._statistic, self.distx, self.disty) for rep in range(reps)]
         ))
         pvalue = (null_dist >= stat).sum() / reps
 
