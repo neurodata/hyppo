@@ -4,7 +4,7 @@ from numba import njit
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 from . import Dcorr
-from .._utils import gaussian, check_xy_distmat
+from .._utils import gaussian, check_xy_distmat, chi2_approx
 
 
 class Hsic(IndependenceTest):
@@ -135,7 +135,7 @@ class Hsic(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, auto=True):
         r"""
         Calculates the Hsic test statistic and p-value.
 
@@ -153,6 +153,11 @@ class Hsic(IndependenceTest):
         workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
+        auto : bool (default: True)
+            Automatically uses fast approximation when sample size and size of array
+            is greater than 20. If True, and sample size is greater than 20, a fast
+            chi2 approximation will be run. Parameters ``reps`` and ``workers`` are
+            irrelevant in this case.
 
         Returns
         -------
@@ -203,4 +208,8 @@ class Hsic(IndependenceTest):
         if self.is_kernel:
             check_xy_distmat(x, y)
 
-        return super(Hsic, self).test(x, y, reps, workers)
+        if auto == True and x.shape[0] > 20 and x.size > 20:
+            stat, pvalue = chi2_approx(self._statistic, x, y)
+            return stat, pvalue
+        else:
+            return super(Hsic, self).test(x, y, reps, workers)

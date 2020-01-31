@@ -3,6 +3,7 @@ from joblib import Parallel, delayed
 
 import numpy as np
 from scipy._lib._util import check_random_state
+from scipy.stats.distributions import chi2
 from scipy.spatial.distance import cdist
 
 
@@ -133,5 +134,13 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1):
     # permutations, a p-value of 0 is incorrect
     if pvalue == 0:
         pvalue = 1 / reps
+
+    return stat, pvalue
+
+
+def chi2_approx(calc_stat, x, y):
+    n = x.shape[0]
+    stat = calc_stat(x, y)
+    pvalue = 1 - chi2.cdf(stat*n + 1, 1)
 
     return stat, pvalue
