@@ -107,7 +107,38 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
 
 
 def rot_2samp(sim, n, p, noise=True, degree=90, trans=0):
-    """Rotated 2 sample test"""
+    r"""
+    Rotates independence simulations to produce 2 samples
+
+    Parameters
+    ----------
+    sim : callable()
+        The simulation function (must be an independence simulation) that will be
+        rotated.
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, (default: True)
+        Whether or not to include noise in the simulation.
+    degree : float, (default: 90)
+        The number of degrees to separate the second simulation
+    trans : float, (default: 0)
+        The amount to translate the simulation by (if any)
+
+    Returns
+    -------
+    samp1, samp2 : ndarray
+        Simulated data matrices.
+
+    Examples
+    --------
+    >>> from mgc.sims import rot_2samp
+    >>> from mgc.sims import spiral
+    >>> samp1, samp2 = rot_2samp(spiral, 100, 1)
+    >>> print(samp1.shape, samp2.shape)
+    (100, 2) (100, 2)
+    """
     if sim not in _SIMS:
         raise ValueError("Not valid simulation")
 
@@ -127,7 +158,38 @@ def rot_2samp(sim, n, p, noise=True, degree=90, trans=0):
 
 
 def trans_2samp(sim, n, p, noise=True, degree=90, trans=0.3):
-    """Translated 2 sample test"""
+    r"""
+    Translates independence simulations to produce 2 samples
+
+    Parameters
+    ----------
+    sim : callable()
+        The simulation function (must be an independence simulation) that will be
+        rotated.
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, (default: True)
+        Whether or not to include noise in the simulation.
+    degree : float, (default: 90)
+        The number of degrees to separate the second simulation
+    trans : float, (default: 0.3)
+        The amount to translate the simulation by (if any)
+
+    Returns
+    -------
+    samp1, samp2 : ndarray
+        Simulated data matrices.
+
+    Examples
+    --------
+    >>> from mgc.sims import trans_2samp
+    >>> from mgc.sims import spiral
+    >>> samp1, samp2 = trans_2samp(spiral, 100, 1)
+    >>> print(samp1.shape, samp2.shape)
+    (100, 2) (100, 2)
+    """
     if sim not in _SIMS:
         raise ValueError("Not valid simulation")
 
@@ -151,6 +213,33 @@ def trans_2samp(sim, n, p, noise=True, degree=90, trans=0.3):
 
 
 def gaussian_3samp(n, epsilon=1, weight=0, case=1):
+    r"""
+    Produce 3 samples of 2D gaussians for various cases
+
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    epsilon : float
+        The amount of distance to move the gaussians.
+    weight : bool, (default: True)
+        For a mixture of gaussians, the amount to weight the second gaussian.
+    case : float, (default: 90)
+        The case to test the simulation (look at k-sample paper for more
+        information).
+
+    Returns
+    -------
+    sims : list of ndarray
+        Simulated data matrices.
+
+    Examples
+    --------
+    >>> from mgc.sims import gaussian_3samp
+    >>> sims = gaussian_3samp(100)
+    >>> print(sims[0].shape, sims[1].shape, sims[2].shape)
+    (100,) (100,) (100,)
+    """
     old_case = case
     if old_case == 4:
         case = 2

@@ -194,19 +194,19 @@ def setup(app):
 # -- Jupyter Notebook --------------------------------------------------------
 
 
-# def all_but_ipynb(dir, contents):
-#     result = []
-#     for c in contents:
-#         if os.path.isfile(os.path.join(dir, c)) and (not c.endswith(".ipynb")):
-#             result += [c]
-#     return result
+def all_but_ipynb(dir, contents):
+    result = []
+    for c in contents:
+        if os.path.isfile(os.path.join(dir, c)) and (not c.endswith(".ipynb")):
+            result += [c]
+    return result
 
 
-# shutil.rmtree(
-#     os.path.join(PROJECT_PATH, "..", "docs/tutorials/benchmarks"), ignore_errors=True
-# )
-# shutil.copytree(
-#     os.path.join(PROJECT_PATH, "..", "benchmarks"),
-#     os.path.join(PROJECT_PATH, "..", "docs/tutorials/benchmarks"),
-#     ignore=all_but_ipynb,
-# )
+shutil.rmtree(
+    os.path.join(PROJECT_PATH, "..", "docs/tutorials/benchmarks"), ignore_errors=True
+)
+shutil.copytree(
+    os.path.join(PROJECT_PATH, "..", "benchmarks"),
+    os.path.join(PROJECT_PATH, "..", "docs/tutorials/benchmarks"),
+    ignore=all_but_ipynb,
+)

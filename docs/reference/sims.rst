@@ -25,3 +25,9 @@ Independence Simulations
 .. autofunction:: diamond
 .. autofunction:: multiplicative_noise
 .. autofunction:: multimodal_independence
+
+*K*-Sample Simulations
+----------------------
+..autofunction:: rot_2samp
+..autofunction:: trans_2samp
+..autofunction:: gaussian_3samp
