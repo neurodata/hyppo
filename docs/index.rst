@@ -55,6 +55,7 @@ Documentation
    :maxdepth: 1
 
    install
+   tutorials
    reference/index
    contributing
    license
