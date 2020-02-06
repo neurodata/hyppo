@@ -1,6 +1,7 @@
 import numpy as np
 from numba import njit
 
+
 from .._utils import euclidean, gaussian
 from .base import KSampleTest
 from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC
