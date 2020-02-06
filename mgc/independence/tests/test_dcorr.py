@@ -19,15 +19,6 @@ class TestDcorrStat:
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(pvalue, obs_pvalue, decimal=2)
 
-    @pytest.mark.parametrize(
-        "distx, obs_stat", [(np.identity(100), 1.0), (np.zeros((100, 100)), 0.0)]
-    )
-    def test_local_dcorr(self, distx, obs_stat):
-        disty = distx
-
-        stat = _dcorr(distx, disty)
-        assert_almost_equal(stat, obs_stat)
-
 
 class TestDcorrErrorWarn:
     """ Tests errors and warnings derived from MGC.
