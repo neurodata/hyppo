@@ -1,7 +1,8 @@
 import numpy as np
 from numba import njit
 
-from .._utils import euclidean
+
+from .._utils import euclidean, gaussian
 from .base import KSampleTest
 from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC
 from ..random_forest import MGCRF
@@ -30,6 +31,9 @@ class KSample(KSampleTest):
         before-hand or create a function of the form ``compute_distance(x)``
         where `x` is the data matrix for which pairwise distances are
         calculated.
+    bias : bool (default: False)
+        Whether or not to use the biased or unbiased test statistics. Only
+        applies to ``Dcorr`` and ``Hsic``.
 
     Notes
     -----
@@ -63,7 +67,7 @@ class KSample(KSampleTest):
     this data.
     """
 
-    def __init__(self, indep_test, compute_distance=euclidean):
+    def __init__(self, indep_test, compute_distance=euclidean, bias=False):
         test_names = {
             RV.__name__: RV,
             CCA.__name__: CCA,
@@ -75,7 +79,11 @@ class KSample(KSampleTest):
         }
         if indep_test not in test_names.keys():
             raise ValueError("Test is not a valid independence test")
+        if indep_test == "Hsic" and compute_distance == euclidean:
+            compute_distance = gaussian
         indep_test = test_names[indep_test]
+        self.bias = bias
+
         KSampleTest.__init__(self, indep_test, compute_distance=compute_distance)
 
     def _statistic(self, *args):

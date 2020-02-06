@@ -22,17 +22,26 @@ class KSampleTest(ABC):
         distance matrix before-hand or create a function of the form
         ``compute_distance(x)`` where `x` is the data matrix for which
         pairwise distances are calculated.
+    bias : bool (default: False)
+        Whether or not to use the biased or unbiased test statistics. Only
+        applies to ``Dcorr`` and ``Hsic``.
     """
 
-    def __init__(self, indep_test, compute_distance=euclidean):
+    def __init__(self, indep_test, compute_distance=euclidean, bias=False):
         # set statistic and p-value
         self.stat = None
         self.pvalue = None
         self.compute_distance = compute_distance
 
         dist_tests = [Dcorr, HHG, Hsic, MGC]
+        # modify when adding Hottelling and MANOVA and set indep_test to None
         if indep_test in dist_tests:
-            self.indep_test = indep_test(compute_distance=compute_distance)
+            if indep_test.__name__ == "Hsic":
+                self.indep_test = indep_test(compute_kernel=compute_distance, bias=bias)
+            elif indep_test.__name__ == "Dcorr":
+                self.indep_test = indep_test(compute_distance=compute_distance, bias=bias)
+            else:
+                self.indep_test = indep_test(compute_distance=compute_distance,)
         else:
             self.indep_test = indep_test()
 

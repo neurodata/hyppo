@@ -1,7 +1,7 @@
 import numpy as np
 from numba import njit
 
-from .._utils import euclidean, check_xy_distmat
+from .._utils import euclidean, check_xy_distmat, chi2_approx
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 
@@ -23,6 +23,8 @@ class Dcorr(IndependenceTest):
         before-hand or create a function of the form ``compute_distance(x)``
         where `x` is the data matrix for which pairwise distances are
         calculated.
+    bias : bool (default: False)
+        Whether or not to use the biased or unbiased test statistics.
 
     See Also
     --------
@@ -88,11 +90,12 @@ class Dcorr(IndependenceTest):
                 Statistics*, 42(6), 2382-2412.
     """
 
-    def __init__(self, compute_distance=euclidean):
+    def __init__(self, compute_distance=euclidean, bias=False):
         # set is_distance to true if compute_distance is None
         self.is_distance = False
         if not compute_distance:
             self.is_distance = True
+        self.bias = bias
 
         IndependenceTest.__init__(self, compute_distance=compute_distance)
 
@@ -121,12 +124,13 @@ class Dcorr(IndependenceTest):
             distx = self.compute_distance(x)
             disty = self.compute_distance(y)
 
-        stat = _dcorr(distx, disty)
+        stat = _dcorr(distx, disty, self.bias)
         self.stat = stat
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1):
+
+    def test(self, x, y, reps=1000, workers=1, auto=True, bias=False):
         r"""
         Calculates the Dcorr test statistic and p-value.
 
@@ -144,6 +148,11 @@ class Dcorr(IndependenceTest):
         workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
+        auto : bool (default: True)
+            Automatically uses fast approximation when sample size and size of array
+            is greater than 20. If True, and sample size is greater than 20, a fast
+            chi2 approximation will be run. Parameters ``reps`` and ``workers`` are
+            irrelevant in this case.
 
         Returns
         -------
@@ -194,32 +203,45 @@ class Dcorr(IndependenceTest):
         if self.is_distance:
             check_xy_distmat(x, y)
 
-        return super(Dcorr, self).test(x, y, reps, workers)
+        if auto == True and x.shape[0] > 20:
+            stat, pvalue = chi2_approx(self._statistic, x, y)
+            return stat, pvalue
+        else:
+            return super(Dcorr, self).test(x, y, reps, workers)
 
 
 @njit
-def _center_distmat(distx):  # pragma: no cover
+def _center_distmat(distx, bias):  # pragma: no cover
     """Centers the distance matrices"""
     n = distx.shape[0]
 
-    # double centered distance matrices (unbiased version)
-    exp_distx = (
-        np.repeat((distx.sum(axis=0) / (n - 2)), n).reshape(-1, n).T
-        + np.repeat((distx.sum(axis=1) / (n - 2)), n).reshape(-1, n)
-        - distx.sum() / ((n - 1) * (n - 2))
-    )
+    # double centered distance matrices
+    if bias:
+        # use sum instead of mean because of numba restrictions
+        exp_distx = (
+            np.repeat(distx.sum(axis=0) / n, n).reshape(-1, n).T
+            + np.repeat(distx.sum(axis=1) / n, n).reshape(-1, n)
+            - (distx.sum() / (n * n))
+        )
+    else:
+        exp_distx = (
+            np.repeat((distx.sum(axis=0) / (n - 2)), n).reshape(-1, n).T
+            + np.repeat((distx.sum(axis=1) / (n - 2)), n).reshape(-1, n)
+            - distx.sum() / ((n - 1) * (n - 2))
+        )
     cent_distx = distx - exp_distx
-    np.fill_diagonal(cent_distx, 0)
+    if not bias:
+        np.fill_diagonal(cent_distx, 0)
 
     return cent_distx
 
 
 @njit
-def _dcorr(distx, disty):  # pragma: no cover
+def _dcorr(distx, disty, bias):  # pragma: no cover
     """Calculate the Dcorr test statistic"""
     # center distance matrices
-    cent_distx = _center_distmat(distx)
-    cent_disty = _center_distmat(disty)
+    cent_distx = _center_distmat(distx, bias)
+    cent_disty = _center_distmat(disty, bias)
 
     # calculate covariances and variances
     covar = np.sum(np.multiply(cent_distx, cent_disty.T))

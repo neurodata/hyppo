@@ -3,7 +3,7 @@ import numpy as np
 from numba import njit
 from scipy.stats import multiscale_graphcorr
 
-from .._utils import euclidean, check_xy_distmat
+from .._utils import euclidean, check_xy_distmat, chi2_approx
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 
@@ -145,7 +145,7 @@ class MGC(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1, random_state=None):
+    def test(self, x, y, reps=1000, workers=1, auto=True):
         r"""
         Calculates the MGC test statistic and p-value.
 
@@ -163,10 +163,12 @@ class MGC(IndependenceTest):
         workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
-        random_state : int or np.random.RandomState instance, (default: None)
-            If already a RandomState instance, use it.
-            If seed is an int, return a new RandomState instance seeded with seed.
-            If None, use np.random.RandomState.
+        auto : bool (default: True)
+            Automatically uses fast approximation when sample size and size of array
+            is greater than 20. If True, and sample size is greater than 20, a fast
+            chi2 approximation will be run. Parameters ``reps`` and ``workers`` are
+            irrelevant in this case. In this case, the optional mgc dictionary will
+            not be returned.
 
         Returns
         -------
@@ -232,5 +234,4 @@ class MGC(IndependenceTest):
             compute_distance=self.compute_distance,
             reps=reps,
             workers=workers,
-            random_state=random_state,
         )

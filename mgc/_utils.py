@@ -3,6 +3,7 @@ from joblib import Parallel, delayed
 
 import numpy as np
 from scipy._lib._util import check_random_state
+from scipy.stats.distributions import chi2
 from scipy.spatial.distance import cdist
 
 
@@ -102,7 +103,9 @@ def euclidean(x):
 def gaussian(x):
     """Default medial gaussian kernel similarity calculation"""
     l1 = cdist(x, x, "cityblock")
-    gamma = 1.0 / (2 * (np.median(l1[l1 != 0]) ** 2))
+    mask = np.ones(l1.shape, dtype=bool)
+    np.fill_diagonal(mask, 0)
+    gamma = 1.0 / (2 * (np.median(l1[mask]) ** 2))
     return np.exp(-gamma * cdist(x, x, "sqeuclidean"))
 
 
@@ -133,5 +136,13 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1):
     # permutations, a p-value of 0 is incorrect
     if pvalue == 0:
         pvalue = 1 / reps
+
+    return stat, pvalue
+
+
+def chi2_approx(calc_stat, x, y):
+    n = x.shape[0]
+    stat = calc_stat(x, y)
+    pvalue = 1 - chi2.cdf(stat*n + 1, 1)
 
     return stat, pvalue
