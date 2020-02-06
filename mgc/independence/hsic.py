@@ -26,6 +26,8 @@ class Hsic(IndependenceTest):
         before-hand or create a function of the form ``compute_kernel(x)``
         where `x` is the data matrix for which pairwise similarties are
         calculated.
+    bias : bool (default: False)
+        Whether or not to use the biased or unbiased test statistics.
 
     See Also
     --------
@@ -92,13 +94,14 @@ class Hsic(IndependenceTest):
                 11(Apr), 1391-1423.
     """
 
-    def __init__(self, compute_kernel=gaussian):
+    def __init__(self, compute_kernel=gaussian, bias=False):
         # set statistic and p-value
         self.compute_kernel = compute_kernel
 
         self.is_kernel = False
         if not compute_kernel:
             self.is_kernel = True
+        self.bias = bias
 
         IndependenceTest.__init__(self, compute_distance=compute_kernel)
 
@@ -126,10 +129,10 @@ class Hsic(IndependenceTest):
         if not self.is_kernel:
             kernx = self.compute_kernel(x)
             kerny = self.compute_kernel(y)
-            distx = np.max(np.abs(kernx)) - kernx
-            disty = np.max(np.abs(kerny)) - kerny
+            distx = 1 - kernx / np.max(kernx)
+            disty = 1 - kerny / np.max(kerny)
 
-        dcorr = Dcorr(compute_distance=None)
+        dcorr = Dcorr(compute_distance=None, bias=self.bias)
         stat = dcorr._statistic(distx, disty)
         self.stat = stat
 
@@ -158,6 +161,8 @@ class Hsic(IndependenceTest):
             is greater than 20. If True, and sample size is greater than 20, a fast
             chi2 approximation will be run. Parameters ``reps`` and ``workers`` are
             irrelevant in this case.
+        bias : bool (default: False)
+            Whether or not to use the biased or unbiased test statistics
 
         Returns
         -------
