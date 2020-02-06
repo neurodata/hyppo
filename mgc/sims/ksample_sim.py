@@ -86,19 +86,7 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
         raise ValueError("pow_type not a valid flag ('dim', 'samp')")
     rot_data = (rot_mat @ data.T).T
 
-    if sim.__name__ in [
-        "joint_normal",
-        "logarithmic",
-        "sin_four_pi",
-        "sin_sixteen_pi",
-        "two_parabolas",
-        "square",
-        "diamond",
-        "circle",
-        "ellipse",
-        "multiplicative_noise",
-        "multimodal_independence",
-    ]:
+    if sim.__name__ in same_shape:
         x_rot, y_rot = np.hsplit(rot_data, 2)
     else:
         x_rot, y_rot = np.hsplit(rot_data, [-p])
