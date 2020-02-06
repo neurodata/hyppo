@@ -143,6 +143,6 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1):
 def chi2_approx(calc_stat, x, y):
     n = x.shape[0]
     stat = calc_stat(x, y)
-    pvalue = 1 - chi2.cdf(stat*n + 1, 1)
+    pvalue = 1 - chi2.cdf(stat * n + 1, 1)
 
     return stat, pvalue
