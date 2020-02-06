@@ -194,8 +194,8 @@ class HHG(IndependenceTest):
 
 
 @njit
-def _hhg(distx, disty):  # pragma: no cover
-    """Calculate the HHG test statistic"""
+def _pearson_stat(distx, disty):  # pragma: no cover
+    """Calculate the Pearson chi square stats"""
 
     n = distx.shape[0]
     S = np.zeros((n, n))
@@ -216,6 +216,14 @@ def _hhg(distx, disty):  # pragma: no cover
                 if denom > 0:
                     S[i, j] = ((n - 2) * (t12 * t21 - t11 * t22) ** 2) / denom
 
-    stat = np.sum(S)
+    return S
+
+
+def _hhg(distx, disty):
+    """Calculate the HHG test statistic"""
+    S = _pearson_stat(distx, disty)
+    mask = np.ones(S.shape, dtype=bool)
+    np.fill_diagonal(mask, 0)
+    stat = np.sum(S[mask])
 
     return stat
