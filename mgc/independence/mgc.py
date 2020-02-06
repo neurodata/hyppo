@@ -228,14 +228,10 @@ class MGC(IndependenceTest):
         if self.is_distance:
             check_xy_distmat(x, y)
 
-        if auto == True and x.shape[0] > 20 and x.size > 20:
-            stat, pvalue = chi2_approx(self._statistic, x, y)
-            return stat, pvalue
-        else:
-            return multiscale_graphcorr(
-                x,
-                y,
-                compute_distance=self.compute_distance,
-                reps=reps,
-                workers=workers,
-            )
+        return multiscale_graphcorr(
+            x,
+            y,
+            compute_distance=self.compute_distance,
+            reps=reps,
+            workers=workers,
+        )
