@@ -229,9 +229,5 @@ class MGC(IndependenceTest):
             check_xy_distmat(x, y)
 
         return multiscale_graphcorr(
-            x,
-            y,
-            compute_distance=self.compute_distance,
-            reps=reps,
-            workers=workers,
+            x, y, compute_distance=self.compute_distance, reps=reps, workers=workers
         )

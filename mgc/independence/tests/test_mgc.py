@@ -50,12 +50,3 @@ class TestMGCStat(object):
         assert_approx_equal(stat1, obs_stat, significant=1)
         assert_approx_equal(stat2, obs_stat, significant=1)
         assert_approx_equal(pvalue, obs_pvalue, significant=1)
-
-    def test_random_state(self):
-        # generate x and y
-        x, y = linear(n=100, p=1)
-
-        # test stat and pvalue
-        stat, pvalue, _ = MGC().test(x, y, random_state=1)
-        assert_approx_equal(stat, 0.97, significant=1)
-        assert_approx_equal(pvalue, 0.001, significant=1)

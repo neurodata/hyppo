@@ -39,9 +39,11 @@ class KSampleTest(ABC):
             if indep_test.__name__ == "Hsic":
                 self.indep_test = indep_test(compute_kernel=compute_distance, bias=bias)
             elif indep_test.__name__ == "Dcorr":
-                self.indep_test = indep_test(compute_distance=compute_distance, bias=bias)
+                self.indep_test = indep_test(
+                    compute_distance=compute_distance, bias=bias
+                )
             else:
-                self.indep_test = indep_test(compute_distance=compute_distance,)
+                self.indep_test = indep_test(compute_distance=compute_distance)
         else:
             self.indep_test = indep_test()
 
