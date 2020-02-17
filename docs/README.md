@@ -2,7 +2,7 @@
 
 We currently use Sphinx
 
-If you only want to get the documentation, this can be found at [https://mgc.neurodata.io](https://mgc.neurodata.io).
+If you only want to get the documentation, this can be found at [https://hyppo.neurodata.io](https://hyppo.neurodata.io).
 
 ## Python Dependencies
 

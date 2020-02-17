@@ -92,7 +92,7 @@ class Spearman(IndependenceTest):
         Examples
         --------
         >>> import numpy as np
-        >>> from mgc.independence import Spearman
+        >>> from hyppo.independence import Spearman
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Spearman().test(x, y)

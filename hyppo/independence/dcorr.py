@@ -163,7 +163,7 @@ class Dcorr(IndependenceTest):
         Examples
         --------
         >>> import numpy as np
-        >>> from mgc.independence import Dcorr
+        >>> from hyppo.independence import Dcorr
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Dcorr().test(x, y)
@@ -174,7 +174,7 @@ class Dcorr(IndependenceTest):
         (greater alpha levels).
 
         >>> import numpy as np
-        >>> from mgc.independence import Dcorr
+        >>> from hyppo.independence import Dcorr
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Dcorr().test(x, y, reps=10000)
@@ -186,7 +186,7 @@ class Dcorr(IndependenceTest):
         to ``None``.
 
         >>> import numpy as np
-        >>> from mgc.independence import Dcorr
+        >>> from hyppo.independence import Dcorr
         >>> x = np.ones((10, 10)) - np.identity(10)
         >>> y = 2 * x
         >>> dcorr = Dcorr(compute_distance=None)

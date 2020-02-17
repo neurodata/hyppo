@@ -1,4 +1,4 @@
-Contributing to mgc
+Contributing to hyppo
 *******************
 
 (adopted from scikit-learn)
@@ -11,15 +11,15 @@ an issue if you have found a bug or wish to see a feature implemented.
 
 In case you experience issues using this package, do not hesitate to submit a
 ticket to the
-`Issue Tracker <https://github.com/neurodata/mgc/issues>`_. You are
+`Issue Tracker <https://github.com/neurodata/hyppo/issues>`_. You are
 also welcome to post feature requests or pull requests.
 
 It is recommended to check that your issue complies with the
 following rules before submitting:
 
 -  Verify that your issue is not being currently addressed by other
-   `issues <https://github.com/neurodata/mgc/issues?q=>`_
-   or `pull requests <https://github.com/neurodata/mgc/pulls?q=>`_.
+   `issues <https://github.com/neurodata/hyppo/issues?q=>`_
+   or `pull requests <https://github.com/neurodata/hyppo/pulls?q=>`_.
 
 -  If you are submitting a bug report, we strongly encourage you to follow the
    guidelines in :ref:`filing_bugs`.
@@ -30,7 +30,7 @@ How to make a good bug report
 -----------------------------
 
 When you submit an issue to `Github
-<https://github.com/neurodata/mgc/issues>`__, please do your best to
+<https://github.com/neurodata/hyppo/issues>`__, please do your best to
 follow these guidelines! This will make it a lot easier to provide you with
 good feedback:
 
@@ -46,12 +46,12 @@ good feedback:
 - If an exception is raised, please **provide the full traceback**.
 
 - Please include your **operating system type and version number**, as well as
-  your **Python and mgc versions**. This information
+  your **Python and hyppo versions**. This information
   can be found by running the following code snippet::
 
     import platform; print(platform.platform())
     import sys; print("Python", sys.version)
-    import mgc; print("mgc", mgc.__version__)
+    import hyppo; print("hyppo", hyppo.__version__)
 
 - Please ensure all **code snippets and error messages are formatted in
   appropriate code blocks**.  See `Creating and highlighting code blocks
@@ -61,22 +61,22 @@ good feedback:
 Contributing Code
 -----------------
 
-The preferred workflow for contributing to `mgc` is to fork the main
+The preferred workflow for contributing to `hyppo` is to fork the main
 repository on GitHub, clone, and develop on a branch. Steps:
 
-1. Fork the `project repository <https://github.com/neurodata/mgc>`__ by clicking
+1. Fork the `project repository <https://github.com/neurodata/hyppo>`__ by clicking
    on the ‘Fork’ button near the top right of the page. This creates a copy
    of the code under your GitHub user account. For more details on how to
    fork a repository see `this
    guide <https://help.github.com/articles/fork-a-repo/>`__.
 
-2. Clone your fork of the ``mgc`` repo from your GitHub account to your
+2. Clone your fork of the ``hyppo`` repo from your GitHub account to your
    local disk:
 
    .. code:: bash
 
-      $ git clone git@github.com:YourLogin/mgc.git
-      $ cd mgc
+      $ git clone git@github.com:YourLogin/hyppo.git
+      $ cd hyppo
 
 3. Create a ``feature`` branch to hold your development changes:
 
@@ -150,7 +150,7 @@ before you submit a pull request:
 Coding Guidelines
 -----------------
 
-Uniformly formatted code makes it easier to share code ownership. ``mgc``
+Uniformly formatted code makes it easier to share code ownership. ``hyppo``
 package closely follows the official Python guidelines detailed in
 `PEP8 <https://www.python.org/dev/peps/pep-0008/>`__ that detail how
 code should be formatted and indented. Please read it and follow it.

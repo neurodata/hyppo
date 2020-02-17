@@ -1,7 +1,7 @@
 Simulations
 ***********
 
-.. currentmodule:: mgc.sims
+.. currentmodule:: hyppo.sims
 
 Independence Simulations
 ------------------------

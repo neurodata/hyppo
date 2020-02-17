@@ -151,7 +151,7 @@ class HHG(IndependenceTest):
         Examples
         --------
         >>> import numpy as np
-        >>> from mgc.independence import HHG
+        >>> from hyppo.independence import HHG
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = HHG().test(x, y)
@@ -162,7 +162,7 @@ class HHG(IndependenceTest):
         (greater alpha levels).
 
         >>> import numpy as np
-        >>> from mgc.independence import HHG
+        >>> from hyppo.independence import HHG
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = HHG().test(x, y, reps=10000)
@@ -174,7 +174,7 @@ class HHG(IndependenceTest):
         to ``None``.
 
         >>> import numpy as np
-        >>> from mgc.independence import HHG
+        >>> from hyppo.independence import HHG
         >>> x = np.ones((10, 10)) - np.identity(10)
         >>> y = 2 * x
         >>> hhg = HHG(compute_distance=None)

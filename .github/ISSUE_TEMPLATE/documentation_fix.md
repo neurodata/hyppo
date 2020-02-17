@@ -1,6 +1,6 @@
 ---
 name: Documentation Fix
-about: Create a report to help us improve the documentation of mgc
+about: Create a report to help us improve the documentation of hyppo
 label: documentation
 
 ---

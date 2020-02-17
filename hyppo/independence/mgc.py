@@ -189,7 +189,7 @@ class MGC(IndependenceTest):
         Examples
         --------
         >>> import numpy as np
-        >>> from mgc.independence import MGC
+        >>> from hyppo.independence import MGC
         >>> x = np.arange(100)
         >>> y = x
         >>> stat, pvalue, _ = MGC().test(x, y)
@@ -200,7 +200,7 @@ class MGC(IndependenceTest):
         (greater alpha levels).
 
         >>> import numpy as np
-        >>> from mgc.independence import MGC
+        >>> from hyppo.independence import MGC
         >>> x = np.arange(100)
         >>> y = x
         >>> stat, pvalue, _ = MGC().test(x, y, reps=10000)
@@ -212,7 +212,7 @@ class MGC(IndependenceTest):
         to ``None``.
 
         >>> import numpy as np
-        >>> from mgc.independence import MGC
+        >>> from hyppo.independence import MGC
         >>> x = np.ones((10, 10)) - np.identity(10)
         >>> y = 2 * x
         >>> mgc = MGC(compute_distance=None)

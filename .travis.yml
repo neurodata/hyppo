@@ -27,7 +27,7 @@ install:
 - if [[ $TRAVIS_PYTHON_VERSION != '3.5' ]]; then travis_retry pip install black; fi
 
 script:
-- pytest mgc/
+- pytest hyppo/
 - if [[ $TRAVIS_PYTHON_VERSION != '3.5' ]]; then black --check --diff ./mgc; fi
 
 after_success:

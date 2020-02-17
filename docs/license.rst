@@ -1,12 +1,12 @@
 License
 =======
-mgc is distributed with a MIT license.
+hyppo is distributed with a MIT license.
 
 ::
 
     MIT License
 
-    Copyright (c) 2019 Sambit Panda
+    Copyright (c) 2019 Neurodata
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

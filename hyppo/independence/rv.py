@@ -111,7 +111,7 @@ class RV(IndependenceTest):
         Examples
         --------
         >>> import numpy as np
-        >>> from mgc.independence import RV
+        >>> from hyppo.independence import RV
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = RV().test(x, y)
@@ -122,7 +122,7 @@ class RV(IndependenceTest):
         (greater alpha levels).
 
         >>> import numpy as np
-        >>> from mgc.independence import RV
+        >>> from hyppo.independence import RV
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = RV().test(x, y, reps=10000)

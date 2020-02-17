@@ -3,13 +3,13 @@ import sys
 from setuptools import setup, find_packages
 from sys import platform
 
-PACKAGE_NAME = "mgc"
+PACKAGE_NAME = "hyppo"
 DESCRIPTION = "A comprehensive independence testing package"
 with open("README.md", "r") as f:
     LONG_DESCRIPTION = f.read()
 AUTHOR = ("Sambit Panda",)
 AUTHOR_EMAIL = "spanda3@jhu.edu"
-URL = "https://github.com/sampan501/mgc"
+URL = "https://github.com/neurodata/hyppo"
 MINIMUM_PYTHON_VERSION = 3, 5  # Minimum of Python 3.5
 REQUIRED_PACKAGES = [
     "numpy>=1.17",
@@ -20,7 +20,7 @@ REQUIRED_PACKAGES = [
 
 # Find mgc version.
 PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
-for line in open(os.path.join(PROJECT_PATH, "mgc", "__init__.py")):
+for line in open(os.path.join(PROJECT_PATH, "hyppo", "__init__.py")):
     if line.startswith("__version__ = "):
         VERSION = line.strip().split()[2][1:-1]
 

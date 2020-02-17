@@ -104,7 +104,7 @@ class DiscrimOneSample(DiscriminabilityTest):
         Examples
         --------
         >>> import numpy as np
-        >>> from mgc.discrim import DiscrimOneSample
+        >>> from hyppo.discrim import DiscrimOneSample
         >>> x = np.concatenate([np.zeros((50, 2)), np.ones((50, 2))], axis=0)
         >>> y = np.concatenate([np.zeros(50), np.ones(50)], axis=0)
         >>> stat, pvalue = DiscrimOneSample().test(x, y)

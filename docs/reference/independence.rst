@@ -1,7 +1,7 @@
 Independence
 ************
 
-.. currentmodule:: mgc.independence
+.. currentmodule:: hyppo.independence
 
 Multiscale Graph Correlation (MGC)
 ----------------------------------

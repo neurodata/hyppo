@@ -1,7 +1,7 @@
 *K*-Sample
 **********
 
-.. currentmodule:: mgc.ksample
+.. currentmodule:: hyppo.ksample
 
 Non-parametric *K*-Sample Test
 ------------------------------

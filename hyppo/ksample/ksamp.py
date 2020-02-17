@@ -20,7 +20,7 @@ class KSample(KSampleTest):
 
     Parameters
     ----------
-    indep_test : {"CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC", "MGCRF"}
+    indep_test : {"CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC"}
         A string corresponding to the desired independence test from
         ``mgc.independence``.
     compute_distance : callable(), optional (default: euclidean)
@@ -131,7 +131,7 @@ class KSample(KSampleTest):
         Examples
         --------
         >>> import numpy as np
-        >>> from mgc.ksample import KSample
+        >>> from hyppo.ksample import KSample
         >>> x = np.arange(7)
         >>> y = x
         >>> z = np.arange(10)
@@ -143,7 +143,7 @@ class KSample(KSampleTest):
         (greater alpha levels).
 
         >>> import numpy as np
-        >>> from mgc.ksample import KSample
+        >>> from hyppo.ksample import KSample
         >>> x = np.arange(7)
         >>> y = x
         >>> z = np.ones(7)

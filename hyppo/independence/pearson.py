@@ -92,7 +92,7 @@ class Pearson(IndependenceTest):
         Examples
         --------
         >>> import numpy as np
-        >>> from mgc.independence import Pearson
+        >>> from hyppo.independence import Pearson
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Pearson().test(x, y)

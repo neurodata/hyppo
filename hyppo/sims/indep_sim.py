@@ -75,7 +75,7 @@ def linear(n, p, noise=False, low=-1, high=1):
 
     Examples
     --------
-    >>> from mgc.sims import linear
+    >>> from hyppo.sims import linear
     >>> x, y = linear(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 1)
@@ -127,7 +127,7 @@ def exponential(n, p, noise=False, low=0, high=3):
 
     Examples
     --------
-    >>> from mgc.sims import exponential
+    >>> from hyppo.sims import exponential
     >>> x, y = exponential(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 1)
@@ -187,7 +187,7 @@ def cubic(n, p, noise=False, low=-1, high=1, cubs=[-12, 48, 128], scale=1 / 3):
 
     Examples
     --------
-    >>> from mgc.sims import cubic
+    >>> from hyppo.sims import cubic
     >>> x, y = cubic(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 1)
@@ -251,7 +251,7 @@ def joint_normal(n, p, noise=False):
 
     Examples
     --------
-    >>> from mgc.sims import joint_normal
+    >>> from hyppo.sims import joint_normal
     >>> x, y = joint_normal(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 2)
@@ -313,7 +313,7 @@ def step(n, p, noise=False, low=-1, high=1):
 
     Examples
     --------
-    >>> from mgc.sims import step
+    >>> from hyppo.sims import step
     >>> x, y = step(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 1)
@@ -369,7 +369,7 @@ def quadratic(n, p, noise=False, low=-1, high=1):
 
     Examples
     --------
-    >>> from mgc.sims import quadratic
+    >>> from hyppo.sims import quadratic
     >>> x, y = quadratic(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 1)
@@ -425,7 +425,7 @@ def w_shaped(n, p, noise=False, low=-1, high=1):
 
     Examples
     --------
-    >>> from mgc.sims import w_shaped
+    >>> from hyppo.sims import w_shaped
     >>> x, y = w_shaped(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 1)
@@ -483,7 +483,7 @@ def spiral(n, p, noise=False, low=0, high=5):
 
     Examples
     --------
-    >>> from mgc.sims import spiral
+    >>> from hyppo.sims import spiral
     >>> x, y = spiral(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 1)
@@ -547,7 +547,7 @@ def uncorrelated_bernoulli(n, p, noise=False, prob=0.5):
 
     Examples
     --------
-    >>> from mgc.sims import uncorrelated_bernoulli
+    >>> from hyppo.sims import uncorrelated_bernoulli
     >>> x, y = uncorrelated_bernoulli(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 1)
@@ -604,7 +604,7 @@ def logarithmic(n, p, noise=False):
 
     Examples
     --------
-    >>> from mgc.sims import logarithmic
+    >>> from hyppo.sims import logarithmic
     >>> x, y = logarithmic(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 2)
@@ -657,7 +657,7 @@ def fourth_root(n, p, noise=False, low=-1, high=1):
 
     Examples
     --------
-    >>> from mgc.sims import fourth_root
+    >>> from hyppo.sims import fourth_root
     >>> x, y = fourth_root(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 1)
@@ -736,7 +736,7 @@ def sin_four_pi(n, p, noise=False, low=-1, high=1):
 
     Examples
     --------
-    >>> from mgc.sims import sin_four_pi
+    >>> from hyppo.sims import sin_four_pi
     >>> x, y = sin_four_pi(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 2)
@@ -781,7 +781,7 @@ def sin_sixteen_pi(n, p, noise=False, low=-1, high=1):
 
     Examples
     --------
-    >>> from mgc.sims import sin_sixteen_pi
+    >>> from hyppo.sims import sin_sixteen_pi
     >>> x, y = sin_sixteen_pi(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 2)
@@ -843,7 +843,7 @@ def square(n, p, noise=False, low=-1, high=1):
 
     Examples
     --------
-    >>> from mgc.sims import square
+    >>> from hyppo.sims import square
     >>> x, y = square(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 2)
@@ -888,7 +888,7 @@ def two_parabolas(n, p, noise=False, low=-1, high=1, prob=0.5):
 
     Examples
     --------
-    >>> from mgc.sims import two_parabolas
+    >>> from hyppo.sims import two_parabolas
     >>> x, y = two_parabolas(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 2)
@@ -972,7 +972,7 @@ def circle(n, p, noise=False, low=-1, high=1):
 
     Examples
     --------
-    >>> from mgc.sims import circle
+    >>> from hyppo.sims import circle
     >>> x, y = circle(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 2)
@@ -1018,7 +1018,7 @@ def ellipse(n, p, noise=False, low=-1, high=1):
 
     Examples
     --------
-    >>> from mgc.sims import ellipse
+    >>> from hyppo.sims import ellipse
     >>> x, y = ellipse(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 2)
@@ -1063,7 +1063,7 @@ def diamond(n, p, noise=False, low=-1, high=1):
 
     Examples
     --------
-    >>> from mgc.sims import diamond
+    >>> from hyppo.sims import diamond
     >>> x, y = diamond(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 2)
@@ -1101,7 +1101,7 @@ def multiplicative_noise(n, p):
 
     Examples
     --------
-    >>> from mgc.sims import multiplicative_noise
+    >>> from hyppo.sims import multiplicative_noise
     >>> x, y = multiplicative_noise(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 2)
@@ -1153,7 +1153,7 @@ def multimodal_independence(n, p, prob=0.5, sep1=3, sep2=2):
 
     Examples
     --------
-    >>> from mgc.sims import multimodal_independence
+    >>> from hyppo.sims import multimodal_independence
     >>> x, y = multimodal_independence(100, 2)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 2)
