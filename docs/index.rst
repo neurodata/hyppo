@@ -7,7 +7,7 @@ Overview of hyppo_
 
 .. _hyppo: https://hyppo.neurodata.io/
 
-``hyppo`` (**HYP**othesis Testing in **P**yth**O**n, pronounced "Hippo")
+``hyppo`` (**HYP**\ othesis Testing in **P**\ yth\ **O**\ n, pronounced "Hippo")
 is an open-source software package for hypothesis testing.
 
 Motivation
