@@ -5,7 +5,6 @@ from numba import njit
 from .._utils import euclidean, gaussian
 from .base import KSampleTest
 from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC
-from ..random_forest import MGCRF
 from ._utils import _CheckInputs, k_sample_transform
 
 
@@ -21,7 +20,7 @@ class KSample(KSampleTest):
 
     Parameters
     ----------
-    indep_test : {"CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC", "MGCRF"}
+    indep_test : {"CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC"}
         A string corresponding to the desired independence test from
         ``mgc.independence``.
     compute_distance : callable(), optional (default: euclidean)
@@ -75,7 +74,6 @@ class KSample(KSampleTest):
             Hsic.__name__: Hsic,
             Dcorr.__name__: Dcorr,
             MGC.__name__: MGC,
-            MGCRF.__name__: MGCRF,
         }
         if indep_test not in test_names.keys():
             raise ValueError("Test is not a valid independence test")
@@ -133,7 +131,7 @@ class KSample(KSampleTest):
         Examples
         --------
         >>> import numpy as np
-        >>> from mgc.ksample import KSample
+        >>> from hyppo.ksample import KSample
         >>> x = np.arange(7)
         >>> y = x
         >>> z = np.arange(10)
@@ -145,7 +143,7 @@ class KSample(KSampleTest):
         (greater alpha levels).
 
         >>> import numpy as np
-        >>> from mgc.ksample import KSample
+        >>> from hyppo.ksample import KSample
         >>> x = np.arange(7)
         >>> y = x
         >>> z = np.ones(7)

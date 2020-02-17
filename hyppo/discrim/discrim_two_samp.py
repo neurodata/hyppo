@@ -106,7 +106,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
         Examples
         --------
         >>> import numpy as np
-        >>> from mgc.discrim import DiscrimTwoSample
+        >>> from hyppo.discrim import DiscrimTwoSample
         >>> x1 = np.ones((100,2), dtype=float)
         >>> x2 = np.concatenate([np.zeros((50, 2)), np.ones((50, 2))], axis=0)
         >>> y = np.concatenate([np.zeros(50), np.ones(50)], axis=0)

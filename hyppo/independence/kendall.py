@@ -108,7 +108,7 @@ class Kendall(IndependenceTest):
         Examples
         --------
         >>> import numpy as np
-        >>> from mgc.independence import Kendall
+        >>> from hyppo.independence import Kendall
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Kendall().test(x, y)

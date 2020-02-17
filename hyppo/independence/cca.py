@@ -122,7 +122,7 @@ class CCA(IndependenceTest):
         Examples
         --------
         >>> import numpy as np
-        >>> from mgc.independence import CCA
+        >>> from hyppo.independence import CCA
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = CCA().test(x, y)
@@ -133,7 +133,7 @@ class CCA(IndependenceTest):
         (greater alpha levels).
 
         >>> import numpy as np
-        >>> from mgc.independence import CCA
+        >>> from hyppo.independence import CCA
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = CCA().test(x, y, reps=10000)

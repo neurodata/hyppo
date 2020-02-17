@@ -8,7 +8,7 @@ from .._utils import euclidean
 
 class TimeSeriesTest(ABC):
     """
-    Base class for all tests in mgc.
+    Base class for time series in hyppo.
 
     Parameters
     ----------

@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest an idea for mgc
+about: Suggest an idea for hyppo
 label: enhancement
 
 ---

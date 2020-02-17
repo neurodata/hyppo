@@ -174,7 +174,7 @@ class Hsic(IndependenceTest):
         Examples
         --------
         >>> import numpy as np
-        >>> from mgc.independence import Hsic
+        >>> from hyppo.independence import Hsic
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Hsic().test(x, y)
@@ -185,7 +185,7 @@ class Hsic(IndependenceTest):
         (greater alpha levels).
 
         >>> import numpy as np
-        >>> from mgc.independence import Hsic
+        >>> from hyppo.independence import Hsic
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Hsic().test(x, y, reps=10000)
@@ -197,7 +197,7 @@ class Hsic(IndependenceTest):
         to ``None``.
 
         >>> import numpy as np
-        >>> from mgc.independence import Hsic
+        >>> from hyppo.independence import Hsic
         >>> x = np.ones((10, 10)) - np.identity(10)
         >>> y = 2 * x
         >>> hsic = Hsic(compute_kernel=None)

@@ -12,9 +12,9 @@ class KSampleTest(ABC):
 
     Parameters
     ----------
-    indep_test : {CCA, Dcorr, HHG, RV, Hsic}
+    indep_test : {CCA, Dcorr, HHG, RV, Hsic, MGC}
         The class corresponding to the desired independence test from
-        ``mgc.independence``.
+        ``hyppo.independence``.
     compute_distance : callable(), optional (default: euclidean)
         A function that computes the distance or similarity among the samples
         within each data matrix. Set to `None` if `x` and `y` are already

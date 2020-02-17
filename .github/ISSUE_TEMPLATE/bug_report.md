@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Create a report to help us improve mgc
+about: Create a report to help us improve hyppo
 label: bug
 
 ---
