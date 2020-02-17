@@ -14,11 +14,13 @@ for (num_samples in num_samples_range){
   times = seq(1, 3, by=1)
   executions <- list()
   for (t in times){
-    x <- as.matrix(dist((x), diag = TRUE, upper = TRUE))
-    y <- as.matrix(dist((y), diag = TRUE, upper = TRUE))
+    #x <- as.matrix(dist((x), diag = TRUE, upper = TRUE))
+    #y <- as.matrix(dist((y), diag = TRUE, upper = TRUE))
     #time_taken <- microbenchmark(kmmd(x, y, ntimes=1000), times=1, unit="secs") # best of 5 executions
     #time_taken <- microbenchmark(dcor.test(x, y, R=1000), times=1, unit="secs") # best of 5 executions
-    time_taken <- microbenchmark(hhg.test(x, y, nr.perm = 1000), times=1, unit="secs") # best of 5 executions
+    #time_taken <- microbenchmark(dcor.test(x, y, R=1000), times=1, unit="secs") # best of 5 executions
+    time_taken <- microbenchmark(dcor2d(x, y), times=1, unit="secs") # best of 5 executions
+    #time_taken <- microbenchmark(hhg.test(x, y, nr.perm = 1000), times=1, unit="secs") # best of 5 executions
     executions <- c(executions, list(time_taken[1, 2]/(10^9)))
   }
   linear_data <- c(linear_data, list(sapply(executions, mean)))
