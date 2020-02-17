@@ -1,5 +1,5 @@
 Contributing to hyppo
-*******************
+*********************
 
 (adopted from scikit-learn)
 
