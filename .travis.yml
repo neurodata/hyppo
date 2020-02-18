@@ -1,19 +1,19 @@
 language: python
 
 python:
-  - "3.5"
-  - "3.6"
-  - "3.7"
+- '3.5'
+- '3.6'
+- '3.7'
 
 jobs:
   include:
-    - os: windows
-      language: sh
-      python: "3.7"
-      before_install:
-        - choco install python3 --params "/InstallDir:C:\\Python" --version 3.7.4
-        - export PATH="/c/Python:/c/Python/Scripts:$PATH"
-        - python -m pip install --upgrade pip wheel
+  - os: windows
+    language: sh
+    python: '3.7'
+    before_install:
+    - choco install python3 --params "/InstallDir:C:\\Python" --version 3.7.4
+    - export PATH="/c/Python:/c/Python/Scripts:$PATH"
+    - python -m pip install --upgrade pip wheel
 
 branches:
   only:
@@ -35,3 +35,11 @@ after_success:
 
 notifications:
 - email: false
+
+deploy:
+  provider: pypi
+    user: "sampanda501"
+  password:
+    secure: ETst5EjaQRrOPXYik7ut3xzTwIiOrUklyZsQ1AioqzKJS9MXfwmaXnf12l3scC9DB+DUA2XmpM1EsA5Rw+OBLJR2e3lK8N2fNJlabnjnh8jT9jEmHoUQc1RS6GjxWx1ZDgdBU6Q6O04TPlMOB3hjgegLeQyemG1z0/3Viboa+c748zrpqlHYQXoPMQ40WPp75wWM4fqWYyl1qgonMp24YiworwHI2oO06lg/DUoHneyJsaY4JBuGZmgxzq1ir9OFvYm5p7Qwe89dUfreQOEZh32WiHNx6EDzbM436bFuAJPtIywPIj8CJcxyXgWljiQ8BvsOVmDUsixC3HndCwVmV+gTUMTu9n1Ib7v1S0OLlm5IXgsy/HabVtLWeoAR1fr7xBBUcJPwbcfN/61lMJd1ENOGCqDUaYMvWEyBwOtncApU8P2W5i28otqXqz5S8cIPAr4dDo0b1XKEe+qt11KNFOUD43n+mEASd+L8MUSOziJoA5h0N4Fgygg8kHp+M1VNXQxIRGj1LyCoAITlL8R5c4s2dH/rZlWzKoPUCxmZn5xBEoKPC7EDY01iCPqsl7NO+Yy1udTV8+cD31kCJ+ZxJGpOcVgfgrGBJXraKo+3d237ZcJl9q/UvYxs11DhZMbiBrnd/IRiboI/eQWC5RArDZBVObyjGPImcJPq6AYh8H8=
+  on:
+    tags: true
