@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/github/license/neurodata/mgc)](https://mgc.neurodata.io/license.html)
 [![arXiv shield](https://img.shields.io/badge/arXiv-1907.02088-red.svg?style=flat)](https://arxiv.org/abs/1907.02088)
 
-`hyppo` (**HYP**othesis Testing in **P**yth**O**n, pronounced "Hippo") is an open-source software package for independence and k-sample testing.
+`hyppo` (**HYP**othesis Testing in **P**yth**O**n, pronounced "Hippo") is an open-source software package for hypothesis testing.
 
 - **Installation Guide:** [https://mgc.neurodata.io/install.html](https://mgc.neurodata.io/install.html)
 - **Documentation:** [https://mgc.neurodata.io/](https://mgc.neurodata.io/)
@@ -15,4 +15,4 @@
 - **Issues:** [https://github.com/neurodata/mgc/issues](https://github.com/neurodata/mgc/issues)
 - **Contribution Guide:** [https://mgc.neurodata.io/contributing.html](https://mgc.neurodata.io/contributing.html)
 
-`hyppo` intends to be a comprehensive independence and k-sample testing package and runs on all major versions of operating systems. It also includes novel tests not found in other packages that operate on multivariate data. It is quick to install and free of charge. If you need to use multivariate hypothesis testing, be sure to give `hyppo` a try!
+`hyppo` intends to be a comprehensive hypothesis testing package and runs on all major versions of operating systems. It also includes novel tests not found in other packages that operate on multivariate data. It is quick to install and free of charge. If you need to use multivariate hypothesis testing, be sure to give `hyppo` a try!
