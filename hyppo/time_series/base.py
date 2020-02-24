@@ -55,7 +55,7 @@ class TimeSeriesTest(ABC):
         """
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=1, random_state=None):
+    def test(self, x, y, reps=1000, workers=1):
         """
         Calulates the independece test p-value.
 

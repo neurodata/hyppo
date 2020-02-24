@@ -3,12 +3,12 @@ from numba import njit
 
 from .base import TimeSeriesTest
 from ._utils import _CheckInputs, compute_stat
-from ..independence import Dcorr
+from ..independence import MGC
 
 
-class DcorrX(TimeSeriesTest):
+class MGCX(TimeSeriesTest):
     """
-    Compute the Dcorr test statistic and p-value.
+    Compute the MGC test statistic and p-value.
 
     Attributes
     ----------
@@ -24,7 +24,7 @@ class DcorrX(TimeSeriesTest):
 
     def _statistic(self, x, y):
         """
-        Calulates the Dcorr test statistic.
+        Calulates the MGC test statistic.
 
         Parameters
         ----------
@@ -42,7 +42,7 @@ class DcorrX(TimeSeriesTest):
         )
         x, y = check_input()
 
-        stat, opt_lag = compute_stat(x, y, Dcorr, self.compute_distance, self.max_lag)
+        stat, opt_lag = compute_stat(x, y, MGC, self.compute_distance, self.max_lag)
         self.stat = stat
         self.opt_lag = opt_lag
 
@@ -50,7 +50,7 @@ class DcorrX(TimeSeriesTest):
 
     def test(self, x, y, reps=1000, workers=1):
         """
-        Calulates the HHG test p-value.
+        Calulates the MGC test p-value.
 
         Parameters
         ----------
@@ -70,4 +70,4 @@ class DcorrX(TimeSeriesTest):
         )
         x, y = check_input()
 
-        return super(DcorrX, self).test(x, y, reps, workers)
+        return super(MGCX, self).test(x, y, reps, workers)
