@@ -80,9 +80,22 @@ class KSample(KSampleTest):
         if indep_test == "Hsic" and compute_distance == euclidean:
             compute_distance = gaussian
         indep_test = test_names[indep_test]
-        self.bias = bias
+        self.indep_test_name = indep_test.__name__
 
-        KSampleTest.__init__(self, indep_test, compute_distance=compute_distance)
+        dist_tests = [Dcorr, HHG, Hsic, MGC]
+        if indep_test in dist_tests:
+            if self.indep_test_name == "Hsic":
+                self.indep_test = indep_test(compute_kernel=compute_distance, bias=bias)
+            elif self.indep_test_name == "Dcorr":
+                self.indep_test = indep_test(
+                    compute_distance=compute_distance, bias=bias
+                )
+            else:
+                self.indep_test = indep_test(compute_distance=compute_distance)
+        else:
+            self.indep_test = indep_test()
+
+        KSampleTest.__init__(self, compute_distance=compute_distance)
 
     def _statistic(self, *args):
         r"""
@@ -160,4 +173,7 @@ class KSample(KSampleTest):
         inputs = check_input()
         u, v = k_sample_transform(inputs)
 
-        return self.indep_test.test(u, v, reps, workers)
+        if self.indep_test_name in ["Dcorr", "Hsic"]:
+            return self.indep_test.test(u, v, reps, workers, auto=False)
+        else:
+            return self.indep_test.test(u, v, reps, workers)

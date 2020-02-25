@@ -61,7 +61,7 @@ class _CheckInputs:
 
     def _check_indep_test(self):
         tests = [CCA, Dcorr, HHG, RV, Hsic, MGC]
-        if self.indep_test.__class__ not in tests:
+        if self.indep_test.__class__ not in tests and self.indep_test is not None:
             raise ValueError(
                 "indep_test must be CannCorr, Dcorr, HHG, RVCorr, Hsic, MGC, or MGCRF"
             )
@@ -75,12 +75,18 @@ class _CheckInputs:
 def k_sample_transform(inputs):
     n_inputs = len(inputs)
     u = np.vstack(inputs)
-    vs = []
-    for i in range(n_inputs):
-        n = inputs[i].shape[0]
-        encode = np.zeros(shape=(n, n_inputs))
-        encode[:, i] = np.ones(shape=n)
-        vs.append(encode)
-    v = np.concatenate(vs)
+
+    if n_inputs == 2:
+        n1 = inputs[0].shape[0]
+        n2 = inputs[1].shape[0]
+        v = np.vstack([np.zeros((n1, 1)), np.ones((n2, 1))])
+    else:
+        vs = []
+        for i in range(n_inputs):
+            n = inputs[i].shape[0]
+            encode = np.zeros(shape=(n, n_inputs))
+            encode[:, i] = np.ones(shape=n)
+            vs.append(encode)
+        v = np.concatenate(vs)
 
     return u, v

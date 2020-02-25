@@ -12,9 +12,6 @@ class KSampleTest(ABC):
 
     Parameters
     ----------
-    indep_test : {CCA, Dcorr, HHG, RV, Hsic, MGC}
-        The class corresponding to the desired independence test from
-        ``hyppo.independence``.
     compute_distance : callable(), optional (default: euclidean)
         A function that computes the distance or similarity among the samples
         within each data matrix. Set to `None` if `x` and `y` are already
@@ -27,25 +24,11 @@ class KSampleTest(ABC):
         applies to ``Dcorr`` and ``Hsic``.
     """
 
-    def __init__(self, indep_test, compute_distance=euclidean, bias=False):
+    def __init__(self, compute_distance=euclidean, bias=False):
         # set statistic and p-value
         self.stat = None
         self.pvalue = None
         self.compute_distance = compute_distance
-
-        dist_tests = [Dcorr, HHG, Hsic, MGC]
-        # modify when adding Hottelling and MANOVA and set indep_test to None
-        if indep_test in dist_tests:
-            if indep_test.__name__ == "Hsic":
-                self.indep_test = indep_test(compute_kernel=compute_distance, bias=bias)
-            elif indep_test.__name__ == "Dcorr":
-                self.indep_test = indep_test(
-                    compute_distance=compute_distance, bias=bias
-                )
-            else:
-                self.indep_test = indep_test(compute_distance=compute_distance)
-        else:
-            self.indep_test = indep_test()
 
         super().__init__()
 
