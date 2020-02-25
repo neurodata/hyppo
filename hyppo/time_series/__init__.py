@@ -1,3 +1,4 @@
 from .dcorrx import DcorrX
+from .mgcx import MGCX
 
-__all__ = ["DcorrX"]
+__all__ = ["MGCX", "DcorrX"]

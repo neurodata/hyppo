@@ -1,5 +1,6 @@
 from .indep_sim import *
 from .ksample_sim import *
+from .time_series_sim import *
 
 __all__ = [
     "linear",
@@ -25,4 +26,7 @@ __all__ = [
     "rot_2samp",
     "trans_2samp",
     "gaussian_3samp",
+    "indep_ar",
+    "cross_corr_ar",
+    "nonlinear_process",
 ]

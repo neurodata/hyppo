@@ -7,8 +7,8 @@ Overview of hyppo_
 
 .. _hyppo: https://hyppo.neurodata.io/
 
-``hyppo`` (**HYP**\ othesis Testing in **P**\ yth\ **O**\ n, pronounced "Hippo")
-is an open-source software package for hypothesis testing.
+``hyppo`` (**HYP**\ othesis Testing in **P**\ yth\ **O**\ n, pronounced
+"Hippo") is an open-source software package for hypothesis testing.
 
 Motivation
 ----------
@@ -43,10 +43,10 @@ terms of the :doc:`MIT </license>`.  We welcome contributions. Join us on
 History
 -------
 
-``hyppo`` is a rebranding of ``mgcpy``, which was founded in September 2018. The
-original version was designed and written by Satish Palaniappan, Sambit Panda
-Junhao Xiong, Sandhya Ramachandran, and Ronak Mehtra. This new version was
-written by Sambit Panda.
+``hyppo`` is a rebranding of ``mgcpy``, which was founded in September 2018.
+The original version was designed and written by Satish Palaniappan, Sambit
+Panda Junhao Xiong, Sandhya Ramachandran, and Ronak Mehtra. This new version
+was written by Sambit Panda.
 
 Documentation
 =============
@@ -55,6 +55,7 @@ Documentation
    :maxdepth: 1
 
    install
+   tutorials
    reference/index
    contributing
    license

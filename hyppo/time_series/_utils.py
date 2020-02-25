@@ -76,3 +76,30 @@ class _CheckInputs:
 
         if nx <= 3 or ny <= 3:
             raise ValueError("Number of samples is too low")
+
+
+def compute_stat(x, y, indep_test, compute_distance, max_lag):
+    """Compute time series test statistic"""
+    # calculate distance matrices
+    distx = compute_distance(x)
+    disty = compute_distance(y)
+
+    # calculate dep_lag when max_lag is 0
+    dep_lag = []
+    indep_test = indep_test(compute_distance=compute_distance)
+    indep_test_stat = indep_test._statistic(x, y)
+    dep_lag.append(np.maximum(0, indep_test_stat))
+
+    # loop over time points and find max test statistic
+    n = distx.shape[0]
+    for j in range(1, max_lag + 1):
+        slice_distx = distx[j:n, j:n]
+        slice_disty = disty[0 : (n - j), 0 : (n - j)]
+        stat = indep_test._statistic(slice_distx, slice_disty)
+        dep_lag.append((n - j) * np.maximum(0, stat) / n)
+
+    # calculate optimal lag and test statistic
+    opt_lag = np.argmax(dep_lag)
+    stat = np.sum(dep_lag)
+
+    return stat, opt_lag

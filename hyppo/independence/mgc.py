@@ -145,7 +145,7 @@ class MGC(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1, auto=True):
+    def test(self, x, y, reps=1000, workers=1):
         r"""
         Calculates the MGC test statistic and p-value.
 
@@ -163,12 +163,6 @@ class MGC(IndependenceTest):
         workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
-        auto : bool (default: True)
-            Automatically uses fast approximation when sample size and size of array
-            is greater than 20. If True, and sample size is greater than 20, a fast
-            chi2 approximation will be run. Parameters ``reps`` and ``workers`` are
-            irrelevant in this case. In this case, the optional mgc dictionary will
-            not be returned.
 
         Returns
         -------
@@ -218,7 +212,7 @@ class MGC(IndependenceTest):
         >>> mgc = MGC(compute_distance=None)
         >>> stat, pvalue, _ = mgc.test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
-        '0.0, 0.93'
+        '0.0, 1.00'
         """
         check_input = _CheckInputs(
             x, y, dim=2, reps=reps, compute_distance=self.compute_distance
@@ -228,6 +222,17 @@ class MGC(IndependenceTest):
         if self.is_distance:
             check_xy_distmat(x, y)
 
-        return multiscale_graphcorr(
-            x, y, compute_distance=self.compute_distance, reps=reps, workers=workers
-        )
+        # using our joblib implementation instead of multiprocessing backend in
+        # scipy gives significantly faster results
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore")
+            _, _, mgc_dict = multiscale_graphcorr(
+                x, y, compute_distance=self.compute_distance, reps=1
+            )
+
+        stat, pvalue = super(MGC, self).test(x, y, reps, workers)
+        self.stat = stat
+        self.pvalue = pvalue
+        self.mgc_dict = mgc_dict
+
+        return stat, pvalue, mgc_dict
