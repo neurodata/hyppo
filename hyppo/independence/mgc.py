@@ -212,7 +212,7 @@ class MGC(IndependenceTest):
         >>> mgc = MGC(compute_distance=None)
         >>> stat, pvalue, _ = mgc.test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
-        '0.0, 0.93'
+        '0.0, 1.00'
         """
         check_input = _CheckInputs(
             x, y, dim=2, reps=reps, compute_distance=self.compute_distance
