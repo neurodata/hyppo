@@ -94,8 +94,37 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
     return x_rot, y_rot
 
 
-def rot_2samp(sim, n, p, noise=True, degree=90, trans=0):
-    """Rotated 2 sample test"""
+def rot_2samp(sim, n, p, noise=True, degree=90):
+    r"""
+    Rotates input simulations to produce a 2-sample simulation.
+
+    Parameters
+    ----------
+    sim : callable()
+        The simulation (from the ``hyppo.sims`` module) that is to be rotated.
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, (default: True)
+        Whether or not to include noise in the simulation.
+    degree : float, (default: 90)
+        The number of degrees to rotate the input simulation by (in first dimension).
+
+    Returns
+    -------
+    samp1, samp2 : ndarray
+        Rotated data matrices. `samp1` and `samp2` have shapes `(n, p+1)` and `(n, p+1)`
+        or `(n, 2p)` and `(n, 2p)` depending on the independence simulation. Here, `n`
+        is the number of samples and `p` is the number of dimensions.
+
+    Examples
+    --------
+    >>> from hyppo.sims import rot_2samp, linear
+    >>> x, y = rot_2samp(linear, 100, 1)
+    >>> print(x.shape, y.shape)
+    (100, 2) (100, 2)
+    """
     if sim not in _SIMS:
         raise ValueError("Not valid simulation")
 
@@ -115,7 +144,37 @@ def rot_2samp(sim, n, p, noise=True, degree=90, trans=0):
 
 
 def trans_2samp(sim, n, p, noise=True, degree=90, trans=0.3):
-    """Translated 2 sample test"""
+    r"""
+    Translates and rotates input simulations to produce a 2-sample
+    simulation.
+
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, (default: False)
+        Whether or not to include noise in the simulation.
+    degree : float, (default: 90)
+        The number of degrees to rotate the input simulation by (in first dimension).
+    trans : float, (default: 0.3)
+        The amount to translate the second simulation by (in first dimension).
+
+    Returns
+    -------
+    samp1, samp2 : ndarray
+        Translated/rotated data matrices. `samp1` and `samp2` have shapes `(n, p+1)` and
+        `(n, p+1)` or `(n, 2p)` and `(n, 2p)` depending on the independence simulation.
+        Here, `n` is the number of samples and `p` is the number of dimensions.
+
+    Examples
+    --------
+    >>> from hyppo.sims import trans_2samp, linear
+    >>> x, y = trans_2samp(linear, 100, 1)
+    >>> print(x.shape, y.shape)
+    (100, 2) (100, 2)
+    """
     if sim not in _SIMS:
         raise ValueError("Not valid simulation")
 
@@ -139,6 +198,34 @@ def trans_2samp(sim, n, p, noise=True, degree=90, trans=0.3):
 
 
 def gaussian_3samp(n, epsilon=1, weight=0, case=1):
+    r"""
+    Generates 3 sample of gaussians corresponding to 5 cases.
+
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    epsilon : float, (default: 1)
+        The amount to translate simulation by (amount  depends on case).
+    weight : float, (default: False)
+        Number between 0 and 1 corresponding to weight of the second Gaussian
+        (used in case 4 and 5 to produce a mixture of Gaussians)
+    case : {1, 2, 3, 4, 5}, (default: 1)
+        The case in which to evaluate statistical power for each test.
+
+    Returns
+    -------
+    sims : list of ndarray
+        List of 3 2-dimensional multivariate Gaussian each
+        corresponding to the desired case.
+
+    Examples
+    --------
+    >>> from hyppo.sims import gaussian_3samp
+    >>> sims = gaussian_3samp(100)
+    >>> print(sims[0].shape, sims[1].shape, sims[2].shape)
+    (100, 2) (100, 2) (100, 2)
+    """
     old_case = case
     if old_case == 4:
         case = 2
