@@ -24,6 +24,7 @@ the algorithms included against each other.
     tutorials/independence/indep_power
     tutorials/independence/indep_alg_speed
 
+
 *K*-sample Tests
 ------------------
 The *k*-testing problem is generalized as follows: consider random variables
@@ -32,26 +33,16 @@ The *k*-testing problem is generalized as follows: consider random variables
 
 .. math::
 
-    H_0: F_1 &= F_2 = \ldots F_k \\
-    H_A: \exists \ j \neq j' \text{ s.t. } F_j \neq F_{j'}
+    H_0:\ &F_1 = F_2 = \ldots F_k \\
+    H_A:\ &\exists \ j \neq j' \text{ s.t. } F_j \neq F_{j'}
 
-We are able to reduce the *k*-sample testing problem to the independence
-testing problem and then use our power nonparametric tests (see above
-tutorials for information about them). This tutorial overview how to use
-*k*-sample tests in ``hyppo``.
+This tutorial overview how to use *k*-sample tests in ``hyppo``.
 
 .. toctree::
     :maxdepth: 1
 
     tutorials/ksample/ksample
 
-Discriminability Tests
-----------------------
-
-.. toctree::
-    :maxdepth: 1
-
-    tutorials/discrim/discriminability
 
 Time-Series Tests
 -----------------
@@ -78,6 +69,7 @@ This tutorial overview how to use time_series based tests in ``hyppo``.
 
     tutorials/time_series/time_series
 
+
 Sims
 ----
 To evaluate existing implmentations and benchmark against other packages,
@@ -91,4 +83,3 @@ which are sampled from multivariate normal distribusions.
     :maxdepth: 1
 
     tutorials/sims/indep_simulations
-    tutorials/sims/ksample_simulations
