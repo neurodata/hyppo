@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def indep_ar(n, lag=1, phi=0.5, sigma=1.0):
+def indep_ar(n, lag=1, phi=0.5, sigma=1):
     # X_t and Y_t are univarite AR(1) with phi = 0.5 for both series.
     # Noise follows N(0, sigma2).
 
@@ -11,7 +11,7 @@ def indep_ar(n, lag=1, phi=0.5, sigma=1.0):
     x = epsilons
     y = etas
 
-    # AR(1) process.
+    # AR process.
     for t in range(lag, n):
         x[t] = phi * x[t - lag] + epsilons[t]
         y[t] = phi * y[t - lag] + etas[t]
@@ -19,7 +19,7 @@ def indep_ar(n, lag=1, phi=0.5, sigma=1.0):
     return x, y
 
 
-def cross_corr_ar(n, lag=1, phi=0.5, sigma=1.0):
+def cross_corr_ar(n, lag=1, phi=0.5, sigma=1):
     # X_t and Y_t are together a bivarite AR(1) with Phi = [0 0.5; 0.5 0].
     # Noise follow N(0, sigma2).
 

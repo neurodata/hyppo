@@ -86,7 +86,6 @@ def compute_stat(x, y, indep_test, compute_distance, max_lag):
 
     # calculate dep_lag when max_lag is 0
     dep_lag = []
-    test_name = indep_test.__name__
     indep_test = indep_test(compute_distance=compute_distance)
     indep_test_stat = indep_test._statistic(x, y)
     dep_lag.append(np.maximum(0, indep_test_stat))
@@ -96,10 +95,7 @@ def compute_stat(x, y, indep_test, compute_distance, max_lag):
     for j in range(1, max_lag + 1):
         slice_distx = distx[j:n, j:n]
         slice_disty = disty[0 : (n - j), 0 : (n - j)]
-        if test_name == "Dcorr":
-            stat = indep_test._statistic(slice_distx, slice_disty, auto=False)
-        else:
-            stat = indep_test._statistic(slice_distx, slice_disty)
+        stat = indep_test._statistic(slice_distx, slice_disty)
         dep_lag.append((n - j) * np.maximum(0, stat) / n)
 
     # calculate optimal lag and test statistic

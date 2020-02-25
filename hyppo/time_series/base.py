@@ -85,7 +85,7 @@ class TimeSeriesTest(ABC):
         self.disty = self.compute_distance(y)
 
         # calculate observed test statistic
-        stat = self._statistic(x, y)
+        stat = self._statistic(x, y)[0]
 
         # calculate null distribution
         null_dist = np.array(
@@ -117,6 +117,6 @@ def _perm_stat(calc_stat, distx, disty):
     permy = disty[np.ix_(perm_index, perm_index)]
 
     # calculate permuted statics, store in null distribution
-    perm_stat = calc_stat(distx, permy)
+    perm_stat = calc_stat(distx, permy)[0]
 
     return perm_stat
