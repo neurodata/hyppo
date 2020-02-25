@@ -58,6 +58,7 @@ Documentation
    tutorials
    reference/index
    contributing
+   news
    license
 
 .. toctree::
