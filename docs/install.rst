@@ -14,6 +14,21 @@ First, make sure you have the latest version of ``pip`` (the Python package
 manager) installed. If you do not, refer to the `Pip documentation
 <https://pip.pypa.io/en/stable/installing/>`_ and install ``pip`` first.
 
+Install from PyPi
+-----------------
+Install the current release of ``hyppo`` from the Terminal with ``pip``::
+
+    $ pip install hyppo
+
+To upgrade to a newer release use the ``--upgrade`` flag::
+
+    $ pip install --upgrade graspy
+
+If you do not have permission to install software systemwide, you can install
+into your user directory using the ``--user`` flag::
+
+    $ pip install --user hyppo
+
 Install from Github
 -------------------
 You can manually download ``hyppo`` by cloning the git repo master version and
@@ -23,6 +38,12 @@ and run the following from the top-level source directory using the Terminal::
     $ git clone https://github.com/neurodata/hyppo
     $ cd hyppo
     $ python3 setup.py install
+
+Or, alternatively, you can use ``pip``::
+
+    $ git clone https://github.com/neurodata/hyppo
+    $ cd hyppo
+    $ pip install .
 
 Python package dependencies
 ---------------------------
