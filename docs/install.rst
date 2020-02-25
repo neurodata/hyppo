@@ -22,7 +22,7 @@ Install the current release of ``hyppo`` from the Terminal with ``pip``::
 
 To upgrade to a newer release use the ``--upgrade`` flag::
 
-    $ pip install --upgrade graspy
+    $ pip install --upgrade hyppo
 
 If you do not have permission to install software systemwide, you can install
 into your user directory using the ``--user`` flag::
