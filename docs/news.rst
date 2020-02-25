@@ -3,8 +3,8 @@
 Release Log
 ===========
 
-v0.0.1
+v0.1.0
 ------
 | **Release date:** 25 February 2020
 | **Supports:** Python 3.5+.
-| :doc:`release/0.0.1-release`.
+| :doc:`release/0.1.0-release`.
