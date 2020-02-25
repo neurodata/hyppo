@@ -58,5 +58,5 @@ setup(
     include_package_data=True,
     test_suite="tests",
     use_scm_version=True,
-    setup_requires=['setuptools_scm'],
+    setup_requires=["setuptools_scm"],
 )
