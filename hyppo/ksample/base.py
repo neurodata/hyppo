@@ -9,26 +9,12 @@ from ..independence import Dcorr, HHG, Hsic, MGC
 class KSampleTest(ABC):
     """
     A base class for a k-sample test.
-
-    Parameters
-    ----------
-    compute_distance : callable(), optional (default: euclidean)
-        A function that computes the distance or similarity among the samples
-        within each data matrix. Set to `None` if `x` and `y` are already
-        distance matrices. To call a custom function, either create the
-        distance matrix before-hand or create a function of the form
-        ``compute_distance(x)`` where `x` is the data matrix for which
-        pairwise distances are calculated.
-    bias : bool (default: False)
-        Whether or not to use the biased or unbiased test statistics. Only
-        applies to ``Dcorr`` and ``Hsic``.
     """
 
-    def __init__(self, compute_distance=euclidean, bias=False):
+    def __init__(self):
         # set statistic and p-value
         self.stat = None
         self.pvalue = None
-        self.compute_distance = compute_distance
 
         super().__init__()
 

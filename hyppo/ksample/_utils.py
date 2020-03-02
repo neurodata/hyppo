@@ -7,7 +7,7 @@ from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC
 
 
 class _CheckInputs:
-    def __init__(self, inputs, indep_test, reps=None, compute_distance=None):
+    def __init__(self, inputs, indep_test=None, reps=None, compute_distance=None):
         self.inputs = inputs
         self.compute_distance = compute_distance
         self.reps = reps

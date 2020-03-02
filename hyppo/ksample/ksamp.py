@@ -81,6 +81,7 @@ class KSample(KSampleTest):
             compute_distance = gaussian
         indep_test = test_names[indep_test]
         self.indep_test_name = indep_test.__name__
+        self.compute_distance = compute_distance
 
         dist_tests = [Dcorr, HHG, Hsic, MGC]
         if indep_test in dist_tests:
@@ -95,7 +96,7 @@ class KSample(KSampleTest):
         else:
             self.indep_test = indep_test()
 
-        KSampleTest.__init__(self, compute_distance=compute_distance)
+        KSampleTest.__init__(self)
 
     def _statistic(self, *args):
         r"""
