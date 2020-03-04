@@ -1,7 +1,7 @@
 Discriminability
 ****************
 
-.. currentmodule:: mgc.discrim
+.. currentmodule:: hyppo.discrim
 
 Discriminability One Sample Test
 --------------------------------

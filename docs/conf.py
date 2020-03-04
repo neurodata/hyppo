@@ -22,14 +22,14 @@ from github_link import make_linkcode_resolve
 
 # -- Project information -----------------------------------------------------
 
-project = "mgc"
+project = "hyppo"
 copyright = "2018"
 authors = u"Sambit Panda"
 
 # The short X.Y version
-# Find mgc version.
+# Find hyppo version.
 PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
-for line in open(os.path.join(PROJECT_PATH, "..", "mgc", "__init__.py")):
+for line in open(os.path.join(PROJECT_PATH, "..", "hyppo", "__init__.py")):
     if line.startswith("__version__ = "):
         version = line.strip().split()[2][1:-1]
 
@@ -79,7 +79,7 @@ source_encoding = "utf-8"
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 html_static_path = ["_static"]
-modindex_common_prefix = ["mgc."]
+modindex_common_prefix = ["hyppo."]
 
 pygments_style = "sphinx"
 smartquotes = False
@@ -97,14 +97,14 @@ html_context = {
     # Set the following variables to generate the resulting github URL for each page.
     # Format Template: https://{{ github_host|default("github.com") }}/{{ github_user }}/{{ github_repo }}/blob/{{ github_version }}{{ conf_py_path }}{{ pagename }}{{ suffix }}
     "github_user": "neurodata",
-    "github_repo": "mgc",
+    "github_repo": "hyppo",
     "github_version": "master/docs/",
 }
 
 linkcode_resolve = make_linkcode_resolve(
-    "mgc",
+    "hyppo",
     u"https://github.com/neurodata/"
-    "mgc/blob/{revision}/"
+    "hyppo/blob/{revision}/"
     "{package}/{path}#L{lineno}",
 )
 
@@ -121,7 +121,7 @@ linkcode_resolve = make_linkcode_resolve(
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "mgcdoc"
+htmlhelp_basename = "hyppodoc"
 
 # -- Options for LaTeX output ------------------------------------------------
 
@@ -143,13 +143,13 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
-latex_documents = [(master_doc, "mgc.tex", "mgc Documentation", authors, "manual")]
+latex_documents = [(master_doc, "hyppo.tex", "hyppo Documentation", authors, "manual")]
 
 # -- Options for manual page output ------------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "mgc", "mgc Documentation", [authors], 1)]
+man_pages = [(master_doc, "hyppo", "hyppo Documentation", [authors], 1)]
 
 # -- Options for Texinfo output ----------------------------------------------
 
@@ -159,10 +159,10 @@ man_pages = [(master_doc, "mgc", "mgc Documentation", [authors], 1)]
 texinfo_documents = [
     (
         master_doc,
-        "mgc",
-        "mgc Documentation",
+        "hyppo",
+        "hyppo Documentation",
         authors,
-        "mgc",
+        "hyppo",
         "One line description of project.",
         "Miscellaneous",
     )

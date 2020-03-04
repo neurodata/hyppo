@@ -3,7 +3,7 @@ from math import ceil
 
 from scipy._lib._util import check_random_state, MapWrapper
 
-from mgc.ksample._utils import k_sample_transform
+from hyppo.ksample._utils import k_sample_transform
 
 
 class _ParallelP(object):

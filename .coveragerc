@@ -10,4 +10,4 @@ show_missing = True
 omit =
     *tests*
     *__init__.py
-    *mgc/_utils.py
+    *hyppo/_utils.py

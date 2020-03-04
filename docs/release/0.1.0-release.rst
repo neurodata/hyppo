@@ -1,0 +1,77 @@
+hyppo v0.1.0 Release Notes
+==========================
+
+.. contents::
+
+hyppo 0.1.0 is the culmination of 8 months of hard work. It contains
+many new features, numerous bug-fixes, improved test coverage and
+better documentation. All users are encouraged to use this release instead
+of the mgcpy, which this package is replacing, are a large number of
+bug-fixes and optimizations.  Moreover, our development attention will now
+shift to bug-fix releases on this branch, and on adding new features
+on the development master branch.
+
+Release highlights (as compared to mgcpy):
+
+  - New time series and discriminability modules
+  - More user-friendly implementation of *k*-Sample Testing
+
+This release requires Python 3.5+.
+
+New features
+------------
+
+Independence testing
+^^^^^^^^^^^^^^^^^^^^
+Tests have been given a unique class as compared to mgcpy. Parallelization
+in this module makes tests faster and ``Hsic`` has been added as a standalone
+test within this package (uses exact equivalence implementation).
+
+*k*-sample testing
+^^^^^^^^^^^^^^^^^^
+*k*-Sample testing is now organized within a class that is modeled similarly to
+how independence tests are run. More information about the specifics of how
+this works can be found in the docs.
+
+Time series
+^^^^^^^^^^^
+Time series based independence tests have been included as a separate module
+from independence tests.
+
+Simulations
+^^^^^^^^^^^
+Simulations have been included as a separate module and ``hyppo.sims`` now
+includes k-sample simulations and time series simulations.
+
+Discriminability
+^^^^^^^^^^^^^^^^
+Discriminability has been included from the r-mgc package and has been changed
+so it conforms to the ``hyppo`` API.
+
+Benchmarks
+^^^^^^^^^^
+A benchmarks folder as been added that contains notebooks comparing
+statistical power, algorithm wall times, and test statistics comparisons
+between the algorithms and sometimes between the respective R implementations.
+Many of those notebooks have been condensed into tutorials in the
+documentation.
+
+Other changes
+-------------
+API has been changed as compared to mgcpy and is modeled after scikit-learn
+with the inclusion of the ``base.py`` containing an abstract class within each
+module and energy with a ``.test`` method calculating test statistic in
+p-value.
+
+
+Authors
+=======
+
+This release contains work by the following people (contributed at least
+one patch to this release, names in alphabetical order by last name):
+
+* Jayanta Dey +
+* Sambit Panda +
+
+A total of 2 people contributed to this release.
+People with a "+" by their names contributed a patch for the first time.

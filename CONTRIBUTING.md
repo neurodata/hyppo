@@ -1,22 +1,22 @@
-Contributing to mgc
-===================
+Contributing to hyppo
+=====================
 
 (adopted from scikit-learn)
 
 The latest contributing guide is available in the repository at
 `docs/contributing.rst`, or online at:
 
-[https://mgc.neurodata.io/contributing.html](https://mgc.neurodata.io/contributing.html)
+[https://hyppo.neurodata.io/contributing.html](https://hyppo.neurodata.io/contributing.html)
 
-There are many ways to contribute to mgc, with the most common ones
+There are many ways to contribute to `hyppo`, with the most common ones
 being contribution of code or documentation to the project. Improving the
 documentation is no less important than improving the library itself. If you
 find a typo in the documentation, or have made improvements,do not hesitate to
 submit a GitHub pull request. Documentation can be found under the
-[docs/](https://github.com/neurodata/mgc/tree/master/docs) directory.
+[docs/](https://github.com/neurodata/hyppo/tree/master/docs) directory.
 
 But there are many other ways to help. In particular answering queries on the
-[issue tracker](https://github.com/neurodata/mgc/issues), and
+[issue tracker](https://github.com/neurodata/hyppo/issues), and
 investigating bugs are very valuable contributions that decrease the burden on
 the project maintainers.
 
@@ -28,9 +28,9 @@ link to it from your website, or simply star it in GitHub to say "I use it".
 Quick links
 -----------
 
-* [Submitting a bug report or feature request](http://mgc.neurodata.io/contributing.html#submitting-a-bug-report-or-a-feature-request)
-* [Contributing code](http://mgc.neurodata.io/contributing.html#contributing-code)
-* [Coding guidelines](http://mgc.neurodata.io/contributing.html#coding-guidelines)
+* [Submitting a bug report or feature request](http://hyppo.neurodata.io/contributing.html#submitting-a-bug-report-or-a-feature-request)
+* [Contributing code](http://hyppo.neurodata.io/contributing.html#contributing-code)
+* [Coding guidelines](http://hyppo.neurodata.io/contributing.html#coding-guidelines)
 
 Code of Conduct
 ---------------
