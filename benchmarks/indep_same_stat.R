@@ -4,10 +4,10 @@ require("energy")
 require("kernlab")
 require("HHG")
 # change to your file path
-#filepath = setwd("/Users/sampan501/workspace/mgc/benchmarks/same_stat/indep")
-filepath = setwd("/Users/sampan501/workspace/mgc/benchmarks/same_stat/ksample")
+#filepath = setwd("/Users/sampan501/workspace/hyppo/benchmarks/same_stat/indep")
+filepath = setwd("/Users/sampan501/workspace/hyppo/benchmarks/same_stat/ksample")
 
-times = seq(1, 20, by=1)
+times = seq(1, 100, by=1)
 statistics <- list()
 for (t in times){
   #df <- read.csv(paste(filepath, "/", t, ".csv", sep=""), sep=",")
