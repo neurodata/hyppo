@@ -1,0 +1,38 @@
+import numpy as np
+
+from .base import RandomForestTest
+from ._utils import _CheckInputs, rf_xmat
+from ..independence import Dcorr
+from .._utils import euclidean
+
+
+class MGCRF(RandomForestTest):
+    r"""
+    Class for calculating the random forest based Dcorr test statistic and p-value.
+    """
+
+    def __init__(self, ntrees=500):
+        self.ntrees = ntrees
+        RandomForestTest.__init__(self)
+
+    def _statistic(self, x, y):
+        r"""
+        Helper function that calculates the random forest based Dcorr test statistic.
+
+        y must be categorical
+        """
+        distx = np.sqrt(1 - rf_xmat(x, y, self.ntrees))
+        disty = euclidean(y)
+        stat = Dcorr(compute_distance=None)._statistic(distx, disty)
+        self.stat = stat
+
+        return stat
+
+    def test(self, x, y, reps=1000, workers=1):
+        r"""
+        Calculates the random forest based Dcorr test statistic and p-value.
+        """
+        check_input = _CheckInputs(x, y, reps=reps, ntrees=self.ntrees)
+        x, y = check_input()
+
+        return super(MGCRF, self).test(x, y, reps, workers)
