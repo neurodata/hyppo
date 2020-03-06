@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/github/license/neurodata/hyppo)](https://hyppo.neurodata.io/license.html)
 [![arXiv shield](https://img.shields.io/badge/arXiv-1907.02088-red.svg?style=flat)](https://arxiv.org/abs/1907.02088)
 
-`hyppo` (**HYP**othesis Testing in **P**yth**O**n, pronounced "Hippo") is an open-source software package for hypothesis testing.
+`hyppo` (**HYP**othesis Testing in **P**yth**O**n, pronounced "Hippo") is an open-source software package for multivariate hypothesis testing.
 
 - **Installation Guide:** [https://hyppo.neurodata.io/install.html](https://hyppo.neurodata.io/install.html)
 - **Documentation:** [https://hyppo.neurodata.io/](https://hyppo.neurodata.io/)
@@ -15,4 +15,4 @@
 - **Issues:** [https://github.com/neurodata/hyppo/issues](https://github.com/neurodata/hyppo/issues)
 - **Contribution Guide:** [https://hyppo.neurodata.io/contributing.html](https://hyppo.neurodata.io/contributing.html)
 
-`hyppo` intends to be a comprehensive hypothesis testing package and runs on all major versions of operating systems. It also includes novel tests not found in other packages that operate on multivariate data. It is quick to install and free of charge. If you need to use multivariate hypothesis testing, be sure to give `hyppo` a try!
+`hyppo` intends to be a comprehensive multivariate hypothesis testing package and runs on all major versions of operating systems. It also includes novel tests not found in other packages. It is quick to install and free of charge. If you need to use multivariate hypothesis testing, be sure to give `hyppo` a try!
