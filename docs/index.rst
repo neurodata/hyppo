@@ -37,7 +37,7 @@ Free software
 -------------
 
 ``hyppo`` is free software; you can redistribute it and/or modify it under the
-terms of the :doc:`MIT </license>`.  We welcome contributions. Join us on
+terms of the :doc:`Apache 2.0 </license>`.  We welcome contributions. Join us on
 `GitHub <https://github.com/neurodata/hyppo>`_.
 
 History
