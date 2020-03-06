@@ -1,6 +1,6 @@
 License
 =======
-hyppo is distributed with a MIT license.
+``hyppo`` is distributed with a Apache 2.0 license.
 
 ::
 
