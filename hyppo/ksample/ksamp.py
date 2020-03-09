@@ -124,7 +124,7 @@ class KSample(KSampleTest):
         ----------
         *args : ndarrays
             Variable length input data matrices. All inputs must have the same
-            number of samples. That is, the shapes must be `(n, p)` and
+            number of dimensions. That is, the shapes must be `(n, p)` and
             `(m, p)` where `n` and `m` are the number of samples and `p` are
             the number of dimensions. Alternatively, inputs can be distance
             matrices, where the shapes must all be `(n, n)`.
@@ -148,7 +148,6 @@ class KSample(KSampleTest):
         >>> from hyppo.ksample import KSample
         >>> x = np.arange(7)
         >>> y = x
-        >>> z = np.arange(10)
         >>> stat, pvalue = KSample("Dcorr").test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
         '-0.136, 1.0'

@@ -10,7 +10,7 @@ from ._utils import _CheckInputs, k_sample_transform
 
 class Hotelling(KSampleTest):
     r"""
-    Class for calculating Hotelling :math:`T^2`
+    Class for calculating Hotelling :math:`T^2` test statistic and p-value.
     """
 
     def __init__(self):
@@ -18,13 +18,13 @@ class Hotelling(KSampleTest):
 
     def _statistic(self, x, y):
         r"""
-        Calulates the *k*-sample test statistic.
+        Calulates the Hotelling :math:`T^2` test statistic.
 
         Parameters
         ----------
-        *args : ndarrays
-            Variable length input data matrices. All inputs must have the same
-            number of samples. That is, the shapes must be `(n, p)` and
+        x, y : ndarrays
+            Input data matrices. `x` and `y` must have the same
+            number of dimensions. That is, the shapes must be `(n, p)` and
             `(m, p)` where `n` and `m` are the number of samples and `p` are
             the number of dimensions. Alternatively, inputs can be distance
             matrices, where the shapes must all be `(n, n)`.
@@ -48,13 +48,13 @@ class Hotelling(KSampleTest):
 
     def test(self, x, y, reps=1000, workers=1, auto=True):
         r"""
-        Calculates the *k*-sample test statistic and p-value.
+        Calulates the Hotellings :math:`T^2` test statistic and p-value.
 
         Parameters
         ----------
-        *args : ndarrays
-            Variable length input data matrices. All inputs must have the same
-            number of samples. That is, the shapes must be `(n, p)` and
+        x, y : ndarrays
+            Input data matrices. `x` and `y` must have the same
+            number of dimensions. That is, the shapes must be `(n, p)` and
             `(m, p)` where `n` and `m` are the number of samples and `p` are
             the number of dimensions. Alternatively, inputs can be distance
             matrices, where the shapes must all be `(n, n)`.
@@ -64,22 +64,25 @@ class Hotelling(KSampleTest):
         workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
+        auto : bool (default: True)
+            Automatically uses analytical p-value calculation rather than a
+            generic permutation test. Parameters ``reps`` and ``workers`` are
+            irrelevant in this case.
 
         Returns
         -------
         stat : float
-            The computed *k*-Sample statistic.
+            The computed Hotellings :math:`T^2` statistic.
         pvalue : float
-            The computed *k*-Sample p-value.
+            The computed Hotellings :math:`T^2` p-value.
 
         Examples
         --------
         >>> import numpy as np
-        >>> from hyppo.ksample import KSample
+        >>> from hyppo.ksample import Hotelling
         >>> x = np.arange(7)
         >>> y = x
-        >>> z = np.arange(10)
-        >>> stat, pvalue = KSample("Dcorr").test(x, y)
+        >>> stat, pvalue = Hotelling().test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
         '-0.136, 1.0'
 
@@ -90,8 +93,7 @@ class Hotelling(KSampleTest):
         >>> from hyppo.ksample import KSample
         >>> x = np.arange(7)
         >>> y = x
-        >>> z = np.ones(7)
-        >>> stat, pvalue = KSample("Dcorr").test(x, y, z, reps=10000)
+        >>> stat, pvalue = Hotelling().test(x, y, reps=10000, auto=False)
         >>> '%.3f, %.1f' % (stat, pvalue)
         '0.172, 0.0'
         """
