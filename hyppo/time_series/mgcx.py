@@ -81,10 +81,6 @@ class MGCX(TimeSeriesTest):
         opt_scale : tuple
             The computed optimal scale as a pair of two elements.
         """
-        check_input = _CheckInputs(
-            x, y, max_lag=self.max_lag, compute_distance=self.compute_distance
-        )
-        x, y = check_input()
 
         stat, opt_lag = compute_stat(x, y, MGC, self.compute_distance, self.max_lag)
         self.stat = stat

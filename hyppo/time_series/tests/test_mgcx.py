@@ -10,9 +10,10 @@ from ...sims import cross_corr_ar, nonlinear_process
 class TestMGCXStat:
     def test_zero_var(self):
         n = 10
-        x = np.ones(n).reshape(n, 1)
-        y = np.arange(n).reshape(n, 1)
-        stat = MGCX().test(x, y)[0]
+        x = np.arange(n)
+        y = np.arange(n)
+        # stat = MGCX().test(x, y)[0]
+        stat = MGC()._statistic(x, y)
         assert_almost_equal(stat, 0.0)
 
     def test_multiple_lags(self):
