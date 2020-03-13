@@ -24,22 +24,39 @@ class _ParallelP(object):
         self.rngs = rngs
 
     def __call__(self, index):
-        if (
-            self.sim.__name__ == "multiplicative_noise"
-            or self.sim.__name__ == "multimodal_independence"
-        ):
-            x, y = self.ksim(
-                self.sim, self.n, self.p, degree=self.angle, trans=self.trans
-            )
+        if self.ksim.__name__ == "rot_2samp":
+            if (
+                self.sim.__name__ == "multiplicative_noise"
+                or self.sim.__name__ == "multimodal_independence"
+            ):
+                x, y = self.ksim(
+                    self.sim, self.n, self.p, degree=self.angle
+                )
+            else:
+                x, y = self.ksim(
+                    self.sim,
+                    self.n,
+                    self.p,
+                    noise=self.noise,
+                    degree=self.angle,
+                )
         else:
-            x, y = self.ksim(
-                self.sim,
-                self.n,
-                self.p,
-                noise=self.noise,
-                degree=self.angle,
-                trans=self.trans,
-            )
+            if (
+                self.sim.__name__ == "multiplicative_noise"
+                or self.sim.__name__ == "multimodal_independence"
+            ):
+                x, y = self.ksim(
+                    self.sim, self.n, self.p, degree=self.angle, trans=self.trans
+                )
+            else:
+                x, y = self.ksim(
+                    self.sim,
+                    self.n,
+                    self.p,
+                    noise=self.noise,
+                    degree=self.angle,
+                    trans=self.trans,
+                )
 
         u, v = k_sample_transform([x, y])
         obs_stat = self.test._statistic(u, v)
