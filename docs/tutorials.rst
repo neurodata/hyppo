@@ -27,7 +27,7 @@ the algorithms included against each other.
 
 *K*-sample Tests
 ------------------
-The *k*-testing problem is generalized as follows: consider random variables
+The *k*-sample testing problem is generalized as follows: consider random variables
 :math:`X_1, X_2, \ldots, X_k` that have densities
 :math:`F_1, F_2, \ldots, F_k`. Then, we are testing
 
