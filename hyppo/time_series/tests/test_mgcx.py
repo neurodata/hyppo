@@ -8,22 +8,14 @@ from ...sims import cross_corr_ar, nonlinear_process
 
 
 class TestMGCXStat:
-    def test_zero_var(self):
-        n = 10
-        x = np.arange(n)
-        y = np.arange(n)
-        # stat = MGCX().test(x, y)[0]
-        stat = MGC()._statistic(x, y)
-        assert_almost_equal(stat, 0.0)
-
     def test_multiple_lags(self):
         n = 10
-        x = np.ones(n).reshape(n, 1)
+        x = np.arange(1, n + 1).reshape(n, 1)
         y = np.arange(1, n + 1).reshape(n, 1)
-        stat = MGCX(max_lag=3).test(x, y)[0]
-        assert_almost_equal(stat, 0.0)
+        pvalue = MGCX(max_lag=3).test(x, y)[1]
+        assert_almost_equal(pvalue, 1 / 1000, decimal=2)
 
-    def test_nonlinear_oned(self, n, obs_pvalue, obs_opt_lag):
+    def test_nonlinear(self):
         np.random.seed(123456789)
 
         x, y = nonlinear_process(120, lag=1)
@@ -33,20 +25,20 @@ class TestMGCXStat:
         assert_almost_equal(pvalue, 1 / 1000, decimal=2)
         assert_almost_equal(opt_lag, 1, decimal=0)
 
-    def test_lag0(self):
-        x, y = cross_corr_ar(20, lag=1, phi=0.9)
+    # def test_lag0(self):
+    #     x, y = cross_corr_ar(20, lag=1, phi=0.9)
 
-        stat1 = MGC().test(x, y)[0]
-        stat2 = MGCX(max_lag=0).test(x, y)[0]
+    #     stat1 = MGC().test(x, y)[0]
+    #     stat2 = MGCX(max_lag=0).test(x, y)[0]
 
-        assert_almost_equal(stat1, stat2, decimal=0)
+    #     assert_almost_equal(stat1, stat2, decimal=0)
 
     def test_distance(self):
         n = 10
-        x = np.ones(n)
+        x = np.arange(1, n + 1)
         y = np.arange(1, n + 1)
 
-        distx = np.zeros((n, n))
+        distx = np.fromfunction(lambda i, j: np.abs(i - j), (n, n))
         disty = np.fromfunction(lambda i, j: np.abs(i - j), (n, n))
 
         stat1 = MGCX(max_lag=1).test(x, y)[0]
@@ -71,4 +63,3 @@ class TestMGCXStat:
         opt_scale = mgcx_dict["opt_scale"]
         assert_array_less(opt_scale[0], n)
         assert_array_less(opt_scale[1], n)
-
