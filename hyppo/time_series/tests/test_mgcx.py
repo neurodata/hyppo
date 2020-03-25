@@ -47,7 +47,7 @@ class TestMGCXStat:
         assert_almost_equal(stat1, stat2, decimal=0)
 
     def test_optimal_scale_linear(self):
-        n = 7
+        n = 
         x = np.arange(n)
         y = x
         mgcx_dict = MGCX().test(x, y, reps=100)[2]
