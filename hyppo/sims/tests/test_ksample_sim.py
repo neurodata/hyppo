@@ -50,8 +50,6 @@ class TestKSampleShape:
             "two_parabolas",
             "square",
             "diamond",
-            "circle",
-            "ellipse",
             "multiplicative_noise",
             "multimodal_independence",
         ]:

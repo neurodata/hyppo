@@ -45,8 +45,6 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
         "two_parabolas",
         "square",
         "diamond",
-        "circle",
-        "ellipse",
         "multiplicative_noise",
         "multimodal_independence",
     ]

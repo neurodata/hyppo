@@ -922,7 +922,7 @@ def _circle_ellipse(n, p, noise=False, low=-1, high=1, radius=1):
     sig = np.identity(p)
     gauss_noise = np.random.multivariate_normal(np.zeros(p), sig, size=n)
 
-    ry = np.ones((n, p))
+    ry = np.ones((n, 1))
     x[:, 0] = np.cos(unif[:, 0] * np.pi)
     for i in range(p - 1):
         x[:, i + 1] = x[:, i] * np.cos(unif[:, i + 1] * np.pi)
