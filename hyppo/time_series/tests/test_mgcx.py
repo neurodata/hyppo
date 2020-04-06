@@ -25,6 +25,7 @@ class TestMGCXStat:
         assert_almost_equal(pvalue, 1 / 1000, decimal=2)
         assert_almost_equal(opt_lag, 1, decimal=0)
 
+    # TO DO: Fix when repeated values are fixed in classic MGC.
     # def test_lag0(self):
     #     x, y = cross_corr_ar(20, lag=1, phi=0.9)
 
@@ -47,7 +48,7 @@ class TestMGCXStat:
         assert_almost_equal(stat1, stat2, decimal=0)
 
     def test_optimal_scale_linear(self):
-        n = 
+        n = 10
         x = np.arange(n)
         y = x
         mgcx_dict = MGCX().test(x, y, reps=100)[2]
