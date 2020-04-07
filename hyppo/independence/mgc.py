@@ -229,6 +229,7 @@ class MGC(IndependenceTest):
             _, _, mgc_dict = multiscale_graphcorr(
                 x, y, compute_distance=self.compute_distance, reps=1
             )
+        mgc_dict.pop("null_dist")
 
         stat, pvalue = super(MGC, self).test(x, y, reps, workers)
         self.stat = stat
