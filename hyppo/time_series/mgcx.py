@@ -136,17 +136,18 @@ class MGCX(TimeSeriesTest):
 
         >>> import numpy as np
         >>> from hyppo.time_series import MGCX
+        >>> np.random.seed(456)
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue, mgcx_dict = MGCX().test(x, y, reps = 100)
         >>> '%.1f, %.2f, [%d, %d]' % (stat, pvalue, mgcx_dict['opt_scale'][0], mgcx_dict['opt_scale'][1])
-        '1.0, 0.02, [7, 7]'
+        '1.0, 0.01, [7, 7]'
 
         The increasing the max_lag can increase the ability to identify dependence.
 
         >>> import numpy as np
         >>> from hyppo.time_series import MGCX
-        np.random.seed(1234)
+        >>> np.random.seed(1234)
         >>> x = np.random.permutation(10)
         >>> y = np.roll(x, -1)
         >>> stat, pvalue, mgcx_dict = MGCX(max_lag=1).test(x, y, reps=1000)
@@ -159,6 +160,7 @@ class MGCX(TimeSeriesTest):
 
         >>> import numpy as np
         >>> from hyppo.time_series import MGCX
+        >>> np.random.seed(789)
         >>> x = np.ones((10, 10)) - np.identity(10)
         >>> y = 2 * x
         >>> mgcx = MGCX(compute_distance=None)

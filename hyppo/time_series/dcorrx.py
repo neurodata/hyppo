@@ -130,6 +130,7 @@ class DcorrX(TimeSeriesTest):
         --------
         >>> import numpy as np
         >>> from hyppo.time_series import DcorrX
+        >>> np.random.seed(456)
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue, dcorrx_dict = DcorrX().test(x, y, reps = 100)
@@ -140,7 +141,7 @@ class DcorrX(TimeSeriesTest):
 
         >>> import numpy as np
         >>> from hyppo.time_series import DcorrX
-        np.random.seed(1234)
+        >>> np.random.seed(1234)
         >>> x = np.random.permutation(10)
         >>> y = np.roll(x, -1)
         >>> stat, pvalue, dcorrx_dict = DcorrX(max_lag=1).test(x, y, reps=1000)
@@ -153,6 +154,7 @@ class DcorrX(TimeSeriesTest):
 
         >>> import numpy as np
         >>> from hyppo.time_series import DcorrX
+        >>> np.random.seed(789)
         >>> x = np.ones((10, 10)) - np.identity(10)
         >>> y = 2 * x
         >>> dcorrx = DcorrX(compute_distance=None)
