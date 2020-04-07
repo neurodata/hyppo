@@ -85,7 +85,8 @@ class TimeSeriesTest(ABC):
         self.disty = self.compute_distance(y)
 
         # calculate observed test statistic
-        stat = self._statistic(x, y)[0]
+        stat_list = self._statistic(x, y)
+        stat = stat_list[0]
 
         # calculate null distribution
         null_dist = np.array(
@@ -104,7 +105,7 @@ class TimeSeriesTest(ABC):
             pvalue = 1 / reps
         self.pvalue = pvalue
 
-        return stat, pvalue
+        return stat, pvalue, stat_list
 
 
 def _perm_stat(calc_stat, distx, disty):

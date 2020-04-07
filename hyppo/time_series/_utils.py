@@ -10,6 +10,7 @@ from .._utils import (
     check_compute_distance,
 )
 from ..independence import Dcorr
+from ..independence import MGC
 
 
 class _CheckInputs:
@@ -103,3 +104,20 @@ def compute_stat(x, y, indep_test, compute_distance, max_lag):
     stat = np.sum(dep_lag)
 
     return stat, opt_lag
+
+
+def compute_scale_at_lag(x, y, opt_lag, compute_distance):
+    """Run the mgc test at the optimal scale (by shifting the series)."""
+    n = x.shape[0]
+    distx = compute_distance(x)
+    disty = compute_distance(y)
+
+    slice_distx = distx[opt_lag:n, opt_lag:n]
+    slice_disty = disty[0 : (n - opt_lag), 0 : (n - opt_lag)]
+
+    mgc = MGC()
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore")
+        opt_scale = mgc.test(slice_distx, slice_disty, reps=0)[2]["opt_scale"]
+
+    return opt_scale
