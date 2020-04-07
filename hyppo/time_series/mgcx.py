@@ -30,9 +30,8 @@ class MGCX(TimeSeriesTest):
 
     See Also
     --------
-    Dcorr: Distance correlation test statistic and p-value.
-    Hsic : Hilbert-Schmidt independence criterion test statistic and p-value.
-    HHG : Heller Heller Gorfine test statistic and p-value.
+    MGC: Multiscale graph correlation test statistic and p-value.
+    DcorrX: Cross distance correlation test statistic and p-value.
 
     Notes
     -----

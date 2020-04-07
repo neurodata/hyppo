@@ -1,4 +1,4 @@
-Independence
+Time Series
 ************
 
 .. currentmodule:: hyppo.time_series
