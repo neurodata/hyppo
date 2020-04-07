@@ -166,7 +166,7 @@ class MGCX(TimeSeriesTest):
         >>> mgcx = MGCX(compute_distance=None)
         >>> stat, pvalue, mgcx_dict = mgcx.test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
-        '1.0, 1.00'
+        '1.0, 0.00'
         """
         check_input = _CheckInputs(
             x, y, max_lag=self.max_lag, compute_distance=self.compute_distance
