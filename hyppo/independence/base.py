@@ -40,7 +40,7 @@ class IndependenceTest(ABC):
         """
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, return_null=False):
         r"""
         Calulates the independence test p-value.
 
@@ -53,6 +53,8 @@ class IndependenceTest(ABC):
         workers : int, optional (default: 1)
             Evaluates method using `multiprocessing.Pool <multiprocessing>`).
             Supply `-1` to use all cores available to the Process.
+        return_null : bool, optional (default: False)
+            Flag to check if null distribution gets returned.
 
         Returns
         -------
@@ -60,13 +62,16 @@ class IndependenceTest(ABC):
             The computed independence test statistic.
         pvalue : float
             The pvalue obtained via permutation.
+        null_dist : ndarray or None
+            The null distribution generated via permutation test.
         """
         self.x = x
         self.y = y
 
         # calculate p-value
-        stat, pvalue = perm_test(self._statistic, x, y, reps=reps, workers=workers)
+        stat, pvalue, null_dist = perm_test(self._statistic, x, y, reps=reps, workers=workers)
         self.stat = stat
         self.pvalue = pvalue
+        self.null_dist = null_dist
 
-        return stat, pvalue
+        return stat, pvalue, null_dist

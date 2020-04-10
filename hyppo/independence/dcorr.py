@@ -159,6 +159,9 @@ class Dcorr(IndependenceTest):
             The computed Dcorr statistic.
         pvalue : float
             The computed Dcorr p-value.
+        null_dist : ndarray or None
+            The null distribution generated via permutation test, None if an
+            approximation is used.
 
         Examples
         --------
@@ -166,7 +169,7 @@ class Dcorr(IndependenceTest):
         >>> from hyppo.independence import Dcorr
         >>> x = np.arange(7)
         >>> y = x
-        >>> stat, pvalue = Dcorr().test(x, y)
+        >>> stat, pvalue, null_dist = Dcorr().test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
 
@@ -177,7 +180,7 @@ class Dcorr(IndependenceTest):
         >>> from hyppo.independence import Dcorr
         >>> x = np.arange(7)
         >>> y = x
-        >>> stat, pvalue = Dcorr().test(x, y, reps=10000)
+        >>> stat, pvalue, null_dist = Dcorr().test(x, y, reps=10000)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
 
@@ -190,7 +193,7 @@ class Dcorr(IndependenceTest):
         >>> x = np.ones((10, 10)) - np.identity(10)
         >>> y = 2 * x
         >>> dcorr = Dcorr(compute_distance=None)
-        >>> stat, pvalue = dcorr.test(x, y)
+        >>> stat, pvalue, null_dist = dcorr.test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '0.0, 1.00'
         """
@@ -204,7 +207,7 @@ class Dcorr(IndependenceTest):
 
         if auto == True and x.shape[0] > 20:
             stat, pvalue = chi2_approx(self._statistic, x, y)
-            return stat, pvalue
+            return stat, pvalue, None
         else:
             return super(Dcorr, self).test(x, y, reps, workers)
 

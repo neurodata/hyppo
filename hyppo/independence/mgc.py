@@ -170,6 +170,8 @@ class MGC(IndependenceTest):
             The computed MGC statistic.
         pvalue : float
             The computed MGC p-value.
+        null_dist : ndarray or None
+            The null distribution generated via permutation test.
         mgc_dict : dict
             Contains additional useful returns containing the following keys:
 
@@ -210,7 +212,7 @@ class MGC(IndependenceTest):
         >>> x = np.ones((10, 10)) - np.identity(10)
         >>> y = 2 * x
         >>> mgc = MGC(compute_distance=None)
-        >>> stat, pvalue, _ = mgc.test(x, y)
+        >>> stat, pvalue, null_dist, _ = mgc.test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '0.0, 1.00'
         """
@@ -231,9 +233,10 @@ class MGC(IndependenceTest):
             )
         mgc_dict.pop("null_dist")
 
-        stat, pvalue = super(MGC, self).test(x, y, reps, workers)
+        stat, pvalue, null_dist = super(MGC, self).test(x, y, reps, workers)
         self.stat = stat
         self.pvalue = pvalue
+        self.null_dist = null_dist
         self.mgc_dict = mgc_dict
 
-        return stat, pvalue, mgc_dict
+        return stat, pvalue, null_dist, mgc_dict

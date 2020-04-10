@@ -20,7 +20,7 @@ class TestCCAStat:
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
         x, y = linear(n, 1)
-        stat, pvalue = CCA().test(x, y)
+        stat, pvalue, null_dist = CCA().test(x, y)
 
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(pvalue, obs_pvalue, decimal=2)
@@ -31,7 +31,7 @@ class TestCCAStat:
     def test_linear_threed(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
         x, y = linear(n, 3)
-        stat, pvalue = CCA().test(x, y)
+        stat, pvalue, null_dist = CCA().test(x, y)
 
         assert_almost_equal(stat, obs_stat, decimal=1)
         assert_almost_equal(pvalue, obs_pvalue, decimal=1)

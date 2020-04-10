@@ -147,6 +147,8 @@ class HHG(IndependenceTest):
             The computed HHG statistic.
         pvalue : float
             The computed HHG p-value.
+        null_dist : ndarray or None
+            The null distribution generated via permutation test.
 
         Examples
         --------
@@ -154,7 +156,7 @@ class HHG(IndependenceTest):
         >>> from hyppo.independence import HHG
         >>> x = np.arange(7)
         >>> y = x
-        >>> stat, pvalue = HHG().test(x, y)
+        >>> stat, pvalue, null_dist = HHG().test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '160.0, 0.00'
 
@@ -165,7 +167,7 @@ class HHG(IndependenceTest):
         >>> from hyppo.independence import HHG
         >>> x = np.arange(7)
         >>> y = x
-        >>> stat, pvalue = HHG().test(x, y, reps=10000)
+        >>> stat, pvalue, null_dist = HHG().test(x, y, reps=10000)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '160.0, 0.00'
 
@@ -178,7 +180,7 @@ class HHG(IndependenceTest):
         >>> x = np.ones((10, 10)) - np.identity(10)
         >>> y = 2 * x
         >>> hhg = HHG(compute_distance=None)
-        >>> stat, pvalue = hhg.test(x, y)
+        >>> stat, pvalue, null_dist = hhg.test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '0.0, 1.00'
         """
