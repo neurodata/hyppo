@@ -118,8 +118,6 @@ class CCA(IndependenceTest):
             The computed CCA statistic.
         pvalue : float
             The computed CCA p-value.
-        null_dist : ndarray or None
-            The null distribution generated via permutation test.
 
         Examples
         --------
@@ -127,7 +125,7 @@ class CCA(IndependenceTest):
         >>> from hyppo.independence import CCA
         >>> x = np.arange(7)
         >>> y = x
-        >>> stat, pvalue, null_dist = CCA().test(x, y)
+        >>> stat, pvalue = CCA().test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
 
@@ -138,7 +136,7 @@ class CCA(IndependenceTest):
         >>> from hyppo.independence import CCA
         >>> x = np.arange(7)
         >>> y = x
-        >>> stat, pvalue, null_dist = CCA().test(x, y, reps=10000)
+        >>> stat, pvalue = CCA().test(x, y, reps=10000)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
         """

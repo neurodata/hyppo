@@ -13,7 +13,7 @@ class TestHsicStat:
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
         x, y = linear(n, 1)
-        stat, pvalue, null_dist = Hsic().test(x, y)
+        stat, pvalue = Hsic().test(x, y)
 
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(pvalue, obs_pvalue, decimal=2)

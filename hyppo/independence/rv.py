@@ -107,8 +107,6 @@ class RV(IndependenceTest):
             The computed RV statistic.
         pvalue : float
             The computed RV p-value.
-        null_dist : ndarray or None
-            The null distribution generated via permutation test.
 
         Examples
         --------
@@ -116,7 +114,7 @@ class RV(IndependenceTest):
         >>> from hyppo.independence import RV
         >>> x = np.arange(7)
         >>> y = x
-        >>> stat, pvalue, null_dist = RV().test(x, y)
+        >>> stat, pvalue = RV().test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
 
@@ -127,7 +125,7 @@ class RV(IndependenceTest):
         >>> from hyppo.independence import RV
         >>> x = np.arange(7)
         >>> y = x
-        >>> stat, pvalue, null_dist = RV().test(x, y, reps=10000)
+        >>> stat, pvalue = RV().test(x, y, reps=10000)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
         """

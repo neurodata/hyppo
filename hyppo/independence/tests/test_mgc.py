@@ -26,7 +26,7 @@ class TestMGCStat(object):
 
         # test stat and pvalue
         stat1 = MGC()._statistic(x, y)
-        stat2, pvalue, null_dist, _ = MGC().test(x, y)
+        stat2, pvalue, _ = MGC().test(x, y)
         assert_approx_equal(stat1, obs_stat, significant=1)
         assert_approx_equal(stat2, obs_stat, significant=1)
         assert_approx_equal(pvalue, obs_pvalue, significant=1)
@@ -46,7 +46,7 @@ class TestMGCStat(object):
 
         # test stat and pvalue
         stat1 = MGC()._statistic(x, y)
-        stat2, pvalue, null_dist, _ = MGC().test(x, y)
+        stat2, pvalue, _ = MGC().test(x, y)
         assert_approx_equal(stat1, obs_stat, significant=1)
         assert_approx_equal(stat2, obs_stat, significant=1)
         assert_approx_equal(pvalue, obs_pvalue, significant=1)
