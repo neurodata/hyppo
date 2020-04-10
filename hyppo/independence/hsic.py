@@ -215,7 +215,10 @@ class Hsic(IndependenceTest):
 
         if auto == True and x.shape[0] > 20:
             stat, pvalue = chi2_approx(self._statistic, x, y)
+            self.stat = stat
+            self.pvalue = pvalue
             self.null_dist = None
-            return stat, pvalue
         else:
-            return super(Hsic, self).test(x, y, reps, workers)
+            stat, pvalue = super(Hsic, self).test(x, y, reps, workers)
+
+        return stat, pvalue

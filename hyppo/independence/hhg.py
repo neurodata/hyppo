@@ -154,7 +154,7 @@ class HHG(IndependenceTest):
         >>> from hyppo.independence import HHG
         >>> x = np.arange(7)
         >>> y = x
-        >>> stat, pvalue, null_dist = HHG().test(x, y)
+        >>> stat, pvalue = HHG().test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '160.0, 0.00'
 

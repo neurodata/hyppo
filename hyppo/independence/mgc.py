@@ -177,8 +177,6 @@ class MGC(IndependenceTest):
                     A 2D representation of the latent geometry of the relationship.
                 - opt_scale : (int, int)
                     The estimated optimal scale as a `(x, y)` pair.
-                - null_dist : list
-                    The null distribution derived from the permuted matrices
 
         Examples
         --------
@@ -231,10 +229,7 @@ class MGC(IndependenceTest):
             )
         mgc_dict.pop("null_dist")
 
-        stat, pvalue, null_dist = super(MGC, self).test(x, y, reps, workers)
-        self.stat = stat
-        self.pvalue = pvalue
-        self.null_dist = null_dist
+        stat, pvalue = super(MGC, self).test(x, y, reps, workers)
         self.mgc_dict = mgc_dict
 
         return stat, pvalue, mgc_dict
