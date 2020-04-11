@@ -2,7 +2,6 @@ import warnings
 
 import numpy as np
 from scipy.stats import chi2
-from sklearn.ensemble import RandomForestRegressor
 
 from .._utils import (
     contains_nan,
@@ -16,11 +15,10 @@ from .._utils import (
 class _CheckInputs:
     """Checks inputs for all independence tests"""
 
-    def __init__(self, x, y, reps=None, ntrees=500):
+    def __init__(self, x, y, reps=None):
         self.x = x
         self.y = y
         self.reps = reps
-        self.ntrees = ntrees
 
     def __call__(self):
         check_ndarray_xy(self.x, self.y)
@@ -29,7 +27,6 @@ class _CheckInputs:
         self.x, self.y = self.check_dim_xy()
         self.x, self.y = convert_xy_float64(self.x, self.y)
         self._check_min_samples()
-        self._check_ntrees()
 
         if self.reps:
             check_reps(self.reps)
@@ -73,16 +70,9 @@ class _CheckInputs:
         if nx <= 3 or ny <= 3:
             raise ValueError("Number of samples is too low")
 
-    def _check_ntrees(self):
-        """Check if number of trees is enough"""
-        if not isinstance(self.ntrees, int):
-            raise TypeError("ntrees must be an integer")
-        if self.ntrees < 100:
-            warnings.warn("Tree is low (<100), consider using more trees")
 
-
-def sim_matrix(model, X):
-    terminals = model.apply(X)
+def sim_matrix(model, x):
+    terminals = model.apply(x)
     ntrees = terminals.shape[1]
 
     proxMat = 1 * np.equal.outer(terminals[:, 0], terminals[:, 0])
@@ -91,12 +81,3 @@ def sim_matrix(model, X):
     proxMat = proxMat / ntrees
 
     return proxMat
-
-
-def rf_xmat(x, y, ntrees):
-    y = y.reshape(-1)
-    clf = RandomForestRegressor(n_estimators=ntrees)
-    clf.fit(x, y)
-    x = sim_matrix(clf, x)
-
-    return x

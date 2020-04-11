@@ -1,9 +1,5 @@
 from abc import ABC, abstractmethod
 
-import numpy as np
-
-from .._utils import perm_test
-
 
 class RandomForestTest(ABC):
     r"""
@@ -50,12 +46,3 @@ class RandomForestTest(ABC):
         pvalue : float
             The pvalue obtained via permutation.
         """
-        self.x = x
-        self.y = y
-
-        # calculate p-value
-        stat, pvalue = perm_test(self._statistic, x, y, reps=reps, workers=workers)
-        self.stat = stat
-        self.pvalue = pvalue
-
-        return stat, pvalue

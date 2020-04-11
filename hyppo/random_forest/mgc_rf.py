@@ -1,9 +1,10 @@
 import numpy as np
+from sklearn.ensemble import RandomForestRegressor
 
 from .base import RandomForestTest
-from ._utils import _CheckInputs, rf_xmat
+from ._utils import _CheckInputs, sim_matrix
 from ..independence import Dcorr
-from .._utils import euclidean
+from .._utils import euclidean, perm_test
 
 
 class MGCRF(RandomForestTest):
@@ -11,8 +12,9 @@ class MGCRF(RandomForestTest):
     Class for calculating the random forest based Dcorr test statistic and p-value.
     """
 
-    def __init__(self, ntrees=500):
-        self.ntrees = ntrees
+    def __init__(self, clf=RandomForestRegressor(n_estimators=500)):
+        self.clf = clf
+        self.first_time = True
         RandomForestTest.__init__(self)
 
     def _statistic(self, x, y):
@@ -21,7 +23,12 @@ class MGCRF(RandomForestTest):
 
         y must be categorical
         """
-        distx = np.sqrt(1 - rf_xmat(x, y, self.ntrees))
+        if self.first_time:
+            y = y.reshape(-1)
+            self.clf.fit(x, y)
+            self.first_time = False
+        distx = np.sqrt(1 - sim_matrix(self.clf, x))
+        y = y.reshape(-1, 1)
         disty = euclidean(y)
         stat = Dcorr(compute_distance=None)._statistic(distx, disty)
         self.stat = stat
@@ -32,7 +39,11 @@ class MGCRF(RandomForestTest):
         r"""
         Calculates the random forest based Dcorr test statistic and p-value.
         """
-        check_input = _CheckInputs(x, y, reps=reps, ntrees=self.ntrees)
+        check_input = _CheckInputs(x, y, reps=reps)
         x, y = check_input()
 
-        return super(MGCRF, self).test(x, y, reps, workers)
+        stat, pvalue = perm_test(self._statistic, x, y, reps=reps, workers=workers)
+        self.stat = stat
+        self.pvalue = pvalue
+
+        return stat, pvalue
