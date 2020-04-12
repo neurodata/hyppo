@@ -900,7 +900,7 @@ def two_parabolas(n, p, noise=False, low=-1, high=1, prob=0.5):
     x = _random_uniform(n, p, low, high)
     coeffs = _gen_coeffs(p)
     u = np.random.binomial(1, prob, size=(n, 1))
-    rand_noise = _random_uniform(n, p, low=0, high=1)
+    rand_noise = _random_uniform(n, 1, low=0, high=1)
 
     x_coeffs = x @ coeffs
     y = (x_coeffs ** 2 + 2 * noise * rand_noise) * (u - 0.5)
