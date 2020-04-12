@@ -42,7 +42,6 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
         "logarithmic",
         "sin_four_pi",
         "sin_sixteen_pi",
-        "two_parabolas",
         "square",
         "diamond",
         "multiplicative_noise",
