@@ -40,7 +40,7 @@ class IndependenceTest(ABC):
         """
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, is_distsim=True):
         r"""
         Calulates the independence test p-value.
 
@@ -53,6 +53,8 @@ class IndependenceTest(ABC):
         workers : int, optional (default: 1)
             Evaluates method using `multiprocessing.Pool <multiprocessing>`).
             Supply `-1` to use all cores available to the Process.
+        is_distsim : bool, optional (default: True)
+            Whether or not a distance matrix/sim matrix is used.
 
         Returns
         -------
@@ -65,7 +67,9 @@ class IndependenceTest(ABC):
         self.y = y
 
         # calculate p-value
-        stat, pvalue = perm_test(self._statistic, x, y, reps=reps, workers=workers)
+        stat, pvalue = perm_test(
+            self._statistic, x, y, reps=reps, workers=workers, is_distsim=is_distsim
+        )
         self.stat = stat
         self.pvalue = pvalue
 

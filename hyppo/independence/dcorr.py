@@ -202,10 +202,13 @@ class Dcorr(IndependenceTest):
         if self.is_distance:
             check_xy_distmat(x, y)
 
-        if auto == True and x.shape[0] > 20:
+        if auto and x.shape[0] > 20:
             stat, pvalue = chi2_approx(self._statistic, x, y)
             return stat, pvalue
         else:
+            if not self.is_distance:
+                x = self.compute_distance(x)
+                y = self.compute_distance(y)
             return super(Dcorr, self).test(x, y, reps, workers)
 
 

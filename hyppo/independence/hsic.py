@@ -213,8 +213,11 @@ class Hsic(IndependenceTest):
         if self.is_kernel:
             check_xy_distmat(x, y)
 
-        if auto == True and x.shape[0] > 20:
+        if auto and x.shape[0] > 20:
             stat, pvalue = chi2_approx(self._statistic, x, y)
             return stat, pvalue
         else:
+            if not self.is_kernel:
+                x = self.compute_distance(x)
+                y = self.compute_distance(y)
             return super(Hsic, self).test(x, y, reps, workers)

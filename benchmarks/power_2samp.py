@@ -29,16 +29,10 @@ class _ParallelP(object):
                 self.sim.__name__ == "multiplicative_noise"
                 or self.sim.__name__ == "multimodal_independence"
             ):
-                x, y = self.ksim(
-                    self.sim, self.n, self.p, degree=self.angle
-                )
+                x, y = self.ksim(self.sim, self.n, self.p, degree=self.angle)
             else:
                 x, y = self.ksim(
-                    self.sim,
-                    self.n,
-                    self.p,
-                    noise=self.noise,
-                    degree=self.angle,
+                    self.sim, self.n, self.p, noise=self.noise, degree=self.angle,
                 )
         else:
             if (

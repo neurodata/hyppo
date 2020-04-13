@@ -117,7 +117,7 @@ class KSample(KSampleTest):
 
         return self.indep_test._statistic(u, v)
 
-    def test(self, *args, reps=1000, workers=1):
+    def test(self, *args, reps=1000, workers=1, auto=True):
         r"""
         Calculates the *k*-sample test statistic and p-value.
 
@@ -178,9 +178,11 @@ class KSample(KSampleTest):
         if self.indep_test_name == "MGCRF":
             n_inputs = len(inputs)
             ns = [i.shape[0] for i in inputs]
-            v = np.concatenate([np.repeat(i, ns[i]) for i in range(n_inputs)]).reshape(-1, 1)
+            v = np.concatenate([np.repeat(i, ns[i]) for i in range(n_inputs)]).reshape(
+                -1, 1
+            )
 
         if self.indep_test_name in ["Dcorr", "Hsic"]:
-            return self.indep_test.test(u, v, reps, workers, auto=False)
+            return self.indep_test.test(u, v, reps, workers, auto=auto)
         else:
             return self.indep_test.test(u, v, reps, workers)

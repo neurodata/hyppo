@@ -144,4 +144,4 @@ class CCA(IndependenceTest):
         x, y = check_input()
 
         # use default permutation test
-        return super(CCA, self).test(x, y, reps, workers)
+        return super(CCA, self).test(x, y, reps, workers, is_distsim=False)

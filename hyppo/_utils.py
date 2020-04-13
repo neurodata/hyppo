@@ -110,14 +110,18 @@ def gaussian(x):
 
 
 # p-value computation
-def _perm_stat(calc_stat, x, y):
-    permy = np.random.permutation(y)
+def _perm_stat(calc_stat, x, y, is_distsim=True):
+    if is_distsim:
+        order = np.random.permutation(y.shape[0])
+        permy = y[order][:, order]
+    else:
+        permy = np.random.permutation(y)
     perm_stat = calc_stat(x, permy)
 
     return perm_stat
 
 
-def perm_test(calc_stat, x, y, reps=1000, workers=1):
+def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True):
     """
     Calculate the p-value via permutation
     """
@@ -127,7 +131,7 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1):
     # calculate null distribution
     null_dist = np.array(
         Parallel(n_jobs=workers)(
-            [delayed(_perm_stat)(calc_stat, x, y) for rep in range(reps)]
+            [delayed(_perm_stat)(calc_stat, x, y, is_distsim) for rep in range(reps)]
         )
     )
     pvalue = (null_dist >= stat).sum() / reps

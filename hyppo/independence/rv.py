@@ -132,4 +132,4 @@ class RV(IndependenceTest):
         check_input = _CheckInputs(x, y, dim=2, reps=reps)
         x, y = check_input()
 
-        return super(RV, self).test(x, y, reps, workers)
+        return super(RV, self).test(x, y, reps, workers, is_distsim=False)
