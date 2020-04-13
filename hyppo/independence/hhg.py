@@ -192,6 +192,7 @@ class HHG(IndependenceTest):
         else:
             x = self.compute_distance(x)
             y = self.compute_distance(y)
+            self.is_distance = True
 
         return super(HHG, self).test(x, y, reps, workers)
 

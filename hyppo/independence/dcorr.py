@@ -209,6 +209,7 @@ class Dcorr(IndependenceTest):
             if not self.is_distance:
                 x = self.compute_distance(x)
                 y = self.compute_distance(y)
+                self.is_distance = True
             return super(Dcorr, self).test(x, y, reps, workers)
 
 

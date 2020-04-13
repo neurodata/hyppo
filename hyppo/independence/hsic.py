@@ -220,4 +220,5 @@ class Hsic(IndependenceTest):
             if not self.is_kernel:
                 x = self.compute_distance(x)
                 y = self.compute_distance(y)
+                self.is_kernel = True
             return super(Hsic, self).test(x, y, reps, workers)
