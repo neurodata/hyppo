@@ -254,7 +254,7 @@ def joint_normal(n, p, noise=False):
     >>> from hyppo.sims import joint_normal
     >>> x, y = joint_normal(100, 2)
     >>> print(x.shape, y.shape)
-    (100, 2) (100, 2)
+    (100, 2) (100, 1)
     """
     if p > 10:
         raise ValueError("Covariance matrix for p>10 is not positive" "semi-definite")
@@ -270,7 +270,7 @@ def joint_normal(n, p, noise=False):
 
     eps = _calc_eps(n)
     x = np.random.multivariate_normal(np.zeros(2 * p), covT, n)
-    y = x[:, p : 2 * p] + 0.5 * noise * eps
+    y = x[:, p].reshape(-1, 1) + 0.5 * noise * eps
     x = x[:, :p]
 
     return x, y
@@ -617,7 +617,7 @@ def logarithmic(n, p, noise=False):
     x = np.random.multivariate_normal(np.zeros(p), sig, size=n)
     eps = _calc_eps(n)
 
-    y = np.log(x ** 2) + 3 * noise * eps
+    y = np.sum(np.log(x ** 2) + 3 * noise * eps, axis=1)
 
     return x, y
 
@@ -694,7 +694,7 @@ def _sin(n, p, noise=False, low=-1, high=1, period=4 * np.pi):
     else:
         cc = 0.5
 
-    y = np.sin(x * period) + cc * noise * eps
+    y = np.sum(np.sin(x * period) + cc * noise * eps, axis=1)
 
     return x, y
 
@@ -802,6 +802,7 @@ def _square_diamond(n, p, noise=False, low=-1, high=1, period=-np.pi / 2):
 
     x = u * np.cos(period) + v * np.sin(period) + 0.05 * p * gauss_noise
     y = -u * np.sin(period) + v * np.cos(period)
+    y = np.sum(y, axis=1)
 
     return x, y
 
@@ -1113,7 +1114,7 @@ def multiplicative_noise(n, p):
     sig = np.identity(p)
     x = np.random.multivariate_normal(np.zeros(p), sig, size=n)
     y = np.random.multivariate_normal(np.zeros(p), sig, size=n)
-    y = np.multiply(x, y)
+    y = np.sum(np.multiply(x, y), axis=1)
 
     return x, y
 
@@ -1169,6 +1170,6 @@ def multimodal_independence(n, p, prob=0.5, sep1=3, sep2=2):
     v_2 = np.random.binomial(1, prob, size=(n, p))
 
     x = u / sep1 + sep2 * u_2 - 1
-    y = v / sep1 + sep2 * v_2 - 1
+    y = np.sum(v / sep1 + sep2 * v_2 - 1, axis=1).reshape(-1, 1)
 
     return x, y
