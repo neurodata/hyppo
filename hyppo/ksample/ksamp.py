@@ -174,6 +174,8 @@ class KSample(KSampleTest):
         u, v = k_sample_transform(inputs)
 
         if self.indep_test_name in ["Dcorr", "Hsic"]:
-            return self.indep_test.test(u, v, reps, workers, auto=False)
+            stat, pvalue = self.indep_test.test(u, v, reps, workers, auto=False)
         else:
-            return self.indep_test.test(u, v, reps, workers)
+            stat, pvalue = self.indep_test.test(u, v, reps, workers)
+        self.null_dist = self.indep_test.null_dist
+        return stat, pvalue
