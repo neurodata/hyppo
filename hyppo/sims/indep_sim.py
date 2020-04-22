@@ -617,7 +617,8 @@ def logarithmic(n, p, noise=False):
     x = np.random.multivariate_normal(np.zeros(p), sig, size=n)
     eps = _calc_eps(n)
 
-    y = np.sum(np.log(x ** 2) + 3 * noise * eps, axis=1)
+    y = np.log(x ** 2) + 3 * noise * eps
+    y = y[:, 0].reshape(-1, 1)
 
     return x, y
 
@@ -694,7 +695,8 @@ def _sin(n, p, noise=False, low=-1, high=1, period=4 * np.pi):
     else:
         cc = 0.5
 
-    y = np.sum(np.sin(x * period) + cc * noise * eps, axis=1)
+    y = np.sin(x * period) + cc * noise * eps
+    y = y[:, 0].reshape(-1, 1)
 
     return x, y
 
@@ -802,7 +804,7 @@ def _square_diamond(n, p, noise=False, low=-1, high=1, period=-np.pi / 2):
 
     x = u * np.cos(period) + v * np.sin(period) + 0.05 * p * gauss_noise
     y = -u * np.sin(period) + v * np.cos(period)
-    y = np.sum(y, axis=1)
+    y = y[:, 0].reshape(-1, 1)
 
     return x, y
 
@@ -1114,7 +1116,8 @@ def multiplicative_noise(n, p):
     sig = np.identity(p)
     x = np.random.multivariate_normal(np.zeros(p), sig, size=n)
     y = np.random.multivariate_normal(np.zeros(p), sig, size=n)
-    y = np.sum(np.multiply(x, y), axis=1)
+    y = np.multiply(x, y)
+    y = y[:, 0].reshape(-1, 1)
 
     return x, y
 
@@ -1170,6 +1173,7 @@ def multimodal_independence(n, p, prob=0.5, sep1=3, sep2=2):
     v_2 = np.random.binomial(1, prob, size=(n, p))
 
     x = u / sep1 + sep2 * u_2 - 1
-    y = np.sum(v / sep1 + sep2 * v_2 - 1, axis=1).reshape(-1, 1)
+    y = v / sep1 + sep2 * v_2 - 1
+    y = y[:, 0].reshape(-1, 1)
 
     return x, y
