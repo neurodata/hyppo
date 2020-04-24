@@ -270,7 +270,7 @@ def joint_normal(n, p, noise=False):
 
     eps = _calc_eps(n)
     x = np.random.multivariate_normal(np.zeros(2 * p), covT, n)
-    y = x[:, p].reshape(-1, 1) + 0.5 * noise * eps
+    y = x[:, 0].reshape(-1, 1) + 0.5 * noise * eps
     x = x[:, :p]
 
     return x, y
