@@ -18,7 +18,7 @@ class KSample(KSampleTest):
     ----------
     indep_test : {"CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC"}
         A string corresponding to the desired independence test from
-        ``mgc.independence``.
+        ``mgc.independence``. This is not case sensitive.
     compute_distance : callable(), optional (default: euclidean)
         A function that computes the distance among the samples within each
         data matrix. Set to `None` if `x` and `y` are already distance
@@ -63,13 +63,14 @@ class KSample(KSampleTest):
     """
 
     def __init__(self, indep_test, compute_distance=euclidean, bias=False):
+        indep_test = indep_test.lower()
         test_names = {
-            RV.__name__: RV,
-            CCA.__name__: CCA,
-            HHG.__name__: HHG,
-            Hsic.__name__: Hsic,
-            Dcorr.__name__: Dcorr,
-            MGC.__name__: MGC,
+            "rv": RV,
+            "cca": CCA,
+            "hhg": HHG,
+            "hsic": Hsic,
+            "dcorr": Dcorr,
+            "mgc": MGC,
         }
         if indep_test not in test_names.keys():
             raise ValueError("Test is not a valid independence test")
