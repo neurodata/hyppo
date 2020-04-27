@@ -131,13 +131,9 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1):
         )
     )
     pvalue = (null_dist >= stat).sum() / reps
-
-    # correct for a p-value of 0. This is because, with bootstrapping
-    # permutations, a p-value of 0 is incorrect
     if pvalue == 0:
         pvalue = 1 / reps
-
-    return stat, pvalue
+    return stat, pvalue, null_dist
 
 
 def chi2_approx(calc_stat, x, y):
