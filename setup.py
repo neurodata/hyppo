@@ -10,7 +10,7 @@ with open("README.md", "r") as f:
 AUTHOR = ("Sambit Panda",)
 AUTHOR_EMAIL = "spanda3@jhu.edu"
 URL = "https://github.com/neurodata/hyppo"
-MINIMUM_PYTHON_VERSION = 3, 5  # Minimum of Python 3.5
+MINIMUM_PYTHON_VERSION = 3, 6  # Minimum of Python 3.6
 REQUIRED_PACKAGES = [
     "numpy>=1.17",
     "scipy>=1.4.0",
@@ -50,9 +50,9 @@ setup(
         "Topic :: Scientific/Engineering :: Mathematics",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
     ],
     packages=find_packages(),
     include_package_data=True,
