@@ -1,7 +1,3 @@
-import numpy as np
-from numba import njit
-
-
 from .._utils import euclidean, gaussian
 from .base import KSampleTest
 from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC
@@ -115,7 +111,7 @@ class KSample(KSampleTest):
 
         return self.indep_test._statistic(u, v)
 
-    def test(self, *args, reps=1000, workers=1):
+    def test(self, *args, reps=1000, workers=1, auto=True):
         r"""
         Calculates the *k*-sample test statistic and p-value.
 
@@ -133,6 +129,11 @@ class KSample(KSampleTest):
         workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
+        auto : bool (default: True)
+            Automatically uses fast approximation when sample size and size of array
+            is greater than 20. If True, and sample size is greater than 20, a fast
+            chi2 approximation will be run. Parameters ``reps`` and ``workers`` are
+            irrelevant in this case. Only applies to ``Dcorr`` and ``Hsic``.
 
         Returns
         -------
@@ -174,6 +175,6 @@ class KSample(KSampleTest):
         u, v = k_sample_transform(inputs)
 
         if self.indep_test_name in ["Dcorr", "Hsic"]:
-            return self.indep_test.test(u, v, reps, workers, auto=False)
+            return self.indep_test.test(u, v, reps, workers, auto=auto)
         else:
             return self.indep_test.test(u, v, reps, workers)

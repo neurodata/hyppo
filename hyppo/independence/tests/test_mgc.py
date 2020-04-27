@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from numpy.testing import assert_approx_equal, assert_warns, assert_raises
+from numpy.testing import assert_approx_equal
 
 from ...sims import linear, spiral, multimodal_independence
 from .. import MGC

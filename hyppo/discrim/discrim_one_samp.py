@@ -1,6 +1,5 @@
 from ._utils import _CheckInputs
 import numpy as np
-import random
 from .base import DiscriminabilityTest
 from scipy._lib._util import MapWrapper
 

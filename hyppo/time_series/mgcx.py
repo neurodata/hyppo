@@ -1,6 +1,3 @@
-import numpy as np
-from numba import njit
-
 from .base import TimeSeriesTest
 from ._utils import _CheckInputs, compute_stat, compute_scale_at_lag
 from ..independence import MGC
@@ -25,8 +22,8 @@ class MGCX(TimeSeriesTest):
         calculated.
 
     max_lag : int, optional (default: 0)
-        The maximum number of lags in the past to check dependence between `x` and the shifted `y`. 
-        Also the :math:`M` hyperparmeter below.
+        The maximum number of lags in the past to check dependence between `x` and the
+        shifted `y`. Also the :math:`M` hyperparmeter below.
 
     See Also
     --------
@@ -37,15 +34,17 @@ class MGCX(TimeSeriesTest):
     -----
     The statistic can be derived as follows:
 
-    Let :math:`x` and :math:`y` be :math:`(n, p)` and :math:`(n, q)` series respectively,
-    which each contain :math:`y` observations of the series :math:`(X_t)` and :math:`(Y_t)`.
-    Similarly, let :math:`x[j:n]` be the :math:`(n-j, p)` last :math:`n-j` observations of :math:`x`.
-    Let :math:`y[0:(n-j)]` be the :math:`(n-j, p)` first :math:`n-j` observations of :math:`y`.
-    Let :math:`M` be the maximum lag hyperparameter. The cross distance correlation is,
+    Let :math:`x` and :math:`y` be :math:`(n, p)` and :math:`(n, q)` series
+    respectively, which each contain :math:`y` observations of the series :math:`(X_t)`
+    and :math:`(Y_t)`. Similarly, let :math:`x[j:n]` be the :math:`(n-j, p)` last
+    :math:`n-j` observations of :math:`x`. Let :math:`y[0:(n-j)]` be the
+    :math:`(n-j, p)` first :math:`n-j` observations of :math:`y`. Let :math:`M` be the
+    maximum lag hyperparameter. The cross distance correlation is,
 
     .. math::
 
-        \mathrm{MGCX}_n (x, y) =  \sum_{j=0}^M frac{n-j}{n} \mathrm{MGC}_n (x[j:n], y[0:(n-j)])
+        \mathrm{MGCX}_n (x, y) =  \sum_{j=0}^M frac{n-j}{n}
+                                  \mathrm{MGC}_n (x[j:n], y[0:(n-j)])
 
     References
     ----------
@@ -125,9 +124,11 @@ class MGCX(TimeSeriesTest):
             Contains additional useful returns containing the following keys:
 
                 - opt_lag : int
-                    The optimal lag that maximizes the strength of the relationship with respect to lag.
+                    The optimal lag that maximizes the strength of the relationship
+                    with respect to lag.
                 - opt_scale : tuple
-                    The optimal scale that maximizes the strength of the relationship with respect to scale.
+                    The optimal scale that maximizes the strength of the relationship
+                    with respect to scale.
 
         Examples
         --------
@@ -139,7 +140,8 @@ class MGCX(TimeSeriesTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue, mgcx_dict = MGCX().test(x, y, reps = 100)
-        >>> '%.1f, %.2f, [%d, %d]' % (stat, pvalue, mgcx_dict['opt_scale'][0], mgcx_dict['opt_scale'][1])
+        >>> '%.1f, %.2f, [%d, %d]' % (stat, pvalue, mgcx_dict['opt_scale'][0],
+        ... mgcx_dict['opt_scale'][1])
         '1.0, 0.01, [7, 7]'
 
         The increasing the max_lag can increase the ability to identify dependence.
