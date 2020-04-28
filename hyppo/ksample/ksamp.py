@@ -153,18 +153,6 @@ class KSample(KSampleTest):
         >>> stat, pvalue = KSample("Dcorr").test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
         '-0.136, 1.0'
-
-        The number of replications can give p-values with higher confidence
-        (greater alpha levels).
-
-        >>> import numpy as np
-        >>> from hyppo.ksample import KSample
-        >>> x = np.arange(7)
-        >>> y = x
-        >>> z = np.ones(7)
-        >>> stat, pvalue = KSample("Dcorr").test(x, y, z, reps=10000)
-        >>> '%.3f, %.1f' % (stat, pvalue)
-        '0.172, 0.0'
         """
         inputs = list(args)
         check_input = _CheckInputs(

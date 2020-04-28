@@ -227,9 +227,10 @@ class MGC(IndependenceTest):
             )
         mgc_dict.pop("null_dist")
 
-        if not self.is_distance:
-            x = self.compute_distance(x, workers=workers)
-            y = self.compute_distance(y, workers=workers)
+        # add this after MGC source code fix
+        # if not self.is_distance:
+        #     x = self.compute_distance(x, workers=workers)
+        #     y = self.compute_distance(y, workers=workers)
 
         stat, pvalue = super(MGC, self).test(x, y, reps, workers)
         self.mgc_dict = mgc_dict

@@ -28,7 +28,7 @@ class _CheckInputs:
         self.x, self.y = self.check_dim_xy()
         self.x, self.y = convert_xy_float64(self.x, self.y)
         self._check_min_samples()
-        self._check_variance()
+        # self._check_variance()
         check_compute_distance(self.compute_distance)
 
         if self.reps:
@@ -78,10 +78,10 @@ class _CheckInputs:
         if nx <= 3 or ny <= 3:
             raise ValueError("Number of samples is too low")
 
-    def _check_variance(self):
-        for i in self.inputs:
-            if np.var(i) == 0:
-                raise ValueError("Test cannot be run, one of the inputs has 0 variance")
+    # def _check_variance(self):
+    #     for i in [self.x, self.y]:
+    #         if np.var(i) == 0:
+    #             raise ValueError("Test cannot be run, one of the inputs has 0 variance")
 
 
 def compute_stat(x, y, indep_test, compute_distance, max_lag):
