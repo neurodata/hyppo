@@ -2,9 +2,9 @@ import warnings
 from joblib import Parallel, delayed
 
 import numpy as np
-from scipy._lib._util import check_random_state
 from scipy.stats.distributions import chi2
-from scipy.spatial.distance import cdist
+from sklearn.metrics import pairwise_distances
+from sklearn.metrics.pairwise import rbf_kernel
 
 
 # from scipy
@@ -95,29 +95,37 @@ def check_inputs_distmat(inputs):
             )
 
 
-def euclidean(x):
+def euclidean(x, workers=None):
     """Default euclidean distance function calculation"""
-    return cdist(x, x, metric="euclidean")
+    return pairwise_distances(X=x, metric="euclidean", n_jobs=workers)
 
 
-def gaussian(x):
+def gaussian(x, workers=None):
     """Default medial gaussian kernel similarity calculation"""
-    l1 = cdist(x, x, "cityblock")
-    mask = np.ones(l1.shape, dtype=bool)
-    np.fill_diagonal(mask, 0)
-    gamma = 1.0 / (2 * (np.median(l1[mask]) ** 2))
-    return np.exp(-gamma * cdist(x, x, "sqeuclidean"))
+    l1 = pairwise_distances(X=x, metric="l1", n_jobs=workers)
+    n = l1.shape[0]
+    med = np.median(
+        np.lib.stride_tricks.as_strided(
+            l1, (n - 1, n + 1), (l1.itemsize * (n + 1), l1.itemsize)
+        )[:, 1:]
+    )
+    gamma = 1.0 / (2 * (med ** 2))
+    return rbf_kernel(x, gamma=gamma)
 
 
 # p-value computation
-def _perm_stat(calc_stat, x, y):
-    permy = np.random.permutation(y)
+def _perm_stat(calc_stat, x, y, is_distsim=True):
+    if is_distsim:
+        order = np.random.permutation(y.shape[0])
+        permy = y[order][:, order]
+    else:
+        permy = np.random.permutation(y)
     perm_stat = calc_stat(x, permy)
 
     return perm_stat
 
 
-def perm_test(calc_stat, x, y, reps=1000, workers=1):
+def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True):
     """
     Calculate the p-value via permutation
     """
@@ -127,12 +135,16 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1):
     # calculate null distribution
     null_dist = np.array(
         Parallel(n_jobs=workers)(
-            [delayed(_perm_stat)(calc_stat, x, y) for rep in range(reps)]
+            [delayed(_perm_stat)(calc_stat, x, y, is_distsim) for rep in range(reps)]
         )
     )
     pvalue = (null_dist >= stat).sum() / reps
+
+    # correct for a p-value of 0. This is because, with bootstrapping
+    # permutations, a p-value of 0 is incorrect
     if pvalue == 0:
         pvalue = 1 / reps
+
     return stat, pvalue, null_dist
 
 

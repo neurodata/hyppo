@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-import numpy as np
-
 from .._utils import euclidean, perm_test
 
 
@@ -40,7 +38,7 @@ class IndependenceTest(ABC):
         """
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, is_distsim=True):
         r"""
         Calulates the independence test p-value.
 
@@ -66,7 +64,7 @@ class IndependenceTest(ABC):
 
         # calculate p-value
         stat, pvalue, null_dist = perm_test(
-            self._statistic, x, y, reps=reps, workers=workers
+            self._statistic, x, y, reps=reps, workers=workers, is_distsim=is_distsim
         )
         self.stat = stat
         self.pvalue = pvalue

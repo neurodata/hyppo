@@ -1,9 +1,6 @@
 from abc import ABC, abstractmethod
 
-import numpy as np
-
 from .._utils import euclidean
-from ..independence import Dcorr, HHG, Hsic, MGC
 
 
 class KSampleTest(ABC):

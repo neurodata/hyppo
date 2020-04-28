@@ -26,15 +26,3 @@ Cannonical Correlation Analysis (CCA)
 RV
 ---
 .. autoclass:: RV
-
-Pearson
--------
-.. autoclass:: Pearson
-
-Kendall's tau
--------------
-.. autoclass:: Kendall
-
-Spearman's rho
---------------
-.. autoclass:: Spearman

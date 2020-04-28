@@ -1,6 +1,3 @@
-import numpy as np
-from numba import njit
-
 from .base import TimeSeriesTest
 from ._utils import _CheckInputs, compute_stat
 from ..independence import Dcorr
@@ -25,8 +22,8 @@ class DcorrX(TimeSeriesTest):
         calculated.
 
     max_lag : int, optional (default: 0)
-        The maximum number of lags in the past to check dependence between `x` and the shifted `y`. 
-        Also the :math:`M` hyperparmeter below.
+        The maximum number of lags in the past to check dependence between `x` and the
+        shifted `y`. Also the :math:`M` hyperparmeter below.
 
     See Also
     --------
@@ -37,15 +34,17 @@ class DcorrX(TimeSeriesTest):
     -----
     The statistic can be derived as follows:
 
-    Let :math:`x` and :math:`y` be :math:`(n, p)` and :math:`(n, q)` series respectively,
-    which each contain :math:`y` observations of the series :math:`(X_t)` and :math:`(Y_t)`.
-    Similarly, let :math:`x[j:n]` be the :math:`(n-j, p)` last :math:`n-j` observations of :math:`x`.
-    Let :math:`y[0:(n-j)]` be the :math:`(n-j, p)` first :math:`n-j` observations of :math:`y`.
-    Let :math:`M` be the maximum lag hyperparameter. The cross distance correlation is,
+    Let :math:`x` and :math:`y` be :math:`(n, p)` and :math:`(n, q)` series
+    respectively, which each contain :math:`y` observations of the series
+    :math:`(X_t)` and :math:`(Y_t)`. Similarly, let :math:`x[j:n]` be the
+    :math:`(n-j, p)` last :math:`n-j` observations of :math:`x`. Let :math:`y[0:(n-j)]`
+    be the :math:`(n-j, p)` first :math:`n-j` observations of :math:`y`. Let :math:`M`
+    be the maximum lag hyperparameter. The cross distance correlation is,
 
     .. math::
 
-        \mathrm{DcorrX}_n (x, y) =  \sum_{j=0}^M frac{n-j}{n} \mathrm{Dcorr}_n (x[j:n], y[0:(n-j)])
+        \mathrm{DcorrX}_n (x, y) =  \sum_{j=0}^M frac{n-j}{n}
+                                    \mathrm{Dcorr}_n (x[j:n], y[0:(n-j)])
 
     References
     ----------

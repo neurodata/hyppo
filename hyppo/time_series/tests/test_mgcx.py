@@ -1,10 +1,8 @@
-import pytest
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_array_less
 
-from ...independence import MGC
 from .. import MGCX
-from ...sims import cross_corr_ar, nonlinear_process
+from ...sims import nonlinear_process
 
 
 class TestMGCXStat:

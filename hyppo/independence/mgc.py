@@ -1,9 +1,7 @@
 import warnings
-import numpy as np
-from numba import njit
 from scipy.stats import multiscale_graphcorr
 
-from .._utils import euclidean, check_xy_distmat, chi2_approx
+from .._utils import euclidean, check_xy_distmat
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 
@@ -138,7 +136,7 @@ class MGC(IndependenceTest):
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
             mgc = multiscale_graphcorr(
-                x, y, compute_distance=self.compute_distance, reps=1
+                x, y, compute_distance=self.compute_distance, reps=0
             )
         stat = mgc.stat
         self.stat = stat
@@ -213,7 +211,7 @@ class MGC(IndependenceTest):
         '0.0, 1.00'
         """
         check_input = _CheckInputs(
-            x, y, dim=2, reps=reps, compute_distance=self.compute_distance
+            x, y, reps=reps, compute_distance=self.compute_distance
         )
         x, y = check_input()
 
@@ -225,11 +223,17 @@ class MGC(IndependenceTest):
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
             _, _, mgc_dict = multiscale_graphcorr(
-                x, y, compute_distance=self.compute_distance, reps=1
+                x, y, compute_distance=self.compute_distance, reps=0
             )
         mgc_dict.pop("null_dist")
 
-        stat, pvalue = super(MGC, self).test(x, y, reps, workers)
+        # add this after MGC source code fix
+        # if not self.is_distance:
+        #     x = self.compute_distance(x, workers=workers)
+        #     y = self.compute_distance(y, workers=workers)
+
+        # change is_distsim to True after scipy fix
+        stat, pvalue = super(MGC, self).test(x, y, reps, workers, is_distsim=False)
         self.mgc_dict = mgc_dict
 
         return stat, pvalue, mgc_dict

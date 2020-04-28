@@ -183,12 +183,16 @@ class HHG(IndependenceTest):
         '0.0, 1.00'
         """
         check_input = _CheckInputs(
-            x, y, dim=2, reps=reps, compute_distance=self.compute_distance
+            x, y, reps=reps, compute_distance=self.compute_distance
         )
         x, y = check_input()
 
         if self.is_distance:
             check_xy_distmat(x, y)
+        else:
+            x = self.compute_distance(x, workers=workers)
+            y = self.compute_distance(y, workers=workers)
+            self.is_distance = True
 
         return super(HHG, self).test(x, y, reps, workers)
 

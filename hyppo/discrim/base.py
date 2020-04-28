@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 import numpy as np
-from .._utils import euclidean
 
 
 class DiscriminabilityTest(ABC):

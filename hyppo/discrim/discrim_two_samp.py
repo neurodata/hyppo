@@ -1,6 +1,5 @@
 from ._utils import _CheckInputs
 import numpy as np
-import random
 from numba import njit
 from .base import DiscriminabilityTest
 from scipy._lib._util import MapWrapper
@@ -27,7 +26,8 @@ class DiscrimTwoSample(DiscriminabilityTest):
     Notes
     -----
     Let :math:`\hat D_{x_1}` denote the sample discriminability of one approach,
-    and :math:`\hat D_{x_2}` denote the sample discriminability of another approach. Then,
+    and :math:`\hat D_{x_2}` denote the sample discriminability of another approach.
+    Then,
 
     .. math::
 
@@ -81,15 +81,15 @@ class DiscrimTwoSample(DiscriminabilityTest):
             to ``True`` in this case.
         y : ndarray
             A vector containing the sample ids for our `n` samples. Should be matched
-            to the inputs such that ``y[i]`` is the corresponding label for ``x_1[i, :]``
-            and ``x_2[i, :]``.
+            to the inputs such that ``y[i]`` is the corresponding label for
+            ``x_1[i, :]`` and ``x_2[i, :]``.
         reps : int, optional (default: 1000)
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
         alt : {"greater", "less", "neq"} (default: "neq")
-            The alternative hypothesis for the test. Can test that first dataset is more
-            discriminable (alt = "greater"), less discriminable (alt = "less") or unequal
-            discriminability (alt = "neq").
+            The alternative hypothesis for the test. Can test that first dataset is
+            more discriminable (alt = "greater"), less discriminable (alt = "less")
+            or unequal discriminability (alt = "neq").
         workers : int, optional (default: -1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
