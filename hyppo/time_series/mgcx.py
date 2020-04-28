@@ -153,7 +153,7 @@ class MGCX(TimeSeriesTest):
         >>> y = np.roll(x, -1)
         >>> stat, pvalue, mgcx_dict = MGCX(max_lag=1).test(x, y, reps=1000)
         >>> '%.1f, %.2f, %d' % (stat, pvalue, mgcx_dict['opt_lag'])
-        '1.1, 0.01, 1'
+        '1.1, 0.02, 1'
 
         In addition, the inputs can be distance matrices. Using this is the,
         same as before, except the ``compute_distance`` parameter must be set

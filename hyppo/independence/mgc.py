@@ -232,7 +232,8 @@ class MGC(IndependenceTest):
         #     x = self.compute_distance(x, workers=workers)
         #     y = self.compute_distance(y, workers=workers)
 
-        stat, pvalue = super(MGC, self).test(x, y, reps, workers)
+        # change is_distsim to True after scipy fix
+        stat, pvalue = super(MGC, self).test(x, y, reps, workers, is_distsim=False)
         self.mgc_dict = mgc_dict
 
         return stat, pvalue, mgc_dict
