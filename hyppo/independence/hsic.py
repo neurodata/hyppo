@@ -217,8 +217,9 @@ class Hsic(IndependenceTest):
             self.null_dist = None
         else:
             if not self.is_kernel:
-                x = self.compute_kernel(x)
-                y = self.compute_kernel(y)
+                x = self.compute_kernel(x, workers=workers)
+                y = self.compute_kernel(y, workers=workers)
+                self.is_kernel = True
             stat, pvalue = super(Hsic, self).test(x, y, reps, workers)
 
         return stat, pvalue

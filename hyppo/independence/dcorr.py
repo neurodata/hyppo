@@ -209,8 +209,9 @@ class Dcorr(IndependenceTest):
             self.null_dist = None
         else:
             if not self.is_distance:
-                x = self.compute_distance(x)
-                y = self.compute_distance(y)
+                x = self.compute_distance(x, workers=workers)
+                y = self.compute_distance(y, workers=workers)
+                self.is_distance = True
             stat, pvalue = super(Dcorr, self).test(x, y, reps, workers)
 
         return stat, pvalue

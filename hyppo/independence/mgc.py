@@ -136,7 +136,7 @@ class MGC(IndependenceTest):
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
             mgc = multiscale_graphcorr(
-                x, y, compute_distance=self.compute_distance, reps=1
+                x, y, compute_distance=self.compute_distance, reps=0
             )
         stat = mgc.stat
         self.stat = stat
@@ -223,13 +223,13 @@ class MGC(IndependenceTest):
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
             _, _, mgc_dict = multiscale_graphcorr(
-                x, y, compute_distance=self.compute_distance, reps=1
+                x, y, compute_distance=self.compute_distance, reps=0
             )
         mgc_dict.pop("null_dist")
 
         if not self.is_distance:
-            x = self.compute_distance(x)
-            y = self.compute_distance(y)
+            x = self.compute_distance(x, workers=workers)
+            y = self.compute_distance(y, workers=workers)
 
         stat, pvalue = super(MGC, self).test(x, y, reps, workers)
         self.mgc_dict = mgc_dict

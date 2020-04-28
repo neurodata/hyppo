@@ -81,9 +81,9 @@ class KSample(KSampleTest):
 
         dist_tests = [Dcorr, HHG, Hsic, MGC]
         if indep_test in dist_tests:
-            if self.indep_test_name == "Hsic":
+            if self.indep_test_name == "hsic":
                 self.indep_test = indep_test(compute_kernel=compute_distance, bias=bias)
-            elif self.indep_test_name == "Dcorr":
+            elif self.indep_test_name == "dcorr":
                 self.indep_test = indep_test(
                     compute_distance=compute_distance, bias=bias
                 )
@@ -175,7 +175,7 @@ class KSample(KSampleTest):
         inputs = check_input()
         u, v = k_sample_transform(inputs)
 
-        if self.indep_test_name in ["Dcorr", "Hsic"]:
+        if self.indep_test_name in ["dcorr", "hsic"]:
             return self.indep_test.test(u, v, reps, workers, auto=auto)
         else:
             return self.indep_test.test(u, v, reps, workers)
