@@ -74,13 +74,12 @@ class KSample(KSampleTest):
         }
         if indep_test not in test_names.keys():
             raise ValueError("Test is not a valid independence test")
-        if indep_test == "Hsic" and compute_distance == euclidean:
+        if indep_test == "hsic" and compute_distance == euclidean:
             compute_distance = gaussian
+        self.indep_test_name = indep_test
         indep_test = test_names[indep_test]
-        self.indep_test_name = indep_test.__name__
 
-        dist_tests = [Dcorr, HHG, Hsic, MGC]
-        if indep_test in dist_tests:
+        if self.indep_test_name in ["dcorr", "hhg", "hsic", "mgc"]:
             if self.indep_test_name == "hsic":
                 self.indep_test = indep_test(compute_kernel=compute_distance, bias=bias)
             elif self.indep_test_name == "dcorr":
