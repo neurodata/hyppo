@@ -1,7 +1,3 @@
-import numpy as np
-from numba import njit
-
-
 from .._utils import euclidean, gaussian
 from .base import KSampleTest
 from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC
@@ -23,7 +19,7 @@ class KSample(KSampleTest):
     ----------
     indep_test : {"CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC"}
         A string corresponding to the desired independence test from
-        ``mgc.independence``.
+        ``mgc.independence``. This is not case sensitive.
     compute_distance : callable(), optional (default: euclidean)
         A function that computes the distance among the samples within each
         data matrix. Set to `None` if `x` and `y` are already distance
@@ -68,27 +64,26 @@ class KSample(KSampleTest):
     """
 
     def __init__(self, indep_test, compute_distance=euclidean, bias=False):
+        indep_test = indep_test.lower()
         test_names = {
-            RV.__name__: RV,
-            CCA.__name__: CCA,
-            HHG.__name__: HHG,
-            Hsic.__name__: Hsic,
-            Dcorr.__name__: Dcorr,
-            MGC.__name__: MGC,
-            MGCRF.__name__: MGCRF,
+            "rv": RV,
+            "cca": CCA,
+            "hhg": HHG,
+            "hsic": Hsic,
+            "dcorr": Dcorr,
+            "mgc": MGC,
         }
         if indep_test not in test_names.keys():
             raise ValueError("Test is not a valid independence test")
-        if indep_test == "Hsic" and compute_distance == euclidean:
+        if indep_test == "hsic" and compute_distance == euclidean:
             compute_distance = gaussian
         self.indep_test_name = indep_test
         indep_test = test_names[indep_test]
 
-        dist_tests = [Dcorr, HHG, Hsic, MGC]
-        if indep_test in dist_tests:
-            if self.indep_test_name == "Hsic":
+        if self.indep_test_name in ["dcorr", "hhg", "hsic", "mgc"]:
+            if self.indep_test_name == "hsic":
                 self.indep_test = indep_test(compute_kernel=compute_distance, bias=bias)
-            elif self.indep_test_name == "Dcorr":
+            elif self.indep_test_name == "dcorr":
                 self.indep_test = indep_test(
                     compute_distance=compute_distance, bias=bias
                 )
@@ -135,6 +130,11 @@ class KSample(KSampleTest):
         workers : int, optional (default: 1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
+        auto : bool (default: True)
+            Automatically uses fast approximation when sample size and size of array
+            is greater than 20. If True, and sample size is greater than 20, a fast
+            chi2 approximation will be run. Parameters ``reps`` and ``workers`` are
+            irrelevant in this case. Only applies to ``Dcorr`` and ``Hsic``.
 
         Returns
         -------
@@ -153,18 +153,6 @@ class KSample(KSampleTest):
         >>> stat, pvalue = KSample("Dcorr").test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
         '-0.136, 1.0'
-
-        The number of replications can give p-values with higher confidence
-        (greater alpha levels).
-
-        >>> import numpy as np
-        >>> from hyppo.ksample import KSample
-        >>> x = np.arange(7)
-        >>> y = x
-        >>> z = np.ones(7)
-        >>> stat, pvalue = KSample("Dcorr").test(x, y, z, reps=10000)
-        >>> '%.3f, %.1f' % (stat, pvalue)
-        '0.172, 0.0'
         """
         inputs = list(args)
         check_input = _CheckInputs(
@@ -182,7 +170,7 @@ class KSample(KSampleTest):
                 -1, 1
             )
 
-        if self.indep_test_name in ["Dcorr", "Hsic"]:
+        if self.indep_test_name in ["dcorr", "hsic"]:
             return self.indep_test.test(u, v, reps, workers, auto=auto)
         else:
             return self.indep_test.test(u, v, reps, workers)

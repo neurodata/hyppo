@@ -1,5 +1,4 @@
 import numpy as np
-from numba import njit
 
 from .base import IndependenceTest
 from ._utils import _CheckInputs
@@ -161,8 +160,6 @@ class Hsic(IndependenceTest):
             is greater than 20. If True, and sample size is greater than 20, a fast
             chi2 approximation will be run. Parameters ``reps`` and ``workers`` are
             irrelevant in this case.
-        bias : bool (default: False)
-            Whether or not to use the biased or unbiased test statistics
 
         Returns
         -------
@@ -206,7 +203,7 @@ class Hsic(IndependenceTest):
         '0.0, 1.00'
         """
         check_input = _CheckInputs(
-            x, y, dim=2, reps=reps, compute_distance=self.compute_kernel
+            x, y, reps=reps, compute_distance=self.compute_kernel
         )
         x, y = check_input()
 
@@ -215,10 +212,14 @@ class Hsic(IndependenceTest):
 
         if auto and x.shape[0] > 20:
             stat, pvalue = chi2_approx(self._statistic, x, y)
-            return stat, pvalue
+            self.stat = stat
+            self.pvalue = pvalue
+            self.null_dist = None
         else:
             if not self.is_kernel:
-                x = self.compute_distance(x)
-                y = self.compute_distance(y)
+                x = self.compute_kernel(x, workers=workers)
+                y = self.compute_kernel(y, workers=workers)
                 self.is_kernel = True
-            return super(Hsic, self).test(x, y, reps, workers)
+            stat, pvalue = super(Hsic, self).test(x, y, reps, workers)
+
+        return stat, pvalue

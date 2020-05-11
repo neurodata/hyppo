@@ -1,0 +1,54 @@
+hyppo v0.1.1 Release Notes
+==========================
+
+.. contents::
+
+hyppo 0.1.1 does not include any new features, just removal of extraneous
+features.
+
+Release highlights:
+
+  - Kernel matrices calculated once before calculating p-values
+  - Pearson, Kendall, and Spearman are no longer tests
+
+This release requires Python 3.6+.
+
+Improvements
+------------
+
+Independence testing
+^^^^^^^^^^^^^^^^^^^^
+Null distribution added as a class atribute. Calculate kernel once before
+calculating p-value.
+
+*k*-sample testing
+^^^^^^^^^^^^^^^^^^
+Null distribution added as a class atribute. Calculate kernel once before
+calculating p-value. Upper and lower-case inputs are available for ``indep_test``.
+
+Time series
+^^^^^^^^^^^
+Reference docs and tutorials added to Time Series module.
+
+Other changes
+-------------
+OS/Software requirements and license changes updated in ReadME. ``pairwise_distances``
+from ``sklearn`` used instead of ``cdist`` from ``scipy``.
+
+Removed features
+----------------
+Pearson, Spearman, and Kendall are no longer tests within the package. arXiv
+badge added to docs. Python 3.5 no longer supported.
+
+Authors
+=======
+
+This release contains work by the following people (contributed at least
+one patch to this release, names in alphabetical order by last name):
+
+* Ronak Mehta +
+* Sambit Panda
+* Bijan Varjavand +
+
+A total of 3 people contributed to this release.
+People with a "+" by their names contributed a patch for the first time.

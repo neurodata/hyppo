@@ -16,7 +16,6 @@ class RV(IndependenceTest):
 
     See Also
     --------
-    Pearson : Pearson product-moment correlation test statistic and p-value.
     CCA : CCA test statistic and p-value.
 
     Notes
@@ -129,7 +128,7 @@ class RV(IndependenceTest):
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
         """
-        check_input = _CheckInputs(x, y, dim=2, reps=reps)
+        check_input = _CheckInputs(x, y, reps=reps)
         x, y = check_input()
 
         return super(RV, self).test(x, y, reps, workers, is_distsim=False)

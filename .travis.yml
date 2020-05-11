@@ -1,9 +1,9 @@
 language: python
 
 python:
-- '3.5'
 - '3.6'
 - '3.7'
+- '3.8'
 
 jobs:
   include:
@@ -24,11 +24,11 @@ cache: pip
 install:
 - pip install -r requirements.txt
 - pip install -U pytest pytest-cov codecov
-- if [[ $TRAVIS_PYTHON_VERSION != '3.5' ]]; then travis_retry pip install black; fi
+- pip install black
 
 script:
 - pytest hyppo/
-- if [[ $TRAVIS_PYTHON_VERSION != '3.5' ]]; then black --check --diff ./hyppo; fi
+- black --check --diff ./hyppo
 
 after_success:
 - codecov

@@ -38,7 +38,8 @@ class TestTwoSample:
         assert_almost_equal(p, obs_p, decimal=4)
 
     def test_neq(self):
-        # test whether discriminability for x1 is not equal compared to discriminability for x2
+        # test whether discriminability for x1 is not equal compared to
+        # discriminability for x2
         x1 = np.ones((100, 2), dtype=float)
         x2 = np.concatenate((np.zeros((50, 2)), np.ones((50, 2))), axis=0)
         y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
@@ -55,7 +56,7 @@ class TestTwoSample:
 
 
 class TestTwoSampleWarn:
-    """ 
+    """
     Tests errors and warnings derived from one sample test.
     """
 

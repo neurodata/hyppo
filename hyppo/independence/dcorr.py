@@ -195,7 +195,7 @@ class Dcorr(IndependenceTest):
         '0.0, 1.00'
         """
         check_input = _CheckInputs(
-            x, y, dim=2, reps=reps, compute_distance=self.compute_distance
+            x, y, reps=reps, compute_distance=self.compute_distance
         )
         x, y = check_input()
 
@@ -204,13 +204,17 @@ class Dcorr(IndependenceTest):
 
         if auto and x.shape[0] > 20:
             stat, pvalue = chi2_approx(self._statistic, x, y)
-            return stat, pvalue
+            self.stat = stat
+            self.pvalue = pvalue
+            self.null_dist = None
         else:
             if not self.is_distance:
-                x = self.compute_distance(x)
-                y = self.compute_distance(y)
+                x = self.compute_distance(x, workers=workers)
+                y = self.compute_distance(y, workers=workers)
                 self.is_distance = True
-            return super(Dcorr, self).test(x, y, reps, workers)
+            stat, pvalue = super(Dcorr, self).test(x, y, reps, workers)
+
+        return stat, pvalue
 
 
 @njit

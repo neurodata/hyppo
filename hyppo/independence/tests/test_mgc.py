@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from numpy.testing import assert_approx_equal, assert_warns, assert_raises
+from numpy.testing import assert_approx_equal
 
 from ...sims import linear, spiral, multimodal_independence
 from .. import MGC
@@ -35,7 +35,7 @@ class TestMGCStat(object):
         "sim, obs_stat, obs_pvalue",
         [
             (linear, 0.463, 1 / 1000),  # test linear simulation
-            (spiral, 0.091, 0.005),  # test spiral simulation
+            (spiral, 0.091, 0.003),  # test spiral simulation
         ],
     )
     def test_fived(self, sim, obs_stat, obs_pvalue):
