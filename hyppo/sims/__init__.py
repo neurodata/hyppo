@@ -47,6 +47,7 @@ __all__ = [
     "rot_2samp",
     "trans_2samp",
     "gaussian_3samp",
+    "gaussian_4samp",
     "indep_ar",
     "cross_corr_ar",
     "nonlinear_process",

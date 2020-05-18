@@ -76,7 +76,7 @@ class _CheckInputs:
                 raise ValueError("Test cannot be run, one of the inputs has 0 variance")
 
 
-def k_sample_transform(inputs):
+def k_sample_transform(inputs, ways=None):
     n_inputs = len(inputs)
     u = np.vstack(inputs)
 
@@ -85,12 +85,17 @@ def k_sample_transform(inputs):
         n2 = inputs[1].shape[0]
         v = np.vstack([np.zeros((n1, 1)), np.ones((n2, 1))])
     else:
+        if ways is None:
+            ways = np.arange(n_inputs).reshape(-1, 1)
         vs = []
-        for i in range(n_inputs):
-            n = inputs[i].shape[0]
-            encode = np.zeros(shape=(n, n_inputs))
-            encode[:, i] = np.ones(shape=n)
-            vs.append(encode)
-        v = np.concatenate(vs)
+        input_lens = [len(input) for input in inputs]
+        for way in np.array(ways).T:
+            n_unique = len(np.unique(way))
+            n_ways = len(way)
+            v = np.zeros(shape=(n_ways, n_unique))
+            v[np.arange(n_ways), way % n_unique] = 1
+            vs.append(np.repeat(v, input_lens, axis=0))
+
+        v = np.hstack(vs)
 
     return u, v

@@ -284,3 +284,35 @@ def gaussian_3samp(n, epsilon=1, weight=0, case=1):
         ]
 
     return sims
+
+def gaussian_4samp(n, epsilon=1):
+    r"""
+    Generates 4 sample of gaussians.
+
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    epsilon : float, (default: 1)
+        The amount to translate simulation by (amount  depends on case).
+
+    Returns
+    -------
+    sims : list of ndarray
+        List of 4 2-dimensional multivariate Gaussian.
+
+    Examples
+    --------
+    >>> from hyppo.sims import gaussian_4samp
+    >>> sims = gaussian_4samp(100)
+    >>> print(sims[0].shape, sims[1].shape, sims[2].shape, sims[3].shape)
+    (100, 2) (100, 2) (100, 2) (100, 2)
+    """
+    sigma = np.identity(2)
+    mu1 = [0, 0, epsilon, epsilon]
+    mu2 = [0, epsilon, 0, epsilon]
+
+    means = list(zip(mu1, mu2))
+    sims = [np.random.multivariate_normal(mean, sigma, n) for mean in means]
+
+    return sims
