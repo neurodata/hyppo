@@ -8,7 +8,7 @@ from .._utils import (
     check_ndarray_xy,
     convert_xy_float64,
     check_reps,
-    check_compute_distance,
+    # check_compute_distance,
 )
 
 

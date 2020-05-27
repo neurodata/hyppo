@@ -5,4 +5,4 @@ from .dcorr import Dcorr
 from .hsic import Hsic
 from .mgc import MGC
 
-__all__ = ["Pearson", "RV", "CCA", "Kendall", "Spearman", "HHG", "Dcorr", "Hsic", "MGC"]
+__all__ = ["RV", "CCA", "HHG", "Dcorr", "Hsic", "MGC"]

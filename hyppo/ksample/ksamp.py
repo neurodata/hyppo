@@ -72,6 +72,7 @@ class KSample(KSampleTest):
             "hsic": Hsic,
             "dcorr": Dcorr,
             "mgc": MGC,
+            "mgcrf": MGCRF,
         }
         if indep_test not in test_names.keys():
             raise ValueError("Test is not a valid independence test")
@@ -163,7 +164,7 @@ class KSample(KSampleTest):
         inputs = check_input()
         u, v = k_sample_transform(inputs)
 
-        if self.indep_test_name == "MGCRF":
+        if self.indep_test_name == "mgcrf":
             n_inputs = len(inputs)
             ns = [i.shape[0] for i in inputs]
             v = np.concatenate([np.repeat(i, ns[i]) for i in range(n_inputs)]).reshape(
