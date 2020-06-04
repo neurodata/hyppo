@@ -10,6 +10,7 @@ import sys, os
 from joblib import Parallel, delayed
 
 import numpy as np
+from scipy.spatial.distance import pdist
 import matplotlib.pyplot as plt
 from matplotlib.legend import Legend
 
@@ -42,6 +43,10 @@ tests = [
     MGC,
 ]
 
+test_kwargs = [
+    {"compute_distance": lambda x: pdist(x, metric='sqeuclidean')}
+]
+
 multiways = [
     True,
     False,
@@ -55,7 +60,7 @@ multiways = [
 # %%
 def estimate_power(test, multiway):
     est_power = np.array([
-        np.mean([power_4samp_epsweight(test, epsilon=i, multiway=multiway)
+        np.mean([power_4samp_epsweight(test, epsilon=i, multiway=multiway, compute_distance=lambda x: np.linalg.norm(x[0] - x[1]))
             for _ in range(POWER_REPS)
         ]) 
         for i in EPSILONS
@@ -118,10 +123,10 @@ def plot_power():
             else:
                 for test in tests:
                     for multiway in multiways:
-                        # power = np.genfromtxt(
-                        #     '../benchmarks/4samp_vs_epsilon/{}_{}.csv'.format(multiway, test.__name__),
-                        #     delimiter=','
-                        #     )
+                        power = np.genfromtxt(
+                            '../benchmarks/4samp_vs_epsilon/{}_{}.csv'.format(multiway, test.__name__),
+                            delimiter=','
+                            )
 
                         custom_color = {
                             "Dcorr" : "#377eb8",
@@ -132,13 +137,13 @@ def plot_power():
                                 label = f'Multiway {test.__name__}'
                         else:
                             label = f'{test.__name__}'
-                        # if test.__name__ in custom_color.keys():
-                        #     if test.__name__ == "MGC":
-                        #         col.plot(EPSILONS, power, custom_color[test.__name__], label=label, lw=3)
-                        #     else:
-                        #         col.plot(EPSILONS, power, custom_color[test.__name__], label=label, lw=2)
-                        # else:
-                        #     col.plot(EPSILONS, power, label=label, lw=2)
+                        if test.__name__ in custom_color.keys():
+                            if multiway:#test.__name__ == "MGC":
+                                col.plot(EPSILONS, power, custom_color[test.__name__], label=label, lw=3)
+                            else:
+                                col.plot(EPSILONS, power, custom_color[test.__name__], label=label, ls='--', lw=2)
+                        else:
+                            col.plot(EPSILONS, power, label=label, lw=2)
                         col.tick_params(labelsize=FONTSIZE)
                         col.set_xticks([EPSILONS[0], EPSILONS[-1]])
                         col.set_ylim(0, 1.05)
@@ -151,8 +156,8 @@ def plot_power():
     fig.text(-0.05, 0.3, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE)
     fig.text(-0.05, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
     
-    leg = plt.legend(bbox_to_anchor=(1.17, 0.45), bbox_transform=plt.gcf().transFigure,
-                     ncol=2, loc='upper center', fontsize=FONTSIZE)
+    leg = plt.legend(bbox_to_anchor=(1.5, 0.45), bbox_transform=plt.gcf().transFigure,
+                     ncol=1, loc='upper center', fontsize=FONTSIZE)
     leg.get_frame().set_linewidth(0.0)
     for legobj in leg.legendHandles:
         legobj.set_linewidth(5.0)
@@ -170,5 +175,6 @@ plot_power()
 
 
 # %%
+
 
 

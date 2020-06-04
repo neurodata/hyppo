@@ -13,8 +13,8 @@ class _ParallelP4Samp(object):
     Helper function to calculate parallel power.
     """
 
-    def __init__(self, test, n, epsilon=1, weight=0, case=1, rngs=[],  multiway=False):
-        self.test = test()
+    def __init__(self, test, n, epsilon=1, weight=0, case=1, rngs=[],  multiway=False, **kwargs):
+        self.test = test(**kwargs)
 
         self.n = n
         self.epsilon = epsilon
@@ -45,7 +45,16 @@ class _ParallelP4Samp(object):
 
 
 def _perm_test_4samp(
-    test, n=100, epsilon=1, weight=0, case=1, reps=1000, workers=1, random_state=None, multiway=False
+    test,
+    n=100,
+    epsilon=1,
+    weight=0,
+    case=1,
+    reps=1000,
+    workers=1,
+    random_state=None,
+    multiway=False,
+    **kwargs,
 ):
     r"""
     Helper function that calculates the statistical.
@@ -77,7 +86,7 @@ def _perm_test_4samp(
 
     # use all cores to create function that parallelizes over number of reps
     mapwrapper = MapWrapper(workers)
-    parallelp = _ParallelP4Samp(test, n, epsilon, weight, case, rngs, multiway)
+    parallelp = _ParallelP4Samp(test, n, epsilon, weight, case, rngs, multiway, **kwargs)
     alt_dist, null_dist = map(list, zip(*list(mapwrapper(parallelp, range(reps)))))
     alt_dist = np.array(alt_dist)
     null_dist = np.array(null_dist)
@@ -96,6 +105,7 @@ def power_4samp_epsweight(
     workers=1,
     random_state=None,
     multiway=False,
+    **kwargs,
 ):
     alt_dist, null_dist = _perm_test_4samp(
         test,
@@ -107,6 +117,7 @@ def power_4samp_epsweight(
         workers=workers,
         random_state=random_state,
         multiway=multiway,
+        **kwargs,
     )
     cutoff = np.sort(null_dist)[ceil(reps * (1 - alpha))]
     empirical_power = (alt_dist >= cutoff).sum() / reps
