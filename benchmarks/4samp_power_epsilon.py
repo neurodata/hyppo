@@ -1,36 +1,39 @@
-# To add a new cell, type '# %%'
-# To add a new markdown cell, type '# %% [markdown]'
-# %% [markdown]
+#!/usr/bin/env python
+# coding: utf-8
+
 # # 4 Sample Tests Power over Increasing Epsilon
-# %% [markdown]
+
 # These are same useful functions to import. Since we are calculating the statistical power over all the tests for all the simulations, we can just use a wild card import from the respective modules
 
-# %%
+# In[2]:
+
+
 import sys, os
 from joblib import Parallel, delayed
 
 import numpy as np
-from scipy.spatial.distance import pdist
 import matplotlib.pyplot as plt
 from matplotlib.legend import Legend
 
+sys.path.append(os.path.realpath('..'))
 from benchmarks import power_4samp_epsweight
 from hyppo.independence import MGC
 from hyppo.sims import gaussian_4samp
 
-sys.path.append(os.path.realpath('..'))
+# In[4]:
 
 
-# %%
 import seaborn as sns
 sns.set(color_codes=True, style='white', context='talk', font_scale=2)
 PALETTE = sns.color_palette("Set1")
 sns.set_palette(PALETTE[3:])
 
-# %% [markdown]
+
 # These are some constants that are used in this notebook. If running these notebook, please only manipulate these constants if you are not running more tests. They define the epsilons (distance from 0 for the center of each gaussian cluster) tested upon and the number of replications. The simulations tested over and the independence tests tested over are defined also.
 
-# %%
+# In[5]:
+
+
 MAX_EPSILON = 1
 STEP_SIZE = 0.05
 EPSILONS = np.arange(0, MAX_EPSILON + STEP_SIZE, STEP_SIZE)
@@ -38,29 +41,29 @@ WEIGHTS = EPSILONS
 POWER_REPS = 5
 
 
-# %%
+# In[9]:
+
+
 tests = [
     MGC,
 ]
 
-test_kwargs = [
-    {"compute_distance": lambda x: pdist(x, metric='sqeuclidean')}
-]
-
 multiways = [
     True,
-    False,
+    #False,
 ]
 
-# %% [markdown]
+
 # The following function calculates the estimated power ``POWER_REPS`` number off times and averages them. It does this iterating over the number of sample sizes.
 # 
 # **Note: We only recommend running this code if running the next 2 cells ONCE to generate the csv files used to visualize the plots. This code takes a very long time to run and if running, we recommend using a machine with many cores.**
 
-# %%
+# In[10]:
+
+
 def estimate_power(test, multiway):
     est_power = np.array([
-        np.mean([power_4samp_epsweight(test, epsilon=i, multiway=multiway, compute_distance=lambda x: np.linalg.norm(x[0] - x[1]))
+        np.mean([power_4samp_epsweight(test, epsilon=i, multiway=multiway, compute_distance=None)
             for _ in range(POWER_REPS)
         ]) 
         for i in EPSILONS
@@ -71,15 +74,19 @@ def estimate_power(test, multiway):
     return est_power
 
 
-# %%
+# In[11]:
+
+
 outputs = Parallel(n_jobs=-1, verbose=100)(
     [delayed(estimate_power)(test, multiway) for test in tests for multiway in multiways]
 )
 
-# %% [markdown]
+
 # The following code loops over each saved independence test file and generates absolute power curves for each test and for each simulation modality.
 
-# %%
+# In[5]:
+
+
 FONTSIZE = 30
 
 def plot_power():
@@ -170,11 +177,14 @@ def plot_power():
     plt.savefig('../benchmarks/figs/4samp_power_epsilon.pdf', transparent=True, bbox_inches='tight')
 
 
-# %%
+# In[6]:
+
+
 plot_power()
 
 
-# %%
+# In[ ]:
+
 
 
 

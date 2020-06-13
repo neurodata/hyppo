@@ -2,7 +2,7 @@ import numpy as np
 from math import ceil
 
 from scipy._lib._util import check_random_state, MapWrapper
-from sklearn.metrics.pairwise import euclidean_distances
+from sklearn.metrics import pairwise_distances
 
 from hyppo.ksample._utils import k_sample_transform
 from hyppo.sims import gaussian_4samp
@@ -31,15 +31,17 @@ class _ParallelP4Samp(object):
         else:
             u, v = k_sample_transform(Xs)
 
-        #u_dist = euclidean_distances(u,u)
-        #v_dist = (euclidean_distances(v,v)**2)/2
-        obs_stat = self.test._statistic(u, v)
+        u_dist = pairwise_distances(u, metric="euclidean")
+        v_dist = pairwise_distances(v, metric="sqeuclidean") / 2
+ 
+        obs_stat = self.test._statistic(u_dist, v_dist)
 
-        #permv = self.rngs[index].permutation(np.arange(len(v_dist)))
+        #permv = self.rngs[index].permutation(np.arange(len(v)))
         permv = self.rngs[index].permutation(v)
 
         # calculate permuted stats, store in null distribution
-        perm_stat = self.test._statistic(u, permv)
+        permv_dist = pairwise_distances(permv, metric="sqeuclidean") / 2
+        perm_stat = self.test._statistic(u_dist, permv_dist)
 
         return obs_stat, perm_stat
 
