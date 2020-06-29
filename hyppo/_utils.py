@@ -109,7 +109,7 @@ def gaussian(x, workers=None):
             l1, (n - 1, n + 1), (l1.itemsize * (n + 1), l1.itemsize)
         )[:, 1:]
     )
-    # prevents division when used on label vectors
+    # prevents division by zero when used on label vectors
     med = med if med else 1
     gamma = 1.0 / (2 * (med ** 2))
     return rbf_kernel(x, gamma=gamma)
