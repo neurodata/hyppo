@@ -1,0 +1,30 @@
+hyppo v0.1.3 Release Notes
+==========================
+
+.. contents::
+
+hyppo 0.1.3 does not include any new features, just fixes. This release requires
+Python 3.6+.
+
+Fixes
+-----
+
+*k*-sample testing
+^^^^^^^^^^^^^^^^^^
+Prevent division by zero when calculating using default gaussian median kernel.
+
+Other
+^^^^^
+Used `chi2.sf` instead of `1 - chi2.cdf`
+
+Authors
+=======
+
+This release contains work by the following people (contributed at least
+one patch to this release, names in alphabetical order by last name):
+
+* Benjamin Pedigo +
+* Anton Alayakin +
+
+A total of 1 person contributed to this release.
+People with a "+" by their names contributed a patch for the first time.
