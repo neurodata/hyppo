@@ -19,6 +19,7 @@ from .indep_sim import (
     multiplicative_noise,
     square,
     multimodal_independence,
+    indep_sim,
 )
 from .ksample_sim import rot_2samp, trans_2samp, gaussian_3samp
 from .time_series_sim import indep_ar, cross_corr_ar, nonlinear_process
@@ -50,4 +51,5 @@ __all__ = [
     "indep_ar",
     "cross_corr_ar",
     "nonlinear_process",
+    "indep_sim",
 ]
