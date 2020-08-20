@@ -61,7 +61,7 @@ def check_reps(reps):
     elif reps < 1000:
         msg = (
             "The number of replications is low (under 1000), and p-value "
-            "calculations may be unreliable. Use the p-value result, with "
+            "calculations may be unreliable. Use the p-value result with "
             "caution!"
         )
         warnings.warn(msg, RuntimeWarning)
