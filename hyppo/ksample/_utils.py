@@ -19,7 +19,6 @@ class _CheckInputs:
         self.inputs = self._convert_inputs_float64()
         self._check_indep_test()
         self._check_min_samples()
-        self._check_variance()
 
         return self.inputs
 
@@ -70,15 +69,12 @@ class _CheckInputs:
             if i.shape[0] <= 3:
                 raise ValueError("Number of samples is too low")
 
-    def _check_variance(self):
-        for i in self.inputs:
-            if np.var(i) == 0:
-                raise ValueError("Test cannot be run, one of the inputs has 0 variance")
-
 
 def k_sample_transform(inputs):
     n_inputs = len(inputs)
     u = np.vstack(inputs)
+    if np.var(u) == 0:
+        raise ValueError("Test cannot be run, the inputs have 0 variance")
 
     if n_inputs == 2:
         n1 = inputs[0].shape[0]
