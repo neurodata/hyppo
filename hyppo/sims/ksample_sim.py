@@ -1,50 +1,29 @@
 import numpy as np
 
-from .indep_sim import (
-    linear,
-    spiral,
-    exponential,
-    cubic,
-    joint_normal,
-    step,
-    quadratic,
-    w_shaped,
-    uncorrelated_bernoulli,
-    logarithmic,
-    fourth_root,
-    sin_four_pi,
-    sin_sixteen_pi,
-    two_parabolas,
-    circle,
-    ellipse,
-    diamond,
-    multiplicative_noise,
-    square,
-    multimodal_independence,
-)
+from . import indep_sim
 
 
-_SIMS = [
-    linear,
-    spiral,
-    exponential,
-    cubic,
-    joint_normal,
-    step,
-    quadratic,
-    w_shaped,
-    uncorrelated_bernoulli,
-    logarithmic,
-    fourth_root,
-    sin_four_pi,
-    sin_sixteen_pi,
-    two_parabolas,
-    circle,
-    ellipse,
-    diamond,
-    multiplicative_noise,
-    square,
-    multimodal_independence,
+SIMULATIONS = [
+    "linear",
+    "spiral",
+    "exponential",
+    "cubic",
+    "joint_normal",
+    "step",
+    "quadratic",
+    "w_shaped",
+    "uncorrelated_bernoulli",
+    "logarithmic",
+    "fourth_root",
+    "sin_four_pi",
+    "sin_sixteen_pi",
+    "two_parabolas",
+    "circle",
+    "ellipse",
+    "diamond",
+    "multiplicative_noise",
+    "square",
+    "multimodal_independence",
 ]
 
 
@@ -281,3 +260,15 @@ def gaussian_3samp(n, epsilon=1, weight=0, case=1):
         ]
 
     return sims
+
+
+def ksample_sim(ksim, indep_sim, n, p, **kwargs):
+    """
+    Allows choice for which simulation the user
+    """
+    if sim not in SIMULATIONS.keys():
+        raise ValueError("sim_name must be one of the following: {}".format(list(SIMULATIONS.keys())))
+    else:
+        sim = SIMULATIONS[sim]
+
+    return sim(n, p, **kwargs)

@@ -1208,7 +1208,7 @@ def indep_sim(sim, n, p, **kwargs):
     Allows choice for which simulation the user
     """
     if sim not in SIMULATIONS.keys():
-        raise ValueError("sim_name must be in {}".format(SIMULATIONS.keys()))
+        raise ValueError("sim_name must be one of the following: {}".format(list(SIMULATIONS.keys())))
     else:
         sim = SIMULATIONS[sim]
 
