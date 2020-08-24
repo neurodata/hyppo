@@ -16,9 +16,9 @@ import matplotlib.pyplot as plt
 from matplotlib.legend import Legend
 
 sys.path.append(os.path.realpath('..'))
-from benchmarks import power_4samp_epsweight
-from hyppo.independence import MGC
-from hyppo.sims import gaussian_4samp
+from benchmarks import power_2samp_2level_epsweight
+from hyppo.independence import MGC, Dcorr
+from hyppo.sims import gaussian_2samp_2level
 
 # In[4]:
 
@@ -35,22 +35,26 @@ sns.set_palette(PALETTE[3:])
 
 
 MAX_EPSILON = 1
-STEP_SIZE = 0.05
-EPSILONS = np.arange(0, MAX_EPSILON + STEP_SIZE, STEP_SIZE)
-WEIGHTS = EPSILONS
-POWER_REPS = 5
+STEP_SIZE = 0.1#0.05
+EPSILONS1 = np.arange(0, MAX_EPSILON + STEP_SIZE, STEP_SIZE)
+EPSILONS2 = np.arange(0, MAX_EPSILON + STEP_SIZE, STEP_SIZE)
+WEIGHTS = EPSILONS1
+POWER_REPS = 3#5
+REPS = 250
 
 # In[9]:
 
 
 tests = [
-    MGC,
+    Dcorr,
 ]
 
 multiways = [
     True,
     #False,
 ]
+
+plot = False
 
 
 # The following function calculates the estimated power ``POWER_REPS`` number off times and averages them. It does this iterating over the number of sample sizes.
@@ -62,12 +66,15 @@ multiways = [
 
 def estimate_power(test, multiway):
     est_power = np.array([
-        np.mean([power_4samp_epsweight(test, epsilon=i, multiway=multiway, compute_distance=None)
-            for _ in range(POWER_REPS)
-        ]) 
-        for i in EPSILONS
+        [
+            np.mean([power_2samp_2level_epsweight(test, epsilon1=i, epsilon2=j, reps=REPS, multiway=multiway, compute_distance=None)
+                for _ in range(POWER_REPS)
+            ]) 
+            for i in EPSILONS1
+        ]
+        for j in EPSILONS2
     ])
-    np.savetxt('../benchmarks/4samp_vs_epsilon/{}_{}.csv'.format(multiway, test.__name__),
+    np.savetxt('../benchmarks/2samp_2level_vs_epsilon/{}_{}.csv'.format(multiway, test.__name__),
                est_power, delimiter=',')
     
     return est_power
@@ -92,13 +99,13 @@ def plot_power():
     fig, ax = plt.subplots(nrows=2, ncols=1, figsize=(4,8))
     
     sim_title = [
-        "Four Gaussians",
+        "2 Sample 2 Level Gaussians",
     ]
     ax = np.array([ax]).reshape((2,-1))
     for i, row in enumerate(ax):
         for j, col in enumerate(row):
             if i == 0:
-                sims = gaussian_4samp(100, epsilon=4)
+                sims = gaussian_2samp_2level(100, epsilon1=4, epsilon2=4)
                 
                 sim_markers = [
                     "1",
@@ -130,7 +137,7 @@ def plot_power():
                 for test in tests:
                     for multiway in multiways:
                         power = np.genfromtxt(
-                            '../benchmarks/4samp_vs_epsilon/{}_{}.csv'.format(multiway, test.__name__),
+                            '../benchmarks/2samp_2level_vs_epsilon/{}_{}.csv'.format(multiway, test.__name__),
                             delimiter=','
                             )
 
@@ -173,13 +180,13 @@ def plot_power():
     fig.add_artist(leg)
     for legobj in leg.legendHandles:
         legobj.set_linewidth(3)
-    plt.savefig('../benchmarks/figs/4samp_power_epsilon.pdf', transparent=True, bbox_inches='tight')
+    plt.savefig('../benchmarks/figs/2samp_2level_power_epsilon.pdf', transparent=True, bbox_inches='tight')
 
 
 # In[6]:
 
-
-plot_power()
+if plot:
+    plot_power()
 
 
 # In[ ]:

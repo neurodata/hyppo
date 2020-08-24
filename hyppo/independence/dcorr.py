@@ -91,17 +91,16 @@ class Dcorr(IndependenceTest):
                 Statistics*, 42(6), 2382-2412.
     """
 
-    def __init__(self, compute_distance=euclidean, bias=False, groups=None):
+    def __init__(self, compute_distance=euclidean, bias=False):
         # set is_distance to true if compute_distance is None
         self.is_distance = False
         if not compute_distance:
             self.is_distance = True
         self.bias = bias
-        self.groups = groups
 
         IndependenceTest.__init__(self, compute_distance=compute_distance)
 
-    def _statistic(self, x, y, permute_groups):
+    def _statistic(self, x, y):
         r"""
         Helper function that calculates the Dcorr test statistic.
 
@@ -126,7 +125,7 @@ class Dcorr(IndependenceTest):
             distx = self.compute_distance(x)
             disty = self.compute_distance(y)
 
-        stat = _dcorr(distx, disty, self.bias, permute_groups, self.groups)
+        stat = _dcorr(distx, disty, self.bias)
         self.stat = stat
 
         return stat
@@ -221,36 +220,36 @@ class Dcorr(IndependenceTest):
 
 
 #@njit
-def _center_distmat(distx, bias, permute_groups, groups):  # pragma: no cover
+def _center_distmat(distx, bias):  # pragma: no cover
     """Centers the distance matrices"""
     n = distx.shape[0]
 
     # double centered distance matrices
-    if permute_groups is not None and groups is not None:
-        group_mask = np.ones((n,n))
-        group_indices = defaultdict(list)
-        for i,group in enumerate(permute_groups):
-            group_indices[group].append(i)
-        for indices in group_indices.values():
-            group_mask[np.ix_(indices, indices)] = 0
+    # if permute_groups is not None and groups is not None:
+    #     group_mask = np.ones((n,n))
+    #     group_indices = defaultdict(list)
+    #     for i,group in enumerate(permute_groups):
+    #         group_indices[group].append(i)
+    #     for indices in group_indices.values():
+    #         group_mask[np.ix_(indices, indices)] = 0
 
-        if groups:
-            # Subtract average excluding within-group distances
-            exp_distx = np.repeat(
-                (((distx * group_mask).mean(axis=0) * n) / group_mask.sum(axis=0)), n
-            ).reshape(-1, n).T
-            exp_distx = exp_distx + exp_distx.T - (distx * group_mask).sum() / group_mask.sum()
-        else:
-            # unbiased centering
-            exp_distx = (
-                np.repeat((distx.sum(axis=0) / (n - 2)), n).reshape(-1, n).T
-                + np.repeat((distx.sum(axis=1) / (n - 2)), n).reshape(-1, n)
-                - distx.sum() / ((n - 1) * (n - 2))
-            )
-        # Zero group elements
-        cent_distx = distx - exp_distx
-        cent_distx = cent_distx * group_mask
-    elif bias:
+    #     if groups:
+    #         # Subtract average excluding within-group distances
+    #         exp_distx = np.repeat(
+    #             (((distx * group_mask).mean(axis=0) * n) / group_mask.sum(axis=0)), n
+    #         ).reshape(-1, n).T
+    #         exp_distx = exp_distx + exp_distx.T - (distx * group_mask).sum() / group_mask.sum()
+    #     else:
+    #         # unbiased centering
+    #         exp_distx = (
+    #             np.repeat((distx.sum(axis=0) / (n - 2)), n).reshape(-1, n).T
+    #             + np.repeat((distx.sum(axis=1) / (n - 2)), n).reshape(-1, n)
+    #             - distx.sum() / ((n - 1) * (n - 2))
+    #         )
+    #     # Zero group elements
+    #     cent_distx = distx - exp_distx
+    #     cent_distx = cent_distx * group_mask
+    if bias:
         # use sum instead of mean because of numba restrictions
         exp_distx = (
             np.repeat(distx.sum(axis=0) / n, n).reshape(-1, n).T
@@ -270,11 +269,11 @@ def _center_distmat(distx, bias, permute_groups, groups):  # pragma: no cover
 
 
 #@njit
-def _dcorr(distx, disty, bias, permute_groups, groups):  # pragma: no cover
+def _dcorr(distx, disty, bias):  # pragma: no cover
     """Calculate the Dcorr test statistic"""
     # center distance matrices
-    cent_distx = _center_distmat(distx, bias, permute_groups, groups)
-    cent_disty = _center_distmat(disty, bias, permute_groups, groups)
+    cent_distx = _center_distmat(distx, bias)
+    cent_disty = _center_distmat(disty, bias)
 
     # calculate covariances and variances
     covar = np.sum(np.multiply(cent_distx, cent_disty.T))
