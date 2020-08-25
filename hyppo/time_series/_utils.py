@@ -81,7 +81,7 @@ class _CheckInputs:
     # def _check_variance(self):
     #     for i in [self.x, self.y]:
     #         if np.var(i) == 0:
-    #             raise ValueError("Test cannot be run, one of the inputs has 0 variance")
+    #             raise ValueError("One of the inputs has 0 variance")
 
 
 def compute_stat(x, y, indep_test, compute_distance, max_lag):
@@ -94,7 +94,7 @@ def compute_stat(x, y, indep_test, compute_distance, max_lag):
     dep_lag = []
     indep_test = indep_test(compute_distance=compute_distance)
     indep_test_stat = indep_test._statistic(x, y)
-    dep_lag.append(np.maximum(0, indep_test_stat))
+    dep_lag.append(indep_test_stat)
 
     # loop over time points and find max test statistic
     n = distx.shape[0]
@@ -102,7 +102,7 @@ def compute_stat(x, y, indep_test, compute_distance, max_lag):
         slice_distx = distx[j:n, j:n]
         slice_disty = disty[0 : (n - j), 0 : (n - j)]
         stat = indep_test._statistic(slice_distx, slice_disty)
-        dep_lag.append((n - j) * np.maximum(0, stat) / n)
+        dep_lag.append((n - j) * stat / n)
 
     # calculate optimal lag and test statistic
     opt_lag = np.argmax(dep_lag)
