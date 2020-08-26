@@ -33,8 +33,7 @@ class TestOneSample:
 
 
 class TestOneSampleWarn:
-    """ Tests errors and warnings derived from one sample test.
-    """
+    """Tests errors and warnings derived from one sample test."""
 
     def test_error_one_id(self):
         # checks whether y has only one id

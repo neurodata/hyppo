@@ -7,8 +7,7 @@ from .. import MGC
 
 
 class TestMGCStat(object):
-    """ Test validity of MGC test statistic
-    """
+    """Test validity of MGC test statistic"""
 
     @pytest.mark.parametrize(
         "sim, obs_stat, obs_pvalue",
