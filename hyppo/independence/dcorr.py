@@ -219,7 +219,9 @@ class Dcorr(IndependenceTest):
                 x = self.compute_distance(x, workers=workers)
                 y = self.compute_distance(y, workers=workers)
                 self.is_distance = True
-            stat, pvalue = super(Dcorr, self).test(x, y, reps, workers, perm_blocks=perm_blocks)
+            stat, pvalue = super(Dcorr, self).test(
+                x, y, reps, workers, perm_blocks=perm_blocks
+            )
 
         return stat, pvalue
 

@@ -149,12 +149,13 @@ def check_perm_block(perm_block):
         )
 
     return perm_block
-    
+
 
 class _PermNode(object):
     """
     Helper class for nodes in _PermTree.
     """
+
     def __init__(self, parent, label=None, index=None):
         self.children = []
         self.parent = parent
@@ -181,6 +182,7 @@ class _PermTree(object):
     """
     Tree representation of dependencies for restricted permutations
     """
+
     def __init__(self, perm_blocks):
         perm_blocks = check_perm_blocks(perm_blocks)
         self.root = _PermNode(None)
@@ -206,11 +208,18 @@ class _PermTree(object):
         if len(node.get_children()) == 0:
             return [node.index]
         else:
-            indices, labels = zip(*[(self._permute_level(child), child.label) for child in node.get_children()])
+            indices, labels = zip(
+                *[
+                    (self._permute_level(child), child.label)
+                    for child in node.get_children()
+                ]
+            )
             shuffle_children = [i for i, label in enumerate(labels) if label >= 0]
             indices = np.asarray(indices)
             if len(shuffle_children) > 1:
-                indices[shuffle_children] = indices[np.random.permutation(shuffle_children)]
+                indices[shuffle_children] = indices[
+                    np.random.permutation(shuffle_children)
+                ]
             return np.concatenate(indices)
 
     def permute_indices(self):
@@ -225,6 +234,7 @@ class _PermGroups(object):
     """
     Helper function to calculate parallel p-value.
     """
+
     def __init__(self, y, perm_blocks=None):
         self.n = y.shape[0]
         if perm_blocks is None:
@@ -269,7 +279,10 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
     permuter = _PermGroups(y, perm_blocks)
     null_dist = np.array(
         Parallel(n_jobs=workers)(
-            [delayed(_perm_stat)(calc_stat, x, y, is_distsim, permuter) for rep in range(reps)]
+            [
+                delayed(_perm_stat)(calc_stat, x, y, is_distsim, permuter)
+                for rep in range(reps)
+            ]
         )
     )
     pvalue = (null_dist >= stat).sum() / reps

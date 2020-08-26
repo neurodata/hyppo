@@ -69,7 +69,13 @@ class IndependenceTest(ABC):
 
         # calculate p-value
         stat, pvalue, null_dist = perm_test(
-            self._statistic, x, y, reps=reps, workers=workers, is_distsim=is_distsim, perm_blocks=perm_blocks
+            self._statistic,
+            x,
+            y,
+            reps=reps,
+            workers=workers,
+            is_distsim=is_distsim,
+            perm_blocks=perm_blocks,
         )
         self.stat = stat
         self.pvalue = pvalue
