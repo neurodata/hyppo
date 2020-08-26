@@ -224,7 +224,7 @@ class Dcorr(IndependenceTest):
         return stat, pvalue
 
 
-#@njit
+@njit
 def _center_distmat(distx, bias):  # pragma: no cover
     """Centers the distance matrices"""
     n = distx.shape[0]
@@ -247,7 +247,7 @@ def _center_distmat(distx, bias):  # pragma: no cover
     return cent_distx
 
 
-#@njit
+@njit
 def _dcorr(distx, disty, bias):  # pragma: no cover
     """Calculate the Dcorr test statistic"""
     # center distance matrices
