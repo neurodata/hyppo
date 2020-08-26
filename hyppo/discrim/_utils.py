@@ -42,7 +42,7 @@ class _CheckInputs:
 
     def _condition_input(self, x1):
         """Checks whether there is only one subject and removes
-           isolates and calculate distance."""
+        isolates and calculate distance."""
         uniques, counts = np.unique(self.y, return_counts=True)
 
         if (counts != 1).sum() <= 1:

@@ -31,8 +31,7 @@ class TestCCAStat:
 
 
 class TestCCAErrorWarn:
-    """ Tests errors and warnings derived from MGC.
-    """
+    """Tests errors and warnings derived from MGC."""
 
     def test_error_notndarray(self):
         # raises error if x or y is not a ndarray
