@@ -38,7 +38,7 @@ class IndependenceTest(ABC):
         """
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=1, is_distsim=True, permute_groups=None, permute_structure=None):
+    def test(self, x, y, reps=1000, workers=1, is_distsim=True, perm_blocks=None):
         r"""
         Calulates the independence test p-value.
 
@@ -51,7 +51,7 @@ class IndependenceTest(ABC):
         workers : int, optional (default: 1)
             Evaluates method using `multiprocessing.Pool <multiprocessing>`).
             Supply `-1` to use all cores available to the Process.
-        permute_groups : 1D ndarray or list, optional
+        perm_blocks : ndarray, optional
             Labels defining groups of y labels that need to be permuted
             together.
 
@@ -67,7 +67,7 @@ class IndependenceTest(ABC):
 
         # calculate p-value
         stat, pvalue, null_dist = perm_test(
-            self._statistic, x, y, reps=reps, workers=workers, is_distsim=is_distsim, permute_groups=permute_groups, permute_structure=permute_structure
+            self._statistic, x, y, reps=reps, workers=workers, is_distsim=is_distsim, perm_blocks=perm_blocks
         )
         self.stat = stat
         self.pvalue = pvalue

@@ -130,7 +130,7 @@ class Dcorr(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1, auto=True, bias=False, permute_groups=None, permute_structure=None):
+    def test(self, x, y, reps=1000, workers=1, auto=True, bias=False, perm_blocks=None):
         r"""
         Calculates the Dcorr test statistic and p-value.
 
@@ -153,8 +153,7 @@ class Dcorr(IndependenceTest):
             is greater than 20. If True, and sample size is greater than 20, a fast
             chi2 approximation will be run. Parameters ``reps`` and ``workers`` are
             irrelevant in this case.
-        permute_groups : 1D ndarray or list, optional
-            Labels defining groups of y labels that need to be permuted together.
+        perm_blocks : TODO
 
         Returns
         -------
@@ -204,7 +203,7 @@ class Dcorr(IndependenceTest):
         if self.is_distance:
             check_xy_distmat(x, y)
 
-        if auto and x.shape[0] > 20 and permute_groups is None:
+        if auto and x.shape[0] > 20 and permute_blocks is None:
             stat, pvalue = chi2_approx(self._statistic, x, y)
             self.stat = stat
             self.pvalue = pvalue
@@ -214,7 +213,7 @@ class Dcorr(IndependenceTest):
                 x = self.compute_distance(x, workers=workers)
                 y = self.compute_distance(y, workers=workers)
                 self.is_distance = True
-            stat, pvalue = super(Dcorr, self).test(x, y, reps, workers, permute_groups=permute_groups, permute_structure=permute_structure)
+            stat, pvalue = super(Dcorr, self).test(x, y, reps, workers, perm_blocks=perm_blocks)
 
         return stat, pvalue
 
