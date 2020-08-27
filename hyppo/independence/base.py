@@ -51,9 +51,11 @@ class IndependenceTest(ABC):
         workers : int, optional (default: 1)
             Evaluates method using `multiprocessing.Pool <multiprocessing>`).
             Supply `-1` to use all cores available to the Process.
-        perm_blocks : ndarray, optional
-            Labels defining groups of y labels that need to be permuted
-            together.
+        perm_blocks : 2d ndarray, optional
+            Restricts permutations to account for dependencies in data. Columns
+            recursively partition samples based on unique labels. Groups at
+            each partition are exchangeable under a permutation but remain
+            fixed if label is negative.
 
         Returns
         -------
@@ -67,7 +69,13 @@ class IndependenceTest(ABC):
 
         # calculate p-value
         stat, pvalue, null_dist = perm_test(
-            self._statistic, x, y, reps=reps, workers=workers, is_distsim=is_distsim, perm_blocks=perm_blocks
+            self._statistic,
+            x,
+            y,
+            reps=reps,
+            workers=workers,
+            is_distsim=is_distsim,
+            perm_blocks=perm_blocks,
         )
         self.stat = stat
         self.pvalue = pvalue
