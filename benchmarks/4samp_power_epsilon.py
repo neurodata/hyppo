@@ -17,7 +17,7 @@ from matplotlib.legend import Legend
 
 sys.path.append(os.path.realpath('..'))
 from benchmarks import power_4samp_epsweight
-from hyppo.independence import MGC
+from hyppo.independence import MGC, Dcorr
 from hyppo.sims import gaussian_4samp
 
 # In[4]:
@@ -35,21 +35,21 @@ sns.set_palette(PALETTE[3:])
 
 
 MAX_EPSILON = 1
-STEP_SIZE = 0.05
+STEP_SIZE = 0.1
 EPSILONS = np.arange(0, MAX_EPSILON + STEP_SIZE, STEP_SIZE)
 WEIGHTS = EPSILONS
-POWER_REPS = 5
+POWER_REPS = 2
 
 # In[9]:
 
 
 tests = [
-    MGC,
+    Dcorr,
 ]
 
 multiways = [
     True,
-    #False,
+    False,
 ]
 
 
@@ -62,7 +62,7 @@ multiways = [
 
 def estimate_power(test, multiway):
     est_power = np.array([
-        np.mean([power_4samp_epsweight(test, epsilon=i, multiway=multiway, compute_distance=None)
+        np.mean([power_4samp_epsweight(test, epsilon=i, workers=-1, multiway=multiway, compute_distance=None)
             for _ in range(POWER_REPS)
         ]) 
         for i in EPSILONS

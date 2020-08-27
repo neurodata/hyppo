@@ -343,8 +343,8 @@ def gaussian_2samp_2level(n, epsilon1=1, epsilon2=1):
     (100, 2) (100, 2) (100, 2) (100, 2)
     """
     sigma = np.identity(2)
-    mu1 = [0, 0, epsilon1, epsilon1]
-    mu2 = [0, epsilon2, 0, epsilon2]
+    mu1 = [0, epsilon1/2+epsilon2, epsilon1/2-epsilon2, epsilon1]
+    mu2 = [0, epsilon1/2-epsilon2, epsilon1/2+epsilon2, epsilon1]
 
     means = list(zip(mu1, mu2))
     sims = [np.random.multivariate_normal(mean, sigma, n) for mean in means]

@@ -28,11 +28,12 @@ class _ParallelP4Samp(object):
         if self.multiway:
             ways = [[0,0], [0,1], [1,0], [1,1]]
             u, v = k_sample_transform(Xs, ways=ways)
+            v_dist = pairwise_distances(v, metric="sqeuclidean") / 2
         else:
             u, v = k_sample_transform(Xs)
+            v_dist = pairwise_distances(v, metric="euclidean")
 
         u_dist = pairwise_distances(u, metric="euclidean")
-        v_dist = pairwise_distances(v, metric="sqeuclidean") / 2
  
         obs_stat = self.test._statistic(u_dist, v_dist)
 
@@ -40,7 +41,10 @@ class _ParallelP4Samp(object):
         permv = self.rngs[index].permutation(v)
 
         # calculate permuted stats, store in null distribution
-        permv_dist = pairwise_distances(permv, metric="sqeuclidean") / 2
+        if self.multiway:
+            permv_dist = pairwise_distances(permv, metric="sqeuclidean") / 2
+        else:
+            permv_dist = pairwise_distances(permv, metric="euclidean")
         perm_stat = self.test._statistic(u_dist, permv_dist)
 
         return obs_stat, perm_stat

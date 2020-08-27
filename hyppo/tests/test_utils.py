@@ -33,12 +33,12 @@ class TestPermTree:
             0,0,1,1,2,2
         ])
         blocks = np.vstack((
-            [1, 1],
-            [1, 1],
-            [2, 1],
-            [2, 1],
-            [3, 1],
-            [3, 1],
+            [1],#, 1],
+            [1],#, 1],
+            [2],#, 1],
+            [2],#, 1],
+            [3],#, 1],
+            [3],#, 1],
         ))
         original_indices = perm_tree.original_indices()
         perms = np.asarray([

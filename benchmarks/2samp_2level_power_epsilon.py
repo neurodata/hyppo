@@ -34,13 +34,14 @@ sns.set_palette(PALETTE[3:])
 # In[5]:
 
 
-MAX_EPSILON = 1
+MAX_EPSILON1 = 1
+MAX_EPSILON2 = 1
 STEP_SIZE = 0.1#0.05
-EPSILONS1 = np.arange(0, MAX_EPSILON + STEP_SIZE, STEP_SIZE)
-EPSILONS2 = np.arange(0, MAX_EPSILON + STEP_SIZE, STEP_SIZE)
+EPSILONS1 = np.arange(0, MAX_EPSILON1 + STEP_SIZE, STEP_SIZE)
+EPSILONS2 = np.arange(0, MAX_EPSILON2 + STEP_SIZE, STEP_SIZE)
 WEIGHTS = EPSILONS1
-POWER_REPS = 3#5
-REPS = 250
+POWER_REPS = 2#5
+REPS = 200
 
 # In[9]:
 
@@ -51,7 +52,7 @@ tests = [
 
 multiways = [
     True,
-    #False,
+    False,
 ]
 
 plot = False
@@ -67,7 +68,7 @@ plot = False
 def estimate_power(test, multiway):
     est_power = np.array([
         [
-            np.mean([power_2samp_2level_epsweight(test, epsilon1=i, epsilon2=j, reps=REPS, multiway=multiway, compute_distance=None)
+            np.mean([power_2samp_2level_epsweight(test, workers=-1, epsilon1=i, epsilon2=j, reps=REPS, multiway=multiway, compute_distance=None)
                 for _ in range(POWER_REPS)
             ]) 
             for i in EPSILONS1
