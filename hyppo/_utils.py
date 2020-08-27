@@ -143,6 +143,7 @@ def check_perm_block(perm_block):
     else:
         unique, counts = np.unique(perm_block, return_counts=True)
         pos_counts = [c for c, u in zip(counts, unique) if u >= 0]
+    pos_counts = [c for c, u in zip(counts, unique) if u >= 0]
     if len(set(pos_counts)) > 1:
         raise ValueError(
             f"Exchangeable hiearchy has groups with {min(pos_counts)} to \
