@@ -1,5 +1,10 @@
 from hyppo._utils import _PermTree, _PermNode
-from numpy.testing import assert_array_less, assert_allclose, assert_equal, assert_raises
+from numpy.testing import (
+    assert_array_less,
+    assert_allclose,
+    assert_equal,
+    assert_raises,
+)
 import numpy as np
 
 
@@ -63,9 +68,9 @@ class TestPermTree:
         assert_allclose(np.mean(perms, axis=0)[:2], [0.5, 0.5], rtol=0, atol=0.2)
 
     def test_non_int_inputs(self):
-        blocks = ['a', 'b', 'c']
+        blocks = ["a", "b", "c"]
         perm_tree = _PermTree(blocks)
 
     def test_block_sizes(self):
-        blocks = [1,1,2]
+        blocks = [1, 1, 2]
         assert_raises(ValueError, _PermTree, blocks)
