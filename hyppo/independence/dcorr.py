@@ -230,32 +230,6 @@ class Dcorr(IndependenceTest):
 def _center_distmat(distx, bias):  # pragma: no cover
     """Centers the distance matrices"""
     n = distx.shape[0]
-
-    # if permute_groups is not None and groups is not None:
-    #     group_mask = np.ones((n,n))
-    #     group_indices = defaultdict(list)
-    #     for i,group in enumerate(permute_groups):
-    #         group_indices[group].append(i)
-    #     for indices in group_indices.values():
-    #         group_mask[np.ix_(indices, indices)] = 0
-
-    #     if groups:
-    #         # Subtract average excluding within-group distances
-    #         exp_distx = np.repeat(
-    #             (((distx * group_mask).mean(axis=0) * n) / group_mask.sum(axis=0)), n
-    #         ).reshape(-1, n).T
-    #         exp_distx = exp_distx + exp_distx.T - (distx * group_mask).sum() / group_mask.sum()
-    #     else:
-    #         # unbiased centering
-    #         exp_distx = (
-    #             np.repeat((distx.sum(axis=0) / (n - 2)), n).reshape(-1, n).T
-    #             + np.repeat((distx.sum(axis=1) / (n - 2)), n).reshape(-1, n)
-    #             - distx.sum() / ((n - 1) * (n - 2))
-    #         )
-    #     # Zero group elements
-    #     cent_distx = distx - exp_distx
-    #     cent_distx = cent_distx * group_mask
-
     if bias:
         # use sum instead of mean because of numba restrictions
         exp_distx = (

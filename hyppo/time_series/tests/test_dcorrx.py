@@ -34,12 +34,21 @@ class TestDcorrXStat:
         assert_almost_equal(opt_lag, obs_opt_lag, decimal=0)
 
     def test_lag0(self):
+        # Dependent
         x, y = nonlinear_process(100, lag=1)
 
         stat1 = Dcorr().test(x, y)[0]
         stat2 = DcorrX(max_lag=0).test(x, y)[0]
 
         assert_almost_equal(stat1, stat2, decimal=0)
+
+        # Independent
+        x = np.array([[0.95476444], [0.36741182], [0.37473209], [-0.62469378]])
+        y = np.array([[0.86515308], [-0.01985114], [0.21544295], [1.56443374]])
+        stat, p = Dcorr().test(x, y)
+        statx, px, _ = DcorrX(max_lag=0).test(x, y)
+
+        assert stat == statx
 
     def test_distance(self):
         n = 6
