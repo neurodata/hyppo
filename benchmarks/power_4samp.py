@@ -131,4 +131,4 @@ def power_4samp_epsweight(
     if empirical_power == 0:
         empirical_power = 1 / reps
 
-    return empirical_power
+    return empirical_power, alt_dist, null_dist

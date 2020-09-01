@@ -16,9 +16,9 @@ import matplotlib.pyplot as plt
 from matplotlib.legend import Legend
 
 sys.path.append(os.path.realpath('..'))
-from benchmarks import power_2samp_2level_epsweight
+from benchmarks import power_4samp_2way_epsweight
 from hyppo.independence import MGC, Dcorr
-from hyppo.sims import gaussian_2samp_2level
+from hyppo.sims import gaussian_4samp_2way
 
 # In[4]:
 
@@ -68,14 +68,14 @@ plot = False
 def estimate_power(test, multiway):
     est_power = np.array([
         [
-            np.mean([power_2samp_2level_epsweight(test, workers=-1, epsilon1=i, epsilon2=j, reps=REPS, multiway=multiway, compute_distance=None)
+            np.mean([power_4samp_2way_epsweight(test, workers=-1, epsilon1=i, epsilon2=j, reps=REPS, multiway=multiway, compute_distance=None)
                 for _ in range(POWER_REPS)
             ]) 
             for i in EPSILONS1
         ]
         for j in EPSILONS2
     ])
-    np.savetxt('../benchmarks/2samp_2level_vs_epsilon/{}_{}.csv'.format(multiway, test.__name__),
+    np.savetxt('../benchmarks/4samp_2way_vs_epsilon/{}_{}.csv'.format(multiway, test.__name__),
                est_power, delimiter=',')
     
     return est_power
@@ -106,7 +106,7 @@ def plot_power():
     for i, row in enumerate(ax):
         for j, col in enumerate(row):
             if i == 0:
-                sims = gaussian_2samp_2level(100, epsilon1=4, epsilon2=4)
+                sims = gaussian_4samp_2way(100, epsilon1=4, epsilon2=4)
                 
                 sim_markers = [
                     "1",
@@ -138,7 +138,7 @@ def plot_power():
                 for test in tests:
                     for multiway in multiways:
                         power = np.genfromtxt(
-                            '../benchmarks/2samp_2level_vs_epsilon/{}_{}.csv'.format(multiway, test.__name__),
+                            '../benchmarks/4samp_2way_vs_epsilon/{}_{}.csv'.format(multiway, test.__name__),
                             delimiter=','
                             )
 
@@ -181,7 +181,7 @@ def plot_power():
     fig.add_artist(leg)
     for legobj in leg.legendHandles:
         legobj.set_linewidth(3)
-    plt.savefig('../benchmarks/figs/2samp_2level_power_epsilon.pdf', transparent=True, bbox_inches='tight')
+    plt.savefig('../benchmarks/figs/4samp_2way_power_epsilon.pdf', transparent=True, bbox_inches='tight')
 
 
 # In[6]:

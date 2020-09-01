@@ -317,9 +317,9 @@ def gaussian_4samp(n, epsilon=1):
 
     return sims
 
-def gaussian_2samp_2level(n, epsilon1=1, epsilon2=1):
+def gaussian_4samp_2way(n, epsilon1=1, epsilon2=None, effect_mask=None):
     r"""
-    Generates 4 Gaussians varying along 2 axes (levels)
+    Generates 4 Gaussians varying along 2 axes (ways)
 
     Parameters
     ----------
@@ -327,8 +327,12 @@ def gaussian_2samp_2level(n, epsilon1=1, epsilon2=1):
         The number of samples desired by the simulation.
     epsilon1 : float, (default: 1)
         The amount to separate by along axis 1 (amount  depends on case).
-    epsilon2 : float, (default: 1)
+    epsilon2 : float, (default: None)
         The amount to separate by along axis 2 (amount  depends on case).
+        Is set to epsilon1 if None
+    effect_mask : list, length 4 (default: None)
+        Sets mean to origin for a cluster if entry is 0. Indexes gaussians
+        clockwise starting from the origin. Ignored if None.
 
     Returns
     -------
@@ -337,14 +341,19 @@ def gaussian_2samp_2level(n, epsilon1=1, epsilon2=1):
 
     Examples
     --------
-    >>> from hyppo.sims import gaussian_4samp
-    >>> sims = gaussian_4samp(100)
+    >>> from hyppo.sims import gaussian_4samp_2way
+    >>> sims = gaussian_4samp_2way(100)
     >>> print(sims[0].shape, sims[1].shape, sims[2].shape, sims[3].shape)
     (100, 2) (100, 2) (100, 2) (100, 2)
     """
     sigma = np.identity(2)
-    mu1 = [0, epsilon1/2+epsilon2, epsilon1/2-epsilon2, epsilon1]
-    mu2 = [0, epsilon1/2-epsilon2, epsilon1/2+epsilon2, epsilon1]
+    if epsilon2 is None:
+        epsilon2 = epsilon1
+    mu1 = [0, epsilon1/2-epsilon2/2, epsilon1, epsilon1/2+epsilon2/2]
+    mu2 = [0, epsilon1/2+epsilon2/2, epsilon1, epsilon1/2-epsilon2/2]
+    if effect_mask is not None:
+        mu1 = (np.asarray(effect_mask) != 0) * np.asarray(mu1)
+        mu2 = (np.asarray(effect_mask) != 0) * np.asarray(mu2)
 
     means = list(zip(mu1, mu2))
     sims = [np.random.multivariate_normal(mean, sigma, n) for mean in means]

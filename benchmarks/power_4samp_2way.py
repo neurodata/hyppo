@@ -7,26 +7,27 @@ from scipy._lib._util import check_random_state, MapWrapper
 from sklearn.metrics import pairwise_distances
 
 from hyppo.ksample._utils import k_sample_transform
-from hyppo.sims import gaussian_2samp_2level
+from hyppo.sims import gaussian_4samp_2way
 
 
-class _ParallelP_2samp_2level(object):
+class _ParallelP_4samp_2way(object):
     """
     Helper function to calculate parallel power.
     """
 
-    def __init__(self, test, n, epsilon1=1, epsilon2=1, weight=0, case=1, rngs=[],  multiway=False, permute_groups=None, permute_structure='multilevel', **kwargs):
+    def __init__(self, test, n, epsilon1=1, epsilon2=1, effect_mask=None, weight=0, case=1, rngs=[],  multiway=False, permute_groups=None, permute_structure='multilevel', **kwargs):
         self.test = test(**kwargs)
 
         self.n = n
         self.epsilon1 = epsilon1
         self.epsilon2 = epsilon2
+        self.effect_mask = effect_mask
         self.weight = weight
         self.multiway = multiway
         self.rngs = rngs
 
         # New
-        self.permute_groups = np.vstack(([[0,0]]*n, [[0,1]]*n, [[1,0]]*n, [[1,1]]*n))
+        self.permute_groups = np.vstack(([[0,0]]*n, [[0,1]]*n, [[1,1]]*n, [[1,0]]*n))
         self.permute_structure = permute_structure
 
     def _within_permute(self, index):
@@ -68,10 +69,10 @@ class _ParallelP_2samp_2level(object):
             return n * self._factorial(n-1, n_mults-1)
 
     def __call__(self, index):
-        Xs = gaussian_2samp_2level(self.n, epsilon1=self.epsilon1, epsilon2=self.epsilon2)
+        Xs = gaussian_4samp_2way(self.n, epsilon1=self.epsilon1, epsilon2=self.epsilon2, effect_mask=self.effect_mask)
 
         if self.multiway:
-            ways = [[0,0], [0,1], [1,0], [1,1]]
+            ways = [[0,0], [0,1], [1,1], [1,0]]
             u, v = k_sample_transform(Xs, ways=ways)
         else:
             u, v = k_sample_transform(Xs)
@@ -117,11 +118,12 @@ class _ParallelP_2samp_2level(object):
         return obs_stat, perm_stat
 
 
-def _perm_test_2samp_2level(
+def _perm_test_4samp_2way(
     test,
     n=100,
     epsilon1=1,
     epsilon2=1,
+    effect_mask=None,
     weight=0,
     case=1,
     reps=1000,
@@ -160,7 +162,7 @@ def _perm_test_2samp_2level(
 
     # use all cores to create function that parallelizes over number of reps
     mapwrapper = MapWrapper(workers)
-    parallelp = _ParallelP_2samp_2level(test, n, epsilon1, epsilon2, weight, case, rngs, multiway, **kwargs)
+    parallelp = _ParallelP_4samp_2way(test, n, epsilon1, epsilon2, effect_mask, weight, case, rngs, multiway, **kwargs)
     alt_dist, null_dist = map(list, zip(*list(mapwrapper(parallelp, range(reps)))))
     alt_dist = np.array(alt_dist)
     null_dist = np.array(null_dist)
@@ -168,11 +170,12 @@ def _perm_test_2samp_2level(
     return alt_dist, null_dist
 
 
-def power_2samp_2level_epsweight(
+def power_4samp_2way_epsweight(
     test,
     n=100,
     epsilon1=0.5,
     epsilon2=0.5,
+    effect_mask=None,
     weight=0,
     case=1,
     alpha=0.05,
@@ -182,11 +185,12 @@ def power_2samp_2level_epsweight(
     multiway=False,
     **kwargs,
 ):
-    alt_dist, null_dist = _perm_test_2samp_2level(
+    alt_dist, null_dist = _perm_test_4samp_2way(
         test,
         n=n,
         epsilon1=epsilon1,
         epsilon2=epsilon2,
+        effect_mask=effect_mask,
         weight=weight,
         case=case,
         reps=reps,

@@ -20,7 +20,7 @@ from .indep_sim import (
     square,
     multimodal_independence,
 )
-from .ksample_sim import rot_2samp, trans_2samp, gaussian_3samp, gaussian_4samp, gaussian_2samp_2level
+from .ksample_sim import rot_2samp, trans_2samp, gaussian_3samp, gaussian_4samp, gaussian_4samp_2way
 from .time_series_sim import indep_ar, cross_corr_ar, nonlinear_process
 
 __all__ = [
@@ -51,4 +51,5 @@ __all__ = [
     "indep_ar",
     "cross_corr_ar",
     "nonlinear_process",
+    "gaussian_4samp_2way"
 ]
