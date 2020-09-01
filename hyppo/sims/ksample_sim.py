@@ -317,7 +317,7 @@ def gaussian_4samp(n, epsilon=1):
 
     return sims
 
-def gaussian_4samp_2way(n, epsilon1=1, epsilon2=None, effect_mask=None):
+def gaussian_4samp_2way(n, epsilon1=1, epsilon2=None, effect_mask=None, diag=False):
     r"""
     Generates 4 Gaussians varying along 2 axes (ways)
 
@@ -333,6 +333,9 @@ def gaussian_4samp_2way(n, epsilon1=1, epsilon2=None, effect_mask=None):
     effect_mask : list, length 4 (default: None)
         Sets mean to origin for a cluster if entry is 0. Indexes gaussians
         clockwise starting from the origin. Ignored if None.
+    diag : boolean (default False)
+        If true, epsilon 1 varies the gaussian on the diagonal and epsilon
+        2 varies the other two gaussians
 
     Returns
     -------
@@ -349,8 +352,12 @@ def gaussian_4samp_2way(n, epsilon1=1, epsilon2=None, effect_mask=None):
     sigma = np.identity(2)
     if epsilon2 is None:
         epsilon2 = epsilon1
-    mu1 = [0, epsilon1/2-epsilon2/2, epsilon1, epsilon1/2+epsilon2/2]
-    mu2 = [0, epsilon1/2+epsilon2/2, epsilon1, epsilon1/2-epsilon2/2]
+    if diag:
+        mu1 = [0, 0, epsilon1, epsilon2]
+        mu2 = [0, epsilon2, epsilon1, 0]
+    else:
+        mu1 = [0, epsilon1/2-epsilon2/2, epsilon1, epsilon1/2+epsilon2/2]
+        mu2 = [0, epsilon1/2+epsilon2/2, epsilon1, epsilon1/2-epsilon2/2]
     if effect_mask is not None:
         mu1 = (np.asarray(effect_mask) != 0) * np.asarray(mu1)
         mu2 = (np.asarray(effect_mask) != 0) * np.asarray(mu2)

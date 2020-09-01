@@ -15,7 +15,7 @@ class _ParallelP_4samp_2way(object):
     Helper function to calculate parallel power.
     """
 
-    def __init__(self, test, n, epsilon1=1, epsilon2=1, effect_mask=None, weight=0, case=1, rngs=[],  multiway=False, permute_groups=None, permute_structure='multilevel', **kwargs):
+    def __init__(self, test, n, epsilon1=1, epsilon2=1, effect_mask=None, weight=0, case=1, rngs=[],  multiway=False, permute_groups=None, permute_structure='multilevel', sim_kwargs={}, **kwargs):
         self.test = test(**kwargs)
 
         self.n = n
@@ -25,51 +25,21 @@ class _ParallelP_4samp_2way(object):
         self.weight = weight
         self.multiway = multiway
         self.rngs = rngs
+        self.sim_kwargs = sim_kwargs
 
         # New
-        self.permute_groups = np.vstack(([[0,0]]*n, [[0,1]]*n, [[1,1]]*n, [[1,0]]*n))
-        self.permute_structure = permute_structure
+#         self.permute_groups = np.vstack(([[0,0]]*n, [[0,1]]*n, [[1,1]]*n, [[1,0]]*n))
+#         self.permute_structure = permute_structure
 
-    def _within_permute(self, index):
-        old_indices = np.hstack(list(self.within_indices.values()))
-        new_indices = np.hstack([
-            self.rngs[index].permutation(idx) for idx in self.within_indices.values()
-        ])
-        order = np.ones(self.v_labels.shape[0]) * -1
-        order[np.asarray(old_indices)] = new_indices
-        order = order.astype(int)
-        
-        return order
-
-    def _across_permute(self, index):
-        # Copy dict: [y_label] -> list(indices)
-        class_indices_copy = deepcopy(self.class_indices)
-        new_indices = []
-        old_indices = []
-        for group in self.across_indices:
-            p0 = self._factorial(len(class_indices_copy[0]), len(group))
-            p1 = self._factorial(len(class_indices_copy[1]), len(group))
-            # New indices sampled per probabilities at that step
-            if self.rngs[index].uniform() < p0 / (p0+p1):
-                new_indices += [class_indices_copy[0].pop() for _ in range(len(group))]
-            else:
-                new_indices += [class_indices_copy[1].pop() for _ in range(len(group))]
-            # Old indices in correct order
-            old_indices += group
-        order = np.ones(self.v_labels.shape[0]) * -1
-        order[np.asarray(old_indices)] = new_indices
-        order = order.astype(int)
-
-        return order
-
-    def _factorial(self, n, n_mults):
-        if n_mults == 0 or n == 0:
-            return 1
-        else:
-            return n * self._factorial(n-1, n_mults-1)
 
     def __call__(self, index):
-        Xs = gaussian_4samp_2way(self.n, epsilon1=self.epsilon1, epsilon2=self.epsilon2, effect_mask=self.effect_mask)
+        Xs = gaussian_4samp_2way(
+            self.n,
+            epsilon1=self.epsilon1,
+            epsilon2=self.epsilon2,
+            effect_mask=self.effect_mask,
+            **self.sim_kwargs
+        )
 
         if self.multiway:
             ways = [[0,0], [0,1], [1,1], [1,0]]
@@ -78,42 +48,38 @@ class _ParallelP_4samp_2way(object):
             u, v = k_sample_transform(Xs)
 
         u_dist = pairwise_distances(u, metric="euclidean")
-        v_dist = pairwise_distances(v, metric="sqeuclidean") / 2
+        v_dist = pairwise_distances(v, metric="sqeuclidean")
 
         obs_stat = self.test._statistic(u_dist, v_dist)
 
-        self.v_labels = np.unique(self.permute_groups[:,0], return_inverse=True)[1]
-        if self.permute_structure == 'multilevel':
-            # permute_groups [highest level,...,lowest level]
-            # TODO more than 2level, should be generically generalizable
-            self.within_indices = defaultdict(list)
-            for i,group in enumerate(self.permute_groups):
-                self.within_indices[group[1]].append(i) # lowest level
+#        self.v_labels = np.unique(self.permute_groups[:,0], return_inverse=True)[1]
+#         if self.permute_structure == 'multilevel':
+#             # permute_groups [highest level,...,lowest level]
+#             # TODO more than 2level, should be generically generalizable
+#             self.within_indices = defaultdict(list)
+#             for i,group in enumerate(self.permute_groups):
+#                 self.within_indices[group[1]].append(i) # lowest level
 
-            # dict: [y_label] -> list(indices)
-            self.class_indices = defaultdict(list) 
-            across_indices = defaultdict(list)
-            for i,(group,label) in enumerate(zip(self.permute_groups, self.v_labels)):
-                self.class_indices[label].append(i)
-                across_indices[group[0]].append(i) # highest level
-            # list of group indices, sorted descending order
-            self.across_indices = sorted(
-                across_indices.values(), key=lambda x: len(x), reverse=True
-            )
-        else:
-            msg = "permute_structure must be of {'multilevel'}"
-            raise ValueError(msg)
+#             # dict: [y_label] -> list(indices)
+#             self.class_indices = defaultdict(list) 
+#             across_indices = defaultdict(list)
+#             for i,(group,label) in enumerate(zip(self.permute_groups, self.v_labels)):
+#                 self.class_indices[label].append(i)
+#                 across_indices[group[0]].append(i) # highest level
+#             # list of group indices, sorted descending order
+#             self.across_indices = sorted(
+#                 across_indices.values(), key=lambda x: len(x), reverse=True
+#             )
+#         else:
+#             msg = "permute_structure must be of {'multilevel'}"
+#             raise ValueError(msg)
         
-        # permv = self.rngs[index].permutation(np.arange(len(v)))
-        # permv = self.rngs[index].permutation(v)
-        order = self._within_permute(index)
-        permv = v[order]
-        order = self._across_permute(index)
-        permv = permv[order]
+        permv = self.rngs[index].permutation(np.arange(len(v)))
+        permv = self.rngs[index].permutation(v)
 
         # calculate permuted stats, store in null distribution
-        permv_dist = pairwise_distances(permv, metric="sqeuclidean") / 2
-        perm_stat = self.test._statistic(u_dist, permv_dist, )
+        permv_dist = pairwise_distances(permv, metric="sqeuclidean")
+        perm_stat = self.test._statistic(u_dist, permv_dist)
 
         return obs_stat, perm_stat
 
@@ -130,6 +96,7 @@ def _perm_test_4samp_2way(
     workers=1,
     random_state=None,
     multiway=False,
+    sim_kwargs={},
     **kwargs,
 ):
     r"""
@@ -162,7 +129,19 @@ def _perm_test_4samp_2way(
 
     # use all cores to create function that parallelizes over number of reps
     mapwrapper = MapWrapper(workers)
-    parallelp = _ParallelP_4samp_2way(test, n, epsilon1, epsilon2, effect_mask, weight, case, rngs, multiway, **kwargs)
+    parallelp = _ParallelP_4samp_2way(
+        test,
+        n,
+        epsilon1,
+        epsilon2,
+        effect_mask,
+        weight,
+        case,
+        rngs,
+        multiway,
+        sim_kwargs,
+        **kwargs
+    )
     alt_dist, null_dist = map(list, zip(*list(mapwrapper(parallelp, range(reps)))))
     alt_dist = np.array(alt_dist)
     null_dist = np.array(null_dist)
@@ -183,6 +162,7 @@ def power_4samp_2way_epsweight(
     workers=1,
     random_state=None,
     multiway=False,
+    sim_kwargs={},
     **kwargs,
 ):
     alt_dist, null_dist = _perm_test_4samp_2way(
@@ -197,6 +177,7 @@ def power_4samp_2way_epsweight(
         workers=workers,
         random_state=random_state,
         multiway=multiway,
+        sim_kwargs=sim_kwargs,
         **kwargs,
     )
     cutoff = np.sort(null_dist)[ceil(reps * (1 - alpha))]
