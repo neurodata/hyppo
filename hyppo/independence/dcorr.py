@@ -100,7 +100,7 @@ class Dcorr(IndependenceTest):
 
         IndependenceTest.__init__(self, compute_distance=compute_distance)
 
-    def _statistic(self, x, y):
+    def _statistic(self, x, y, z):
         r"""
         Helper function that calculates the Dcorr test statistic.
 
@@ -120,17 +120,24 @@ class Dcorr(IndependenceTest):
         """
         distx = x
         disty = y
+        distz = z
 
         if not self.is_distance:
             distx = self.compute_distance(x)
             disty = self.compute_distance(y)
+            if z is not None:
+                distz = self.compute_distance(z)
 
-        stat = _dcorr(distx, disty, self.bias)
+        if distz is None:
+            stat = _dcorr(distx, disty, self.bias)
+        else:
+            stat = _partial_dcorr(distx, disty, distz, self.bias)
+
         self.stat = stat
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1, auto=True, bias=False, perm_blocks=None):
+    def test(self, x, y, z=None, reps=1000, workers=1, auto=True, bias=False, perm_blocks=None):
         r"""
         Calculates the Dcorr test statistic and p-value.
 
@@ -204,12 +211,17 @@ class Dcorr(IndependenceTest):
             x, y, reps=reps, compute_distance=self.compute_distance
         )
         x, y = check_input()
+        check_input = _CheckInputs(
+            x, z, reps=reps, compute_distance=self.compute_distance
+        )
+        _, z = check_input()
         if self.is_distance:
             check_xy_distmat(x, y)
+            check_xy_distmat(x, z)
         if perm_blocks is not None:
             check_perm_blocks_dim(perm_blocks, y)
 
-        if auto and x.shape[0] > 20 and perm_blocks is None:
+        if auto and x.shape[0] > 20 and perm_blocks is None and z is None:
             stat, pvalue = chi2_approx(self._statistic, x, y)
             self.stat = stat
             self.pvalue = pvalue
@@ -218,9 +230,10 @@ class Dcorr(IndependenceTest):
             if not self.is_distance:
                 x = self.compute_distance(x, workers=workers)
                 y = self.compute_distance(y, workers=workers)
+                z = self.compute_distance(z, workers=workers)
                 self.is_distance = True
             stat, pvalue = super(Dcorr, self).test(
-                x, y, reps, workers, perm_blocks=perm_blocks
+                x, y, reps, workers, perm_blocks=perm_blocks, z=z
             )
 
         return stat, pvalue
@@ -247,6 +260,39 @@ def _center_distmat(distx, bias):  # pragma: no cover
     if not bias:
         np.fill_diagonal(cent_distx, 0)
     return cent_distx
+
+
+@njit
+def _partial_dcorr(distx, disty, distz, bias): # pragma: no cover
+    """Calculate the Partial Dcorr test statistic."""
+    # center distance matrices
+    cent_distx = _center_distmat(distx, bias)
+    cent_disty = _center_distmat(disty, bias)
+    cent_distz = _center_distmat(distz, bias)
+
+    # calculate covariances and variances with z
+    covarxz = np.sum(np.multiply(cent_distx, cent_distz.T))
+    covaryz = np.sum(np.multiply(cent_disty, cent_distz.T))
+    varz = np.sum(np.multiply(cent_distz, cent_distz.T))
+
+    # compute projections
+    projx = cent_distx - covarxz / varz * cent_distz
+    projy = cent_disty - covaryz / varz * cent_distz
+
+    # calculate covariances and variances with x,y
+    covar = np.sum(np.multiply(projx, projy.T))
+    varx = np.sum(np.multiply(projx, projx.T))
+    vary = np.sum(np.multiply(projy, projy.T))
+
+    # stat is 0 with negative variances (would make denominator undefined)
+    if varx <= 0 or vary <= 0:
+        stat = 0
+
+    # calculate generalized test statistic
+    else:
+        stat = covar / np.real(np.sqrt(varx * vary))
+
+    return stat
 
 
 @njit

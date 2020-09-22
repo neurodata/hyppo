@@ -253,7 +253,7 @@ class _PermGroups(object):
 
 
 # p-value computation
-def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None):
+def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None, **kwargs):
     if permuter is None:
         order = np.random.permutation(y.shape[0])
     else:
@@ -264,24 +264,24 @@ def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None):
     else:
         permy = y[order]
 
-    perm_stat = calc_stat(x, permy)
+    perm_stat = calc_stat(x, permy, **kwargs)
 
     return perm_stat
 
 
-def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_blocks=None):
+def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_blocks=None, **kwargs):
     """
     Calculate the p-value via permutation
     """
     # calculate observed test statistic
-    stat = calc_stat(x, y)
+    stat = calc_stat(x, y, **kwargs)
 
     # calculate null distribution
     permuter = _PermGroups(y, perm_blocks)
     null_dist = np.array(
         Parallel(n_jobs=workers)(
             [
-                delayed(_perm_stat)(calc_stat, x, y, is_distsim, permuter)
+                delayed(_perm_stat)(calc_stat, x, y, is_distsim, permuter, **kwargs)
                 for rep in range(reps)
             ]
         )

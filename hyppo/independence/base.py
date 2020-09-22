@@ -38,7 +38,7 @@ class IndependenceTest(ABC):
         """
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=1, is_distsim=True, perm_blocks=None):
+    def test(self, x, y, reps=1000, workers=1, is_distsim=True, perm_block=None, **kwargs):
         r"""
         Calulates the independence test p-value.
 
@@ -56,6 +56,8 @@ class IndependenceTest(ABC):
             recursively partition samples based on unique labels. Groups at
             each partition are exchangeable under a permutation but remain
             fixed if label is negative.
+        **kwargs : dict or list of named arguments
+            Passed to implemented `_statistic` function
 
         Returns
         -------
@@ -75,7 +77,7 @@ class IndependenceTest(ABC):
             reps=reps,
             workers=workers,
             is_distsim=is_distsim,
-            perm_blocks=perm_blocks,
+            **kwargs
         )
         self.stat = stat
         self.pvalue = pvalue
