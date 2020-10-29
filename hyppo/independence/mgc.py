@@ -142,9 +142,7 @@ class MGC(IndependenceTest):
 
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
-            mgc = multiscale_graphcorr(
-                distx, disty, compute_distance=None, reps=0
-            )
+            mgc = multiscale_graphcorr(distx, disty, compute_distance=None, reps=0)
         stat = mgc.stat
         self.stat = stat
 
@@ -233,9 +231,7 @@ class MGC(IndependenceTest):
         # scipy gives significantly faster results
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
-            _, _, mgc_dict = multiscale_graphcorr(
-                x, y, compute_distance=None, reps=0
-            )
+            _, _, mgc_dict = multiscale_graphcorr(x, y, compute_distance=None, reps=0)
         mgc_dict.pop("null_dist")
 
         stat, pvalue = super(MGC, self).test(x, y, reps, workers)
