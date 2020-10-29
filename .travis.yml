@@ -5,6 +5,9 @@ python:
 - '3.7'
 - '3.8'
 
+env:
+  - PARALLELIZE=true
+
 jobs:
   include:
   - os: windows
@@ -23,11 +26,11 @@ cache: pip
 
 install:
 - pip install -r requirements.txt
-- pip install -U pytest pytest-cov codecov pytest-xdist
+- pip install -U pytest pytest-cov codecov
 - pip install black
 
 script:
-- pytest -n auto hyppo/
+- pytest hyppo/
 - black --check --diff ./hyppo
 
 after_success:
