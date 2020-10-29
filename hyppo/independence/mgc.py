@@ -133,10 +133,17 @@ class MGC(IndependenceTest):
         stat : float
             The computed MGC statistic.
         """
+        distx = x
+        disty = y
+
+        if not self.is_distance:
+            distx = self.compute_distance(x)
+            disty = self.compute_distance(y)
+
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
             mgc = multiscale_graphcorr(
-                x, y, compute_distance=self.compute_distance, reps=0
+                distx, disty, compute_distance=None, reps=0
             )
         stat = mgc.stat
         self.stat = stat
@@ -217,23 +224,21 @@ class MGC(IndependenceTest):
 
         if self.is_distance:
             check_xy_distmat(x, y)
+        else:
+            x = self.compute_distance(x, workers=workers)
+            y = self.compute_distance(y, workers=workers)
+            self.is_distance = True
 
         # using our joblib implementation instead of multiprocessing backend in
         # scipy gives significantly faster results
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
             _, _, mgc_dict = multiscale_graphcorr(
-                x, y, compute_distance=self.compute_distance, reps=0
+                x, y, compute_distance=None, reps=0
             )
         mgc_dict.pop("null_dist")
 
-        # add this after MGC source code fix
-        # if not self.is_distance:
-        #     x = self.compute_distance(x, workers=workers)
-        #     y = self.compute_distance(y, workers=workers)
-
-        # change is_distsim to True after scipy fix
-        stat, pvalue = super(MGC, self).test(x, y, reps, workers, is_distsim=False)
+        stat, pvalue = super(MGC, self).test(x, y, reps, workers)
         self.mgc_dict = mgc_dict
 
         return stat, pvalue, mgc_dict
