@@ -26,7 +26,7 @@ cache: pip
 
 install:
 - pip install -r requirements.txt
-- pip install -U pytest pytest-cov codecov
+- pip install -U pytest pytest-cov coveralls
 - pip install black
 
 script:

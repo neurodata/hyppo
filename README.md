@@ -5,7 +5,6 @@
 [![PyPI version](https://img.shields.io/pypi/v/hyppo.svg)](https://pypi.org/project/hyppo/)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ba5c176b0b8dac1fe406/maintainability)](https://codeclimate.com/github/neurodata/hyppo/maintainability)
 [![Coverage Status](https://coveralls.io/repos/github/neurodata/hyppo/badge.svg?branch=master)](https://coveralls.io/github/neurodata/hyppo?branch=master)
-[![codecov](https://codecov.io/gh/neurodata/mgc/branch/master/graph/badge.svg)](https://codecov.io/gh/neurodata/hyppo)
 [![Build Status](https://travis-ci.org/neurodata/hyppo.svg?branch=master)](https://travis-ci.org/neurodata/hyppo)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/hyppo)
 
