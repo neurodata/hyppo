@@ -22,7 +22,6 @@ the algorithms included against each other.
 
     tutorials/independence/independence
     tutorials/independence/indep_power
-    tutorials/independence/indep_alg_speed
 
 
 *K*-sample Tests
