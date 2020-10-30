@@ -34,17 +34,7 @@ script:
 - black --check --diff ./hyppo
 
 after_success:
-- codecov
+- coveralls
 
 notifications:
 - email: false
-
-deploy:
-- provider: pypi
-  user: "sampanda501"
-  password:
-    secure: eyiTj6aiFTm4XccQSc6SF4M4Cvxk+Bg4z39tAppIqrcV9TG1406c3JXezpvrmWfJx1qXuOuruXGAD5xLHxUwKOAZk0XgPEb8P+BlQ3bPOy+wbckfq96morqABUQxD+5eQK9CDSh3GHDgRExZrYr8iiq3WX1gKEzp46mcLqU6qjpnYG1NzsfrD4E5pIKutcBGV2Sp9ylrXNvWhVufNEdGfv71M6vd+MLQXC3DvZ++YYAD86VIeBJux5j5syqrjVOaq/WD08jF3lcLkgNjd741fphIWqweB4pLvA1BPBZjIyU+ft+J0ymOlZ3U3h40H5A+bLSj3ryo6Kow6bWJdaEc98YUwvgCDb2OcqEskxFc3hKLHIZZU3B8wzrOPoSENUdJ1mjXclmcYkXK5I2oC6/qlUCV5n2nEJLrtiPGCr2vbgYusW06kVDEIo8Th0j8vgcGQDLbKL27mMQyjMubdr/5DRfgxq7KyiqpjMcEWBYO0vwSy787YIlysDSaJzdmArE6Jd4rugybIRdcDbIyaJiJoBzuQ1e26En8TmhvKkEABbzdRn7rjSqdT6b8PvFZjL2KPUJaIQ9A/VJvlxGA0MzrrEpPjMzbNc9AJUZoJpMp/EX7koHlh2M10MmyKMTTJLKPqGUpNG3gUDALtpdkE8Qd6YtgSPIjQOz+W+QPJpJwsUw=
-  on:
-    tags: true
-    repo: neurodata/hyppo
-    python: '3.7'
