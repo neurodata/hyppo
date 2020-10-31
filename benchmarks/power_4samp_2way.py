@@ -4,6 +4,7 @@ from collections import defaultdict
 from copy import deepcopy
 
 from scipy._lib._util import check_random_state, MapWrapper
+from joblib import Parallel, delayed
 from sklearn.metrics import pairwise_distances
 
 from hyppo.ksample._utils import k_sample_transform
@@ -16,6 +17,8 @@ class _ParallelP_4samp_2way(object):
     """
 
     def __init__(self, test, n, epsilon1=1, epsilon2=1, effect_mask=None, weight=0, case=1, rngs=[],  multiway=False, permute_groups=None, permute_structure='multilevel', sim_kwargs={}, **kwargs):
+        if multiway: # Provide precomputed distances, squared euclidean
+            kwargs.update({'compute_distance': False})
         self.test = test(**kwargs)
 
         self.n = n
@@ -44,13 +47,20 @@ class _ParallelP_4samp_2way(object):
         if self.multiway:
             ways = [[0,0], [0,1], [1,1], [1,0]]
             u, v = k_sample_transform(Xs, ways=ways)
+            u_dist = pairwise_distances(u, metric="euclidean")
+            v_dist = pairwise_distances(v, metric="sqeuclidean")
+            obs_stat = self.test._statistic(u_dist, v_dist)
+
+            permv = self.rngs[index].permutation(np.arange(len(v)))
+            permv_dist = v_dist[permv][:, permv]
+            perm_stat = self.test._statistic(u_dist, permv_dist)
         else:
             u, v = k_sample_transform(Xs)
+            obs_stat = self.test._statistic(u, v)
 
-        u_dist = pairwise_distances(u, metric="euclidean")
-        v_dist = pairwise_distances(v, metric="sqeuclidean")
-
-        obs_stat = self.test._statistic(u_dist, v_dist)
+            permv = self.rngs[index].permutation(np.arange(len(v)))
+            permv = v[permv]
+            perm_stat = self.test._statistic(u, permv)
 
 #        self.v_labels = np.unique(self.permute_groups[:,0], return_inverse=True)[1]
 #         if self.permute_structure == 'multilevel':
@@ -74,12 +84,12 @@ class _ParallelP_4samp_2way(object):
 #             msg = "permute_structure must be of {'multilevel'}"
 #             raise ValueError(msg)
         
-        permv = self.rngs[index].permutation(np.arange(len(v)))
-        permv = self.rngs[index].permutation(v)
+        
+        # permv = self.rngs[index].permutation(v)
 
         # calculate permuted stats, store in null distribution
-        permv_dist = pairwise_distances(permv, metric="sqeuclidean")
-        perm_stat = self.test._statistic(u_dist, permv_dist)
+        # permv_dist = pairwise_distances(permv, metric="sqeuclidean")
+        
 
         return obs_stat, perm_stat
 
@@ -142,6 +152,7 @@ def _perm_test_4samp_2way(
         sim_kwargs,
         **kwargs
     )
+    # alt_dist, null_dist = zip(*Parallel(n_jobs=workers)(delayed(parallelp)(i) for i in range(reps)))
     alt_dist, null_dist = map(list, zip(*list(mapwrapper(parallelp, range(reps)))))
     alt_dist = np.array(alt_dist)
     null_dist = np.array(null_dist)

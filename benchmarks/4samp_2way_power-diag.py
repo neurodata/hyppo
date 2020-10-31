@@ -27,6 +27,36 @@ sns.set_palette(PALETTE[3:])
 
 # In[2]:
 
+from rpy2.robjects import Formula, numpy2ri
+from rpy2.robjects.packages import importr
+
+
+class Manova:
+    r"""
+    Wrapper of statsmodels MANOVA
+    """
+    def __init__(self):
+        self.stats = importr('stats')
+        self.r_base = importr('base')
+        
+        numpy2ri.activate()
+
+        self.formula = Formula('X ~ Y')
+        self.env = self.formula.environment
+
+    def _statistic(self, x, y):
+        r"""
+        Helper function to calculate the test statistic
+        """
+        self.env['Y'] = y
+        self.env['X'] = x
+
+        stat = self.r_base.summary(self.stats.manova(self.formula), test="Pillai")[3][4]
+
+        return stat
+
+# In[2]:
+
 
 MAX_EPSILON1 = 1
 MAX_EPSILON2 = 1
@@ -34,23 +64,21 @@ STEP_SIZE = 0.05
 EPSILONS1 = np.arange(0, MAX_EPSILON1 + STEP_SIZE, STEP_SIZE)
 EPSILONS2 = [0,0.1,0.2,0.3]#np.arange(0, MAX_EPSILON2 + STEP_SIZE, STEP_SIZE)
 WEIGHTS = EPSILONS1
-POWER_REPS = 5
+POWER_REPS = 10
 REPS = 1000
-n_jobs = 45
+n_jobs = -1
 
-tests = [
-    Dcorr,
+tests = [ # Second arg is multiway flag
+    (Dcorr, True),
+    (Dcorr, False),
+    (Manova, False),
 ]
 
 diag = True
 
-multiways = [
-    True,
-    False,
-]
-
 FONTSIZE = 12
 
+run = False
 plot = True
 
 
@@ -58,7 +86,7 @@ plot = True
 
 def _estimate_power(test, epsilon1, epsilon2, multiway):
     return np.mean([power_4samp_2way_epsweight(
-        test, workers=-1, epsilon1=epsilon1, epsilon2=epsilon2,
+        test, workers=1, epsilon1=epsilon1, epsilon2=epsilon2,
         reps=REPS, multiway=multiway, compute_distance=None, sim_kwargs={'diag':diag})
         for _ in range(POWER_REPS)]) 
 
@@ -66,7 +94,7 @@ def _estimate_power(test, epsilon1, epsilon2, multiway):
 def estimate_power(test, multiway):
     est_power = np.array([
         [
-            np.mean([power_4samp_2way_epsweight(test, workers=-1, epsilon1=i, epsilon2=j, reps=REPS, multiway=multiway, compute_distance=None, sim_kwargs={'diag':diag})
+            np.mean([power_4samp_2way_epsweight(test, workers=1, epsilon1=i, epsilon2=j, reps=REPS, multiway=multiway, sim_kwargs={'diag':diag})
                 for _ in range(POWER_REPS)
             ]) 
             for i in EPSILONS1
@@ -91,9 +119,10 @@ def estimate_power(test, multiway):
 #         np.savetxt('../benchmarks/4samp_2way_vs_epsilon/{}_{}_diag={}_124.csv'.format(multiway, test.__name__, diag),
 #                est_power, delimiter=',')
 
-outputs = Parallel(n_jobs=n_jobs, verbose=100)(
-    [delayed(estimate_power)(test, multiway) for test in tests for multiway in multiways]
-)
+if run:
+    outputs = Parallel(n_jobs=n_jobs, verbose=100)(
+        [delayed(estimate_power)(test, multiway) for test, multiway in tests]
+    )
 
 
 # In[3]:
@@ -140,35 +169,34 @@ def plot_power():
                     col.set_title(sim_title[j], fontsize=FONTSIZE)
                     count += 1
             else:
-                for test in tests:
-                    for multiway in multiways:
-                        power = np.genfromtxt(
-                            '../benchmarks/4samp_2way_vs_epsilon/{}_{}_diag={}.csv'.format(multiway, test.__name__, diag),
-                            delimiter=','
-                            )
+                for test, multiway in tests:
+                    power = np.genfromtxt(
+                        '../benchmarks/4samp_2way_vs_epsilon/{}_{}_diag={}.csv'.format(multiway, test.__name__, diag),
+                        delimiter=','
+                        )
 
-                        custom_color = {
-                            "Dcorr" : "#377eb8",
-                            "Hsic" : "#4daf4a",
-                            "MGC" : "#e41a1c",
-                        }
+                    custom_color = {
+                        "Dcorr" : "#377eb8",
+                        "Hsic" : "#4daf4a",
+                        "MGC" : "#e41a1c",
+                    }
+                    if multiway:
+                            label = f'Multiway {test.__name__}'
+                    else:
+                        label = f'{test.__name__}'
+                    if test.__name__ in custom_color.keys():
                         if multiway:
-                                label = f'Multiway {test.__name__}'
+                            col.plot(EPSILONS1, power[j], custom_color["MGC"], label=label, lw=2)
                         else:
-                            label = f'{test.__name__}'
-                        if test.__name__ in custom_color.keys():
-                            if multiway:#test.__name__ == "MGC":
-                                col.plot(EPSILONS1, power[j], custom_color["MGC"], label=label, lw=2)
-                            else:
-                                col.plot(EPSILONS1, power[j], custom_color[test.__name__], label=label, ls='-', lw=2)
-                        else:
-                            col.plot(EPSILONS1, power[j], label=label, lw=2)
-                        col.tick_params(labelsize=FONTSIZE)
-                        col.set_xticks([EPSILONS1[0], EPSILONS1[-1]])
-                        col.set_ylim(0, 1.05)
-                        col.set_yticks([])
-                        if j == 0:
-                            col.set_yticks([0, 1])
+                            col.plot(EPSILONS1, power[j], custom_color[test.__name__], label=label, ls='-', lw=2)
+                    else:
+                        col.plot(EPSILONS1, power[j], label=label, lw=2)
+                    col.tick_params(labelsize=FONTSIZE)
+                    col.set_xticks([EPSILONS1[0], EPSILONS1[-1]])
+                    col.set_ylim(0, 1.05)
+                    col.set_yticks([])
+                    if j == 0:
+                        col.set_yticks([0, 1])
     
     if len(row) > 1:
         fig.text(0.5, 0.05, 'Cluster Separation', ha='center', fontsize=FONTSIZE)
