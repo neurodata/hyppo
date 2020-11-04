@@ -16,7 +16,10 @@ class _ParallelP_4samp_2way(object):
     Helper function to calculate parallel power.
     """
 
-    def __init__(self, test, n, epsilon1=1, epsilon2=1, effect_mask=None, weight=0, case=1, rngs=[],  multiway=False, permute_groups=None, permute_structure='multilevel', sim_kwargs={}, **kwargs):
+    def __init__(
+        self, test, n, epsilon1=1, epsilon2=1, effect_mask=None, weight=0, case=1, rngs=[],
+        multiway=False, permute_groups=None, permute_structure='multilevel', sim_kwargs={},
+        d=2, **kwargs):
         if multiway: # Provide precomputed distances, squared euclidean
             kwargs.update({'compute_distance': False})
         self.test = test(**kwargs)
@@ -28,6 +31,7 @@ class _ParallelP_4samp_2way(object):
         self.weight = weight
         self.multiway = multiway
         self.rngs = rngs
+        self.d = d
         self.sim_kwargs = sim_kwargs
 
         # New
@@ -41,6 +45,7 @@ class _ParallelP_4samp_2way(object):
             epsilon1=self.epsilon1,
             epsilon2=self.epsilon2,
             effect_mask=self.effect_mask,
+            d=self.d,
             **self.sim_kwargs
         )
 
@@ -107,6 +112,7 @@ def _perm_test_4samp_2way(
     random_state=None,
     multiway=False,
     sim_kwargs={},
+    d=2,
     **kwargs,
 ):
     r"""
@@ -150,6 +156,7 @@ def _perm_test_4samp_2way(
         rngs,
         multiway,
         sim_kwargs,
+        d=d,
         **kwargs
     )
     # alt_dist, null_dist = zip(*Parallel(n_jobs=workers)(delayed(parallelp)(i) for i in range(reps)))
@@ -174,6 +181,7 @@ def power_4samp_2way_epsweight(
     random_state=None,
     multiway=False,
     sim_kwargs={},
+    d=2,
     **kwargs,
 ):
     alt_dist, null_dist = _perm_test_4samp_2way(
@@ -189,6 +197,7 @@ def power_4samp_2way_epsweight(
         random_state=random_state,
         multiway=multiway,
         sim_kwargs=sim_kwargs,
+        d=d,
         **kwargs,
     )
     cutoff = np.sort(null_dist)[ceil(reps * (1 - alpha))]

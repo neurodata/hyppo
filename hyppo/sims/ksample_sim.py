@@ -115,7 +115,7 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
     return x_rot, y_rot
 
 
-def rot_2samp(sim, n, p, noise=True, degree=90):
+def rot_2samp(sim, n, p, noise=True, degree=90, trans=None):
     r"""
     Rotates input simulations to produce a 2-sample simulation.
 
@@ -317,7 +317,7 @@ def gaussian_4samp(n, epsilon=1):
 
     return sims
 
-def gaussian_4samp_2way(n, epsilon1=1, epsilon2=None, effect_mask=None, diag=False):
+def gaussian_4samp_2way(n, epsilon1=1, epsilon2=None, effect_mask=None, diag=False, d=2):
     r"""
     Generates 4 Gaussians varying along 2 axes (ways)
 
@@ -336,6 +336,9 @@ def gaussian_4samp_2way(n, epsilon1=1, epsilon2=None, effect_mask=None, diag=Fal
     diag : boolean (default False)
         If true, epsilon 1 varies the gaussian on the diagonal and epsilon
         2 varies the other two gaussians
+    d : int, optional (default 2)
+        The dimensionality of the gaussians. The first two dimensions are
+        signal, the rest are N(0,1) noise.
 
     Returns
     -------
@@ -349,7 +352,7 @@ def gaussian_4samp_2way(n, epsilon1=1, epsilon2=None, effect_mask=None, diag=Fal
     >>> print(sims[0].shape, sims[1].shape, sims[2].shape, sims[3].shape)
     (100, 2) (100, 2) (100, 2) (100, 2)
     """
-    sigma = np.identity(2)
+    sigma = np.identity(d)
     if epsilon2 is None:
         epsilon2 = epsilon1
     if diag:
@@ -363,6 +366,6 @@ def gaussian_4samp_2way(n, epsilon1=1, epsilon2=None, effect_mask=None, diag=Fal
         mu2 = (np.asarray(effect_mask) != 0) * np.asarray(mu2)
 
     means = list(zip(mu1, mu2))
-    sims = [np.random.multivariate_normal(mean, sigma, n) for mean in means]
+    sims = [np.random.multivariate_normal(list(mean) + [0]*(d-2), sigma, n) for mean in means]
 
     return sims

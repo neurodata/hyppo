@@ -58,52 +58,57 @@ class Manova:
 # In[2]:
 
 
-MAX_EPSILON1 = 1
-MAX_EPSILON2 = 1
-STEP_SIZE = 0.05
-EPSILONS1 = np.arange(0, MAX_EPSILON1 + STEP_SIZE, STEP_SIZE)
+EPSILON1 = 0.5
 EPSILONS2 = [0,0.1,0.2,0.3]#np.arange(0, MAX_EPSILON2 + STEP_SIZE, STEP_SIZE)
-WEIGHTS = EPSILONS1
+WEIGHTS = [EPSILON1]
 POWER_REPS = 10
 REPS = 1000
-n_jobs = 50
-workers = 50
+DIMENSIONS = [2, 5, 10, 25, 50, 100]
+n_jobs = 45
+workers = 45
 
 tests = [ # Second arg is multiway flag
-    # (Dcorr, True),
-    # (Dcorr, False),
-    # (Manova, False),
-    (MGC, True),
+    (Dcorr, True),
+    (Dcorr, False),
+    (Manova, False),
 ]
 
 diag = True
 
 FONTSIZE = 12
 
-run = True
-plot = False
+run = False
+plot = True
 
 
 # In[71]:
 
-def _estimate_power(test, epsilon1, epsilon2, multiway):
-    return np.mean([power_4samp_2way_epsweight(
-        test, workers=1, epsilon1=epsilon1, epsilon2=epsilon2,
-        reps=REPS, multiway=multiway, compute_distance=None, sim_kwargs={'diag':diag})
-        for _ in range(POWER_REPS)]) 
+# def _estimate_power(test, epsilon1, epsilon2, multiway):
+#     return np.mean([power_4samp_2way_epsweight(
+#         test, workers=1, epsilon1=epsilon1, epsilon2=epsilon2,
+#         reps=REPS, multiway=multiway, compute_distance=None, sim_kwargs={'diag':diag})
+#         for _ in range(POWER_REPS)]) 
 
 
-def estimate_power(test, multiway):
+def estimate_power(test, multiway, n_jobs=1):
+    if test == Manova:
+        n_workers = 1
+    else:
+        n_workers = workers
     est_power = np.array([
         [
-            np.mean([power_4samp_2way_epsweight(test, workers=workers, epsilon1=i, epsilon2=j, reps=REPS, multiway=multiway, sim_kwargs={'diag':diag})
+            np.mean([power_4samp_2way_epsweight(test, workers=n_workers, epsilon1=EPSILON1, epsilon2=j, reps=REPS, multiway=multiway, sim_kwargs={'diag':diag}, d=d)
                 for _ in range(POWER_REPS)
             ]) 
-            for i in EPSILONS1
+            # np.mean(Parallel(n_jobs=n_jobs, verbose=100)[
+            #     delayed(power_4samp_2way_epsweight)(test, workers=1, epsilon1=EPSILON1, epsilon2=j, reps=REPS, multiway=multiway, sim_kwargs={'diag':diag}, d=d) \
+            #         for _ in range(POWER_REPS)]
+            #     )
+            for d in DIMENSIONS
         ]
         for j in EPSILONS2
     ])
-    np.savetxt('../benchmarks/4samp_2way_vs_epsilon/{}_{}_diag={}.csv'.format(multiway, test.__name__, diag),
+    np.savetxt('../benchmarks/4samp_2way_vs_epsilon/{}_{}_diag={}_dim.csv'.format(multiway, test.__name__, diag),
                est_power, delimiter=',')
     
     return est_power
@@ -125,6 +130,7 @@ if run:
     outputs = Parallel(n_jobs=n_jobs, verbose=100)(
         [delayed(estimate_power)(test, multiway) for test, multiway in tests]
     )
+    outputs = [estimate_power(test, multiway) for test, multiway in tests]
 
 
 # In[3]:
@@ -173,7 +179,7 @@ def plot_power():
             else:
                 for test, multiway in tests:
                     power = np.genfromtxt(
-                        '../benchmarks/4samp_2way_vs_epsilon/{}_{}_diag={}.csv'.format(multiway, test.__name__, diag),
+                        '../benchmarks/4samp_2way_vs_epsilon/{}_{}_diag={}_dim.csv'.format(multiway, test.__name__, diag),
                         delimiter=','
                         )
 
@@ -188,13 +194,13 @@ def plot_power():
                         label = f'{test.__name__}'
                     if test.__name__ in custom_color.keys():
                         if multiway:
-                            col.plot(EPSILONS1, power[j], custom_color["MGC"], label=label, lw=2)
+                            col.plot(DIMENSIONS, power[j], custom_color["MGC"], label=label, lw=2)
                         else:
-                            col.plot(EPSILONS1, power[j], custom_color[test.__name__], label=label, ls='-', lw=2)
+                            col.plot(DIMENSIONS, power[j], custom_color[test.__name__], label=label, ls='-', lw=2)
                     else:
-                        col.plot(EPSILONS1, power[j], label=label, lw=2)
+                        col.plot(DIMENSIONS, power[j], label=label, lw=2)
                     col.tick_params(labelsize=FONTSIZE)
-                    col.set_xticks([EPSILONS1[0], EPSILONS1[-1]])
+                    col.set_xticks([DIMENSIONS[0], DIMENSIONS[-1]])
                     col.set_ylim(0, 1.05)
                     col.set_yticks([])
                     if j == 0:
@@ -229,7 +235,7 @@ def plot_power():
     fig.add_artist(leg);
     for legobj in leg.legendHandles:
         legobj.set_linewidth(3)
-    plt.savefig('../benchmarks/figs/4samp_power_epsilon-diag_varying.pdf', transparent=True, bbox_inches='tight')
+    plt.savefig('../benchmarks/figs/4samp_power_epsilon-diag-dim_varying.pdf', transparent=True, bbox_inches='tight')
 
 
 # In[74]:
