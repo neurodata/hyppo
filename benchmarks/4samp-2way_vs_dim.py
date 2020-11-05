@@ -72,10 +72,11 @@ n_jobs = 45
 workers = 45
 
 tests = [ # Second arg is multiway flag
-    (Dcorr, True),
-    (Dcorr, False),
-    (Manova, False),
-    (MGC, False)
+    # (Dcorr, True),
+    # (Dcorr, False),
+    # (Manova, False),
+    # (MGC, False),
+    (MGC, True),
 ]
 
 effect_masks = [
@@ -88,8 +89,8 @@ effect_masks = [
 
 FONTSIZE = 12
 
-run = False
-plot = True
+run = True
+plot = False
 
 # In[15]:
 
@@ -202,12 +203,12 @@ def plot_power():
                     if j == 0:
                         col.set_yticks([0, 1])
     
-    fig.text(0.5, 0.05, 'Cluster Separation', ha='center', fontsize=FONTSIZE)
+    fig.text(0.5, 0.05, 'Dimension', ha='center', fontsize=FONTSIZE)
 #     fig.text(0.75, 0, 'Increasing Weight', ha='center')
     fig.text(0.1, 0.3, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE)
     fig.text(0.1, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
     
-    leg = plt.legend(bbox_to_anchor=(0.97, 0.45), bbox_transform=plt.gcf().transFigure,
+    leg = plt.legend(bbox_to_anchor=(0.98, 0.45), bbox_transform=plt.gcf().transFigure,
                      ncol=1, loc='upper center', fontsize=FONTSIZE)
     leg.get_frame().set_linewidth(0.0)
     for legobj in leg.legendHandles:
