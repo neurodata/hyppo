@@ -57,7 +57,7 @@ class Manova:
 
 # In[2]:
 
-
+NAME = '4samp-2way_vs_epsilon-diag'
 MAX_EPSILON1 = 1
 MAX_EPSILON2 = 1
 STEP_SIZE = 0.05
@@ -70,18 +70,18 @@ n_jobs = 50
 workers = 50
 
 tests = [ # Second arg is multiway flag
-    # (Dcorr, True),
-    # (Dcorr, False),
-    # (Manova, False),
-    (MGC, True),
+    (Dcorr, True),
+    (Dcorr, False),
+    (Manova, False),
+    # (MGC, True),
 ]
 
 diag = True
 
 FONTSIZE = 12
 
-run = True
-plot = False
+run = False
+plot = True
 
 
 # In[71]:
@@ -103,7 +103,7 @@ def estimate_power(test, multiway):
         ]
         for j in EPSILONS2
     ])
-    np.savetxt('../benchmarks/4samp_2way_vs_epsilon/{}_{}_diag={}.csv'.format(multiway, test.__name__, diag),
+    np.savetxt('../benchmarks/{}/{}_{}_diag={}.csv'.format(NAME, multiway, test.__name__, diag),
                est_power, delimiter=',')
     
     return est_power
@@ -111,15 +111,6 @@ def estimate_power(test, multiway):
 
 # In[72]:
 
-
-# for test in tests:
-#     for multiway in multiways:
-#         est_power = Parallel(n_jobs=n_jobs, verbose=100)(
-#             [delayed(_estimate_power)(test, epsilon1=i, epsilon2=j, multiway=multiway) for i in EPSILONS1 for j in EPSILONS2]
-#         )
-
-#         np.savetxt('../benchmarks/4samp_2way_vs_epsilon/{}_{}_diag={}_124.csv'.format(multiway, test.__name__, diag),
-#                est_power, delimiter=',')
 
 if run:
     outputs = Parallel(n_jobs=n_jobs, verbose=100)(
@@ -173,7 +164,7 @@ def plot_power():
             else:
                 for test, multiway in tests:
                     power = np.genfromtxt(
-                        '../benchmarks/4samp_2way_vs_epsilon/{}_{}_diag={}.csv'.format(multiway, test.__name__, diag),
+                        '../benchmarks/{}/{}_{}_diag={}.csv'.format(NAME, multiway, test.__name__, diag),
                         delimiter=','
                         )
 
@@ -183,16 +174,15 @@ def plot_power():
                         "MGC" : "#e41a1c",
                     }
                     if multiway:
-                            label = f'Multiway {test.__name__}'
+                        label = f'Multiway {test.__name__}'
+                        ls = '--'
                     else:
                         label = f'{test.__name__}'
+                        ls = '-'
                     if test.__name__ in custom_color.keys():
-                        if multiway:
-                            col.plot(EPSILONS1, power[j], custom_color["MGC"], label=label, lw=2)
-                        else:
-                            col.plot(EPSILONS1, power[j], custom_color[test.__name__], label=label, ls='-', lw=2)
+                        col.plot(EPSILONS1, power[j], custom_color[test.__name__], label=label, ls=ls, lw=2)
                     else:
-                        col.plot(EPSILONS1, power[j], label=label, lw=2)
+                        col.plot(EPSILONS1, power[j], label=label, lw=2, ls=ls)
                     col.tick_params(labelsize=FONTSIZE)
                     col.set_xticks([EPSILONS1[0], EPSILONS1[-1]])
                     col.set_ylim(0, 1.05)
@@ -200,22 +190,14 @@ def plot_power():
                     if j == 0:
                         col.set_yticks([0, 1])
     
-    if len(row) > 1:
-        fig.text(0.5, 0.05, 'Cluster Separation', ha='center', fontsize=FONTSIZE)
-    #     fig.text(0.75, 0, 'Increasing Weight', ha='center')
-        fig.text(0.1, 0.3, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE)
-        fig.text(0.1, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
+    fig.text(0.5, 0.05, 'Cluster Separation', ha='center', fontsize=FONTSIZE)
+#     fig.text(0.75, 0, 'Increasing Weight', ha='center')
+    fig.text(0.1, 0.3, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE)
+    fig.text(0.1, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
 
-        leg = plt.legend(bbox_to_anchor=(0.97, 0.45), bbox_transform=plt.gcf().transFigure,
-                         ncol=1, loc='upper center', fontsize=FONTSIZE)
-    else:
-        fig.text(0.5, 0, 'Cluster Separation', ha='center', fontsize=FONTSIZE)
-    #     fig.text(0.75, 0, 'Increasing Weight', ha='center')
-        fig.text(-0.05, 0.3, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE)
-        fig.text(-0.05, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
+    leg = plt.legend(bbox_to_anchor=(0.98, 0.45), bbox_transform=plt.gcf().transFigure,
+                        ncol=1, loc='upper center', fontsize=FONTSIZE, handlelength=3)
 
-        leg = plt.legend(bbox_to_anchor=(1.5, 0.45), bbox_transform=plt.gcf().transFigure,
-                         ncol=1, loc='upper center', fontsize=FONTSIZE)
     leg.get_frame().set_linewidth(0.0)
     for legobj in leg.legendHandles:
         legobj.set_linewidth(5.0)
@@ -229,7 +211,7 @@ def plot_power():
     fig.add_artist(leg);
     for legobj in leg.legendHandles:
         legobj.set_linewidth(3)
-    plt.savefig('../benchmarks/figs/4samp_power_epsilon_diag.pdf', transparent=True, bbox_inches='tight')
+    plt.savefig(f'../benchmarks/figs/{NAME}.pdf', transparent=True, bbox_inches='tight')
 
 
 # In[74]:

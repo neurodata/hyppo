@@ -210,7 +210,7 @@ def plot_power():
     fig.text(0.1, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
     
     leg = plt.legend(bbox_to_anchor=(0.97, 0.45), bbox_transform=plt.gcf().transFigure,
-                     ncol=1, loc='upper center', fontsize=FONTSIZE)
+                     ncol=1, loc='upper center', fontsize=FONTSIZE, handlelength=3)
     leg.get_frame().set_linewidth(0.0)
     for legobj in leg.legendHandles:
         legobj.set_linewidth(5.0)
