@@ -235,7 +235,7 @@ def plot_power():
     fig.add_artist(leg);
     for legobj in leg.legendHandles:
         legobj.set_linewidth(3)
-    plt.savefig('../benchmarks/figs/4samp_power_epsilon-diag-dim_varying.pdf', transparent=True, bbox_inches='tight')
+    plt.savefig('../benchmarks/figs/4samp_2way_power_dimension_diag.pdf', transparent=True, bbox_inches='tight')
 
 
 # In[74]:

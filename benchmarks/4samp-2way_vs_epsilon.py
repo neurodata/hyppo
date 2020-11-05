@@ -20,9 +20,10 @@ from hyppo.sims import gaussian_4samp_2way
 from hyppo.independence import MGC, Dcorr
 
 import seaborn as sns
-sns.set(color_codes=True, style='white', context='talk', font_scale=2)
+sns.set(color_codes=True, style='white', context='talk', font_scale=1)
 PALETTE = sns.color_palette("Set1")
 sns.set_palette(PALETTE[3:])
+np.set_printoptions(precision=3)
 
 
 # In[2]:
@@ -57,92 +58,91 @@ class Manova:
 
 # In[2]:
 
-
+NAME = '4samp-2way_vs_epsilon'
 MAX_EPSILON1 = 1
 MAX_EPSILON2 = 1
 STEP_SIZE = 0.05
 EPSILONS1 = np.arange(0, MAX_EPSILON1 + STEP_SIZE, STEP_SIZE)
-EPSILONS2 = [0,0.1,0.2,0.3]#np.arange(0, MAX_EPSILON2 + STEP_SIZE, STEP_SIZE)
+EPSILONS2 = [None]
 WEIGHTS = EPSILONS1
-POWER_REPS = 10
+POWER_REPS = 5
 REPS = 1000
-n_jobs = 50
-workers = 50
+n_jobs = 45
+workers = 45
 
 tests = [ # Second arg is multiway flag
-    # (Dcorr, True),
-    # (Dcorr, False),
-    # (Manova, False),
-    (MGC, True),
+    (Dcorr, True),
+    (Dcorr, False),
+    (Manova, False),
+    (MGC, False)
 ]
 
-diag = True
+effect_masks = [
+    [0,1,0,0],
+    [0,0,1,0],
+    [0,1,0,1],
+    [0,1,1,0],
+    [0,1,1,1]
+]
 
 FONTSIZE = 12
 
-run = True
-plot = False
+run = False
+plot = True
+
+# In[15]:
 
 
-# In[71]:
-
-def _estimate_power(test, epsilon1, epsilon2, multiway):
-    return np.mean([power_4samp_2way_epsweight(
-        test, workers=1, epsilon1=epsilon1, epsilon2=epsilon2,
-        reps=REPS, multiway=multiway, compute_distance=None, sim_kwargs={'diag':diag})
-        for _ in range(POWER_REPS)]) 
-
-
-def estimate_power(test, multiway):
+def estimate_power(test, multiway, effect_mask):
+    if test == Manova:
+        ws = 1
+    else:
+        ws = workers
     est_power = np.array([
         [
-            np.mean([power_4samp_2way_epsweight(test, workers=workers, epsilon1=i, epsilon2=j, reps=REPS, multiway=multiway, sim_kwargs={'diag':diag})
+            np.mean([power_4samp_2way_epsweight(test, workers=ws, epsilon1=i, effect_mask=effect_mask, epsilon2=j, reps=REPS, multiway=multiway)
                 for _ in range(POWER_REPS)
             ]) 
             for i in EPSILONS1
         ]
         for j in EPSILONS2
     ])
-    np.savetxt('../benchmarks/4samp_2way_vs_epsilon/{}_{}_diag={}.csv'.format(multiway, test.__name__, diag),
+    if not os.path.exists(f'../benchmarks/{NAME}/'):
+        os.makedirs(f'../benchmarks/{NAME}/')
+    np.savetxt('../benchmarks/{}/{}_{}_{}.csv'.format(NAME, multiway, test.__name__, "".join([str(em) for em in effect_mask])),
                est_power, delimiter=',')
     
     return est_power
 
 
-# In[72]:
+# In[16]:
 
-
-# for test in tests:
-#     for multiway in multiways:
-#         est_power = Parallel(n_jobs=n_jobs, verbose=100)(
-#             [delayed(_estimate_power)(test, epsilon1=i, epsilon2=j, multiway=multiway) for i in EPSILONS1 for j in EPSILONS2]
-#         )
-
-#         np.savetxt('../benchmarks/4samp_2way_vs_epsilon/{}_{}_diag={}_124.csv'.format(multiway, test.__name__, diag),
-#                est_power, delimiter=',')
 
 if run:
     outputs = Parallel(n_jobs=n_jobs, verbose=100)(
-        [delayed(estimate_power)(test, multiway) for test, multiway in tests]
+        [delayed(estimate_power)(test, multiway, effect_mask)
+            for test, multiway in tests
+            for effect_mask in effect_masks]
     )
 
 
-# In[3]:
+# In[5]:
 
 
 FONTSIZE = 12
 
 def plot_power():
-    fig, ax = plt.subplots(nrows=2, ncols=len(EPSILONS2), figsize=(16,8))
+    fig, ax = plt.subplots(nrows=2, ncols=len(effect_masks), figsize=(16,10))
     
     sim_title = [
-        f"Four Gaussians (off-diag {ep2})" for ep2 in EPSILONS2
+        f"Four Gaussians {''.join([str(em) for em in effect_mask])}" for effect_mask in effect_masks
     ]
+    
     ax = np.array([ax]).reshape((2,-1))
     for i, row in enumerate(ax):
         for j, col in enumerate(row):
             if i == 0:
-                sims = gaussian_4samp_2way(100, epsilon1=4, epsilon2=EPSILONS2[j]*4, diag=True)
+                sims = gaussian_4samp_2way(100, epsilon1=4, epsilon2=None, effect_mask=effect_masks[j])
                 
                 sim_markers = [
                     "1",
@@ -173,7 +173,12 @@ def plot_power():
             else:
                 for test, multiway in tests:
                     power = np.genfromtxt(
-                        '../benchmarks/4samp_2way_vs_epsilon/{}_{}_diag={}.csv'.format(multiway, test.__name__, diag),
+                        '../benchmarks/{}/{}_{}_{}.csv'.format(
+                            NAME,
+                            multiway,
+                            test.__name__,
+                            "".join([str(em) for em in effect_masks[j]])
+                            ),
                         delimiter=','
                         )
 
@@ -184,15 +189,14 @@ def plot_power():
                     }
                     if multiway:
                             label = f'Multiway {test.__name__}'
+                            ls = '--'
                     else:
                         label = f'{test.__name__}'
+                        ls = '-'
                     if test.__name__ in custom_color.keys():
-                        if multiway:
-                            col.plot(EPSILONS1, power[j], custom_color["MGC"], label=label, lw=2)
-                        else:
-                            col.plot(EPSILONS1, power[j], custom_color[test.__name__], label=label, ls='-', lw=2)
+                        col.plot(EPSILONS1, power, custom_color[test.__name__], label=label, ls=ls, lw=3)
                     else:
-                        col.plot(EPSILONS1, power[j], label=label, lw=2)
+                        col.plot(EPSILONS1, power, label=label, lw=2, ls=ls)
                     col.tick_params(labelsize=FONTSIZE)
                     col.set_xticks([EPSILONS1[0], EPSILONS1[-1]])
                     col.set_ylim(0, 1.05)
@@ -200,40 +204,26 @@ def plot_power():
                     if j == 0:
                         col.set_yticks([0, 1])
     
-    if len(row) > 1:
-        fig.text(0.5, 0.05, 'Cluster Separation', ha='center', fontsize=FONTSIZE)
-    #     fig.text(0.75, 0, 'Increasing Weight', ha='center')
-        fig.text(0.1, 0.3, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE)
-        fig.text(0.1, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
-
-        leg = plt.legend(bbox_to_anchor=(0.97, 0.45), bbox_transform=plt.gcf().transFigure,
-                         ncol=1, loc='upper center', fontsize=FONTSIZE)
-    else:
-        fig.text(0.5, 0, 'Cluster Separation', ha='center', fontsize=FONTSIZE)
-    #     fig.text(0.75, 0, 'Increasing Weight', ha='center')
-        fig.text(-0.05, 0.3, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE)
-        fig.text(-0.05, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
-
-        leg = plt.legend(bbox_to_anchor=(1.5, 0.45), bbox_transform=plt.gcf().transFigure,
-                         ncol=1, loc='upper center', fontsize=FONTSIZE)
+    fig.text(0.5, 0.05, 'Cluster Separation', ha='center', fontsize=FONTSIZE)
+#     fig.text(0.75, 0, 'Increasing Weight', ha='center')
+    fig.text(0.1, 0.3, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE)
+    fig.text(0.1, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
+    
+    leg = plt.legend(bbox_to_anchor=(0.97, 0.45), bbox_transform=plt.gcf().transFigure,
+                     ncol=1, loc='upper center', fontsize=FONTSIZE)
     leg.get_frame().set_linewidth(0.0)
     for legobj in leg.legendHandles:
         legobj.set_linewidth(5.0)
     plt.subplots_adjust(hspace=.20)
-    if len(row) > 1:
-        leg = Legend(fig, scatters, ['Cluster 1', 'Cluster 2', 'Cluster 3', 'Cluster 4'], loc='upper left', frameon=False, ncol=1,
+    leg = Legend(fig, scatters, ['Cluster 1', 'Cluster 2', 'Cluster 3', 'Cluster 4'], loc='upper left', frameon=False, ncol=1,
                 bbox_transform=plt.gcf().transFigure, bbox_to_anchor=(0.9, 0.9), fontsize=FONTSIZE)
-    else:
-        leg = Legend(fig, scatters, ['Cluster 1', 'Cluster 2', 'Cluster 3', 'Cluster 4'], loc='upper center', frameon=False, ncol=1,
-                    bbox_transform=plt.gcf().transFigure, bbox_to_anchor=(1.3, 0.9), fontsize=FONTSIZE)
     fig.add_artist(leg);
     for legobj in leg.legendHandles:
         legobj.set_linewidth(3)
-    plt.savefig('../benchmarks/figs/4samp_power_epsilon-diag_varying.pdf', transparent=True, bbox_inches='tight')
+    plt.savefig(f'../benchmarks/figs/{NAME}.pdf', transparent=True, bbox_inches='tight')
 
 
-# In[74]:
+# In[6]:
 
 if plot:
     plot_power()
-
