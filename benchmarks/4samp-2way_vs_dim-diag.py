@@ -193,7 +193,7 @@ def plot_power():
                     if j == 0:
                         col.set_yticks([0, 1])
     
-    fig.text(0.5, 0.05, 'Cluster Separation', ha='center', fontsize=FONTSIZE)
+    fig.text(0.5, 0.05, 'Dimension', ha='center', fontsize=FONTSIZE)
 #     fig.text(0.75, 0, 'Increasing Weight', ha='center')
     fig.text(0.1, 0.3, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE)
     fig.text(0.1, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
