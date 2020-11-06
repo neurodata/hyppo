@@ -74,7 +74,8 @@ tests = [ # Second arg is multiway flag
     (Dcorr, True),
     (Dcorr, False),
     (Manova, False),
-    (MGC, False)
+    (MGC, False),
+    (MGC, True),
 ]
 
 effect_masks = [

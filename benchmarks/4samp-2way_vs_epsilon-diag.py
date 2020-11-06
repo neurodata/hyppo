@@ -73,7 +73,8 @@ tests = [ # Second arg is multiway flag
     (Dcorr, True),
     (Dcorr, False),
     (Manova, False),
-    # (MGC, True),
+    (MGC, False),
+    (MGC, True),
 ]
 
 diag = True
