@@ -12,7 +12,7 @@ class _ParallelP3Samp(object):
     Helper function to calculate parallel power.
     """
 
-    def __init__(self, test, n, epsilon=1, weight=0, case=1, rngs=[]):
+    def __init__(self, test, n, epsilon=1, weight=0, case=1, rngs=[], d=2):
         self.test = test()
 
         self.n = n
@@ -20,12 +20,13 @@ class _ParallelP3Samp(object):
         self.weight = weight
         self.case = case
         self.rngs = rngs
+        self.d = d
 
     def __call__(self, index):
         if self.case not in [4, 5]:
-            x, y, z = gaussian_3samp(self.n, epsilon=self.epsilon, case=self.case)
+            x, y, z = gaussian_3samp(self.n, epsilon=self.epsilon, case=self.case, d=self.d)
         else:
-            x, y, z = gaussian_3samp(self.n, weight=self.weight, case=self.case)
+            x, y, z = gaussian_3samp(self.n, weight=self.weight, case=self.case, d=self.d)
         u, v = k_sample_transform([x, y, z])
 
         obs_stat = self.test._statistic(u, v)
@@ -39,7 +40,7 @@ class _ParallelP3Samp(object):
 
 
 def _perm_test_3samp(
-    test, n=100, epsilon=1, weight=0, case=1, reps=1000, workers=1, random_state=None
+    test, n=100, epsilon=1, weight=0, case=1, reps=1000, workers=1, random_state=None, d=2,
 ):
     r"""
     Helper function that calculates the statistical.
@@ -56,6 +57,9 @@ def _perm_test_3samp(
     workers : int, optional (default: -1)
         The number of cores to parallelize the p-value computation over.
         Supply -1 to use all cores available to the Process.
+    d : int, optional (default 2)
+        The number of ds in the simulation. The first two are signal,
+        the rest are noise.
 
     Returns
     -------
@@ -71,7 +75,7 @@ def _perm_test_3samp(
 
     # use all cores to create function that parallelizes over number of reps
     mapwrapper = MapWrapper(workers)
-    parallelp = _ParallelP3Samp(test, n, epsilon, weight, case, rngs)
+    parallelp = _ParallelP3Samp(test, n, epsilon, weight, case, rngs, d)
     alt_dist, null_dist = map(list, zip(*list(mapwrapper(parallelp, range(reps)))))
     alt_dist = np.array(alt_dist)
     null_dist = np.array(null_dist)
@@ -89,6 +93,7 @@ def power_3samp_epsweight(
     reps=1000,
     workers=1,
     random_state=None,
+    d=2,
 ):
     alt_dist, null_dist = _perm_test_3samp(
         test,
@@ -99,6 +104,7 @@ def power_3samp_epsweight(
         reps=reps,
         workers=workers,
         random_state=random_state,
+        d=d,
     )
     cutoff = np.sort(null_dist)[ceil(reps * (1 - alpha))]
     empirical_power = (alt_dist >= cutoff).sum() / reps

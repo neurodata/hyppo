@@ -218,7 +218,7 @@ def trans_2samp(sim, n, p, noise=True, degree=90, trans=0.3):
     return samp1, samp2
 
 
-def gaussian_3samp(n, epsilon=1, weight=0, case=1):
+def gaussian_3samp(n, epsilon=1, weight=0, case=1, d=2):
     r"""
     Generates 3 sample of gaussians corresponding to 5 cases.
 
@@ -233,6 +233,9 @@ def gaussian_3samp(n, epsilon=1, weight=0, case=1):
         (used in case 4 and 5 to produce a mixture of Gaussians)
     case : {1, 2, 3, 4, 5}, (default: 1)
         The case in which to evaluate statistical power for each test.
+    d : int, optional (default 2)
+        The dimensionality of the gaussians. The first two dimensions are
+        signal, the rest are mean zero, variance sigma^2 noise.
 
     Returns
     -------
@@ -252,7 +255,7 @@ def gaussian_3samp(n, epsilon=1, weight=0, case=1):
         case = 2
     elif old_case == 5:
         case = 3
-    sigma = np.identity(2)
+    sigma = np.identity(d)
     mu1 = [0] * 3
     mu2 = [0] * 3
 
@@ -271,15 +274,15 @@ def gaussian_3samp(n, epsilon=1, weight=0, case=1):
         raise ValueError("Not valid case, must be 1, 2, or 3")
 
     means = list(zip(mu1, mu2))
-    sims = [np.random.multivariate_normal(mean, sigma, n) for mean in means]
+    sims = [np.random.multivariate_normal(list(mean) + [0]*(d-2), sigma, n) for mean in means]
     if old_case == 4:
         sims[-1] = (1 - weight) * sims[-1] + weight * np.random.multivariate_normal(
-            means[-1], sigma * 1.5, n
+            list(means[-1]) + [0]*(d-2), sigma * 1.5, n
         )
     elif old_case == 5:
         sims = [
             (1 - weight) * sims[i]
-            + weight * np.random.multivariate_normal(means[i], sigma * 1.5, n)
+            + weight * np.random.multivariate_normal(list(means[i]) + [0]*(d-2), sigma * 1.5, n)
             for i in range(len(sims))
         ]
 
