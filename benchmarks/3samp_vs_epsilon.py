@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # 3 Sample Tests Power over Increasing Dimension
+# # 3 Sample Tests Power over Increasing Epsilon
 
 # These are same useful functions to import. Since we are calculating the statistical power over all the tests for all the simulations, we can just use a wild card import from the respective modules
 
@@ -88,19 +88,15 @@ class Manova:
 
 # In[7]:
 
-NAME = '3samp_vs_dim'
-MAX_EPSILONS1 = 1
+
+MAX_EPSILON = 1
 STEP_SIZE = 0.05
-EPSILON1 = 0.5
-EPSILONS2 = [None]
-DIMENSIONS = [2, 5, 10, 25, 50, 75, 100]
+EPSILONS = np.arange(0, MAX_EPSILON + STEP_SIZE, STEP_SIZE)
+WEIGHTS = EPSILONS
 POWER_REPS = 5
-REPS = 1000
 n_jobs = 45
 workers = 45
 ONEWAY_EPSILON = 0.3
-
-FONTSIZE = 12
 
 run = False#True#
 plot = True#False#
@@ -108,27 +104,26 @@ plot = True#False#
 # In[8]:
 
 
+cases = [
+    1,
+    2,
+    3,
+#     4,
+#     5
+    6, # multiway
+]
+
 tests = [
     MGC,
     Dcorr,
     Hsic,
-    # PyManova,
+# PyManova,
     Manova
 ]
 
 multiway_tests = [
     Dcorr
 ]
-
-cases = [
-    1,
-    2,
-    3,
-    # 4,
-    # 5,
-    6,
-]
-
 
 # The following function calculates the estimated power ``POWER_REPS`` number off times and averages them. It does this iterating over the number of sample sizes.
 # 
@@ -143,22 +138,24 @@ def estimate_power(case, test, multiway=False):
     else:
         ws = workers
 
-    est_power = np.array([
-        np.mean([power_3samp_epsweight(test, case=case, epsilon=EPSILON1, workers=ws, d=d, c=ONEWAY_EPSILON, multiway=multiway)
-        for _ in range(POWER_REPS)]) for d in DIMENSIONS])
-
-    if not os.path.exists(f'../benchmarks/{NAME}/'):
-        os.makedirs(f'../benchmarks/{NAME}/')
+    if case in [4, 5]:
+        est_power = np.array([np.mean([power_3samp_epsweight(test, case=case, weight=i, workers=ws, c=ONEWAY_EPSILON, multiway=multiway) for _ in range(POWER_REPS)])
+                              for i in WEIGHTS])
+    else:
+        est_power = np.array([np.mean([power_3samp_epsweight(test, case=case, epsilon=i, workers=ws, c=ONEWAY_EPSILON, multiway=multiway) for _ in range(POWER_REPS)])
+                              for i in EPSILONS])
     if multiway:
-        np.savetxt('../benchmarks/{}/{}_{}_multiway.csv'.format(NAME, case, test.__name__),
+        np.savetxt('../benchmarks/3samp_vs_epsilon/{}_{}_multiway.csv'.format(case, test.__name__),
                 est_power, delimiter=',')
     else:
-        np.savetxt('../benchmarks/{}/{}_{}.csv'.format(NAME, case, test.__name__),
-                est_power, delimiter=',')
+        np.savetxt('../benchmarks/3samp_vs_epsilon/{}_{}.csv'.format(case, test.__name__),
+               est_power, delimiter=',')
+    
     return est_power
 
 
 # In[ ]:
+
 
 if run:
     outputs = Parallel(n_jobs=n_jobs, verbose=100)(
@@ -166,7 +163,7 @@ if run:
     )
 
     outputs = Parallel(n_jobs=n_jobs, verbose=100)(
-        [delayed(estimate_power)(case, test, multiway=True) for case in [6] for test in multiway_tests]
+        [delayed(estimate_power)(case, test, multiway=True) for case in cases for test in multiway_tests]
     )
 
 
@@ -184,6 +181,8 @@ def plot_power():
         "None Different",
         "One Different",
         "All Different",
+        # "One Not Gaussian",
+        # "None Gaussian",
         "More Different",
     ]
     
@@ -225,35 +224,37 @@ def plot_power():
                         "Hsic" : "#4daf4a",
                         "MGC" : "#e41a1c",
                     }
+
                     for multiway in [True, False]:
                         if multiway and (test not in multiway_tests or case not in [6]):
                             continue
                         elif multiway:
-                            power = np.genfromtxt('../benchmarks/{}/{}_{}_multiway.csv'.format(NAME, case, test.__name__),
-                                                delimiter=',')
+                            power = np.genfromtxt('../benchmarks/3samp_vs_epsilon/{}_{}_multiway.csv'.format(case, test.__name__),
+                                          delimiter=',')
+
                             ls = '--'
                             label = f'Multiway {test.__name__}'
                         else:
-                            power = np.genfromtxt('../benchmarks/{}/{}_{}.csv'.format(NAME, case, test.__name__),
-                                                delimiter=',')
+                            power = np.genfromtxt('../benchmarks/3samp_vs_epsilon/{}_{}.csv'.format(case, test.__name__),
+                                          delimiter=',')
+
                             ls = '-'
                             label = test.__name__
-                        
                         if test.__name__ in custom_color.keys():
                             if test.__name__ == "MGC":
-                                col.plot(DIMENSIONS, power, custom_color[test.__name__], label=label, lw=3, ls=ls)
+                                col.plot(EPSILONS, power, custom_color[test.__name__], label=label, lw=3, ls=ls)
                             else:
-                                col.plot(DIMENSIONS, power, custom_color[test.__name__], label=label, lw=2, ls=ls)
+                                col.plot(EPSILONS, power, custom_color[test.__name__], label=label, lw=2, ls=ls)
                         else:
-                            col.plot(DIMENSIONS, power, label=label, lw=2, ls=ls)
-                        col.tick_params(labelsize=FONTSIZE)
-                        col.set_xticks([DIMENSIONS[0], DIMENSIONS[-1]])
-                        col.set_ylim(0, 1.05)
-                        col.set_yticks([])
-                        if j == 0:
-                            col.set_yticks([0, 1])
+                            col.plot(EPSILONS, power, label=label, lw=2, ls=ls)
+                    col.tick_params(labelsize=FONTSIZE)
+                    col.set_xticks([EPSILONS[0], EPSILONS[-1]])
+                    col.set_ylim(0, 1.05)
+                    col.set_yticks([])
+                    if j == 0:
+                        col.set_yticks([0, 1])
     
-    fig.text(0.5, 0, 'Dimension', ha='center', fontsize=FONTSIZE)
+    fig.text(0.5, 0, 'Cluster Separation', ha='center', fontsize=FONTSIZE)
 #     fig.text(0.75, 0, 'Increasing Weight', ha='center')
     fig.text(0.07, 0.3, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE)
     fig.text(0.07, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
@@ -269,7 +270,7 @@ def plot_power():
     fig.add_artist(leg);
     for legobj in leg.legendHandles:
         legobj.set_linewidth(3.0)
-    plt.savefig(f'../benchmarks/figs/{NAME}.pdf', transparent=True, bbox_inches='tight')
+    plt.savefig('../benchmarks/figs/3samp_power_epsilon.pdf', transparent=True, bbox_inches='tight')
 
 
 # In[10]:

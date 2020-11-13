@@ -218,7 +218,7 @@ def trans_2samp(sim, n, p, noise=True, degree=90, trans=0.3):
     return samp1, samp2
 
 
-def gaussian_3samp(n, epsilon=1, weight=0, case=1, d=2):
+def gaussian_3samp(n, epsilon=1, weight=0, case=1, d=2, c=0.3):
     r"""
     Generates 3 sample of gaussians corresponding to 5 cases.
 
@@ -236,6 +236,8 @@ def gaussian_3samp(n, epsilon=1, weight=0, case=1, d=2):
     d : int, optional (default 2)
         The dimensionality of the gaussians. The first two dimensions are
         signal, the rest are mean zero, variance sigma^2 noise.
+    c : int, optional (default 0.2)
+        The one-way epsilon in case 6.
 
     Returns
     -------
@@ -270,6 +272,9 @@ def gaussian_3samp(n, epsilon=1, weight=0, case=1, d=2):
             -(np.sqrt(3) / 6) * epsilon,
             -(np.sqrt(3) / 6) * epsilon,
         ]
+    elif case == 6: # Multiway
+        mu1 = [0, 0, epsilon]
+        mu2 = [0, c, epsilon]
     else:
         raise ValueError("Not valid case, must be 1, 2, or 3")
 
