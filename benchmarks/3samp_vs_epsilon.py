@@ -96,24 +96,15 @@ WEIGHTS = EPSILONS
 POWER_REPS = 5
 n_jobs = 45
 workers = 45
-ONEWAY_EPSILON = 0.3
+ONEWAY_EPSILON = 0.2
 
-run = False#True#
-plot = True#False#
+run = True#False#
+plot = False#True#
 
 # In[8]:
 
-
-cases = [
-    1,
-    2,
-    3,
-#     4,
-#     5
-    6, # multiway
-]
-
 tests = [
+    Dcorr,
     MGC,
     Dcorr,
     Hsic,
@@ -122,7 +113,22 @@ tests = [
 ]
 
 multiway_tests = [
-    Dcorr
+    Dcorr,
+    # MGC,
+]
+
+cases = [
+    # 1,
+    # 2,
+    # 3,
+    # 4,
+    # 5,
+    6,
+]
+
+multiway_cases = [
+    # 1,
+    6,
 ]
 
 # The following function calculates the estimated power ``POWER_REPS`` number off times and averages them. It does this iterating over the number of sample sizes.
@@ -163,7 +169,7 @@ if run:
     )
 
     outputs = Parallel(n_jobs=n_jobs, verbose=100)(
-        [delayed(estimate_power)(case, test, multiway=True) for case in cases for test in multiway_tests]
+        [delayed(estimate_power)(case, test, multiway=True) for case in multiway_cases for test in multiway_tests]
     )
 
 

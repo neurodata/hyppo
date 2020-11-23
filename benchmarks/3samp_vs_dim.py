@@ -91,19 +91,19 @@ class Manova:
 NAME = '3samp_vs_dim'
 MAX_EPSILONS1 = 1
 STEP_SIZE = 0.05
-EPSILON1 = 0.5
+EPSILON1 = 0.7
 EPSILONS2 = [None]
 DIMENSIONS = [2, 5, 10, 25, 50, 75, 100]
 POWER_REPS = 5
 REPS = 1000
 n_jobs = 45
 workers = 45
-ONEWAY_EPSILON = 0.3
+ONEWAY_EPSILON = 0.2
 
 FONTSIZE = 12
 
-run = False#True#
-plot = True#False#
+run = True#False#
+plot = False#True#
 
 # In[8]:
 
@@ -117,15 +117,21 @@ tests = [
 ]
 
 multiway_tests = [
-    Dcorr
+    Dcorr,
+    # MGC,
 ]
 
 cases = [
-    1,
-    2,
-    3,
+    # 1,
+    # 2,
+    # 3,
     # 4,
     # 5,
+    6,
+]
+
+multiway_cases = [
+    # 1,
     6,
 ]
 
@@ -166,7 +172,7 @@ if run:
     )
 
     outputs = Parallel(n_jobs=n_jobs, verbose=100)(
-        [delayed(estimate_power)(case, test, multiway=True) for case in [6] for test in multiway_tests]
+        [delayed(estimate_power)(case, test, multiway=True) for case in multiway_cases for test in multiway_tests]
     )
 
 
@@ -189,7 +195,7 @@ def plot_power():
     
     for i, row in enumerate(ax):
         for j, col in enumerate(row):
-            case = cases[j]
+            case = sorted(list(set(cases+multiway_cases)))[j]
             if i == 0:
                 sims = gaussian_3samp(100, epsilon=4, weight=0.9, case=case, c=2)
                 
@@ -225,8 +231,8 @@ def plot_power():
                         "Hsic" : "#4daf4a",
                         "MGC" : "#e41a1c",
                     }
-                    for multiway in [True, False]:
-                        if multiway and (test not in multiway_tests or case not in [6]):
+                    for multiway in [False, True]:
+                        if multiway and (test not in multiway_tests or case not in multiway_cases):
                             continue
                         elif multiway:
                             power = np.genfromtxt('../benchmarks/{}/{}_{}_multiway.csv'.format(NAME, case, test.__name__),
