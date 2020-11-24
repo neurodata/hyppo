@@ -36,7 +36,7 @@ class _ParallelP3Samp(object):
             x, y, z = gaussian_3samp(self.n, weight=self.weight, case=self.case, d=self.d, c=self.c)
         
         if self.multiway:
-            ways = [[0,0], [0,1], [1,1]]
+            ways = [[0,0], [0,1], [1,0]]
             u, v = k_sample_transform([x, y, z], ways=ways)
             u = pairwise_distances(u, metric="euclidean")
             v = pairwise_distances(v, metric="sqeuclidean")

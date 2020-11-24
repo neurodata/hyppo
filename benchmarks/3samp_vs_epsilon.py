@@ -89,14 +89,15 @@ class Manova:
 # In[7]:
 
 
-MAX_EPSILON = 1
+MAX_EPSILON = 0.6
 STEP_SIZE = 0.05
 EPSILONS = np.arange(0, MAX_EPSILON + STEP_SIZE, STEP_SIZE)
 WEIGHTS = EPSILONS
 POWER_REPS = 5
-n_jobs = 45
-workers = 45
-ONEWAY_EPSILON = 0.2
+REPS = 1000
+n_jobs = 5
+workers = 5
+ONEWAY_EPSILON = 0.3
 
 run = True#False#
 plot = False#True#
@@ -104,17 +105,16 @@ plot = False#True#
 # In[8]:
 
 tests = [
-    Dcorr,
-    MGC,
-    Dcorr,
-    Hsic,
-# PyManova,
-    Manova
+    # Dcorr,
+#     MGC,
+#     Hsic,
+# # PyManova,
+#     Manova
 ]
 
 multiway_tests = [
-    Dcorr,
-    # MGC,
+    # Dcorr,
+    MGC,
 ]
 
 cases = [
@@ -145,11 +145,13 @@ def estimate_power(case, test, multiway=False):
         ws = workers
 
     if case in [4, 5]:
-        est_power = np.array([np.mean([power_3samp_epsweight(test, case=case, weight=i, workers=ws, c=ONEWAY_EPSILON, multiway=multiway) for _ in range(POWER_REPS)])
-                              for i in WEIGHTS])
+        est_power = np.array([np.mean([power_3samp_epsweight(
+            test, case=case, weight=i, workers=ws, c=ONEWAY_EPSILON,
+            multiway=multiway, reps=REPS) for _ in range(POWER_REPS)]) for i in WEIGHTS])
     else:
-        est_power = np.array([np.mean([power_3samp_epsweight(test, case=case, epsilon=i, workers=ws, c=ONEWAY_EPSILON, multiway=multiway) for _ in range(POWER_REPS)])
-                              for i in EPSILONS])
+        est_power = np.array([np.mean([power_3samp_epsweight(
+            test, case=case, epsilon=i, workers=ws, c=ONEWAY_EPSILON,
+            multiway=multiway, reps=REPS) for _ in range(POWER_REPS)]) for i in EPSILONS])
     if multiway:
         np.savetxt('../benchmarks/3samp_vs_epsilon/{}_{}_multiway.csv'.format(case, test.__name__),
                 est_power, delimiter=',')

@@ -89,16 +89,14 @@ class Manova:
 # In[7]:
 
 NAME = '3samp_vs_dim'
-MAX_EPSILONS1 = 1
 STEP_SIZE = 0.05
-EPSILON1 = 0.7
-EPSILONS2 = [None]
+EPSILON1 = 0.6
 DIMENSIONS = [2, 5, 10, 25, 50, 75, 100]
 POWER_REPS = 5
 REPS = 1000
-n_jobs = 45
-workers = 45
-ONEWAY_EPSILON = 0.2
+n_jobs = 5
+workers = 5
+ONEWAY_EPSILON = 0.3
 
 FONTSIZE = 12
 
@@ -110,14 +108,14 @@ plot = False#True#
 
 tests = [
     MGC,
-    Dcorr,
+    # Dcorr,
     Hsic,
     # PyManova,
     Manova
 ]
 
 multiway_tests = [
-    Dcorr,
+    # Dcorr,
     # MGC,
 ]
 
@@ -150,7 +148,7 @@ def estimate_power(case, test, multiway=False):
         ws = workers
 
     est_power = np.array([
-        np.mean([power_3samp_epsweight(test, case=case, epsilon=EPSILON1, workers=ws, d=d, c=ONEWAY_EPSILON, multiway=multiway)
+        np.mean([power_3samp_epsweight(test, case=case, epsilon=EPSILON1, workers=ws, d=d, c=ONEWAY_EPSILON, multiway=multiway, reps=REPS)
         for _ in range(POWER_REPS)]) for d in DIMENSIONS])
 
     if not os.path.exists(f'../benchmarks/{NAME}/'):

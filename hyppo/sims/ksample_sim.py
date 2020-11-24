@@ -218,7 +218,7 @@ def trans_2samp(sim, n, p, noise=True, degree=90, trans=0.3):
     return samp1, samp2
 
 
-def gaussian_3samp(n, epsilon=1, weight=0, case=1, d=2, c=0.3):
+def gaussian_3samp(n, epsilon=1, weight=0, case=1, d=2, c=0.5):
     r"""
     Generates 3 sample of gaussians corresponding to 5 cases.
 
@@ -273,10 +273,15 @@ def gaussian_3samp(n, epsilon=1, weight=0, case=1, d=2, c=0.3):
             -(np.sqrt(3) / 6) * epsilon,
         ]
     elif case == 6: # Multiway
-        mu1 = [0, 0, epsilon]
-        mu2 = [0, c, epsilon]
+        if epsilon > 2*c:
+            assert (epsilon - 2*c) < 1e-6
+            a = 0
+        else:
+            a = np.sqrt(c**2 - (epsilon / 2)**2)
+        mu1 = [0, -epsilon / 2, epsilon / 2]
+        mu2 = [0, -a, -a]
     else:
-        raise ValueError("Not valid case, must be 1, 2, or 3")
+        raise ValueError("Not valid case, must be 1, 2, or 3, or 6")
 
     means = list(zip(mu1, mu2))
     sims = [np.random.multivariate_normal(list(mean) + [0]*(d-2), sigma, n) for mean in means]
