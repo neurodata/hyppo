@@ -89,7 +89,7 @@ class Manova:
 # In[7]:
 
 
-MAX_EPSILON = 0.6
+MAX_EPSILON = 1.0# 0.6
 STEP_SIZE = 0.05
 EPSILONS = np.arange(0, MAX_EPSILON + STEP_SIZE, STEP_SIZE)
 WEIGHTS = EPSILONS
@@ -99,36 +99,36 @@ n_jobs = 5
 workers = 5
 ONEWAY_EPSILON = 0.3
 
-run = True#False#
-plot = False#True#
+run = False#True#
+plot = True#False#
 
 # In[8]:
 
 tests = [
-    # Dcorr,
-#     MGC,
-#     Hsic,
-# # PyManova,
-#     Manova
+    Dcorr,
+    MGC,
+    Hsic,
+# PyManova,
+    Manova
 ]
 
 multiway_tests = [
     # Dcorr,
-    MGC,
+    # MGC,
 ]
 
 cases = [
-    # 1,
-    # 2,
-    # 3,
+    1,
+    2,
+    3,
     # 4,
     # 5,
-    6,
+    # 6,
 ]
 
 multiway_cases = [
     # 1,
-    6,
+    # 6,
 ]
 
 # The following function calculates the estimated power ``POWER_REPS`` number off times and averages them. It does this iterating over the number of sample sizes.
@@ -183,7 +183,7 @@ if run:
 FONTSIZE = 30
 
 def plot_power():
-    fig, ax = plt.subplots(nrows=2, ncols=4, figsize=(16,8))
+    fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(12,8))
     
     sim_title = [
         "None Different",
@@ -191,14 +191,14 @@ def plot_power():
         "All Different",
         # "One Not Gaussian",
         # "None Gaussian",
-        "More Different",
+        # "More Different",
     ]
     
     for i, row in enumerate(ax):
         for j, col in enumerate(row):
             case = cases[j]
             if i == 0:
-                sims = gaussian_3samp(100, epsilon=4, weight=0.9, case=case, c=2)
+                sims = gaussian_3samp(100, epsilon=4, weight=0.9, case=case)
                 
                 sim_markers = [
                     "1",
@@ -267,8 +267,8 @@ def plot_power():
     fig.text(0.07, 0.3, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE)
     fig.text(0.07, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
     
-    leg = plt.legend(bbox_to_anchor=(1.17, 0.45), bbox_transform=plt.gcf().transFigure,
-                     ncol=2, loc='upper center', fontsize=FONTSIZE)
+    leg = plt.legend(bbox_to_anchor=(1.06, 0.5), bbox_transform=plt.gcf().transFigure,
+                     ncol=1, loc='upper center', fontsize=FONTSIZE)
     leg.get_frame().set_linewidth(0.0)
     for legobj in leg.legendHandles:
         legobj.set_linewidth(5.0)
@@ -280,11 +280,12 @@ def plot_power():
         legobj.set_linewidth(3.0)
     plt.savefig('../benchmarks/figs/3samp_power_epsilon.pdf', transparent=True, bbox_inches='tight')
 
+if plot:
+    plot_power()
 
 # In[10]:
 
-if plot:
-    plot_power()
+
 
 
 # In[ ]:

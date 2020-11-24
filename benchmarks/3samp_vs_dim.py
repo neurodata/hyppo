@@ -90,7 +90,7 @@ class Manova:
 
 NAME = '3samp_vs_dim'
 STEP_SIZE = 0.05
-EPSILON1 = 0.6
+EPSILON1 = 1.0 # 0.6
 DIMENSIONS = [2, 5, 10, 25, 50, 75, 100]
 POWER_REPS = 5
 REPS = 1000
@@ -100,15 +100,15 @@ ONEWAY_EPSILON = 0.3
 
 FONTSIZE = 12
 
-run = True#False#
-plot = False#True#
+run = False#True#
+plot = True#False#
 
 # In[8]:
 
 
 tests = [
     MGC,
-    # Dcorr,
+    Dcorr,
     Hsic,
     # PyManova,
     Manova
@@ -120,17 +120,17 @@ multiway_tests = [
 ]
 
 cases = [
-    # 1,
-    # 2,
-    # 3,
+    1,
+    2,
+    3,
     # 4,
     # 5,
-    6,
+    # 6,
 ]
 
 multiway_cases = [
     # 1,
-    6,
+    # 6,
 ]
 
 
@@ -182,20 +182,20 @@ if run:
 FONTSIZE = 30
 
 def plot_power():
-    fig, ax = plt.subplots(nrows=2, ncols=4, figsize=(16,8))
+    fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(12,8))
     
     sim_title = [
         "None Different",
         "One Different",
         "All Different",
-        "More Different",
+        # "More Different",
     ]
     
     for i, row in enumerate(ax):
         for j, col in enumerate(row):
             case = sorted(list(set(cases+multiway_cases)))[j]
             if i == 0:
-                sims = gaussian_3samp(100, epsilon=4, weight=0.9, case=case, c=2)
+                sims = gaussian_3samp(100, epsilon=4, weight=0.9, case=case)
                 
                 sim_markers = [
                     "1",
@@ -251,19 +251,19 @@ def plot_power():
                         else:
                             col.plot(DIMENSIONS, power, label=label, lw=2, ls=ls)
                         col.tick_params(labelsize=FONTSIZE)
-                        col.set_xticks([DIMENSIONS[0], DIMENSIONS[-1]])
+                        col.set_xticks([DIMENSIONS[0]-2, DIMENSIONS[-1]-2])
                         col.set_ylim(0, 1.05)
                         col.set_yticks([])
                         if j == 0:
                             col.set_yticks([0, 1])
     
-    fig.text(0.5, 0, 'Dimension', ha='center', fontsize=FONTSIZE)
+    fig.text(0.5, 0, 'Noise dimensions', ha='center', fontsize=FONTSIZE)
 #     fig.text(0.75, 0, 'Increasing Weight', ha='center')
     fig.text(0.07, 0.3, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE)
     fig.text(0.07, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
     
-    leg = plt.legend(bbox_to_anchor=(1.17, 0.45), bbox_transform=plt.gcf().transFigure,
-                     ncol=2, loc='upper center', fontsize=FONTSIZE)
+    leg = plt.legend(bbox_to_anchor=(1.06, 0.5), bbox_transform=plt.gcf().transFigure,
+                     ncol=1, loc='upper center', fontsize=FONTSIZE)
     leg.get_frame().set_linewidth(0.0)
     for legobj in leg.legendHandles:
         legobj.set_linewidth(5.0)
