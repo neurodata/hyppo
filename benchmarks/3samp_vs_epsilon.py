@@ -180,10 +180,10 @@ if run:
 # In[9]:
 
 
-FONTSIZE = 30
+FONTSIZE = 20
 
 def plot_power():
-    fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(12,8))
+    fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(12,6))
     
     sim_title = [
         "None Different",
@@ -261,23 +261,25 @@ def plot_power():
                     col.set_yticks([])
                     if j == 0:
                         col.set_yticks([0, 1])
+            col.set_aspect(np.diff(col.get_xlim())/np.diff(col.get_ylim()))
     
     fig.text(0.5, 0, 'Cluster Separation', ha='center', fontsize=FONTSIZE)
 #     fig.text(0.75, 0, 'Increasing Weight', ha='center')
-    fig.text(0.07, 0.3, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE)
-    fig.text(0.07, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
+    fig.text(0.11, 0.3, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE)
+    fig.text(0.11, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
     
-    leg = plt.legend(bbox_to_anchor=(1.06, 0.5), bbox_transform=plt.gcf().transFigure,
+    leg = plt.legend(bbox_to_anchor=(1.04, 0.5), bbox_transform=plt.gcf().transFigure,
                      ncol=1, loc='upper center', fontsize=FONTSIZE)
     leg.get_frame().set_linewidth(0.0)
     for legobj in leg.legendHandles:
         legobj.set_linewidth(5.0)
     plt.subplots_adjust(hspace=.20)
     leg = Legend(fig, scatters, ['Cluster 1', 'Cluster 2', 'Cluster 3'], loc='upper center', frameon=False, ncol=1,
-                bbox_transform=plt.gcf().transFigure, bbox_to_anchor=(1.05, 0.9), fontsize=FONTSIZE)
+                bbox_transform=plt.gcf().transFigure, bbox_to_anchor=(1.03, 0.9), fontsize=FONTSIZE)
     fig.add_artist(leg);
     for legobj in leg.legendHandles:
         legobj.set_linewidth(3.0)
+    plt.suptitle('Power vs. increasing cluster separation', fontsize=FONTSIZE, y=1.03)
     plt.savefig('../benchmarks/figs/3samp_power_epsilon.pdf', transparent=True, bbox_inches='tight')
 
 if plot:

@@ -26,7 +26,7 @@ sys.path.append(os.path.realpath('..'))
 
 
 import seaborn as sns
-sns.set(color_codes=True, style='white', context='talk', font_scale=2)
+sns.set(color_codes=True, style='white', context='talk', font_scale=1.5)
 PALETTE = sns.color_palette("Set1")
 sns.set_palette(PALETTE[3:])
 
@@ -90,7 +90,7 @@ class Manova:
 
 NAME = '3samp_vs_dim'
 STEP_SIZE = 0.05
-EPSILON1 = 1.0 # 0.6
+EPSILON1 = 0.5 # 0.6
 DIMENSIONS = [2, 5, 10, 25, 50, 75, 100]
 POWER_REPS = 5
 REPS = 1000
@@ -179,10 +179,10 @@ if run:
 # In[9]:
 
 
-FONTSIZE = 30
+FONTSIZE = 20
 
 def plot_power():
-    fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(12,8))
+    fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(12,6))
     
     sim_title = [
         "None Different",
@@ -256,30 +256,34 @@ def plot_power():
                         col.set_yticks([])
                         if j == 0:
                             col.set_yticks([0, 1])
+            col.set_aspect(np.diff(col.get_xlim())/np.diff(col.get_ylim()))
     
     fig.text(0.5, 0, 'Noise dimensions', ha='center', fontsize=FONTSIZE)
 #     fig.text(0.75, 0, 'Increasing Weight', ha='center')
-    fig.text(0.07, 0.3, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE)
-    fig.text(0.07, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
+    fig.text(0.11, 0.3, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE)
+    fig.text(0.11, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
     
-    leg = plt.legend(bbox_to_anchor=(1.06, 0.5), bbox_transform=plt.gcf().transFigure,
+    leg = plt.legend(bbox_to_anchor=(1.04, 0.5), bbox_transform=plt.gcf().transFigure,
                      ncol=1, loc='upper center', fontsize=FONTSIZE)
     leg.get_frame().set_linewidth(0.0)
     for legobj in leg.legendHandles:
         legobj.set_linewidth(5.0)
     plt.subplots_adjust(hspace=.20)
     leg = Legend(fig, scatters, ['Cluster 1', 'Cluster 2', 'Cluster 3'], loc='upper center', frameon=False, ncol=1,
-                bbox_transform=plt.gcf().transFigure, bbox_to_anchor=(1.05, 0.9), fontsize=FONTSIZE)
+                bbox_transform=plt.gcf().transFigure, bbox_to_anchor=(1.03, 0.9), fontsize=FONTSIZE)
     fig.add_artist(leg);
     for legobj in leg.legendHandles:
         legobj.set_linewidth(3.0)
+    plt.suptitle('Power vs. increasing Gaussian dimension', fontsize=FONTSIZE, y=1.03)
     plt.savefig(f'../benchmarks/figs/{NAME}.pdf', transparent=True, bbox_inches='tight')
 
 
-# In[10]:
-
 if plot:
     plot_power()
+
+# In[10]:
+
+
 
 
 # In[ ]:

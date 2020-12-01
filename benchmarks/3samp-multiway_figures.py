@@ -99,7 +99,7 @@ multiway_cases = [
 
 # In[9]:
 
-FONTSIZE = 30
+FONTSIZE = 20
 
 def plot_power():
     fig, axes = plt.subplots(nrows=3, ncols=2, figsize=(12,16))
@@ -126,13 +126,13 @@ def plot_power():
     twoway = [[0,1,1], [1,0,2], [1,2,0]]
     for i, way in enumerate([oneway, twoway]):
         ax = axes[row][i]
-        sns.heatmap(way, annot=True, fmt="d", ax=ax, cbar=False, vmin=0, vmax=3, cmap="Greys", linewidth=3, linecolor='black')
-        # ax.set_xticks([])
-        ax.set_xticklabels(['Cluster 1', 'Cluster 2', 'Cluster 3'], fontsize=16)
-        # ax.set_yticks([])
-        ax.set_yticklabels(['Cluster 1', 'Cluster 2', 'Cluster 3'], rotation=90, fontsize=16, va='center')
+        sns.heatmap(way, annot=True, fmt="d", ax=ax, cbar=False, vmin=0, vmax=3, cmap="Blues", linewidth=3, linecolor='black')
+        ax.set_xticks([])
+        # ax.set_xticklabels(['Cluster 1', 'Cluster 2', 'Cluster 3'], fontsize=16)
+        ax.set_yticks([])
+        # ax.set_yticklabels(['Cluster 1', 'Cluster 2', 'Cluster 3'], rotation=90, fontsize=16, va='center')
         ax.set_title(sim_title[row][i], fontsize=FONTSIZE)
-        
+        ax.set_aspect('equal')
 
     # Simulated data
     row = 1
@@ -161,7 +161,7 @@ def plot_power():
         ax.arrow(0, 0, -epsilon/2, -a, ec='r', fc='r', alpha=1, head_width=0, ls=':', lw=4)
         ax.arrow(0, 0, epsilon/2, -a, ec='r', fc='r', alpha=1, head_width=0, ls=':', lw=4)
         # ax.text(-2, -1, f'c={ONEWAY_EPSILON}', size=20, va='bottom', ha='center', color='r')
-
+        ax.set_aspect(np.diff(ax.get_xlim())/np.diff(ax.get_ylim()))
     # Power curves
     row = 2
     xlabels = ['epsilon', 'Noise dimensions']
@@ -196,7 +196,7 @@ def plot_power():
                     ax.plot(XRANGE, power, custom_color[test.__name__], label=label, lw=lw, ls=ls)
                 else:
                     ax.plot(XRANGE, power, label=label, lw=lw, ls=ls)
-                ax.tick_params(labelsize=FONTSIZE-10)
+                ax.tick_params(labelsize=FONTSIZE)
                 
                 if i == 0:
                     ax.set_xticks([XRANGE[0], ONEWAY_EPSILON, XRANGE[-1]])
@@ -208,15 +208,16 @@ def plot_power():
         if i == 0:
             ax.axvline(ONEWAY_EPSILON, ls=':', c='grey')
         ax.set_title(sim_title[row][i], fontsize=FONTSIZE)
+        ax.set_aspect(np.diff(ax.get_xlim())/np.diff(ax.get_ylim()))
 
-    fig.text(0.5, -0.2, 'epsilon', ha='center', fontsize=FONTSIZE-8, transform=axes[2][0].transAxes)
-    fig.text(0.5, -0.2, 'Noise dimensions', ha='center', fontsize=FONTSIZE-8, transform=axes[2][1].transAxes)
-    # fig.text(-0.12, 0.5, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE-8, transform=axes[2][0].transAxes)
+    fig.text(0.5, -0.2, 'epsilon', ha='center', fontsize=FONTSIZE, transform=axes[2][0].transAxes)
+    fig.text(0.5, -0.2, 'Noise dimensions', ha='center', fontsize=FONTSIZE, transform=axes[2][1].transAxes)
+    # fig.text(-0.12, 0.5, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE, transform=axes[2][0].transAxes)
 
-    fig.text(-0.22, 0.5, 'Label matrices', va='center', rotation='vertical', fontsize=FONTSIZE, transform=axes[0][0].transAxes)
-    fig.text(-0.22, 0.5, 'Scatter plots', va='center', rotation='vertical', fontsize=FONTSIZE, transform=axes[1][0].transAxes)
-    fig.text(-0.22, 0.5, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE, transform=axes[2][0].transAxes)
-    # fig.text(-0.10, 0.5, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE-10, transform=axes[2][0].transAxes)
+    fig.text(-0.16, 0.5, 'Label matrices', va='center', rotation='vertical', fontsize=FONTSIZE, transform=axes[0][0].transAxes)
+    fig.text(-0.16, 0.5, 'Scatter plots', va='center', rotation='vertical', fontsize=FONTSIZE, transform=axes[1][0].transAxes)
+    fig.text(-0.16, 0.5, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE, transform=axes[2][0].transAxes)
+    # fig.text(-0.10, 0.5, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE, transform=axes[2][0].transAxes)
     
     leg = plt.legend(bbox_to_anchor=(0.92, 0.35), bbox_transform=plt.gcf().transFigure,
                      ncol=1, loc='upper left', fontsize=FONTSIZE)
@@ -233,7 +234,6 @@ def plot_power():
 
 
 plot_power()
-
 
 
 # %%
