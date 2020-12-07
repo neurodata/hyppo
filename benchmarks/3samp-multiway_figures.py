@@ -107,7 +107,7 @@ def plot_power():
     sim_title = [
         ["Default distances", "Multiway distances"],
         ["Weak multiway", "Strong multiway"],
-        ["Cluster separation", "Dimension"],
+        ["Cluster separation", "Added noise dimensions"],
     ]
     sim_markers = [
             "1",
@@ -164,7 +164,6 @@ def plot_power():
         ax.set_aspect(np.diff(ax.get_xlim())/np.diff(ax.get_ylim()))
     # Power curves
     row = 2
-    xlabels = ['epsilon', 'Noise dimensions']
     custom_color = {
         "Dcorr" : "#377eb8",
         "Hsic" : "#4daf4a",
@@ -202,7 +201,7 @@ def plot_power():
                     ax.set_xticks([XRANGE[0], ONEWAY_EPSILON, XRANGE[-1]])
                 elif i == 1:
                     ax.set_xticks([XRANGE[0], XRANGE[-1]])
-                    ax.set_xticklabels([XRANGE[0]-2, XRANGE[-1]-2])
+                    ax.set_xticklabels([XRANGE[0], XRANGE[-1]])
                 ax.set_ylim(0, 1.05)
                 ax.set_yticks([0, 1])
         if i == 0:
@@ -210,15 +209,17 @@ def plot_power():
         ax.set_title(sim_title[row][i], fontsize=FONTSIZE)
         ax.set_aspect(np.diff(ax.get_xlim())/np.diff(ax.get_ylim()))
 
-    fig.text(0.5, -0.2, 'epsilon', ha='center', fontsize=FONTSIZE, transform=axes[2][0].transAxes)
-    fig.text(0.5, -0.2, 'Noise dimensions', ha='center', fontsize=FONTSIZE, transform=axes[2][1].transAxes)
+    fig.text(0.5, -0.2, r'Separation ($\varepsilon$)', ha='center', fontsize=FONTSIZE, transform=axes[2][0].transAxes)
+    fig.text(0.5, -0.2, 'Dimension', ha='center', fontsize=FONTSIZE, transform=axes[2][1].transAxes)
     # fig.text(-0.12, 0.5, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE, transform=axes[2][0].transAxes)
 
     fig.text(-0.16, 0.5, 'Label matrices', va='center', rotation='vertical', fontsize=FONTSIZE, transform=axes[0][0].transAxes)
     fig.text(-0.16, 0.5, 'Scatter plots', va='center', rotation='vertical', fontsize=FONTSIZE, transform=axes[1][0].transAxes)
     fig.text(-0.16, 0.5, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE, transform=axes[2][0].transAxes)
     # fig.text(-0.10, 0.5, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE, transform=axes[2][0].transAxes)
-    
+    fig.text(-0.16, 1.12, '(A)', va='center', fontsize=FONTSIZE, transform=axes[0][0].transAxes)
+    fig.text(-0.16, 1.12, '(B)', va='center', fontsize=FONTSIZE, transform=axes[1][0].transAxes)
+    fig.text(-0.16, 1.12, '(C)', va='center', fontsize=FONTSIZE, transform=axes[2][0].transAxes)
     leg = plt.legend(bbox_to_anchor=(0.92, 0.35), bbox_transform=plt.gcf().transFigure,
                      ncol=1, loc='upper left', fontsize=FONTSIZE)
     leg.get_frame().set_linewidth(0.0)
