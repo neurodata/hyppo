@@ -82,9 +82,9 @@ FONTSIZE = 12
 
 tests = [
     MGC,
+    Dcorr,
     Hsic,
     Manova,
-    Dcorr,
 ]
 
 multiway_tests = [
@@ -175,7 +175,7 @@ def plot_power():
             XRANGE = EPSILONS
         elif i == 1:
             XRANGE = DIMENSIONS
-        for test in set(tests + multiway_tests):
+        for test in tests:
             for multiway in [False, True]:
                 if (multiway and test not in multiway_tests) or (not multiway and test not in tests):
                     continue

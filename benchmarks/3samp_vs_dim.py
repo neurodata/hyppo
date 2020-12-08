@@ -251,14 +251,14 @@ def plot_power():
                         else:
                             col.plot(DIMENSIONS, power, label=label, lw=2, ls=ls)
                         col.tick_params(labelsize=FONTSIZE)
-                        col.set_xticks([DIMENSIONS[0]-2, DIMENSIONS[-1]-2])
+                        col.set_xticks([DIMENSIONS[0], DIMENSIONS[-1]])
                         col.set_ylim(0, 1.05)
                         col.set_yticks([])
                         if j == 0:
                             col.set_yticks([0, 1])
             col.set_aspect(np.diff(col.get_xlim())/np.diff(col.get_ylim()))
     
-    fig.text(0.5, 0, 'Noise dimensions', ha='center', fontsize=FONTSIZE)
+    fig.text(0.5, 0, 'Dimension', ha='center', fontsize=FONTSIZE)
 #     fig.text(0.75, 0, 'Increasing Weight', ha='center')
     fig.text(0.11, 0.3, 'Power', va='center', rotation='vertical', fontsize=FONTSIZE)
     fig.text(0.11, 0.7, 'Scatter Plots', va='center', rotation='vertical', fontsize=FONTSIZE)
