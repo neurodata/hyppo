@@ -29,7 +29,7 @@ class _ParallelP(object):
             or self.sim.__name__ == "multimodal_independence"
         ):
             x, y = self.ksim(
-                self.sim, self.n, self.p, degree=self.angle, trans=self.trans
+                self.sim, self.n, self.p, degree=self.angle, #trans=self.trans
             )
         else:
             x, y = self.ksim(
@@ -38,7 +38,7 @@ class _ParallelP(object):
                 self.p,
                 noise=self.noise,
                 degree=self.angle,
-                trans=self.trans,
+                #trans=self.trans,
             )
 
         u, v = k_sample_transform([x, y])
