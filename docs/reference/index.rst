@@ -10,3 +10,4 @@ Reference
    ksample
    discrim
    sims
+   time_series

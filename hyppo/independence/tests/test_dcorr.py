@@ -4,7 +4,6 @@ from numpy.testing import assert_almost_equal, assert_warns, assert_raises
 
 from ...sims import linear
 from .. import Dcorr
-from ..dcorr import _dcorr
 
 
 class TestDcorrStat:
@@ -21,8 +20,7 @@ class TestDcorrStat:
 
 
 class TestDcorrErrorWarn:
-    """ Tests errors and warnings derived from MGC.
-    """
+    """Tests errors and warnings derived from MGC."""
 
     def test_error_notndarray(self):
         # raises error if x or y is not a ndarray

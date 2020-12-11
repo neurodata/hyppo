@@ -1,4 +1,3 @@
-import warnings
 import numpy as np
 from .._utils import (
     contains_nan,
@@ -42,8 +41,8 @@ class _CheckInputs:
         return self.x, self.y
 
     def _condition_input(self, x1):
-        """Checks whether there is only one subject and removes 
-           isolates and calculate distance."""
+        """Checks whether there is only one subject and removes
+        isolates and calculate distance."""
         uniques, counts = np.unique(self.y, return_counts=True)
 
         if (counts != 1).sum() <= 1:

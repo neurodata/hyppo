@@ -9,6 +9,11 @@ Overview of hyppo_
 
 .. image:: https://img.shields.io/badge/arXiv-1907.02088-red.svg?style=flat
    :target: https://arxiv.org/abs/1907.02088
+.. image:: https://img.shields.io/pypi/v/hyppo.svg
+   :target: https://pypi.org/project/hyppo/
+.. image:: https://img.shields.io/pypi/dm/hyppo
+.. image:: https://img.shields.io/github/license/neurodata/hyppo
+   :target: https://hyppo.neurodata.io/license.html
 
 ``hyppo`` (**HYP**\ othesis Testing in **P**\ yth\ **O**\ n, pronounced
 "Hippo") is an open-source software package for multivariate hypothesis testing.

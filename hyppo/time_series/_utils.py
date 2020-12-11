@@ -9,7 +9,7 @@ from .._utils import (
     check_reps,
     check_compute_distance,
 )
-from ..independence import Dcorr
+from ..independence import MGC
 
 
 class _CheckInputs:
@@ -28,6 +28,7 @@ class _CheckInputs:
         self.x, self.y = self.check_dim_xy()
         self.x, self.y = convert_xy_float64(self.x, self.y)
         self._check_min_samples()
+        # self._check_variance()
         check_compute_distance(self.compute_distance)
 
         if self.reps:
@@ -77,6 +78,11 @@ class _CheckInputs:
         if nx <= 3 or ny <= 3:
             raise ValueError("Number of samples is too low")
 
+    # def _check_variance(self):
+    #     for i in [self.x, self.y]:
+    #         if np.var(i) == 0:
+    #             raise ValueError("One of the inputs has 0 variance")
+
 
 def compute_stat(x, y, indep_test, compute_distance, max_lag):
     """Compute time series test statistic"""
@@ -88,7 +94,7 @@ def compute_stat(x, y, indep_test, compute_distance, max_lag):
     dep_lag = []
     indep_test = indep_test(compute_distance=compute_distance)
     indep_test_stat = indep_test._statistic(x, y)
-    dep_lag.append(np.maximum(0, indep_test_stat))
+    dep_lag.append(indep_test_stat)
 
     # loop over time points and find max test statistic
     n = distx.shape[0]
@@ -96,10 +102,27 @@ def compute_stat(x, y, indep_test, compute_distance, max_lag):
         slice_distx = distx[j:n, j:n]
         slice_disty = disty[0 : (n - j), 0 : (n - j)]
         stat = indep_test._statistic(slice_distx, slice_disty)
-        dep_lag.append((n - j) * np.maximum(0, stat) / n)
+        dep_lag.append((n - j) * stat / n)
 
     # calculate optimal lag and test statistic
     opt_lag = np.argmax(dep_lag)
     stat = np.sum(dep_lag)
 
     return stat, opt_lag
+
+
+def compute_scale_at_lag(x, y, opt_lag, compute_distance):
+    """Run the mgc test at the optimal scale (by shifting the series)."""
+    n = x.shape[0]
+    distx = compute_distance(x)
+    disty = compute_distance(y)
+
+    slice_distx = distx[opt_lag:n, opt_lag:n]
+    slice_disty = disty[0 : (n - opt_lag), 0 : (n - opt_lag)]
+
+    mgc = MGC()
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore")
+        opt_scale = mgc.test(slice_distx, slice_disty, reps=0)[2]["opt_scale"]
+
+    return opt_scale

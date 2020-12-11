@@ -1,9 +1,7 @@
 import warnings
-import numpy as np
-from numba import njit
 from scipy.stats import multiscale_graphcorr
 
-from .._utils import euclidean, check_xy_distmat, chi2_approx
+from .._utils import euclidean, check_xy_distmat
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 
@@ -135,11 +133,16 @@ class MGC(IndependenceTest):
         stat : float
             The computed MGC statistic.
         """
+        distx = x
+        disty = y
+
+        if not self.is_distance:
+            distx = self.compute_distance(x)
+            disty = self.compute_distance(y)
+
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
-            mgc = multiscale_graphcorr(
-                x, y, compute_distance=self.compute_distance, reps=0
-            )
+            mgc = multiscale_graphcorr(distx, disty, compute_distance=None, reps=0)
         stat = mgc.stat
         self.stat = stat
 
@@ -177,8 +180,6 @@ class MGC(IndependenceTest):
                     A 2D representation of the latent geometry of the relationship.
                 - opt_scale : (int, int)
                     The estimated optimal scale as a `(x, y)` pair.
-                - null_dist : list
-                    The null distribution derived from the permuted matrices
 
         Examples
         --------
@@ -215,24 +216,25 @@ class MGC(IndependenceTest):
         '0.0, 1.00'
         """
         check_input = _CheckInputs(
-            x, y, dim=2, reps=reps, compute_distance=self.compute_distance
+            x, y, reps=reps, compute_distance=self.compute_distance
         )
         x, y = check_input()
 
         if self.is_distance:
             check_xy_distmat(x, y)
+        else:
+            x = self.compute_distance(x, workers=workers)
+            y = self.compute_distance(y, workers=workers)
+            self.is_distance = True
 
         # using our joblib implementation instead of multiprocessing backend in
         # scipy gives significantly faster results
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
-            _, _, mgc_dict = multiscale_graphcorr(
-                x, y, compute_distance=self.compute_distance, reps=0
-            )
+            _, _, mgc_dict = multiscale_graphcorr(x, y, compute_distance=None, reps=0)
+        mgc_dict.pop("null_dist")
 
         stat, pvalue = super(MGC, self).test(x, y, reps, workers)
-        self.stat = stat
-        self.pvalue = pvalue
         self.mgc_dict = mgc_dict
 
         return stat, pvalue, mgc_dict

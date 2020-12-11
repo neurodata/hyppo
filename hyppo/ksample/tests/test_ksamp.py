@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from numpy.testing import assert_almost_equal, assert_warns, assert_raises
+from numpy.testing import assert_almost_equal, assert_raises
 
 from ...sims import linear, rot_2samp
 from .. import KSample
@@ -22,8 +22,7 @@ class TestKSample:
 
 
 class TestKSampleErrorWarn:
-    """ Tests errors and warnings derived from MGC.
-    """
+    """Tests errors and warnings derived from MGC."""
 
     def test_error_notndarray(self):
         # raises error if x or y is not a ndarray

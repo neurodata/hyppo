@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-import numpy as np
-
 from .._utils import euclidean, perm_test
 
 
@@ -40,7 +38,7 @@ class IndependenceTest(ABC):
         """
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, is_distsim=True, perm_blocks=None):
         r"""
         Calulates the independence test p-value.
 
@@ -53,6 +51,11 @@ class IndependenceTest(ABC):
         workers : int, optional (default: 1)
             Evaluates method using `multiprocessing.Pool <multiprocessing>`).
             Supply `-1` to use all cores available to the Process.
+        perm_blocks : 2d ndarray, optional
+            Restricts permutations to account for dependencies in data. Columns
+            recursively partition samples based on unique labels. Groups at
+            each partition are exchangeable under a permutation but remain
+            fixed if label is negative.
 
         Returns
         -------
@@ -65,8 +68,17 @@ class IndependenceTest(ABC):
         self.y = y
 
         # calculate p-value
-        stat, pvalue = perm_test(self._statistic, x, y, reps=reps, workers=workers)
+        stat, pvalue, null_dist = perm_test(
+            self._statistic,
+            x,
+            y,
+            reps=reps,
+            workers=workers,
+            is_distsim=is_distsim,
+            perm_blocks=perm_blocks,
+        )
         self.stat = stat
         self.pvalue = pvalue
+        self.null_dist = null_dist
 
         return stat, pvalue

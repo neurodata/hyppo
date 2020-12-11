@@ -1,5 +1,3 @@
-import warnings
-
 import numpy as np
 
 from .._utils import contains_nan
@@ -75,6 +73,8 @@ class _CheckInputs:
 def k_sample_transform(inputs):
     n_inputs = len(inputs)
     u = np.vstack(inputs)
+    if np.var(u) == 0:
+        raise ValueError("Test cannot be run, the inputs have 0 variance")
 
     if n_inputs == 2:
         n1 = inputs[0].shape[0]

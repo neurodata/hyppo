@@ -1,7 +1,8 @@
 import numpy as np
+from collections import defaultdict
 from numba import njit
 
-from .._utils import euclidean, check_xy_distmat, chi2_approx
+from .._utils import euclidean, check_xy_distmat, chi2_approx, check_perm_blocks_dim
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 
@@ -129,7 +130,7 @@ class Dcorr(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1, auto=True, bias=False):
+    def test(self, x, y, reps=1000, workers=1, auto=True, bias=False, perm_blocks=None):
         r"""
         Calculates the Dcorr test statistic and p-value.
 
@@ -152,6 +153,11 @@ class Dcorr(IndependenceTest):
             is greater than 20. If True, and sample size is greater than 20, a fast
             chi2 approximation will be run. Parameters ``reps`` and ``workers`` are
             irrelevant in this case.
+        perm_blocks : list or ndarray, optional
+            Provides hierarchy of dependencies to restrict permutations. Columns
+            provide labels for each sample and recursively partition. Groups at
+            each partition are exchangeable under a permutation but remain
+            fixed if label is negative.
 
         Returns
         -------
@@ -195,26 +201,35 @@ class Dcorr(IndependenceTest):
         '0.0, 1.00'
         """
         check_input = _CheckInputs(
-            x, y, dim=2, reps=reps, compute_distance=self.compute_distance
+            x, y, reps=reps, compute_distance=self.compute_distance
         )
         x, y = check_input()
-
         if self.is_distance:
             check_xy_distmat(x, y)
+        if perm_blocks is not None:
+            check_perm_blocks_dim(perm_blocks, y)
 
-        if auto == True and x.shape[0] > 20:
+        if auto and x.shape[0] > 20 and perm_blocks is None:
             stat, pvalue = chi2_approx(self._statistic, x, y)
-            return stat, pvalue
+            self.stat = stat
+            self.pvalue = pvalue
+            self.null_dist = None
         else:
-            return super(Dcorr, self).test(x, y, reps, workers)
+            if not self.is_distance:
+                x = self.compute_distance(x, workers=workers)
+                y = self.compute_distance(y, workers=workers)
+                self.is_distance = True
+            stat, pvalue = super(Dcorr, self).test(
+                x, y, reps, workers, perm_blocks=perm_blocks
+            )
+
+        return stat, pvalue
 
 
 @njit
 def _center_distmat(distx, bias):  # pragma: no cover
     """Centers the distance matrices"""
     n = distx.shape[0]
-
-    # double centered distance matrices
     if bias:
         # use sum instead of mean because of numba restrictions
         exp_distx = (
@@ -231,7 +246,6 @@ def _center_distmat(distx, bias):  # pragma: no cover
     cent_distx = distx - exp_distx
     if not bias:
         np.fill_diagonal(cent_distx, 0)
-
     return cent_distx
 
 

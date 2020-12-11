@@ -1,0 +1,25 @@
+hyppo v0.1.2 Release Notes
+==========================
+
+.. contents::
+
+hyppo 0.1.2 does not include any new features, just fixes. This release requires
+Python 3.6+.
+
+Fixes
+-----
+
+*k*-sample testing
+^^^^^^^^^^^^^^^^^^
+Fixed MMD/k-samp;e Hsic not running bug.
+
+Authors
+=======
+
+This release contains work by the following people (contributed at least
+one patch to this release, names in alphabetical order by last name):
+
+* Sambit Panda
+
+A total of 1 person contributed to this release.
+People with a "+" by their names contributed a patch for the first time.
