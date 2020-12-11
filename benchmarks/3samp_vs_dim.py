@@ -91,7 +91,7 @@ class Manova:
 NAME = '3samp_vs_dim'
 STEP_SIZE = 0.05
 EPSILON1 = 0.5 # 0.6
-DIMENSIONS = [2, 5, 10, 25, 50, 75, 100]
+DIMENSIONS = [200, 275, 300] # 2, 5, 10, 25, 50, 75, 100, 
 POWER_REPS = 5
 REPS = 1000
 n_jobs = 5
@@ -100,8 +100,8 @@ ONEWAY_EPSILON = 0.3
 
 FONTSIZE = 12
 
-run = False#True#
-plot = True#False#
+run = True#False#
+plot = False#True#
 
 # In[8]:
 
@@ -111,7 +111,7 @@ tests = [
     Dcorr,
     Hsic,
     # PyManova,
-    Manova
+    # Manova
 ]
 
 multiway_tests = [
@@ -121,8 +121,8 @@ multiway_tests = [
 
 cases = [
     1,
-    2,
-    3,
+    # 2,
+    # 3,
     # 4,
     # 5,
     # 6,

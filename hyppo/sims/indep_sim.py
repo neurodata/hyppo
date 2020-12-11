@@ -1172,3 +1172,22 @@ def multimodal_independence(n, p, prob=0.5, sep1=3, sep2=2):
     y = v / sep1 + sep2 * v_2 - 1
 
     return x, y
+
+def multilevel_gaussian(n, epsilon, d=2, group_std=0.1):
+    """
+    Simulates a set of paired observations for a 2-sample test.
+    
+    n1,n2 : size of the two groups. Are both n1 if n2 is None
+    d : dimension of observations
+    group_std : standard deviation of normal distribution around group mean
+    """
+    
+    # Means for each observation
+    mus1 = np.random.normal(np.zeros(d),1,(n,d))
+    assert d >= 2
+    mus2 = np.random.normal([epsilon]*2 + [0]*(d-2), 1, (n,d))
+    
+    # Paired observations
+    X = np.vstack([np.random.normal(mu, group_std, (2,d)) for mu in mus1])
+    Y = np.vstack([np.random.normal(mu, group_std, (2,d)) for mu in mus2])
+    return X, Y
