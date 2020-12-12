@@ -6,8 +6,8 @@
 [![Netlify Status](https://api.netlify.com/api/v1/badges/e5242ebd-631e-4330-b43e-85e428dac66a/deploy-status)](https://app.netlify.com/sites/hyppo/deploys)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ba5c176b0b8dac1fe406/maintainability)](https://codeclimate.com/github/neurodata/hyppo/maintainability)
 [![Coverage Status](https://coveralls.io/repos/github/neurodata/hyppo/badge.svg?branch=master)](https://coveralls.io/github/neurodata/hyppo?branch=master)
-[![Build Status](https://travis-ci.org/neurodata/hyppo.svg?branch=master)](https://travis-ci.org/neurodata/hyppo)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/hyppo)
+[![Build Status](https://travis-ci.com/neurodata/hyppo.svg?branch=master)](https://travis-ci.com/neurodata/hyppo)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/hyppo)](https://pypi.org/project/hyppo/#files)
 
 `hyppo` (**HYP**othesis Testing in **P**yth**O**n, pronounced "Hippo") is an open-source software package for multivariate hypothesis testing.
 
