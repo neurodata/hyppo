@@ -3,7 +3,7 @@
 [![arXiv shield](https://img.shields.io/badge/arXiv-1907.02088-red.svg?style=flat)](https://arxiv.org/abs/1907.02088)
 [![License](https://img.shields.io/github/license/neurodata/hyppo)](https://hyppo.neurodata.io/license.html)
 [![PyPI version](https://img.shields.io/pypi/v/hyppo.svg)](https://pypi.org/project/hyppo/)
-[![Netlify Status](https://img.shields.io/netlify/e5242ebd-631e-4330-b43e-85e428dac66a)](https://app.netlify.com/sites/hyppo/deploys)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/e5242ebd-631e-4330-b43e-85e428dac66a/deploy-status)](https://app.netlify.com/sites/hyppo/deploys)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ba5c176b0b8dac1fe406/maintainability)](https://codeclimate.com/github/neurodata/hyppo/maintainability)
 [![Coverage Status](https://coveralls.io/repos/github/neurodata/hyppo/badge.svg?branch=master)](https://coveralls.io/github/neurodata/hyppo?branch=master)
 [![Build Status](https://travis-ci.com/neurodata/hyppo.svg?branch=master)](https://travis-ci.com/neurodata/hyppo)
