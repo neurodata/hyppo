@@ -5,7 +5,6 @@ from .base import DiscriminabilityTest
 from scipy._lib._util import MapWrapper
 
 
-@pytest.mark.skip(reason="reformat code to speed up test")
 class DiscrimTwoSample(DiscriminabilityTest):
     r"""
     A class that compares the discriminability of two datasets.
