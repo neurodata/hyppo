@@ -8,8 +8,8 @@ from .._utils import euclidean, perm_test
 
 
 FOREST_TYPES = {
-    "classifier" : RandomForestClassifier,
-    "regressor" : RandomForestRegressor
+    "classifier": RandomForestClassifier,
+    "regressor": RandomForestRegressor,
 }
 
 
@@ -48,7 +48,9 @@ class KMERF(RandomForestTest):
         check_input = _CheckInputs(x, y, reps=reps)
         x, y = check_input()
 
-        stat, pvalue = perm_test(self._statistic, x, y, reps=reps, workers=workers, is_distsim=False)
+        stat, pvalue = perm_test(
+            self._statistic, x, y, reps=reps, workers=workers, is_distsim=False
+        )
         self.stat = stat
         self.pvalue = pvalue
 
