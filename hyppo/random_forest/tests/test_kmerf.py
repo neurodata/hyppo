@@ -7,7 +7,7 @@ from .. import KMERF
 
 
 class TestKMERFStat(object):
-    """Test validity of MGC test statistic"""
+    """Test validity of KMERF test statistic"""
 
     @pytest.mark.parametrize(
         "sim, obs_stat, obs_pvalue",
@@ -17,7 +17,7 @@ class TestKMERFStat(object):
             (multimodal_independence, -0.0363, 0.995),  # test independence simulation
         ],
     )
-    def test_oned(sim, obs_stat, obs_pvalue):
+    def test_oned(self, sim, obs_stat, obs_pvalue):
         np.random.seed(12345678)
 
         # generate x and y
