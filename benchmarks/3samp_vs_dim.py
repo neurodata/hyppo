@@ -91,7 +91,7 @@ class Manova:
 NAME = '3samp_vs_dim'
 STEP_SIZE = 0.05
 EPSILON1 = 0.5 # 0.6
-DIMENSIONS = [350]# [2, 5, 10, 25, 50, 75, 100, 200, 275, 350] # 
+DIMENSIONS = [2, 5, 10, 25, 50, 75, 100, 200, 275, 350] 
 POWER_REPS = 5
 REPS = 1000
 n_jobs = 5
@@ -100,8 +100,8 @@ ONEWAY_EPSILON = 0.3
 
 FONTSIZE = 12
 
-run = True#False#
-plot = False#True#
+run = False#True#
+plot = True#False#
 
 # In[8]:
 
@@ -111,7 +111,7 @@ tests = [
     Dcorr,
     Hsic,
     # PyManova,
-    # Manova
+    Manova
 ]
 
 multiway_tests = [
@@ -144,7 +144,7 @@ multiway_cases = [
 def estimate_power(case, test, multiway=False):
     if test == Manova:
         ws = 1
-        dimensions = DIMENSIONS[:-1]
+        dimensions = DIMENSIONS[:-2]
     else:
         ws = workers
         dimensions = DIMENSIONS
@@ -279,7 +279,7 @@ def plot_power():
     for legobj in leg.legendHandles:
         legobj.set_linewidth(3.0)
     plt.suptitle('Power vs. increasing Gaussian dimension', fontsize=FONTSIZE, y=1.03)
-    # plt.savefig(f'../benchmarks/figs/{NAME}.pdf', transparent=True, bbox_inches='tight')
+    plt.savefig(f'../benchmarks/figs/{NAME}.pdf', transparent=True, bbox_inches='tight')
 
 
 if plot:
