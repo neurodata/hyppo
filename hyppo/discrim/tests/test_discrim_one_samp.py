@@ -4,6 +4,7 @@ from numpy.testing import assert_almost_equal, assert_warns, assert_raises
 from .. import DiscrimOneSample
 
 
+@pytest.mark.skip(reason="reformat code to speed up test")
 class TestOneSample:
     def test_same_one(self):
         # matches test calculated statistics and p-value for indiscriminable subjects

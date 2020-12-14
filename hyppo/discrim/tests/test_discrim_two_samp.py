@@ -4,6 +4,7 @@ from numpy.testing import assert_almost_equal, assert_warns, assert_raises
 from .. import DiscrimTwoSample
 
 
+@pytest.mark.skip(reason="reformat code to speed up test")
 class TestTwoSample:
     def test_greater(self):
         # test whether discriminability for x1 is greater than it is for x2
