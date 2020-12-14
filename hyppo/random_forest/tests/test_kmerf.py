@@ -45,7 +45,7 @@ class TestKMERFStat(object):
 
         # test stat and pvalue
         stat1 = KMERF()._statistic(x, y)
-        stat2, pvalue, _ = KMERF().test(x, y)
+        stat2, pvalue = KMERF().test(x, y)
         assert_approx_equal(stat1, obs_stat, significant=1)
         assert_approx_equal(stat2, obs_stat, significant=1)
         assert_approx_equal(pvalue, obs_pvalue, significant=1)
