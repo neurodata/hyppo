@@ -118,14 +118,20 @@ def plot_power():
                 
                 count = 0
                 scatters = []
-                for sim in sims:
+                for count, sim in enumerate(sims):
                     x, y = np.hsplit(sim, 2)
                     scatters.append(col.scatter(x, y, marker=sim_markers[count], color=custom_color[count]))
 
-                    col.set_xticks([])
-                    col.set_yticks([])
-                    col.set_title(sim_title[j], fontsize=FONTSIZE)
-                    count += 1
+                col.set_xticks([])
+                col.set_yticks([])
+                col.set_title(sim_title[j], fontsize=FONTSIZE)
+                if case == 0:
+                    col.set_xlim(-5, 5)
+                    col.set_ylim(-5, 5)
+                else:
+                    col.set_ylim(-3, 7)
+                    col.set_ylim(-3, 7)
+                
             else:
                 for test in tests:
                     custom_color = {
@@ -140,7 +146,7 @@ def plot_power():
                                           delimiter=',')
 
                             ls = '--'
-                            label = f'multilevel {test.__name__}'
+                            label = f'Multilevel {test.__name__}'
                         else:
                             power = np.genfromtxt('../benchmarks/{}/{}_{}.csv'.format(NAME, case, test.__name__),
                                           delimiter=',')

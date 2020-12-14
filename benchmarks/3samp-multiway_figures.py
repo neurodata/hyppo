@@ -142,18 +142,16 @@ def plot_power():
         ax = axes[row][i]
         sims = gaussian_3samp(100, epsilon=epsilon*SCALE, case=6, c=ONEWAY_EPSILON*SCALE)
         
-        count = 0
         scatters = []
-        for sim in sims:
+        for count, sim in enumerate(sims):
             x, y = np.hsplit(sim, 2)
             scatters.append(ax.scatter(x, y, marker=sim_markers[count], color=custom_color[count]))
 
-            ax.set_xlim(-5, 5)
-            ax.set_ylim(-6, 3)
-            ax.set_xticks([])
-            ax.set_yticks([])
-            ax.set_title(sim_title[row][i], fontsize=FONTSIZE)
-            count += 1
+        ax.set_xlim(-5, 5)
+        ax.set_ylim(-7, 3)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_title(sim_title[row][i], fontsize=FONTSIZE)
         ax.text(3, -4, r'$\varepsilon$' + f'={epsilon:.1f}', size=20, va='top', ha='center', color='r')
         a = np.sqrt(ONEWAY_EPSILON**2 - (epsilon/2)**2) * SCALE
         epsilon = epsilon * SCALE

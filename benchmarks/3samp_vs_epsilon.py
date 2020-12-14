@@ -221,6 +221,8 @@ def plot_power():
                         col.set_xlim(-5, 5)
                     if case not in [2, 4, 6]:
                         col.set_ylim(-5, 5)
+                    else:
+                        col.set_ylim(-3, 7)
                     col.set_xticks([])
                     col.set_yticks([])
                     col.set_title(sim_title[j], fontsize=FONTSIZE)

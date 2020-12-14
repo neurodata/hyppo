@@ -91,7 +91,7 @@ class Manova:
 NAME = '3samp_vs_dim'
 STEP_SIZE = 0.05
 EPSILON1 = 0.5 # 0.6
-DIMENSIONS = [200, 275, 300] # 2, 5, 10, 25, 50, 75, 100, 
+DIMENSIONS = [350]# [2, 5, 10, 25, 50, 75, 100, 200, 275, 350] # 
 POWER_REPS = 5
 REPS = 1000
 n_jobs = 5
@@ -121,8 +121,8 @@ multiway_tests = [
 
 cases = [
     1,
-    # 2,
-    # 3,
+    2,
+    3,
     # 4,
     # 5,
     # 6,
@@ -144,12 +144,14 @@ multiway_cases = [
 def estimate_power(case, test, multiway=False):
     if test == Manova:
         ws = 1
+        dimensions = DIMENSIONS[:-1]
     else:
         ws = workers
+        dimensions = DIMENSIONS
 
     est_power = np.array([
         np.mean([power_3samp_epsweight(test, case=case, epsilon=EPSILON1, workers=ws, d=d, c=ONEWAY_EPSILON, multiway=multiway, reps=REPS)
-        for _ in range(POWER_REPS)]) for d in DIMENSIONS])
+        for _ in range(POWER_REPS)]) for d in dimensions])
 
     if not os.path.exists(f'../benchmarks/{NAME}/'):
         os.makedirs(f'../benchmarks/{NAME}/')
@@ -218,6 +220,8 @@ def plot_power():
                         col.set_xlim(-5, 5)
                     if case not in [2, 4, 6]:
                         col.set_ylim(-5, 5)
+                    else:
+                        col.set_ylim(-3, 7)
                     col.set_xticks([])
                     col.set_yticks([])
                     col.set_title(sim_title[j], fontsize=FONTSIZE)
@@ -245,11 +249,11 @@ def plot_power():
                         
                         if test.__name__ in custom_color.keys():
                             if test.__name__ == "MGC":
-                                col.plot(DIMENSIONS, power, custom_color[test.__name__], label=label, lw=3, ls=ls)
+                                col.plot(DIMENSIONS[:len(power)], power, custom_color[test.__name__], label=label, lw=3, ls=ls)
                             else:
-                                col.plot(DIMENSIONS, power, custom_color[test.__name__], label=label, lw=2, ls=ls)
+                                col.plot(DIMENSIONS[:len(power)], power, custom_color[test.__name__], label=label, lw=2, ls=ls)
                         else:
-                            col.plot(DIMENSIONS, power, label=label, lw=2, ls=ls)
+                            col.plot(DIMENSIONS[:len(power)], power, label=label, lw=2, ls=ls)
                         col.tick_params(labelsize=FONTSIZE)
                         col.set_xticks([DIMENSIONS[0], DIMENSIONS[-1]])
                         col.set_ylim(0, 1.05)
@@ -275,7 +279,7 @@ def plot_power():
     for legobj in leg.legendHandles:
         legobj.set_linewidth(3.0)
     plt.suptitle('Power vs. increasing Gaussian dimension', fontsize=FONTSIZE, y=1.03)
-    plt.savefig(f'../benchmarks/figs/{NAME}.pdf', transparent=True, bbox_inches='tight')
+    # plt.savefig(f'../benchmarks/figs/{NAME}.pdf', transparent=True, bbox_inches='tight')
 
 
 if plot:
