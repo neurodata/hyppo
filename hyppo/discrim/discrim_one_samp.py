@@ -4,6 +4,7 @@ from .base import DiscriminabilityTest
 from scipy._lib._util import MapWrapper
 
 
+@pytest.mark.skip(reason="reformat code to speed up test")
 class DiscrimOneSample(DiscriminabilityTest):
     r"""
     A class that performs a one sample test of discriminability.
