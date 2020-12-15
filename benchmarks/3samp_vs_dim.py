@@ -261,6 +261,7 @@ def plot_power():
                         if j == 0:
                             col.set_yticks([0, 1])
             col.set_aspect(np.diff(col.get_xlim())/np.diff(col.get_ylim()))
+            col.axvline(300, ls=':', c='black')
     
     fig.text(0.5, 0, 'Dimension', ha='center', fontsize=FONTSIZE)
 #     fig.text(0.75, 0, 'Increasing Weight', ha='center')
