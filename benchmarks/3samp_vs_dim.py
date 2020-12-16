@@ -280,7 +280,7 @@ def plot_power():
     for legobj in leg.legendHandles:
         legobj.set_linewidth(3.0)
     plt.suptitle('Power vs. increasing Gaussian dimension', fontsize=FONTSIZE, y=1.03)
-    plt.savefig(f'../benchmarks/figs/{NAME}.pdf', transparent=True, bbox_inches='tight')
+    # plt.savefig(f'../benchmarks/figs/{NAME}.pdf', transparent=True, bbox_inches='tight')
 
 
 if plot:

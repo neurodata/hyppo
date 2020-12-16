@@ -163,6 +163,7 @@ def plot_power():
                     col.set_yticks([])
                     if j == 0:
                         col.set_yticks([0, 1])
+                col.axhline(0.05, ls='--', c='grey')
             col.set_aspect(np.diff(col.get_xlim())/np.diff(col.get_ylim()))
     
     fig.text(0.5, 0, 'Cluster Separation', ha='center', fontsize=FONTSIZE)
