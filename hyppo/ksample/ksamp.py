@@ -1,4 +1,4 @@
-from .._utils import euclidean, gaussian
+# from .._utils import euclidean, gaussian
 from .base import KSampleTest
 from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC
 from ._utils import _CheckInputs, k_sample_transform
@@ -62,7 +62,7 @@ class KSample(KSampleTest):
     this data.
     """
 
-    def __init__(self, indep_test, compute_distance=euclidean, bias=False):
+    def __init__(self, indep_test, compute_distance="euclidean", bias=False, **kwargs):
         indep_test = indep_test.lower()
         test_names = {
             "rv": RV,
@@ -75,23 +75,23 @@ class KSample(KSampleTest):
         if indep_test not in test_names.keys():
             raise ValueError("Test is not a valid independence test")
         if indep_test == "hsic" and compute_distance == euclidean:
-            compute_distance = gaussian
+            compute_distance = "gaussian"
         self.indep_test_name = indep_test
         indep_test = test_names[indep_test]
 
         if self.indep_test_name in ["dcorr", "hhg", "hsic", "mgc"]:
             if self.indep_test_name == "hsic":
-                self.indep_test = indep_test(compute_kernel=compute_distance, bias=bias)
+                self.indep_test = indep_test(compute_kernel=compute_distance, bias=bias, **kwargs)
             elif self.indep_test_name == "dcorr":
                 self.indep_test = indep_test(
-                    compute_distance=compute_distance, bias=bias
+                    compute_distance=compute_distance, bias=bias, **kwargs
                 )
             else:
-                self.indep_test = indep_test(compute_distance=compute_distance)
+                self.indep_test = indep_test(compute_distance=compute_distance, **kwargs)
         else:
             self.indep_test = indep_test()
 
-        KSampleTest.__init__(self, compute_distance=compute_distance)
+        KSampleTest.__init__(self, compute_distance=compute_distance, bias=bias, **kwargs)
 
     def _statistic(self, *args):
         r"""
@@ -157,7 +157,6 @@ class KSample(KSampleTest):
         check_input = _CheckInputs(
             inputs=inputs,
             indep_test=self.indep_test,
-            compute_distance=self.compute_distance,
         )
         inputs = check_input()
         u, v = k_sample_transform(inputs)

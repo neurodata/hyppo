@@ -1,7 +1,7 @@
 import warnings
 from scipy.stats import multiscale_graphcorr
 
-from .._utils import euclidean, check_xy_distmat
+from .._utils import compute_dist
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 
@@ -107,13 +107,12 @@ class MGC(IndependenceTest):
                Statistical Association.
     """
 
-    def __init__(self, compute_distance=euclidean):
+    def __init__(self, compute_distance="euclidean", **kwargs):
         # set is_distance to true if compute_distance is None
         self.is_distance = False
         if not compute_distance:
             self.is_distance = True
-
-        IndependenceTest.__init__(self, compute_distance=compute_distance)
+        IndependenceTest.__init__(self, compute_distance=compute_distance, **kwargs)
 
     def _statistic(self, x, y):
         r"""
@@ -137,12 +136,12 @@ class MGC(IndependenceTest):
         disty = y
 
         if not self.is_distance:
-            distx = self.compute_distance(x)
-            disty = self.compute_distance(y)
+            distx, disty = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
 
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
             mgc = multiscale_graphcorr(distx, disty, compute_distance=None, reps=0)
+
         stat = mgc.stat
         self.stat = stat
 
@@ -216,16 +215,12 @@ class MGC(IndependenceTest):
         '0.0, 1.00'
         """
         check_input = _CheckInputs(
-            x, y, reps=reps, compute_distance=self.compute_distance
+            x, y, reps=reps,
         )
         x, y = check_input()
 
-        if self.is_distance:
-            check_xy_distmat(x, y)
-        else:
-            x = self.compute_distance(x, workers=workers)
-            y = self.compute_distance(y, workers=workers)
-            self.is_distance = True
+        x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
+        self.is_distance = True
 
         # using our joblib implementation instead of multiprocessing backend in
         # scipy gives significantly faster results

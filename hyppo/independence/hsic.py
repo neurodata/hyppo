@@ -3,7 +3,7 @@ import numpy as np
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 from . import Dcorr
-from .._utils import gaussian, check_xy_distmat, chi2_approx
+from .._utils import compute_kern, chi2_approx
 
 
 class Hsic(IndependenceTest):
@@ -93,7 +93,7 @@ class Hsic(IndependenceTest):
                 11(Apr), 1391-1423.
     """
 
-    def __init__(self, compute_kernel=gaussian, bias=False):
+    def __init__(self, compute_kernel="gaussian", bias=False, **kwargs):
         # set statistic and p-value
         self.compute_kernel = compute_kernel
 
@@ -102,7 +102,7 @@ class Hsic(IndependenceTest):
             self.is_kernel = True
         self.bias = bias
 
-        IndependenceTest.__init__(self, compute_distance=compute_kernel)
+        IndependenceTest.__init__(self, compute_distance=None, **kwargs)
 
     def _statistic(self, x, y):
         r"""
@@ -126,8 +126,7 @@ class Hsic(IndependenceTest):
         disty = y
 
         if not self.is_kernel:
-            kernx = self.compute_kernel(x)
-            kerny = self.compute_kernel(y)
+            kernx, kerny = compute_kern(x, y, metric=self.compute_kernel, **self.kwargs)
             distx = 1 - kernx / np.max(kernx)
             disty = 1 - kerny / np.max(kerny)
 
@@ -203,12 +202,9 @@ class Hsic(IndependenceTest):
         '0.0, 1.00'
         """
         check_input = _CheckInputs(
-            x, y, reps=reps, compute_distance=self.compute_kernel
+            x, y, reps=reps,
         )
         x, y = check_input()
-
-        if self.is_kernel:
-            check_xy_distmat(x, y)
 
         if auto and x.shape[0] > 20:
             stat, pvalue = chi2_approx(self._statistic, x, y)
@@ -216,10 +212,8 @@ class Hsic(IndependenceTest):
             self.pvalue = pvalue
             self.null_dist = None
         else:
-            if not self.is_kernel:
-                x = self.compute_kernel(x, workers=workers)
-                y = self.compute_kernel(y, workers=workers)
-                self.is_kernel = True
+            x, y = compute_kern(x, y, metric=self.compute_kernel, **self.kwargs)
+            self.is_kernel = True
             stat, pvalue = super(Hsic, self).test(x, y, reps, workers)
 
         return stat, pvalue

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .._utils import euclidean, perm_test
+from .._utils import perm_test
 
 
 class IndependenceTest(ABC):
@@ -18,11 +18,12 @@ class IndependenceTest(ABC):
         pairwise distances are calculated.
     """
 
-    def __init__(self, compute_distance=euclidean):
+    def __init__(self, compute_distance=None, **kwargs):
         # set statistic and p-value
         self.stat = None
         self.pvalue = None
         self.compute_distance = compute_distance
+        self.kwargs = kwargs
 
         super().__init__()
 

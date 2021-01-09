@@ -5,17 +5,15 @@ from .._utils import (
     check_ndarray_xy,
     convert_xy_float64,
     check_reps,
-    check_compute_distance,
 )
 
 
 class _CheckInputs:
     """Checks inputs for all independence tests"""
 
-    def __init__(self, x, y, reps=None, compute_distance=None):
+    def __init__(self, x, y, reps=None):
         self.x = x
         self.y = y
-        self.compute_distance = compute_distance
         self.reps = reps
 
     def __call__(self):
@@ -26,7 +24,6 @@ class _CheckInputs:
         self.x, self.y = convert_xy_float64(self.x, self.y)
         self._check_min_samples()
         self._check_variance()
-        check_compute_distance(self.compute_distance)
 
         if self.reps:
             check_reps(self.reps)

@@ -4,7 +4,7 @@ from joblib import Parallel, delayed
 import numpy as np
 from scipy.stats.distributions import chi2
 from sklearn.metrics import pairwise_distances
-from sklearn.metrics.pairwise import rbf_kernel
+from sklearn.metrics.pairwise import pairwise_kernels
 
 # from scipy
 def contains_nan(a):
@@ -66,50 +66,69 @@ def check_reps(reps):
         warnings.warn(msg, RuntimeWarning)
 
 
-def check_compute_distance(compute):
-    """Check if compute distance/kernel function if a callable()"""
-    if not callable(compute) and compute is not None:
-        raise ValueError("The compute distance/kernel must be a function.")
-
-
-def check_xy_distmat(x, y):
-    """Check if x and y are distance matrices"""
-    nx, px = x.shape
-    ny, py = y.shape
-    if nx != px or ny != py or np.trace(x) != 0 or np.trace(y) != 0:
+def check_distmat(x, y):
+    """Check if x and y are distance matrices."""
+    if (
+        not np.array_equal(x, x.T)
+        or not np.array_equal(y, y.T)
+        or not np.all((x.diagonal() == 0))
+        or not np.all((y.diagonal() == 0))
+    ):
         raise ValueError(
             "Shape mismatch, x and y must be distance matrices "
             "have shape [n, n] and [n, n]."
         )
 
 
-def check_inputs_distmat(inputs):
-    # check if x and y are distance matrices
-    for i in inputs:
-        n, p = i.shape
-        if n != p or np.trace(i) != 0:
-            raise ValueError(
-                "Shape mismatch, x and y must be distance matrices "
-                "have shape [n, n] and [n, n]."
+def check_kernmat(x, y):
+    """Check if x and y are similarity matrices."""
+    if (
+        not np.array_equal(x, x.T)
+        or not np.array_equal(y, y.T)
+        or not np.all((x.diagonal() == 1))
+        or not np.all((y.diagonal() == 1))
+    ):
+        raise ValueError(
+            "Shape mismatch, x and y must be distance matrices "
+            "have shape [n, n] and [n, n]."
+        )
+
+
+def compute_kern(x, y, metric="gaussian", workers=None, **kwargs):
+    if metric == None:
+        metric = "precomputed"
+    if metric == "gaussian":
+        if "gamma" not in kwargs:
+            l1 = pairwise_distances(x, metric="l1", n_jobs=workers)
+            n = l1.shape[0]
+            med = np.median(
+                np.lib.stride_tricks.as_strided(
+                    l1, (n - 1, n + 1), (l1.itemsize * (n + 1), l1.itemsize)
+                )[:, 1:]
             )
+            kwargs["gamma"] = 1.0 / (2 * (med ** 2))
+        metric = "rbf"
+    if callable(metric):
+        simx = metric(x, **kwargs)
+        simy = metric(y, **kwargs)
+        check_kernmat(simx, simy)
+    else:
+        simx = pairwise_kernels(x, metric=metric, n_jobs=workers, **kwargs)
+        simy = pairwise_kernels(y, metric=metric, n_jobs=workers, **kwargs)
+    return simx, simy
 
 
-def euclidean(x, workers=None):
-    """Default euclidean distance function calculation"""
-    return pairwise_distances(X=x, metric="euclidean", n_jobs=workers)
-
-
-def gaussian(x, workers=None):
-    """Default medial gaussian kernel similarity calculation"""
-    l1 = pairwise_distances(X=x, metric="l1", n_jobs=workers)
-    n = l1.shape[0]
-    med = np.median(
-        np.lib.stride_tricks.as_strided(
-            l1, (n - 1, n + 1), (l1.itemsize * (n + 1), l1.itemsize)
-        )[:, 1:]
-    )
-    gamma = 1.0 / (2 * (med ** 2))
-    return rbf_kernel(x, gamma=gamma)
+def compute_dist(x, y, metric="euclidean", workers=None, **kwargs):
+    if metric == None:
+        metric = "precomputed"
+    if callable(metric):
+        distx = metric(x, **kwargs)
+        disty = metric(y, **kwargs)
+        check_distmat(distx, disty)
+    else:
+        distx = pairwise_distances(x, metric=metric, n_jobs=workers, **kwargs)
+        disty = pairwise_distances(y, metric=metric, n_jobs=workers, **kwargs)
+    return distx, disty
 
 
 def check_perm_blocks(perm_blocks):
