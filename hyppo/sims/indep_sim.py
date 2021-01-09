@@ -967,7 +967,7 @@ def circle(n, p, noise=False, low=-1, high=1):
     .. math::
 
         X_{|d|} &= r \left( \sin(\pi U_{|d+1|}) \prod_{j=1}^d \cos(\pi U_{|j|}) + 0.4 \epsilon_{|d|} \right)\ \mathrm{for}\ d = 1, ..., p-1 \\
-        X_{|d|} &= r \left( \prod_{j=1}^p \cos(\pi U_{|j|}) + 0.4 \epsilon_{|p|} \right) \\
+        X_{|p|} &= r \left( \prod_{j=1}^p \cos(\pi U_{|j|}) + 0.4 \epsilon_{|p|} \right) \\
         Y_{|d|} &= \sin(\pi U_{|1|})
 
     Examples
