@@ -152,7 +152,7 @@ class DcorrX(TimeSeriesTest):
         >>> dcorrx = DcorrX(compute_distance=None)
         >>> stat, pvalue, dcorrx_dict = dcorrx.test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
-        '1.0, 0.00'
+        '0.0, 1.00'
         """
         check_input = _CheckInputs(
             x, y, max_lag=self.max_lag,
