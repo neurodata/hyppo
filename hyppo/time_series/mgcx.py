@@ -53,9 +53,8 @@ class MGCX(TimeSeriesTest):
                 *ArXiv*
     """
 
-    def __init__(self, compute_distance=None, max_lag=0):
-        TimeSeriesTest.__init__(self, compute_distance=compute_distance)
-        self.max_lag = max_lag
+    def __init__(self, compute_distance="euclidean", max_lag=0, **kwargs):
+        TimeSeriesTest.__init__(self, compute_distance=compute_distance, max_lag=max_lag, **kwargs)
 
     def _statistic(self, x, y):
         r"""
@@ -79,13 +78,12 @@ class MGCX(TimeSeriesTest):
         opt_scale : tuple
             The computed optimal scale as a pair of two elements.
         """
-
-        stat, opt_lag = compute_stat(x, y, MGC, self.compute_distance, self.max_lag)
+        stat, opt_lag = compute_stat(x, y, MGC, self.compute_distance, self.max_lag, **self.kwargs)
         self.stat = stat
         self.opt_lag = opt_lag
 
         # Run the test at the optimal lag to get the optimal scale.
-        opt_scale = compute_scale_at_lag(x, y, opt_lag, self.compute_distance)
+        opt_scale = compute_scale_at_lag(x, y, opt_lag, self.compute_distance, **self.kwargs)
         self.opt_scale = opt_scale
 
         return stat, opt_lag, opt_scale
@@ -170,7 +168,7 @@ class MGCX(TimeSeriesTest):
         '1.0, 0.00'
         """
         check_input = _CheckInputs(
-            x, y, max_lag=self.max_lag, compute_distance=self.compute_distance
+            x, y, max_lag=self.max_lag,
         )
         x, y = check_input()
 

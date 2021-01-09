@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 from joblib import Parallel, delayed
 
-from .._utils import euclidean
+from ._utils import compute_dist
 
 
 class TimeSeriesTest(ABC):
@@ -29,15 +29,16 @@ class TimeSeriesTest(ABC):
         euclidean.
     """
 
-    def __init__(self, compute_distance=None, max_lag=0):
+    def __init__(self, compute_distance="euclidean", max_lag=0, **kwargs):
         # set statistic and p-value
         self.stat = None
         self.pvalue = None
         self.max_lag = max_lag
+        self.kwargs = kwargs
 
         # set compute_distance kernel
         if not compute_distance:
-            compute_distance = euclidean
+            compute_distance = None
         self.compute_distance = compute_distance
 
         super().__init__()
@@ -81,8 +82,7 @@ class TimeSeriesTest(ABC):
         null_dist : list
             The null distribution of the permuted test statistics.
         """
-        self.distx = self.compute_distance(x)
-        self.disty = self.compute_distance(y)
+        self.distx, self.disty = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
 
         # calculate observed test statistic
         stat_list = self._statistic(x, y)

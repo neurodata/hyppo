@@ -1,10 +1,11 @@
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.metrics import pairwise_distances
 
 from .base import RandomForestTest
 from ._utils import _CheckInputs, sim_matrix
 from ..independence import Dcorr
-from .._utils import euclidean, perm_test
+from .._utils import perm_test
 
 
 FOREST_TYPES = {
@@ -22,7 +23,7 @@ class KMERF(RandomForestTest):
         if forest in FOREST_TYPES.keys():
             self.clf = FOREST_TYPES[forest](n_estimators=ntrees, **kwargs)
         else:
-            raise ValueError("forest must be classifier or regressor")
+            raise ValueError("Forest must be of type classification or regression")
         RandomForestTest.__init__(self)
 
     def _statistic(self, x, y):
@@ -35,7 +36,7 @@ class KMERF(RandomForestTest):
         self.clf.fit(x, y)
         distx = np.sqrt(1 - sim_matrix(self.clf, x))
         y = y.reshape(-1, 1)
-        disty = euclidean(y)
+        disty = pairwise_distances(y, metric="euclidean")
         stat = Dcorr(compute_distance=None)._statistic(distx, disty)
         self.stat = stat
 

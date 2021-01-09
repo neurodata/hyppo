@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-from .._utils import euclidean
-
 
 class KSampleTest(ABC):
     """
@@ -21,11 +19,12 @@ class KSampleTest(ABC):
         applies to ``Dcorr`` and ``Hsic``.
     """
 
-    def __init__(self, compute_distance=euclidean, bias=False):
+    def __init__(self, bias=False, **kwargs):
         # set statistic and p-value
         self.stat = None
         self.pvalue = None
-        self.compute_distance = compute_distance
+        self.bias = bias
+        self.kwargs = kwargs
 
         super().__init__()
 

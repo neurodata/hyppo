@@ -1,8 +1,7 @@
 import numpy as np
-from collections import defaultdict
 from numba import njit
 
-from .._utils import euclidean, check_xy_distmat, chi2_approx, check_perm_blocks_dim
+from .._utils import compute_dist, chi2_approx, check_perm_blocks_dim
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 
@@ -91,14 +90,13 @@ class Dcorr(IndependenceTest):
                 Statistics*, 42(6), 2382-2412.
     """
 
-    def __init__(self, compute_distance=euclidean, bias=False):
+    def __init__(self, compute_distance="euclidean", bias=False, **kwargs):
         # set is_distance to true if compute_distance is None
         self.is_distance = False
         if not compute_distance:
             self.is_distance = True
         self.bias = bias
-
-        IndependenceTest.__init__(self, compute_distance=compute_distance)
+        IndependenceTest.__init__(self, compute_distance=compute_distance, **kwargs)
 
     def _statistic(self, x, y):
         r"""
@@ -122,8 +120,7 @@ class Dcorr(IndependenceTest):
         disty = y
 
         if not self.is_distance:
-            distx = self.compute_distance(x)
-            disty = self.compute_distance(y)
+            distx, disty = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
 
         stat = _dcorr(distx, disty, self.bias)
         self.stat = stat
@@ -201,11 +198,9 @@ class Dcorr(IndependenceTest):
         '0.0, 1.00'
         """
         check_input = _CheckInputs(
-            x, y, reps=reps, compute_distance=self.compute_distance
+            x, y, reps=reps,
         )
         x, y = check_input()
-        if self.is_distance:
-            check_xy_distmat(x, y)
         if perm_blocks is not None:
             check_perm_blocks_dim(perm_blocks, y)
 
@@ -215,10 +210,8 @@ class Dcorr(IndependenceTest):
             self.pvalue = pvalue
             self.null_dist = None
         else:
-            if not self.is_distance:
-                x = self.compute_distance(x, workers=workers)
-                y = self.compute_distance(y, workers=workers)
-                self.is_distance = True
+            x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
+            self.is_distance = True
             stat, pvalue = super(Dcorr, self).test(
                 x, y, reps, workers, perm_blocks=perm_blocks
             )

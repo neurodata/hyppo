@@ -1,7 +1,7 @@
 import numpy as np
 from numba import njit
 
-from .._utils import euclidean, check_xy_distmat
+from .._utils import compute_dist
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 
@@ -84,12 +84,11 @@ class HHG(IndependenceTest):
                *Biometrika*, 100(2), 503-510.
     """
 
-    def __init__(self, compute_distance=euclidean):
+    def __init__(self, compute_distance="euclidean", **kwargs):
         self.is_distance = False
         if not compute_distance:
             self.is_distance = True
-
-        IndependenceTest.__init__(self, compute_distance=compute_distance)
+        IndependenceTest.__init__(self, compute_distance=compute_distance, **kwargs)
 
     def _statistic(self, x, y):
         r"""
@@ -113,11 +112,9 @@ class HHG(IndependenceTest):
         disty = y
 
         if not self.is_distance:
-            distx = self.compute_distance(x)
-            disty = self.compute_distance(y)
+            distx, disty = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
 
         stat = _hhg(distx, disty)
-
         self.stat = stat
 
         return stat
@@ -183,16 +180,12 @@ class HHG(IndependenceTest):
         '0.0, 1.00'
         """
         check_input = _CheckInputs(
-            x, y, reps=reps, compute_distance=self.compute_distance
+            x, y, reps=reps
         )
         x, y = check_input()
 
-        if self.is_distance:
-            check_xy_distmat(x, y)
-        else:
-            x = self.compute_distance(x, workers=workers)
-            y = self.compute_distance(y, workers=workers)
-            self.is_distance = True
+        x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
+        self.is_distance = True
 
         return super(HHG, self).test(x, y, reps, workers)
 

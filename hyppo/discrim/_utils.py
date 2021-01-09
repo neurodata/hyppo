@@ -1,10 +1,12 @@
 import numpy as np
+
+from sklearn.metrics import pairwise_distances
+
 from .._utils import (
     contains_nan,
     check_ndarray_xy,
     convert_xy_float64,
     check_reps,
-    euclidean,
 )
 
 
@@ -60,7 +62,7 @@ class _CheckInputs:
                 x1 = x1[np.ix_(idx, idx)]
 
         if not self.is_distance:
-            x1 = euclidean(x1)
+            x1 = pairwise_distances(x1, metric="euclidean")
 
         return x1
 
