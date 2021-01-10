@@ -75,8 +75,18 @@ def check_distmat(x, y):
         or not np.all((y.diagonal() == 0))
     ):
         raise ValueError(
-            "Shape mismatch, x and y must be distance matrices "
-            "have shape [n, n] and [n, n]."
+            "x and y must be distance matrices, {is_sym} symmetric and {zero_diag} zeros along the diagonal".format(
+                is_sym="x is not"
+                if not np.array_equal(x, x.T)
+                else "y is not"
+                if not np.array_equal(y, y.T)
+                else "both are",
+                zero_diag="x doesn't have"
+                if not np.all((x.diagonal() == 0))
+                else "y doesn't have"
+                if not np.all((y.diagonal() == 0))
+                else "both have",
+            )
         )
 
 
@@ -89,8 +99,18 @@ def check_kernmat(x, y):
         or not np.all((y.diagonal() == 1))
     ):
         raise ValueError(
-            "Shape mismatch, x and y must be distance matrices "
-            "have shape [n, n] and [n, n]."
+            "x and y must be distance matrices, {is_sym} symmetric and {one_diag} ones along the diagonal".format(
+                is_sym="x is not"
+                if not np.array_equal(x, x.T)
+                else "y is not"
+                if not np.array_equal(y, y.T)
+                else "both are",
+                one_diag="x doesn't have"
+                if not np.all((x.diagonal() == 1))
+                else "y doesn't have"
+                if not np.all((y.diagonal() == 1))
+                else "both have",
+            )
         )
 
 

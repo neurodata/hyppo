@@ -136,7 +136,9 @@ class MGC(IndependenceTest):
         disty = y
 
         if not self.is_distance:
-            distx, disty = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
+            distx, disty = compute_dist(
+                x, y, metric=self.compute_distance, **self.kwargs
+            )
 
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
@@ -215,7 +217,9 @@ class MGC(IndependenceTest):
         '0.0, 1.00'
         """
         check_input = _CheckInputs(
-            x, y, reps=reps,
+            x,
+            y,
+            reps=reps,
         )
         x, y = check_input()
 
