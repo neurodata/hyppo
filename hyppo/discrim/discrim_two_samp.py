@@ -147,6 +147,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
             msg = "You have not entered a valid alternative."
             raise ValueError(msg)
 
+        # check if discrim is correct
         if pvalue == 0:
             pvalue = 1 / reps
 

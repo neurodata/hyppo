@@ -99,7 +99,7 @@ class TimeSeriesTest(ABC):
                 ]
             )
         )
-        pvalue = (null_dist >= stat).sum() / reps
+        pvalue = (1 + (null_dist >= stat).sum()) / (1 + reps)
 
         # correct for a p-value of 0. This is because, with bootstrapping
         # permutations, a p-value of 0 is incorrect
