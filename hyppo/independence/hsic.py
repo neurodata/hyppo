@@ -202,7 +202,9 @@ class Hsic(IndependenceTest):
         '0.0, 1.00'
         """
         check_input = _CheckInputs(
-            x, y, reps=reps,
+            x,
+            y,
+            reps=reps,
         )
         x, y = check_input()
 

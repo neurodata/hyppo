@@ -120,7 +120,9 @@ class Dcorr(IndependenceTest):
         disty = y
 
         if not self.is_distance:
-            distx, disty = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
+            distx, disty = compute_dist(
+                x, y, metric=self.compute_distance, **self.kwargs
+            )
 
         stat = _dcorr(distx, disty, self.bias)
         self.stat = stat
@@ -198,7 +200,9 @@ class Dcorr(IndependenceTest):
         '0.0, 1.00'
         """
         check_input = _CheckInputs(
-            x, y, reps=reps,
+            x,
+            y,
+            reps=reps,
         )
         x, y = check_input()
         if perm_blocks is not None:

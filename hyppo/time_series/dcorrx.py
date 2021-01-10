@@ -54,7 +54,9 @@ class DcorrX(TimeSeriesTest):
     """
 
     def __init__(self, compute_distance="euclidean", max_lag=0, **kwargs):
-        TimeSeriesTest.__init__(self, compute_distance=compute_distance, max_lag=max_lag, **kwargs)
+        TimeSeriesTest.__init__(
+            self, compute_distance=compute_distance, max_lag=max_lag, **kwargs
+        )
 
     def _statistic(self, x, y):
         r"""
@@ -76,7 +78,9 @@ class DcorrX(TimeSeriesTest):
         opt_lag : int
             The computed optimal lag.
         """
-        stat, opt_lag = compute_stat(x, y, Dcorr, self.compute_distance, self.max_lag, **self.kwargs)
+        stat, opt_lag = compute_stat(
+            x, y, Dcorr, self.compute_distance, self.max_lag, **self.kwargs
+        )
         self.stat = stat
         self.opt_lag = opt_lag
 
@@ -155,7 +159,9 @@ class DcorrX(TimeSeriesTest):
         '0.0, 1.00'
         """
         check_input = _CheckInputs(
-            x, y, max_lag=self.max_lag,
+            x,
+            y,
+            max_lag=self.max_lag,
         )
         x, y = check_input()
 

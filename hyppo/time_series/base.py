@@ -82,7 +82,9 @@ class TimeSeriesTest(ABC):
         null_dist : list
             The null distribution of the permuted test statistics.
         """
-        self.distx, self.disty = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
+        self.distx, self.disty = compute_dist(
+            x, y, metric=self.compute_distance, **self.kwargs
+        )
 
         # calculate observed test statistic
         stat_list = self._statistic(x, y)

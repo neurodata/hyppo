@@ -81,17 +81,23 @@ class KSample(KSampleTest):
 
         if self.indep_test_name in ["dcorr", "hhg", "hsic", "mgc"]:
             if self.indep_test_name == "hsic":
-                self.indep_test = indep_test(compute_kernel=compute_distance, bias=bias, **kwargs)
+                self.indep_test = indep_test(
+                    compute_kernel=compute_distance, bias=bias, **kwargs
+                )
             elif self.indep_test_name == "dcorr":
                 self.indep_test = indep_test(
                     compute_distance=compute_distance, bias=bias, **kwargs
                 )
             else:
-                self.indep_test = indep_test(compute_distance=compute_distance, **kwargs)
+                self.indep_test = indep_test(
+                    compute_distance=compute_distance, **kwargs
+                )
         else:
             self.indep_test = indep_test()
 
-        KSampleTest.__init__(self, compute_distance=compute_distance, bias=bias, **kwargs)
+        KSampleTest.__init__(
+            self, compute_distance=compute_distance, bias=bias, **kwargs
+        )
 
     def _statistic(self, *args):
         r"""
