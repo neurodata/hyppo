@@ -325,12 +325,7 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
             ]
         )
     )
-    pvalue = (null_dist >= stat).sum() / reps
-
-    # correct for a p-value of 0. This is because, with bootstrapping
-    # permutations, a p-value of 0 is incorrect
-    if pvalue == 0:
-        pvalue = 1 / reps
+    pvalue = (1 + (null_dist >= stat).sum()) / (1 + reps)
 
     return stat, pvalue, null_dist
 

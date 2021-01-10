@@ -132,12 +132,7 @@ class DiscrimOneSample(DiscriminabilityTest):
         self.null_dist = null_dist
 
         # calculate p-value and significant permutation map through list
-        pvalue = ((null_dist >= stat).sum()) / reps
-
-        # correct for a p-value of 0. This is because, with bootstrapping
-        # permutations, a p-value of 0 is incorrect
-        if pvalue == 0:
-            pvalue = 1 / reps
+        pvalue = (1 + (null_dist >= stat).sum()) / (1 + reps)
 
         self.pvalue_ = pvalue
 
