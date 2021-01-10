@@ -11,7 +11,6 @@
 
 `hyppo` (**HYP**othesis Testing in **P**yth**O**n, pronounced "Hippo") is an open-source software package for multivariate hypothesis testing.
 
-- **Installation Guide (also below):** [https://hyppo.neurodata.io/install.html](https://hyppo.neurodata.io/install.html)
 - **Documentation:** [https://hyppo.neurodata.io/](https://hyppo.neurodata.io/)
 - **Tutorials:** [https://hyppo.neurodata.io/tutorials.html](https://hyppo.neurodata.io/tutorials.html)
 - **Source Code:** [https://github.com/neurodata/hyppo/tree/master/hyppo](https://github.com/neurodata/hyppo/tree/master/hyppo)
