@@ -17,11 +17,7 @@
 - **Issues:** [https://github.com/neurodata/hyppo/issues](https://github.com/neurodata/hyppo/issues)
 - **Contribution Guide:** [https://hyppo.neurodata.io/contributing.html](https://hyppo.neurodata.io/contributing.html)
 
-Some system/package requirements:
-
-- **Python**: 3.6+
-- **OS**: All major platforms (Linux, macOS, Windows)
-- **Dependencies**: `numpy`, `scipy`, `numba`, `scikit-learn`
+**Note: We have recently moved our `benchmarks` (with relevant figure replication code for our papers) folder to a new [repo](https://github.com/neurodata/hyppo-papers)!** We aim to add test development code and paper figure replication code there, and will add relevant tests (with tutorials) to ``hyppo``.
 
 `hyppo` intends to be a comprehensive multivariate hypothesis testing package and runs on all major versions of operating systems. It also includes novel tests not found in other packages. It is quick to install and free of charge. If you need to use multivariate hypothesis testing, be sure to give `hyppo` a try!
 
