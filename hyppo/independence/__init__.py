@@ -4,5 +4,6 @@ from .hhg import HHG
 from .dcorr import Dcorr
 from .hsic import Hsic
 from .mgc import MGC
+from .kmerf import KMERF
 
-__all__ = ["RV", "CCA", "HHG", "Dcorr", "Hsic", "MGC"]
+__all__ = [s for s in dir()]  # add imported tests to __all__

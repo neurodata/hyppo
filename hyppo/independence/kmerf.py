@@ -2,9 +2,9 @@ import numpy as np
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.metrics import pairwise_distances
 
-from .base import RandomForestTest
+from .base import IndependenceTest
 from ._utils import _CheckInputs, sim_matrix
-from ..independence import Dcorr
+from . import Dcorr
 from ..tools import perm_test
 
 
@@ -14,7 +14,7 @@ FOREST_TYPES = {
 }
 
 
-class KMERF(RandomForestTest):
+class KMERF(IndependenceTest):
     r"""
     Class for calculating the random forest based Dcorr test statistic and p-value.
     """
@@ -24,7 +24,7 @@ class KMERF(RandomForestTest):
             self.clf = FOREST_TYPES[forest](n_estimators=ntrees, **kwargs)
         else:
             raise ValueError("Forest must be of type classification or regression")
-        RandomForestTest.__init__(self)
+        IndependenceTest.__init__(self)
 
     def _statistic(self, x, y):
         r"""
