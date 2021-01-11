@@ -167,7 +167,8 @@ class KSample(KSampleTest):
         inputs = check_input()
         u, v = k_sample_transform(inputs)
 
+        kwargs = {}
         if self.indep_test_name in ["dcorr", "hsic"]:
-            return self.indep_test.test(u, v, reps, workers, auto=auto)
-        else:
-            return self.indep_test.test(u, v, reps, workers)
+            kwargs = {"auto" : auto}
+
+        return self.indep_test.test(u, v, reps, workers, **kwargs)
