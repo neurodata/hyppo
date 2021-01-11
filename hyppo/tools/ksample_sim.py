@@ -122,7 +122,7 @@ def rot_2samp(sim, n, p, noise=True, degree=90):
     Parameters
     ----------
     sim : callable()
-        The simulation (from the ``hyppo.sims`` module) that is to be rotated.
+        The simulation (from the ``hyppo.tools`` module) that is to be rotated.
     n : int
         The number of samples desired by the simulation.
     p : int
@@ -141,7 +141,7 @@ def rot_2samp(sim, n, p, noise=True, degree=90):
 
     Examples
     --------
-    >>> from hyppo.sims import rot_2samp, linear
+    >>> from hyppo.tools import rot_2samp, linear
     >>> x, y = rot_2samp(linear, 100, 1)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 2)
@@ -191,7 +191,7 @@ def trans_2samp(sim, n, p, noise=True, degree=90, trans=0.3):
 
     Examples
     --------
-    >>> from hyppo.sims import trans_2samp, linear
+    >>> from hyppo.tools import trans_2samp, linear
     >>> x, y = trans_2samp(linear, 100, 1)
     >>> print(x.shape, y.shape)
     (100, 2) (100, 2)
@@ -242,7 +242,7 @@ def gaussian_3samp(n, epsilon=1, weight=0, case=1):
 
     Examples
     --------
-    >>> from hyppo.sims import gaussian_3samp
+    >>> from hyppo.tools import gaussian_3samp
     >>> sims = gaussian_3samp(100)
     >>> print(sims[0].shape, sims[1].shape, sims[2].shape)
     (100, 2) (100, 2) (100, 2)
