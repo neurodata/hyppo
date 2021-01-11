@@ -100,3 +100,14 @@ Multimodal Independence
 3-Sample Gaussian Simulation
 """"""""""""""""""""""""""""
 .. autofunction:: gaussian_3samp
+
+Miscellaneous
+-------------
+
+Kernel Matrix Computation
+""""""""""""""""""
+.. autofunction:: compute_kern
+
+Distance Matrix Computation
+""""""""""""""""""""""""""""
+.. autofunction:: compute_dist

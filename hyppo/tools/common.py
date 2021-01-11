@@ -114,7 +114,44 @@ def _check_kernmat(x, y):
         )
 
 
-def compute_kern(x, y, metric="gaussian", workers=None, **kwargs):
+def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
+    """
+    Compute kernel similarity matrix for the input matrices.
+
+    Parameters
+    ----------
+    x, y : ndarray
+        Input data matrices. `x` and `y` must have the same number of
+        samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        `n` is the number of samples and `p` and `q` are the number of
+        dimensions. Alternatively, if `x` and `y` can be distance matrices,
+        where the shapes must both be `(n, n)`, no kernel will be computed.
+    metric : str, optional (default: "gaussian")
+        A function that computes the distance among the samples within each
+        data matrix.
+        Valid strings for ``metric`` are, as defined in
+        ``sklearn.metrics.pairwise.pairwise_kernels``,
+
+            ['additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'gaussian',
+            'laplacian', 'sigmoid', 'cosine']
+
+        Set to `None` or `precomputed` if `x` and `y` are already distance
+        matrices. To call a custom function, either create the distance matrix
+        before-hand or create a function of the form ``metric(x, **kwargs)``
+        where `x` is the data matrix for which pairwise distances are
+        calculated and kwargs are extra arguements to send to your custom function.
+    workers : int, optional (default: 1)
+        The number of cores to parallelize the p-value computation over.
+        Supply -1 to use all cores available to the Process.
+    **kwargs : optional
+        Optional arguments provided to ``sklearn.metrics.pairwise.pairwise_kernels``
+        or a custom kernel function.
+
+    Returns
+    -------
+    simx, simy : ndarray
+        Similarity matrices based on the metric provided by the user.
+    """
     if metric == None:
         metric = "precomputed"
     if metric == "gaussian":
@@ -139,6 +176,49 @@ def compute_kern(x, y, metric="gaussian", workers=None, **kwargs):
 
 
 def compute_dist(x, y, metric="euclidean", workers=None, **kwargs):
+    """
+    Compute kernel similarity matrix for the input matrices.
+
+    Parameters
+    ----------
+    x, y : ndarray
+        Input data matrices. `x` and `y` must have the same number of
+        samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        `n` is the number of samples and `p` and `q` are the number of
+        dimensions. Alternatively, if `x` and `y` can be distance matrices,
+        where the shapes must both be `(n, n)`, no kernel will be computed.
+    metric : str, optional (default: "gaussian")
+        A function that computes the distance among the samples within each
+        data matrix.
+        Valid strings for ``metric`` are, as defined in
+        ``sklearn.metrics.pairwise_distances``,
+
+            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
+              ‘manhattan’] See the documentation for scipy.spatial.distance for details
+              on these metrics.
+            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
+              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
+              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
+              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
+              documentation for scipy.spatial.distance for details on these metrics.
+
+        Set to `None` or `precomputed` if `x` and `y` are already distance
+        matrices. To call a custom function, either create the distance matrix
+        before-hand or create a function of the form ``metric(x, **kwargs)``
+        where `x` is the data matrix for which pairwise distances are
+        calculated and kwargs are extra arguements to send to your custom function.
+    workers : int, optional (default: 1)
+        The number of cores to parallelize the p-value computation over.
+        Supply -1 to use all cores available to the Process.
+    **kwargs : optional
+        Optional arguments provided to ``sklearn.metrics.pairwise_distances`` or a custom
+        kernel function.
+
+    Returns
+    -------
+    distx, disty : ndarray
+        Distance matrices based on the metric provided by the user.
+    """
     if metric == None:
         metric = "precomputed"
     if callable(metric):
