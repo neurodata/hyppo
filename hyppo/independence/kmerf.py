@@ -16,7 +16,7 @@ FOREST_TYPES = {
 
 class KMERF(IndependenceTest):
     r"""
-    Class for calculating the random forest based Dcorr test statistic and p-value.
+    Class for calculating the kernel mean embedding (KMERF) test statistic and p-value.
     """
 
     def __init__(self, forest="regressor", ntrees=500, **kwargs):
@@ -28,7 +28,7 @@ class KMERF(IndependenceTest):
 
     def _statistic(self, x, y):
         r"""
-        Helper function that calculates the random forest based Dcorr test statistic.
+        Helper function that calculates the KMERF test statistic.
 
         y must be categorical
         """
@@ -44,15 +44,16 @@ class KMERF(IndependenceTest):
 
     def test(self, x, y, reps=1000, workers=1):
         r"""
-        Calculates the random forest based Dcorr test statistic and p-value.
+        Calculates the KMERF test statistic and p-value.
         """
         check_input = _CheckInputs(x, y, reps=reps)
         x, y = check_input()
 
-        stat, pvalue = perm_test(
+        stat, pvalue, null_dist = perm_test(
             self._statistic, x, y, reps=reps, workers=workers, is_distsim=False
         )
         self.stat = stat
         self.pvalue = pvalue
+        self.null_dist = null_dist
 
         return stat, pvalue

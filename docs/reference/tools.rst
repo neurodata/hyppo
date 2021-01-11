@@ -1,5 +1,5 @@
 Tools
-*******************
+*****
 
 .. currentmodule:: hyppo.tools
 
@@ -101,8 +101,8 @@ Multimodal Independence
 """"""""""""""""""""""""""""
 .. autofunction:: gaussian_3samp
 
-Miscellaneous
--------------
+Misc
+----
 
 Kernel Matrix Computation
 """"""""""""""""""

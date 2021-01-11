@@ -1,6 +1,5 @@
-# from .._utils import euclidean, gaussian
 from .base import KSampleTest
-from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC
+from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC, KMERF
 from ._utils import _CheckInputs, k_sample_transform
 
 
@@ -71,10 +70,11 @@ class KSample(KSampleTest):
             "hsic": Hsic,
             "dcorr": Dcorr,
             "mgc": MGC,
+            "kmerf": KMERF,
         }
         if indep_test not in test_names.keys():
             raise ValueError("Test is not a valid independence test")
-        if indep_test == "hsic" and compute_distance == euclidean:
+        if indep_test == "hsic" and compute_distance == "euclidean":
             compute_distance = "gaussian"
         self.indep_test_name = indep_test
         indep_test = test_names[indep_test]
@@ -92,6 +92,8 @@ class KSample(KSampleTest):
                 self.indep_test = indep_test(
                     compute_distance=compute_distance, **kwargs
                 )
+        elif self.indep_test_name == "kmerf":
+            self.indep_test = indep_test(**kwargs)
         else:
             self.indep_test = indep_test()
 
