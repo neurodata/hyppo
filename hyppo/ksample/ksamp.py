@@ -93,7 +93,7 @@ class KSample(KSampleTest):
                     compute_distance=compute_distance, **kwargs
                 )
         elif self.indep_test_name == "kmerf":
-            self.indep_test = indep_test(**kwargs)
+            self.indep_test = indep_test(forest_type="classifier", **kwargs)
         else:
             self.indep_test = indep_test()
 
@@ -115,7 +115,10 @@ class KSample(KSampleTest):
             matrices, where the shapes must all be `(n, n)`.
         """
         inputs = list(args)
-        u, v = k_sample_transform(inputs)
+        if self.indep_test_name == "kmerf":
+            u, v = k_sample_transform(inputs, test_type="rf")
+        else:
+            u, v = k_sample_transform(inputs)
 
         return self.indep_test._statistic(u, v)
 
@@ -167,7 +170,10 @@ class KSample(KSampleTest):
             indep_test=self.indep_test,
         )
         inputs = check_input()
-        u, v = k_sample_transform(inputs)
+        if self.indep_test_name == "kmerf":
+            u, v = k_sample_transform(inputs, test_type="rf")
+        else:
+            u, v = k_sample_transform(inputs)
 
         kwargs = {}
         if self.indep_test_name in ["dcorr", "hsic"]:
