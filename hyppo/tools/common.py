@@ -168,7 +168,9 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
     if callable(metric):
         simx = metric(x, **kwargs)
         simy = metric(y, **kwargs)
-        _check_kernmat(simx, simy) # verify whether matrix is correct, built into sklearn func
+        _check_kernmat(
+            simx, simy
+        )  # verify whether matrix is correct, built into sklearn func
     else:
         simx = pairwise_kernels(x, metric=metric, n_jobs=workers, **kwargs)
         simy = pairwise_kernels(y, metric=metric, n_jobs=workers, **kwargs)
@@ -224,7 +226,9 @@ def compute_dist(x, y, metric="euclidean", workers=None, **kwargs):
     if callable(metric):
         distx = metric(x, **kwargs)
         disty = metric(y, **kwargs)
-        _check_distmat(distx, disty) # verify whether matrix is correct, built into sklearn func
+        _check_distmat(
+            distx, disty
+        )  # verify whether matrix is correct, built into sklearn func
     else:
         distx = pairwise_distances(x, metric=metric, n_jobs=workers, **kwargs)
         disty = pairwise_distances(y, metric=metric, n_jobs=workers, **kwargs)

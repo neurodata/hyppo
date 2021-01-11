@@ -169,6 +169,6 @@ class KSample(KSampleTest):
 
         kwargs = {}
         if self.indep_test_name in ["dcorr", "hsic"]:
-            kwargs = {"auto" : auto}
+            kwargs = {"auto": auto}
 
         return self.indep_test.test(u, v, reps, workers, **kwargs)
