@@ -1,6 +1,6 @@
 import numpy as np
 
-from .._utils import contains_nan
+from ..tools import contains_nan
 from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC
 
 

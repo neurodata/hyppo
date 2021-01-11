@@ -3,7 +3,7 @@ import numpy as np
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 from . import Dcorr
-from .._utils import compute_kern, chi2_approx
+from ..tools import compute_kern, chi2_approx
 
 
 class Hsic(IndependenceTest):

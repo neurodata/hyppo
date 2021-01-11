@@ -2,7 +2,7 @@ import numpy as np
 
 from sklearn.metrics import pairwise_distances
 
-from .._utils import (
+from ..tools import (
     contains_nan,
     check_ndarray_xy,
     convert_xy_float64,

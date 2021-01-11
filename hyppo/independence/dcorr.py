@@ -1,7 +1,7 @@
 import numpy as np
 from numba import njit
 
-from .._utils import compute_dist, chi2_approx, check_perm_blocks_dim
+from ..tools import compute_dist, chi2_approx, check_perm_blocks_dim
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 

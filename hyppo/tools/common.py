@@ -66,7 +66,7 @@ def check_reps(reps):
         warnings.warn(msg, RuntimeWarning)
 
 
-def check_distmat(x, y):
+def _check_distmat(x, y):
     """Check if x and y are distance matrices."""
     if (
         not np.array_equal(x, x.T)
@@ -90,7 +90,7 @@ def check_distmat(x, y):
         )
 
 
-def check_kernmat(x, y):
+def _check_kernmat(x, y):
     """Check if x and y are similarity matrices."""
     if (
         not np.array_equal(x, x.T)
@@ -131,7 +131,7 @@ def compute_kern(x, y, metric="gaussian", workers=None, **kwargs):
     if callable(metric):
         simx = metric(x, **kwargs)
         simy = metric(y, **kwargs)
-        check_kernmat(simx, simy)
+        _check_kernmat(simx, simy) # verify whether matrix is correct, built into sklearn func
     else:
         simx = pairwise_kernels(x, metric=metric, n_jobs=workers, **kwargs)
         simy = pairwise_kernels(y, metric=metric, n_jobs=workers, **kwargs)
@@ -144,7 +144,7 @@ def compute_dist(x, y, metric="euclidean", workers=None, **kwargs):
     if callable(metric):
         distx = metric(x, **kwargs)
         disty = metric(y, **kwargs)
-        check_distmat(distx, disty)
+        _check_distmat(distx, disty) # verify whether matrix is correct, built into sklearn func
     else:
         distx = pairwise_distances(x, metric=metric, n_jobs=workers, **kwargs)
         disty = pairwise_distances(y, metric=metric, n_jobs=workers, **kwargs)

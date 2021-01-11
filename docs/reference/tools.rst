@@ -1,7 +1,7 @@
-Miscellaneous
-*************
+Tools
+*******************
 
-.. currentmodule:: hyppo.sims
+.. currentmodule:: hyppo.tools
 
 Independence Sims
 -----------------
@@ -55,7 +55,7 @@ Sine :math:`4\pi`
 .. autofunction:: sin_four_pi
 
 Sine :math:`16\pi`
-"""""""""""""""""
+""""""""""""""""""
 .. autofunction:: sin_sixteen_pi
 
 Square

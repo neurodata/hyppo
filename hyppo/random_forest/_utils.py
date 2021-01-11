@@ -3,7 +3,7 @@ import warnings
 import numpy as np
 from scipy.stats import chi2
 
-from .._utils import (
+from ..tools import (
     contains_nan,
     check_ndarray_xy,
     convert_xy_float64,

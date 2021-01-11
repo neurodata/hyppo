@@ -1,7 +1,7 @@
 import hyppo.independence
 import hyppo.ksample
 import hyppo.time_series
-import hyppo.sims
+import hyppo.tools
 import hyppo.discrim
 import hyppo.random_forest
 

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 from joblib import Parallel, delayed
 
-from ._utils import compute_dist
+from ..tools import compute_dist
 
 
 class TimeSeriesTest(ABC):

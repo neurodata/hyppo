@@ -1,7 +1,7 @@
 import numpy as np
 from numba import njit
 
-from .._utils import compute_dist
+from ..tools import compute_dist
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 

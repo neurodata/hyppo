@@ -1,4 +1,4 @@
-from hyppo._utils import _PermTree, _PermNode
+from ..common import _PermTree, _PermNode
 from numpy.testing import (
     assert_array_less,
     assert_allclose,

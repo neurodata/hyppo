@@ -1,6 +1,6 @@
 import numpy as np
 
-from .._utils import (
+from ..tools import (
     contains_nan,
     check_ndarray_xy,
     convert_xy_float64,

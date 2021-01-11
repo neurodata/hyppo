@@ -1,7 +1,7 @@
 import warnings
 from scipy.stats import multiscale_graphcorr
 
-from .._utils import compute_dist
+from ..tools import compute_dist
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 
