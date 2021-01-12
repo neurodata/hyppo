@@ -9,6 +9,7 @@ from .. import KMERF
 class TestKMERFStat(object):
     """Test validity of KMERF test statistic"""
 
+    # commented out p-value calculation because build stalled
     @pytest.mark.parametrize(
         "sim, obs_stat, obs_pvalue",
         [
@@ -17,8 +18,6 @@ class TestKMERFStat(object):
             (multimodal_independence, -0.0363, 0.995),  # test independence simulation
         ],
     )
-
-    # commented out p-value calculation because build stalled
     def test_oned(self, sim, obs_stat, obs_pvalue):
         np.random.seed(12345678)
 

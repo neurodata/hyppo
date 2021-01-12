@@ -1,4 +1,4 @@
-from ..common import _PermTree, _PermNode
+from ..common import _PermTree
 from numpy.testing import (
     assert_array_less,
     assert_allclose,
@@ -36,7 +36,7 @@ class TestPermTree:
 
     def test_across_permutations(self):
         np.random.seed(0)
-        y = np.asarray([0, 0, 1, 1, 2, 2])
+        # i.e. case: y = np.asarray([0,0,1,1,2,2])
         blocks = np.vstack(
             (
                 [1, -1],
@@ -48,7 +48,7 @@ class TestPermTree:
             )
         )
         perm_tree = _PermTree(blocks)
-        original_indices = perm_tree.original_indices()
+        _ = perm_tree.original_indices()
         perms = np.asarray([perm_tree.permute_indices() for _ in range(100)])
         assert_equal(perms[0][1::2] - perms[0][::2], [1, 1, 1])
         assert_allclose(np.mean(perms, axis=0), [2, 3, 2, 3, 2, 3], rtol=0, atol=0.2)
@@ -69,7 +69,7 @@ class TestPermTree:
 
     def test_non_int_inputs(self):
         blocks = ["a", "b", "c"]
-        perm_tree = _PermTree(blocks)
+        _ = _PermTree(blocks)
 
     def test_block_sizes(self):
         blocks = [1, 1, 2]

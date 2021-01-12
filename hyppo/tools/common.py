@@ -6,9 +6,10 @@ from scipy.stats.distributions import chi2
 from sklearn.metrics import pairwise_distances
 from sklearn.metrics.pairwise import pairwise_kernels
 
-# from scipy
-def contains_nan(a):
+
+def contains_nan(a):  # from scipy
     """Check if inputs contains NaNs"""
+
     try:
         # Calling np.sum to avoid creating a huge array into memory
         # e.g. np.isnan(a).any()
@@ -75,7 +76,8 @@ def _check_distmat(x, y):
         or not np.all((y.diagonal() == 0))
     ):
         raise ValueError(
-            "x and y must be distance matrices, {is_sym} symmetric and {zero_diag} zeros along the diagonal".format(
+            "x and y must be distance matrices, {is_sym} symmetric and "
+            "{zero_diag} zeros along the diagonal".format(
                 is_sym="x is not"
                 if not np.array_equal(x, x.T)
                 else "y is not"
@@ -99,7 +101,8 @@ def _check_kernmat(x, y):
         or not np.all((y.diagonal() == 1))
     ):
         raise ValueError(
-            "x and y must be distance matrices, {is_sym} symmetric and {one_diag} ones along the diagonal".format(
+            "x and y must be distance matrices, {is_sym} symmetric and {one_diag} "
+            "ones along the diagonal".format(
                 is_sym="x is not"
                 if not np.array_equal(x, x.T)
                 else "y is not"
@@ -152,7 +155,7 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
     simx, simy : ndarray
         Similarity matrices based on the metric provided by the user.
     """
-    if metric == None:
+    if not metric:
         metric = "precomputed"
     if metric == "gaussian":
         if "gamma" not in kwargs:
@@ -213,15 +216,15 @@ def compute_dist(x, y, metric="euclidean", workers=None, **kwargs):
         The number of cores to parallelize the p-value computation over.
         Supply -1 to use all cores available to the Process.
     **kwargs : optional
-        Optional arguments provided to ``sklearn.metrics.pairwise_distances`` or a custom
-        kernel function.
+        Optional arguments provided to ``sklearn.metrics.pairwise_distances`` or a
+        custom kernel function.
 
     Returns
     -------
     distx, disty : ndarray
         Distance matrices based on the metric provided by the user.
     """
-    if metric == None:
+    if not metric:
         metric = "precomputed"
     if callable(metric):
         distx = metric(x, **kwargs)
@@ -253,7 +256,7 @@ def check_perm_blocks(perm_blocks):
 
 def check_perm_blocks_dim(perm_blocks, y):
     if not perm_blocks.shape[0] == y.shape[0]:
-        raise ValueError(f"perm_bocks first dimension must be same length as y")
+        raise ValueError("perm_bocks first dimension must be same length as y")
 
 
 def check_perm_block(perm_block):

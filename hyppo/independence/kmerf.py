@@ -5,7 +5,6 @@ from sklearn.metrics import pairwise_distances
 from .base import IndependenceTest
 from ._utils import _CheckInputs, sim_matrix
 from . import Dcorr
-from ..tools import perm_test
 
 
 FOREST_TYPES = {

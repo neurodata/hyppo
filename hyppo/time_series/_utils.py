@@ -79,7 +79,7 @@ class _CheckInputs:
 def compute_stat(x, y, indep_test, compute_distance, max_lag, **kwargs):
     """Compute time series test statistic"""
     # calculate distance matrices
-    if compute_distance == None:
+    if not compute_distance:
         compute_distance = "precomputed"
     distx, disty = compute_dist(x, y, metric=compute_distance, **kwargs)
 
@@ -107,7 +107,7 @@ def compute_stat(x, y, indep_test, compute_distance, max_lag, **kwargs):
 def compute_scale_at_lag(x, y, opt_lag, compute_distance, **kwargs):
     """Run the mgc test at the optimal scale (by shifting the series)."""
     n = x.shape[0]
-    if compute_distance == None:
+    if not compute_distance:
         compute_distance = "precomputed"
     distx, disty = compute_dist(x, y, metric=compute_distance, **kwargs)
 
