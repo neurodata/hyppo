@@ -3,6 +3,10 @@ Independence
 
 .. currentmodule:: hyppo.independence
 
+Kernel Mean Embedding Random Forest (KMERF)
+-------------------------------------------
+.. autoclass:: KMERF
+
 Multiscale Graph Correlation (MGC)
 ----------------------------------
 .. autoclass:: MGC

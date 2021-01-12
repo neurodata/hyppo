@@ -3,10 +3,10 @@ Discriminability
 
 .. currentmodule:: hyppo.discrim
 
-Discriminability One Sample Test
---------------------------------
+One Sample Test
+---------------
 .. autoclass:: DiscrimOneSample
 
-Discriminability Two Sample Test
---------------------------------
+Two Sample Test
+---------------
 .. autoclass:: DiscrimTwoSample

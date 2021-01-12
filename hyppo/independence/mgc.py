@@ -1,7 +1,7 @@
 import warnings
 from scipy.stats import multiscale_graphcorr
 
-from .._utils import compute_dist
+from ..tools import compute_dist
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 
@@ -55,7 +55,7 @@ class MGC(IndependenceTest):
     :math:`n \times n` distance matrices :math:`A` and :math:`B` (the
     centering and unbiased modification) [3]_.
 
-    #. For all values :math:`k` and :math:`l` from :math:`1, ..., n`,
+    + For all values :math:`k` and :math:`l` from :math:`1, ..., n`,
 
        * The :math:`k`-nearest neighbor and :math:`l`-nearest neighbor graphs
          are calculated for each property. Here, :math:`G_k (i, j)` indicates
@@ -66,32 +66,26 @@ class MGC(IndependenceTest):
        * Let :math:`\circ` denotes the entry-wise matrix product, then local
          correlations are summed and normalized using the following statistic:
 
-    .. math::
+         .. math::
 
-        c^{kl} = \frac{\sum_{ij} A G_k B H_l}
-                      {\sqrt{\sum_{ij} A^2 G_k \times \sum_{ij} B^2 H_l}}
+            c^{kl} = \frac{\sum_{ij} A G_k B H_l}
+                            {\sqrt{\sum_{ij} A^2 G_k \times \sum_{ij} B^2 H_l}}
 
-    #. The MGC test statistic is the smoothed optimal local correlation of
-       :math:`\{ c^{kl} \}`. Denote the smoothing operation as :math:`R(\cdot)`
-       (which essentially set all isolated large correlations) as 0 and
-       connected large correlations the same as before, see [#3MGC]_.) MGC is,
+    + The MGC test statistic is the smoothed optimal local correlation of
+      :math:`\{ c^{kl} \}`. Denote the smoothing operation as :math:`R(\cdot)`
+      (which essentially set all isolated large correlations) as 0 and
+      connected large correlations the same as before, see [#3MGC]_.) MGC is,
 
-    .. math::
+      .. math::
 
-        MGC_n (x, y) = \max_{(k, l)} R \left(c^{kl} \left( x_n, y_n \right)
+         MGC_n (x, y) = \max_{(k, l)} R \left(c^{kl} \left( x_n, y_n \right)
                                                     \right)
 
     The test statistic returns a value between :math:`(-1, 1)` since it is
     normalized.
 
-    The p-value returned is calculated using a permutation test. This process
-    is completed by first randomly permuting :math:`y` to estimate the null
-    distribution and then calculating the probability of observing a test
-    statistic, under the null, at least as extreme as the observed test
-    statistic.
-
-    MGC requires at least 5 samples to run with reliable results. It can also
-    handle high-dimensional data sets.
+    The p-value returned is calculated using a permutation test using a
+    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
 
     References
     ----------
@@ -191,17 +185,6 @@ class MGC(IndependenceTest):
         >>> stat, pvalue, _ = MGC().test(x, y)
         >>> '%.1f, %.3f' % (stat, pvalue)
         '1.0, 0.001'
-
-        The number of replications can give p-values with higher confidence
-        (greater alpha levels).
-
-        >>> import numpy as np
-        >>> from hyppo.independence import MGC
-        >>> x = np.arange(100)
-        >>> y = x
-        >>> stat, pvalue, _ = MGC().test(x, y, reps=10000)
-        >>> '%.1f, %.3f' % (stat, pvalue)
-        '1.0, 0.000'
 
         In addition, the inputs can be distance matrices. Using this is the,
         same as before, except the ``compute_distance`` parameter must be set

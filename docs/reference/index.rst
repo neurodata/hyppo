@@ -9,5 +9,5 @@ Reference
    independence
    ksample
    discrim
-   sims
    time_series
+   tools

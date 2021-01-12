@@ -1,6 +1,5 @@
-# from .._utils import euclidean, gaussian
 from .base import KSampleTest
-from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC
+from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC, KMERF
 from ._utils import _CheckInputs, k_sample_transform
 
 
@@ -32,7 +31,7 @@ class KSample(KSampleTest):
 
     Notes
     -----
-    The ideas behind this can be found in an upcoming paper:
+    The formulation for this implementation is as follows [#1Ksamp]_:
 
     The *k*-sample testing problem can be thought of as a generalization of
     the two sample testing problem. Define
@@ -59,7 +58,90 @@ class KSample(KSampleTest):
     By manipulating the inputs of the *k*-sample test, we can create
     concatenated versions of the inputs and another label matrix which are
     necessarily paired. Then, any nonparametric test can be performed on
-    this data.
+    this data. That is,
+
+    Letting :math:`n = \sum_{i=1}^k n_i`, define new data matrices
+    :math:`\mathbf{x}` and :math:`\mathbf{y}` such that,
+
+    .. math::
+
+        \begin{align*}
+        \mathbf{x} &=
+        \begin{bmatrix}
+            \mathbf{u}_1 \\
+            \vdots \\
+            \mathbf{u}_k
+        \end{bmatrix} \in \mathbb{R}^{n \times p} \\
+        \mathbf{y} &=
+        \begin{bmatrix}
+            \mathbf{1}_{n_1 \times 1} & \mathbf{0}_{n_1 \times 1}
+            & \ldots & \mathbf{0}_{n_1 \times 1} \\
+            \mathbf{0}_{n_2 \times 1} & \mathbf{1}_{n_2 \times 1}
+            & \ldots & \mathbf{0}_{n_2 \times 1} \\
+            \vdots & \vdots & \ddots & \vdots \\
+            \mathbf{0}_{n_k \times 1} & \mathbf{0}_{n_k \times 1}
+            & \ldots & \mathbf{1}_{n_k \times 1} \\
+        \end{bmatrix} \in \mathbb{R}^{n \times k}
+        \end{align*}
+
+    Additionally, in the two-sample case,
+
+    .. math::
+
+        \begin{align*}
+        \mathbf{x} &=
+        \begin{bmatrix}
+            \mathbf{u}_1 \\
+            \mathbf{u}_2
+        \end{bmatrix} \in \mathbb{R}^{n \times p} \\
+        \mathbf{y} &=
+        \begin{bmatrix}
+            \mathbf{0}_{n_1 \times 1} \\
+            \mathbf{1}_{n_2 \times 1}
+        \end{bmatrix} \in \mathbb{R}^n
+        \end{align*}
+
+    Given :math:`\mathbf{u}` and :math:`\mathbf{v}`$` as defined above,
+    to perform a :math:`w`-way test where :math:`w < k`,
+
+    .. math::
+
+        \mathbf{y} =
+        \begin{bmatrix}
+            \mathbf{1}_{n_1 \times 1} & \mathbf{0}_{n_1 \times 1}
+            & \ldots & \mathbf{1}_{n_1 \times 1} \\
+            \mathbf{1}_{n_2 \times 1} & \mathbf{1}_{n_2 \times 1}
+            & \ldots & \mathbf{0}_{n_2 \times 1} \\
+            \vdots & \vdots & \ddots & \vdots \\
+            \mathbf{0}_{n_k \times 1} & \mathbf{1}_{n_k \times 1}
+            & \ldots & \mathbf{1}_{n_k \times 1} \\
+        \end{bmatrix} \in \mathbb{R}^{n \times k}.
+
+    where each row of :math:`\mathbf{y}` contains :math:`w`
+    :math:`\mathbf{1}_{n_i}` elements. This leads to label matrix distances
+    proportional to how many labels (ways) samples differ by, a hierarchy of distances
+    between samples thought to be true if the null hypothesis is rejected.
+
+    Performing a multilevel test involves constructing :math:x` and :math:`y` using
+    either of the methods above and then performing a block permutation [#2Ksamp]_.
+    Essentially, the permutation is striated, where permutation is limited to be within
+    a block of samples or between blocks of samples, but not both. This is done because
+    the data is not freely exchangeable, so it is necessary to block the permutation to
+    preserve the joint distribution [#2Ksamp]_.
+
+    The p-value returned is calculated using a permutation test using a
+    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
+    The fast version of the test (for :math:`k`-sample Dcorr and Hsic) uses a
+    `chi squared approximation <https://hyppo.neurodata.io/reference/tools.html#chi-squared-approximation>`_.
+
+    References
+    ----------
+    .. [#1Ksamp] Panda, S., Shen, C., Perry, R., Zorn, J., Lutz, A., Priebe, C. E., &
+                 Vogelstein, J. T. (2019). Nonparametric MANOVA via Independence
+                 Testing. arXiv e-prints, arXiv-1910.
+    .. [#2Ksamp] Winkler, A. M., Webster, M. A., Vidaurre, D., Nichols, T. E., &
+                 Smith, S. M. (2015). Multi-level block permutation. Neuroimage, 123,
+                 253-268.
     """
 
     def __init__(self, indep_test, compute_distance="euclidean", bias=False, **kwargs):
@@ -71,10 +153,11 @@ class KSample(KSampleTest):
             "hsic": Hsic,
             "dcorr": Dcorr,
             "mgc": MGC,
+            "kmerf": KMERF,
         }
         if indep_test not in test_names.keys():
             raise ValueError("Test is not a valid independence test")
-        if indep_test == "hsic" and compute_distance == euclidean:
+        if indep_test == "hsic" and compute_distance == "euclidean":
             compute_distance = "gaussian"
         self.indep_test_name = indep_test
         indep_test = test_names[indep_test]
@@ -92,6 +175,8 @@ class KSample(KSampleTest):
                 self.indep_test = indep_test(
                     compute_distance=compute_distance, **kwargs
                 )
+        elif self.indep_test_name == "kmerf":
+            self.indep_test = indep_test(forest_type="classifier", **kwargs)
         else:
             self.indep_test = indep_test()
 
@@ -113,7 +198,10 @@ class KSample(KSampleTest):
             matrices, where the shapes must all be `(n, n)`.
         """
         inputs = list(args)
-        u, v = k_sample_transform(inputs)
+        if self.indep_test_name == "kmerf":
+            u, v = k_sample_transform(inputs, test_type="rf")
+        else:
+            u, v = k_sample_transform(inputs)
 
         return self.indep_test._statistic(u, v)
 
@@ -165,9 +253,13 @@ class KSample(KSampleTest):
             indep_test=self.indep_test,
         )
         inputs = check_input()
-        u, v = k_sample_transform(inputs)
-
-        if self.indep_test_name in ["dcorr", "hsic"]:
-            return self.indep_test.test(u, v, reps, workers, auto=auto)
+        if self.indep_test_name == "kmerf":
+            u, v = k_sample_transform(inputs, test_type="rf")
         else:
-            return self.indep_test.test(u, v, reps, workers)
+            u, v = k_sample_transform(inputs)
+
+        kwargs = {}
+        if self.indep_test_name in ["dcorr", "hsic"]:
+            kwargs = {"auto": auto}
+
+        return self.indep_test.test(u, v, reps, workers, **kwargs)

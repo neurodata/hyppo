@@ -1,7 +1,7 @@
 import numpy as np
 
-from .._utils import contains_nan
-from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC
+from ..tools import contains_nan
+from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC, KMERF
 
 
 class _CheckInputs:
@@ -57,11 +57,9 @@ class _CheckInputs:
         return [np.asarray(i).astype(np.float64) for i in self.inputs]
 
     def _check_indep_test(self):
-        tests = [CCA, Dcorr, HHG, RV, Hsic, MGC]
-        if self.indep_test.__class__ not in tests and self.indep_test is not None:
-            raise ValueError(
-                "indep_test must be CannCorr, Dcorr, HHG, RVCorr, Hsic, MGC, or MGCRF"
-            )
+        tests = [CCA, Dcorr, HHG, RV, Hsic, MGC, KMERF]
+        if self.indep_test.__class__ not in tests and self.indep_test:
+            raise ValueError("indep_test must be in {}".format(tests))
 
     def _check_min_samples(self):
         for i in self.inputs:
@@ -69,23 +67,30 @@ class _CheckInputs:
                 raise ValueError("Number of samples is too low")
 
 
-def k_sample_transform(inputs):
+def k_sample_transform(inputs, test_type="normal"):
     n_inputs = len(inputs)
     u = np.vstack(inputs)
     if np.var(u) == 0:
         raise ValueError("Test cannot be run, the inputs have 0 variance")
 
-    if n_inputs == 2:
-        n1 = inputs[0].shape[0]
-        n2 = inputs[1].shape[0]
-        v = np.vstack([np.zeros((n1, 1)), np.ones((n2, 1))])
+    if test_type == "rf":
+        v = np.concatenate(
+            [np.repeat(i, inputs[i].shape[0]) for i in range(n_inputs)], axis=0
+        )
+    elif test_type == "normal":
+        if n_inputs == 2:
+            n1 = inputs[0].shape[0]
+            n2 = inputs[1].shape[0]
+            v = np.vstack([np.zeros((n1, 1)), np.ones((n2, 1))])
+        else:
+            vs = []
+            for i in range(n_inputs):
+                n = inputs[i].shape[0]
+                encode = np.zeros(shape=(n, n_inputs))
+                encode[:, i] = np.ones(shape=n)
+                vs.append(encode)
+            v = np.concatenate(vs)
     else:
-        vs = []
-        for i in range(n_inputs):
-            n = inputs[i].shape[0]
-            encode = np.zeros(shape=(n, n_inputs))
-            encode[:, i] = np.ones(shape=n)
-            vs.append(encode)
-        v = np.concatenate(vs)
+        raise ValueError("test_type must be normal or rf")
 
     return u, v

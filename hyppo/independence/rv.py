@@ -38,6 +38,9 @@ class RV(IndependenceTest):
 
     where :math:`\mathrm{tr} (\cdot)` is the trace operator.
 
+    The p-value returned is calculated using a permutation test using a
+    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
+
     References
     ----------
     .. [#1RV] Robert, P., & Escoufier, Y. (1976). A unifying tool for linear

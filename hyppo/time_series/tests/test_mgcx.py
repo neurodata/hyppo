@@ -2,7 +2,7 @@ import numpy as np
 from numpy.testing import assert_almost_equal, assert_array_less
 
 from .. import MGCX
-from ...sims import nonlinear_process
+from ...tools import nonlinear_process
 
 
 class TestMGCXStat:

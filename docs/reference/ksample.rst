@@ -3,6 +3,6 @@
 
 .. currentmodule:: hyppo.ksample
 
-Non-parametric *K*-Sample Test
-------------------------------
+Nonpar MANOVA via Independence Testing
+--------------------------------------
 .. autoclass:: KSample

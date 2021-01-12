@@ -4,7 +4,7 @@ from numpy.testing import assert_almost_equal
 
 from ...independence import Dcorr
 from .. import DcorrX
-from ...sims import cross_corr_ar, nonlinear_process
+from ...tools import cross_corr_ar, nonlinear_process
 
 
 class TestDcorrXStat:

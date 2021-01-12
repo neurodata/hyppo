@@ -3,7 +3,7 @@ import numpy as np
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 from . import Dcorr
-from .._utils import compute_kern, chi2_approx
+from ..tools import compute_kern, chi2_approx
 
 
 class Hsic(IndependenceTest):
@@ -81,6 +81,11 @@ class Hsic(IndependenceTest):
         \mathrm{UHsic}_n (x, y) = \frac{\mathrm{UHsic}_n (x, y)}
                                        {\sqrt{\mathrm{UHsic}_n (x, x)
                                               \mathrm{UHsic}_n (y, y)}}
+
+    The p-value returned is calculated using a permutation test using a
+    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
+    The fast version of the test uses a
+    `chi squared approximation <https://hyppo.neurodata.io/reference/tools.html#chi-squared-approximation>`_.
 
     References
     ----------

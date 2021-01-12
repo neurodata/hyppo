@@ -1,7 +1,7 @@
 import numpy as np
 from numba import njit
 
-from .._utils import compute_dist, chi2_approx, check_perm_blocks_dim
+from ..tools import compute_dist, chi2_approx, check_perm_blocks_dim
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 
@@ -79,6 +79,11 @@ class Dcorr(IndependenceTest):
         \mathrm{UDcorr}_n (x, y) = \frac{\mathrm{UDcov}_n (x, y)}
                                         {\sqrt{\mathrm{UDcov}_n (x, x)
                                                \mathrm{UDcov}_n (y, y)}}
+
+    The p-value returned is calculated using a permutation test using a
+    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
+    The fast version of the test uses a
+    `chi squared approximation <https://hyppo.neurodata.io/reference/tools.html#chi-squared-approximation>`_.
 
     References
     ----------

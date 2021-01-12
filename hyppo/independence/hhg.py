@@ -1,7 +1,7 @@
 import numpy as np
 from numba import njit
 
-from .._utils import compute_dist
+from ..tools import compute_dist
 from .base import IndependenceTest
 from ._utils import _CheckInputs
 
@@ -76,6 +76,9 @@ class HHG(IndependenceTest):
     .. math::
 
         \mathrm{HHG}_n (x, y) = \sum_{i=1}^n \sum_{j=1, j \neq i}^n S(i, j)
+
+    The p-value returned is calculated using a permutation test using a
+    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
 
     References
     ----------

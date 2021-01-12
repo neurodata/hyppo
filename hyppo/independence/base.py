@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .._utils import perm_test
+from ..tools import perm_test
 
 
 class IndependenceTest(ABC):

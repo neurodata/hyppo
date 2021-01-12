@@ -89,7 +89,7 @@ import sphinx_rtd_theme
 
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-html_theme_options = {"collapse_navigation": False, "navigation_depth": 3}
+html_theme_options = {"collapse_navigation": False, "navigation_depth": 4}
 
 html_context = {
     # Enable the "Edit in GitHub link within the header of each page.

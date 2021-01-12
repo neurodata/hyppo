@@ -102,18 +102,17 @@ class DiscrimTwoSample(DiscriminabilityTest):
             The computed discriminability score for ``x2``.
         pvalue : float
             The computed two sample test p-value.
+
+        Examples
+        --------
+        >>> import numpy as np
+        >>> from hyppo.discrim import DiscrimTwoSample
+        >>> x1 = np.ones((100,2), dtype=float)
+        >>> x2 = np.concatenate([np.zeros((50, 2)), np.ones((50, 2))], axis=0)
+        >>> y = np.concatenate([np.zeros(50), np.ones(50)], axis=0)
+        >>> '%.1f, %.1f, %.2f' % DiscrimTwoSample().test(x1, x2, y) # doctest: +SKIP
+        '0.5, 1.0, 0.00'
         """
-        # Examples
-        # --------
-        # >>> import numpy as np
-        # >>> from hyppo.discrim import DiscrimTwoSample
-        # >>> x1 = np.ones((100,2), dtype=float)
-        # >>> x2 = np.concatenate([np.zeros((50, 2)), np.ones((50, 2))], axis=0)
-        # >>> y = np.concatenate([np.zeros(50), np.ones(50)], axis=0)
-        # >>> discrim1, discrim2, pvalue = DiscrimTwoSample().test(x1, x2, y)
-        # >>> '%.1f, %.1f, %.2f' % (discrim1, discrim2, pvalue)
-        # '0.5, 1.0, 0.00'
-        # """
 
         check_input = _CheckInputs(
             [x1, x2],

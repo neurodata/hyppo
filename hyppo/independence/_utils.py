@@ -1,6 +1,6 @@
 import numpy as np
 
-from .._utils import (
+from ..tools import (
     contains_nan,
     check_ndarray_xy,
     convert_xy_float64,
@@ -69,3 +69,15 @@ class _CheckInputs:
     def _check_variance(self):
         if np.var(self.x) == 0 or np.var(self.y) == 0:
             raise ValueError("Test cannot be run, one of the inputs has 0 variance")
+
+
+def sim_matrix(model, x):
+    terminals = model.apply(x)
+    ntrees = terminals.shape[1]
+
+    proxMat = 1 * np.equal.outer(terminals[:, 0], terminals[:, 0])
+    for i in range(1, ntrees):
+        proxMat += 1 * np.equal.outer(terminals[:, i], terminals[:, i])
+    proxMat = proxMat / ntrees
+
+    return proxMat
