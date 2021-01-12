@@ -101,6 +101,21 @@ Multimodal Independence
 """"""""""""""""""""""""""""
 .. autofunction:: gaussian_3samp
 
+Time-Series Sims
+----------------
+
+Independent AR Process
+""""""""""""""""""""""
+.. autofunction:: indep_ar
+
+Linear AR Process
+"""""""""""""""""
+.. autofunction:: cross_corr_ar
+
+Nonlinear AR Process
+""""""""""""""""""""
+.. autofunction:: nonlinear_process
+
 Misc
 ----
 
