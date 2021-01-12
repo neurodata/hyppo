@@ -9,7 +9,6 @@ from sklearn.metrics.pairwise import pairwise_kernels
 
 def contains_nan(a):  # from scipy
     """Check if inputs contains NaNs"""
-
     try:
         # Calling np.sum to avoid creating a huge array into memory
         # e.g. np.isnan(a).any()
@@ -279,9 +278,7 @@ def check_perm_block(perm_block):
 
 
 class _PermNode(object):
-    """
-    Helper class for nodes in _PermTree.
-    """
+    """Helper class for nodes in _PermTree."""
 
     def __init__(self, parent, label=None, index=None):
         self.children = []
@@ -306,9 +303,7 @@ class _PermNode(object):
 
 
 class _PermTree(object):
-    """
-    Tree representation of dependencies for restricted permutations
-    """
+    """Tree representation of dependencies for restricted permutations"""
 
     def __init__(self, perm_blocks):
         perm_blocks = check_perm_blocks(perm_blocks)
@@ -358,9 +353,7 @@ class _PermTree(object):
 
 # permutation group shuffling class
 class _PermGroups(object):
-    """
-    Helper function to calculate parallel p-value.
-    """
+    """Helper function to calculate parallel p-value."""
 
     def __init__(self, y, perm_blocks=None):
         self.n = y.shape[0]
@@ -380,7 +373,8 @@ class _PermGroups(object):
 
 # p-value computation
 def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None):
-    if permuter is None:
+    """Permute the test statistic"""
+    if not permuter:
         order = np.random.permutation(y.shape[0])
     else:
         order = permuter()
@@ -397,7 +391,41 @@ def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None):
 
 def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_blocks=None):
     """
-    Calculate the p-value via permutation
+    Calculate the p-value for a nonparametric test via permutation.
+
+    This process is completed by first randomly permuting :math:`y` to estimate the null
+    distribution and then calculating the probability of observing a test
+    statistic, under the null, at least as extreme as the observed test
+    statistic.
+
+    Parameters
+    ----------
+    calc_stat : callable()
+        The method used to calculate the test statistic (must use hyppo API)
+    x, y : ndarray
+        Input data matrices. `x` and `y` must have the same number of
+        samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        `n` is the number of samples and `p` and `q` are the number of
+        dimensions. Alternatively, `x` and `y` can be distance matrices,
+        where the shapes must both be `(n, n)`.
+    reps : int, optional (default: 1000)
+        The number of replications used to estimate the null distribution
+        when using the permutation test used to calculate the p-value.
+    workers : int, optional (default: 1)
+        The number of cores to parallelize the p-value computation over.
+        Supply -1 to use all cores available to the Process.
+    is_distsim : bool, optional (default: True)
+        Whether or not `x` and `y` are distance or similarity matrices. Changes the
+        permutation style of `y`.
+
+    Returns
+    -------
+    stat : float
+        The computed test statistic.
+    pvalue : float
+        The computed p-value.
+    pvalue : float
+        The approximated null distribution of shape `(reps,)`.
     """
     # calculate observed test statistic
     stat = calc_stat(x, y)
@@ -418,6 +446,43 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
 
 
 def chi2_approx(calc_stat, x, y):
+    """
+    Calculate the p-value for Dcorr and Hsic via a chi-squared approximation.
+
+    In the case of distance and kernel methods, Dcorr (and by extension Hsic
+    [#2ChiSq]_) can be approximated via a chi-squared distribution [#1ChiSq].
+    This approximation is also applicable for the nonparametric MANOVA via
+    independence testing method in our package [#3ChiSq]_.
+
+    Parameters
+    ----------
+    calc_stat : callable()
+        The method used to calculate the test statistic (must use hyppo API).
+    x, y : ndarray
+        Input data matrices. `x` and `y` must have the same number of
+        samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        `n` is the number of samples and `p` and `q` are the number of
+        dimensions. Alternatively, `x` and `y` can be distance matrices,
+        where the shapes must both be `(n, n)`.
+
+    Returns
+    -------
+    stat : float
+        The computed test statistic.
+    pvalue : float
+        The computed p-value.
+
+    References
+    ----------
+    .. [#1ChiSq] Shen, C., & Vogelstein, J. T. (2019). The Chi-Square Test of Distance
+                 Correlation. arXiv preprint arXiv:1912.12150.
+    .. [#2ChiSq] Shen, C., & Vogelstein, J. T. (2018). The exact equivalence of
+                 distance and kernel methods for hypothesis testing. arXiv preprint
+                 arXiv:1806.05514.
+    .. [#3ChiSq] Panda, S., Shen, C., Perry, R., Zorn, J., Lutz, A., Priebe, C. E., &
+                 Vogelstein, J. T. (2019). Nonparametric MANOVA via Independence
+                 Testing. arXiv e-prints, arXiv-1910.
+    """
     n = x.shape[0]
     stat = calc_stat(x, y)
     pvalue = chi2.sf(stat * n + 1, 1)

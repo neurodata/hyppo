@@ -126,3 +126,12 @@ Kernel Matrix Computation
 Distance Matrix Computation
 """"""""""""""""""""""""""""
 .. autofunction:: compute_dist
+
+Permutation Test
+""""""""""""""""
+.. autofunction:: perm_test
+
+Chi-Squared Approximation
+"""""""""""""""""""""""""
+.. autofunction:: chi2_approx
+
