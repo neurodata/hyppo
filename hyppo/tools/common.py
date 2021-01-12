@@ -417,6 +417,15 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
     is_distsim : bool, optional (default: True)
         Whether or not `x` and `y` are distance or similarity matrices. Changes the
         permutation style of `y`.
+    perm_blocks : ndarray, optional (default None)
+        Defines blocks of exchangeable samples during the permutation test.
+        If None, all samples can be permuted with one another. Requires `n`
+        rows. Constructs a tree graph with all samples initially at
+        the root node. Each column partitions samples from the same leaf with 
+        shared column label into a child of that leaf. During the permutation
+        test, samples within the same final leaf node are exchangeable
+        and blocks of samples with a common parent node are exchangeable. If a
+        column value is negative, the resulting block is unexchangeable.
 
     Returns
     -------
