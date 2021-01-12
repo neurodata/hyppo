@@ -143,20 +143,6 @@ class DcorrX(TimeSeriesTest):
         >>> stat, pvalue, dcorrx_dict = DcorrX(max_lag=1).test(x, y, reps=1000)
         >>> '%.1f, %.2f, %d' % (stat, pvalue, dcorrx_dict['opt_lag'])
         '1.1, 0.01, 1'
-
-        In addition, the inputs can be distance matrices. Using this is the,
-        same as before, except the ``compute_distance`` parameter must be set
-        to ``None``.
-
-        >>> import numpy as np
-        >>> from hyppo.time_series import DcorrX
-        >>> np.random.seed(789)
-        >>> x = np.ones((10, 10)) - np.identity(10)
-        >>> y = 2 * x
-        >>> dcorrx = DcorrX(compute_distance=None)
-        >>> stat, pvalue, dcorrx_dict = dcorrx.test(x, y)
-        >>> '%.1f, %.2f' % (stat, pvalue)
-        '0.0, 1.00'
         """
         check_input = _CheckInputs(
             x,
