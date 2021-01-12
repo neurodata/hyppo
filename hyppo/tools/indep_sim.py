@@ -243,7 +243,8 @@ def joint_normal(n, p, noise=False):
     :math:`\rho = \frac{1}{2} p`, :math:`I_p` be the identity matrix of size
     :math:`p \times p`, :math:`J_p` be the matrix of ones of size
     :math:`p \times p` and
-    :math:`\Sigma = \begin{bmatrix} I_p & \rho J_p \\ \rho J_p & (1 + 0.5\kappa) I_p \end{bmatrix}`. Then,
+    :math:`\Sigma = \begin{bmatrix} I_p & \rho J_p \\ \rho J_p & (1 + 0.5\kappa) I_p \end{bmatrix}`.
+    Then,
 
     .. math::
 
@@ -838,7 +839,8 @@ def square(n, p, noise=False, low=-1, high=1):
 
     .. math::
 
-        X_{|d|} &= U \cos(\theta) + V \sin(\theta) + 0.05 p \epsilon_{|d|}\ \mathrm{for}\ d = 1, ..., p \\
+        X_{|d|} &= U \cos(\theta) + V \sin(\theta) + 0.05 p \epsilon_{|d|}
+        \ \mathrm{for}\ d = 1, ..., p \\
         Y_{|d|} &= -U \sin(\theta) + V \cos(\theta)
 
     Examples
@@ -966,8 +968,10 @@ def circle(n, p, noise=False, low=-1, high=1):
 
     .. math::
 
-        X_{|d|} &= r \left( \sin(\pi U_{|d+1|}) \prod_{j=1}^d \cos(\pi U_{|j|}) + 0.4 \epsilon_{|d|} \right)\ \mathrm{for}\ d = 1, ..., p-1 \\
-        X_{|p|} &= r \left( \prod_{j=1}^p \cos(\pi U_{|j|}) + 0.4 \epsilon_{|p|} \right) \\
+        X_{|d|} &= r \left( \sin(\pi U_{|d+1|}) \prod_{j=1}^d \cos(\pi U_{|j|})
+        + 0.4 \epsilon_{|d|} \right)\ \mathrm{for}\ d = 1, ..., p-1 \\
+        X_{|p|} &= r \left( \prod_{j=1}^p \cos(\pi U_{|j|})
+        + 0.4 \epsilon_{|p|} \right) \\
         Y_{|d|} &= \sin(\pi U_{|1|})
 
     Examples
@@ -1012,8 +1016,10 @@ def ellipse(n, p, noise=False, low=-1, high=1):
 
     .. math::
 
-        X_{|d|} &= r \left( \sin(\pi U_{|d+1|}) \prod_{j=1}^d \cos(\pi U_{|j|}) + 0.4 \epsilon_{|d|} \right)\ \mathrm{for}\ d = 1, ..., p-1 \\
-        X_{|d|} &= r \left( \prod_{j=1}^p \cos(\pi U_{|j|}) + 0.4 \epsilon_{|p|} \right) \\
+        X_{|d|} &= r \left( \sin(\pi U_{|d+1|}) \prod_{j=1}^d \cos(\pi U_{|j|})
+        + 0.4 \epsilon_{|d|} \right)\ \mathrm{for}\ d = 1, ..., p-1 \\
+        X_{|p|} &= r \left( \prod_{j=1}^p \cos(\pi U_{|j|})
+        + 0.4 \epsilon_{|p|} \right) \\
         Y_{|d|} &= \sin(\pi U_{|1|})
 
     Examples
@@ -1058,7 +1064,8 @@ def diamond(n, p, noise=False, low=-1, high=1):
 
     .. math::
 
-        X_{|d|} &= U \cos(\theta) + V \sin(\theta) + 0.05 p \epsilon_{|d|}\ \mathrm{for}\ d = 1, ..., p \\
+        X_{|d|} &= U \cos(\theta) + V \sin(\theta)
+        + 0.05 p \epsilon_{|d|}\ \mathrm{for}\ d = 1, ..., p \\
         Y_{|d|} &= -U \sin(\theta) + V \cos(\theta)
 
     Examples
