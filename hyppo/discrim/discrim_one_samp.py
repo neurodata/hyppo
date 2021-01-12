@@ -99,17 +99,16 @@ class DiscrimOneSample(DiscriminabilityTest):
             The computed discriminability statistic.
         pvalue : float
             The computed one sample test p-value.
+
+        Examples
+        --------
+        >>> import numpy as np
+        >>> from hyppo.discrim import DiscrimOneSample
+        >>> x = np.concatenate([np.zeros((50, 2)), np.ones((50, 2))], axis=0)
+        >>> y = np.concatenate([np.zeros(50), np.ones(50)], axis=0)
+        >>> '%.1f, %.2f' % DiscrimOneSample().test(x, y) # doctest: +SKIP
+        '1.0, 0.00'
         """
-        # Examples
-        # --------
-        # >>> import numpy as np
-        # >>> from hyppo.discrim import DiscrimOneSample
-        # >>> x = np.concatenate([np.zeros((50, 2)), np.ones((50, 2))], axis=0)
-        # >>> y = np.concatenate([np.zeros(50), np.ones(50)], axis=0)
-        # >>> stat, pvalue = DiscrimOneSample().test(x, y)
-        # >>> '%.1f, %.2f' % (stat, pvalue)
-        # '1.0, 0.00'
-        # """
 
         check_input = _CheckInputs(
             [x],
