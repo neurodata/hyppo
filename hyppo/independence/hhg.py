@@ -77,6 +77,9 @@ class HHG(IndependenceTest):
 
         \mathrm{HHG}_n (x, y) = \sum_{i=1}^n \sum_{j=1, j \neq i}^n S(i, j)
 
+    The p-value returned is calculated using a permutation test using a
+    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
+
     References
     ----------
     .. [#1HHG] Heller, R., Heller, Y., & Gorfine, M. (2012). A consistent

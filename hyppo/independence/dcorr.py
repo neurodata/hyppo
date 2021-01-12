@@ -80,6 +80,11 @@ class Dcorr(IndependenceTest):
                                         {\sqrt{\mathrm{UDcov}_n (x, x)
                                                \mathrm{UDcov}_n (y, y)}}
 
+    The p-value returned is calculated using a permutation test using a
+    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
+    The fast version of the test uses a
+    `chi squared approximation <https://hyppo.neurodata.io/reference/tools.html#chi-squared-approximation>`_.
+
     References
     ----------
     .. [#1Dcor] Székely, G. J., Rizzo, M. L., & Bakirov, N. K. (2007).

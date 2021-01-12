@@ -36,6 +36,9 @@ class CCA(IndependenceTest):
             {\sqrt{a^T \hat{\Sigma}_{xx} a}
              \sqrt{b^T \hat{\Sigma}_{yy} b}}
 
+    The p-value returned is calculated using a permutation test using a
+    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
+
     References
     ----------
     .. [#1CCA] Härdle, W. K., & Simar, L. (2015). Canonical correlation

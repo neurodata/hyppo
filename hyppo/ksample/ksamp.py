@@ -31,8 +31,6 @@ class KSample(KSampleTest):
 
     Notes
     -----
-    The ideas behind this can be found in an upcoming paper:
-
     The *k*-sample testing problem can be thought of as a generalization of
     the two sample testing problem. Define
     :math:`\{ u_i \stackrel{iid}{\sim} F_U,\ i = 1, ..., n \}` and
@@ -59,6 +57,11 @@ class KSample(KSampleTest):
     concatenated versions of the inputs and another label matrix which are
     necessarily paired. Then, any nonparametric test can be performed on
     this data.
+
+    The p-value returned is calculated using a permutation test using a
+    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
+    The fast version of the test (for :math:`k`-sample Dcorr and Hsic) uses a
+    `chi squared approximation <https://hyppo.neurodata.io/reference/tools.html#chi-squared-approximation>`_.
     """
 
     def __init__(self, indep_test, compute_distance="euclidean", bias=False, **kwargs):

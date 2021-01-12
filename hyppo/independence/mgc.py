@@ -84,14 +84,8 @@ class MGC(IndependenceTest):
     The test statistic returns a value between :math:`(-1, 1)` since it is
     normalized.
 
-    The p-value returned is calculated using a permutation test. This process
-    is completed by first randomly permuting :math:`y` to estimate the null
-    distribution and then calculating the probability of observing a test
-    statistic, under the null, at least as extreme as the observed test
-    statistic.
-
-    MGC requires at least 5 samples to run with reliable results. It can also
-    handle high-dimensional data sets.
+    The p-value returned is calculated using a permutation test using a
+    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
 
     References
     ----------

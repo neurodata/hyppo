@@ -82,6 +82,11 @@ class Hsic(IndependenceTest):
                                        {\sqrt{\mathrm{UHsic}_n (x, x)
                                               \mathrm{UHsic}_n (y, y)}}
 
+    The p-value returned is calculated using a permutation test using a
+    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
+    The fast version of the test uses a
+    `chi squared approximation <https://hyppo.neurodata.io/reference/tools.html#chi-squared-approximation>`_.
+
     References
     ----------
     .. [#1Hsic] Gretton, A., Fukumizu, K., Teo, C. H., Song, L., Schölkopf,

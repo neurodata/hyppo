@@ -81,6 +81,9 @@ class KMERF(IndependenceTest):
          KMERF_n(\mathbf{x}, \mathbf{y}) = \frac{1}{n(n-3)}
          \mathrm{tr} \left( \mathbf{L}^{\mathbf{x}} \mathbf{L}^{\mathbf{y}} \right)
 
+    The p-value returned is calculated using a permutation test using a
+    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
+
     References
     ----------
     .. [#1KMERF] Shen, C., Panda, S., & Vogelstein, J. T. (2018). Learning
