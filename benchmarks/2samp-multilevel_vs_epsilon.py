@@ -163,7 +163,7 @@ def plot_power():
                     col.set_yticks([])
                     if j == 0:
                         col.set_yticks([0, 1])
-                col.axhline(0.05, ls='--', c='grey')
+                col.axhline(0.05, ls='--', c='black', label='alpha = 0.05')
             col.set_aspect(np.diff(col.get_xlim())/np.diff(col.get_ylim()))
     
     fig.text(0.5, 0, 'Cluster Separation', ha='center', fontsize=FONTSIZE)
@@ -184,7 +184,7 @@ def plot_power():
     for legobj in leg.legendHandles:
         legobj.set_linewidth(3.0)
     plt.suptitle('Multilevel Dcorr: Power vs. Cluster separation', fontsize=FONTSIZE, y=1.03)
-    plt.savefig(f'../benchmarks/figs/{NAME}.pdf', transparent=True, bbox_inches='tight')
+    # plt.savefig(f'../benchmarks/figs/{NAME}.pdf', transparent=True, bbox_inches='tight')
 
 if plot:
     plot_power()
