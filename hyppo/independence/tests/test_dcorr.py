@@ -1,6 +1,6 @@
-import pytest
 import numpy as np
-from numpy.testing import assert_almost_equal, assert_warns, assert_raises
+import pytest
+from numpy.testing import assert_almost_equal, assert_raises, assert_warns
 
 from ...tools import linear
 from .. import Dcorr

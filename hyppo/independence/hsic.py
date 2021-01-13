@@ -1,9 +1,9 @@
 import numpy as np
 
-from .base import IndependenceTest
-from ._utils import _CheckInputs
+from ..tools import chi2_approx, compute_kern
 from . import Dcorr
-from ..tools import compute_kern, chi2_approx
+from ._utils import _CheckInputs
+from .base import IndependenceTest
 
 
 class Hsic(IndependenceTest):
@@ -18,13 +18,20 @@ class Hsic(IndependenceTest):
 
     Parameters
     ----------
-    compute_kernel : callable(), optional (default: rbf kernel)
-        A function that computes the similarity among the samples within each
-        data matrix. Set to `None` if `x` and `y` are already similarity
+    compute_kernel : callable(), optional (default: "gaussian")
+        A function that computes the kernel similarity among the samples within each
+        data matrix.
+        Valid strings for ``metric`` are, as defined in
+        ``sklearn.metrics.pairwise.pairwise_kernels``,
+
+            ['additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'gaussian',
+            'laplacian', 'sigmoid', 'cosine']
+
+        Set to `None` or `precomputed` if `x` and `y` are already distance
         matrices. To call a custom function, either create the distance matrix
-        before-hand or create a function of the form ``compute_kernel(x)``
-        where `x` is the data matrix for which pairwise similarties are
-        calculated.
+        before-hand or create a function of the form ``metric(x, **kwargs)``
+        where `x` is the data matrix for which pairwise kernel similarity matrices are
+        calculated and kwargs are extra arguements to send to your custom function.
     bias : bool (default: False)
         Whether or not to use the biased or unbiased test statistics.
 
@@ -91,10 +98,10 @@ class Hsic(IndependenceTest):
     ----------
     .. [#1Hsic] Gretton, A., Fukumizu, K., Teo, C. H., Song, L., Schölkopf,
                 B., & Smola, A. J. (2008). A kernel statistical test of
-                independence. In *Advances in neural information processing
-                systems* (pp. 585-592).
+                independence. In Advances in neural information processing
+                systems (pp. 585-592).
     .. [#2Hsic] Gretton, A., & GyĂśrfi, L. (2010). Consistent nonparametric
-                tests of independence. *Journal of Machine Learning Research*,
+                tests of independence. Journal of Machine Learning Research,
                 11(Apr), 1391-1423.
     """
 

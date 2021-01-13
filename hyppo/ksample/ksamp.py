@@ -1,6 +1,6 @@
-from .base import KSampleTest
-from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC, KMERF
+from ..independence import CCA, HHG, KMERF, MGC, RV, Dcorr, Hsic
 from ._utils import _CheckInputs, k_sample_transform
+from .base import KSampleTest
 
 
 class KSample(KSampleTest):
@@ -18,13 +18,26 @@ class KSample(KSampleTest):
     indep_test : {"CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC"}
         A string corresponding to the desired independence test from
         ``mgc.independence``. This is not case sensitive.
-    compute_distance : callable(), optional (default: euclidean)
+    compute_distance : callable(), optional (default: "euclidean")
         A function that computes the distance among the samples within each
-        data matrix. Set to `None` if `x` and `y` are already distance
+        data matrix.
+        Valid strings for ``metric`` are, as defined in
+        ``sklearn.metrics.pairwise_distances``,
+
+            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
+              ‘manhattan’] See the documentation for scipy.spatial.distance for details
+              on these metrics.
+            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
+              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
+              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
+              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
+              documentation for scipy.spatial.distance for details on these metrics.
+
+        Set to `None` or `precomputed` if `x` and `y` are already distance
         matrices. To call a custom function, either create the distance matrix
-        before-hand or create a function of the form ``compute_distance(x)``
+        before-hand or create a function of the form ``metric(x, **kwargs)``
         where `x` is the data matrix for which pairwise distances are
-        calculated.
+        calculated and kwargs are extra arguements to send to your custom function.
     bias : bool (default: False)
         Whether or not to use the biased or unbiased test statistics. Only
         applies to ``Dcorr`` and ``Hsic``.
@@ -47,8 +60,8 @@ class KSample(KSampleTest):
 
     The closely related independence testing problem can be generalized
     similarly: Given a set of paired data
-    :math:`\{\left(x_i, y_i \right) \stackrel{iid}{\sim} F_{XY},
-    \ i = 1, ..., N\}`, the problem that we are testing is,
+    :math:`\{\left(x_i, y_i \right) \stackrel{iid}{\sim} F_{XY}, \ i = 1, ..., N\}`,
+    the problem that we are testing is,
 
     .. math::
 
@@ -58,7 +71,7 @@ class KSample(KSampleTest):
     By manipulating the inputs of the *k*-sample test, we can create
     concatenated versions of the inputs and another label matrix which are
     necessarily paired. Then, any nonparametric test can be performed on
-    this data. That is,
+    this data.
 
     Letting :math:`n = \sum_{i=1}^k n_i`, define new data matrices
     :math:`\mathbf{x}` and :math:`\mathbf{y}` such that,
@@ -122,7 +135,7 @@ class KSample(KSampleTest):
     proportional to how many labels (ways) samples differ by, a hierarchy of distances
     between samples thought to be true if the null hypothesis is rejected.
 
-    Performing a multilevel test involves constructing :math:x` and :math:`y` using
+    Performing a multilevel test involves constructing :math:`x` and :math:`y` using
     either of the methods above and then performing a block permutation [#2Ksamp]_.
     Essentially, the permutation is striated, where permutation is limited to be within
     a block of samples or between blocks of samples, but not both. This is done because
@@ -179,6 +192,11 @@ class KSample(KSampleTest):
             self.indep_test = indep_test(forest_type="classifier", **kwargs)
         else:
             self.indep_test = indep_test()
+
+        # set is_distance to true if compute_distance is None
+        self.is_distance = False
+        if not compute_distance:
+            self.is_distance = True
 
         KSampleTest.__init__(
             self, compute_distance=compute_distance, bias=bias, **kwargs
@@ -250,7 +268,7 @@ class KSample(KSampleTest):
         inputs = list(args)
         check_input = _CheckInputs(
             inputs=inputs,
-            indep_test=self.indep_test,
+            indep_test=self.indep_test_name,
         )
         inputs = check_input()
         if self.indep_test_name == "kmerf":

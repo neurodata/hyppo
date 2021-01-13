@@ -1,9 +1,10 @@
 import warnings
+
 from scipy.stats import multiscale_graphcorr
 
 from ..tools import compute_dist
-from .base import IndependenceTest
 from ._utils import _CheckInputs
+from .base import IndependenceTest
 
 
 class MGC(IndependenceTest):
@@ -29,13 +30,26 @@ class MGC(IndependenceTest):
 
     Parameters
     ----------
-    compute_distance : callable(), optional (default: euclidean)
+    compute_distance : callable(), optional (default: "euclidean")
         A function that computes the distance among the samples within each
-        data matrix. Set to `None` if `x` and `y` are already distance
+        data matrix.
+        Valid strings for ``metric`` are, as defined in
+        ``sklearn.metrics.pairwise_distances``,
+
+            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
+              ‘manhattan’] See the documentation for scipy.spatial.distance for details
+              on these metrics.
+            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
+              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
+              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
+              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
+              documentation for scipy.spatial.distance for details on these metrics.
+
+        Set to `None` or `precomputed` if `x` and `y` are already distance
         matrices. To call a custom function, either create the distance matrix
-        before-hand or create a function of the form ``compute_distance(x)``
+        before-hand or create a function of the form ``metric(x, **kwargs)``
         where `x` is the data matrix for which pairwise distances are
-        calculated.
+        calculated and kwargs are extra arguements to send to your custom function.
 
     See Also
     --------
@@ -53,7 +67,7 @@ class MGC(IndependenceTest):
     the distance matrix of :math:`y`. :math:`D^x` and :math:`D^y` are
     modified to be mean zero columnwise. This results in two
     :math:`n \times n` distance matrices :math:`A` and :math:`B` (the
-    centering and unbiased modification) [3]_.
+    centering and unbiased modification) [#3MGC]_.
 
     + For all values :math:`k` and :math:`l` from :math:`1, ..., n`,
 

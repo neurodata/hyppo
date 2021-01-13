@@ -120,7 +120,7 @@ Misc
 ----
 
 Kernel Matrix Computation
-""""""""""""""""""
+"""""""""""""""""""""""""
 .. autofunction:: compute_kern
 
 Distance Matrix Computation

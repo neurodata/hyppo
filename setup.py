@@ -1,7 +1,8 @@
 import os
 import sys
-from setuptools import setup, find_packages
 from sys import platform
+
+from setuptools import find_packages, setup
 
 PACKAGE_NAME = "hyppo"
 DESCRIPTION = "A comprehensive independence testing package"

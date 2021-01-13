@@ -1,13 +1,7 @@
 import numpy as np
-
 from sklearn.metrics import pairwise_distances
 
-from ..tools import (
-    contains_nan,
-    check_ndarray_xy,
-    convert_xy_float64,
-    check_reps,
-)
+from ..tools import check_ndarray_xy, check_reps, contains_nan, convert_xy_float64
 
 
 class _CheckInputs:

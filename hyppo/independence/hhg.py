@@ -2,8 +2,8 @@ import numpy as np
 from numba import njit
 
 from ..tools import compute_dist
-from .base import IndependenceTest
 from ._utils import _CheckInputs
+from .base import IndependenceTest
 
 
 class HHG(IndependenceTest):
@@ -18,13 +18,26 @@ class HHG(IndependenceTest):
 
     Parameters
     ----------
-    compute_distance : callable(), optional (default: euclidean)
+    compute_distance : callable(), optional (default: "euclidean")
         A function that computes the distance among the samples within each
-        data matrix. Set to `None` if `x` and `y` are already distance
+        data matrix.
+        Valid strings for ``metric`` are, as defined in
+        ``sklearn.metrics.pairwise_distances``,
+
+            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
+              ‘manhattan’] See the documentation for scipy.spatial.distance for details
+              on these metrics.
+            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
+              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
+              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
+              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
+              documentation for scipy.spatial.distance for details on these metrics.
+
+        Set to `None` or `precomputed` if `x` and `y` are already distance
         matrices. To call a custom function, either create the distance matrix
-        before-hand or create a function of the form ``compute_distance(x)``
+        before-hand or create a function of the form ``metric(x, **kwargs)``
         where `x` is the data matrix for which pairwise distances are
-        calculated.
+        calculated and kwargs are extra arguements to send to your custom function.
 
     See Also
     --------
@@ -84,7 +97,7 @@ class HHG(IndependenceTest):
     ----------
     .. [#1HHG] Heller, R., Heller, Y., & Gorfine, M. (2012). A consistent
                multivariate test of association based on ranks of distances.
-               *Biometrika*, 100(2), 503-510.
+               Biometrika, 100(2), 503-510.
     """
 
     def __init__(self, compute_distance="euclidean", **kwargs):

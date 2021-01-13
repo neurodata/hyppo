@@ -1,7 +1,8 @@
-from ._utils import _CheckInputs
 import numpy as np
-from .base import DiscriminabilityTest
 from scipy._lib._util import MapWrapper
+
+from ._utils import _CheckInputs
+from .base import DiscriminabilityTest
 
 
 class DiscrimOneSample(DiscriminabilityTest):

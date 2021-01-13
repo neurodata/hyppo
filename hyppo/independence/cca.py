@@ -1,7 +1,7 @@
 import numpy as np
 
-from .base import IndependenceTest
 from ._utils import _CheckInputs
+from .base import IndependenceTest
 
 
 class CCA(IndependenceTest):
@@ -42,17 +42,17 @@ class CCA(IndependenceTest):
     References
     ----------
     .. [#1CCA] Härdle, W. K., & Simar, L. (2015). Canonical correlation
-               analysis. In *Applied multivariate statistical analysis* (pp.
+               analysis. In Applied multivariate statistical analysis (pp.
                443-454). Springer, Berlin, Heidelberg.
     .. [#2CCA] Knapp, T. R. (1978). Canonical correlation analysis: A general
                parametric significance-testing system. *Psychological
                Bulletin*, 85(2), 410.
     .. [#3CCA] Hotelling, H. (1992). Relations between two sets of variates.
-               In *Breakthroughs in statistics* (pp. 162-190). Springer, New
+               In Breakthroughs in statistics (pp. 162-190). Springer, New
                York, NY.
     .. [#4CCA] Hardoon, D. R., Szedmak, S., & Shawe-Taylor, J. (2004).
                Canonical correlation analysis: An overview with application to
-               learning methods. *Neural computation*, 16(12), 2639-2664.
+               learning methods. Neural computation, 16(12), 2639-2664.
     """
 
     def __init__(self):

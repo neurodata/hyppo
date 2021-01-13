@@ -1,6 +1,6 @@
-from .base import TimeSeriesTest
-from ._utils import _CheckInputs, compute_stat
 from ..independence import Dcorr
+from ._utils import _CheckInputs, compute_stat
+from .base import TimeSeriesTest
 
 
 class DcorrX(TimeSeriesTest):
@@ -13,13 +13,26 @@ class DcorrX(TimeSeriesTest):
 
     Parameters
     ----------
-    compute_distance : callable(), optional (default: euclidean)
+    compute_distance : callable(), optional (default: "euclidean")
         A function that computes the distance among the samples within each
-        data matrix. Set to `None` if `x` and `y` are already distance
+        data matrix.
+        Valid strings for ``metric`` are, as defined in
+        ``sklearn.metrics.pairwise_distances``,
+
+            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
+              ‘manhattan’] See the documentation for scipy.spatial.distance for details
+              on these metrics.
+            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
+              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
+              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
+              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
+              documentation for scipy.spatial.distance for details on these metrics.
+
+        Set to `None` or `precomputed` if `x` and `y` are already distance
         matrices. To call a custom function, either create the distance matrix
-        before-hand or create a function of the form ``compute_distance(x)``
+        before-hand or create a function of the form ``metric(x, **kwargs)``
         where `x` is the data matrix for which pairwise distances are
-        calculated.
+        calculated and kwargs are extra arguements to send to your custom function.
 
     max_lag : int, optional (default: 0)
         The maximum number of lags in the past to check dependence between `x` and the
@@ -32,7 +45,7 @@ class DcorrX(TimeSeriesTest):
 
     Notes
     -----
-    The statistic can be derived as follows:
+    The statistic can be derived as follows [#1DcorX]_:
 
     Let :math:`x` and :math:`y` be :math:`(n, p)` and :math:`(n, q)` series
     respectively, which each contain :math:`y` observations of the series
@@ -43,14 +56,14 @@ class DcorrX(TimeSeriesTest):
 
     .. math::
 
-        \mathrm{DcorrX}_n (x, y) =  \sum_{j=0}^M frac{n-j}{n}
-                                    \mathrm{Dcorr}_n (x[j:n], y[0:(n-j)])
+        DcorrX_n (x, y) =  \sum_{j=0}^M \frac{n-j}{n}
+                                    Dcorr_n (x[j:n], y[0:(n-j)])
 
     References
     ----------
     .. [#1DcorX] Mehta, R., Chung, J., Shen C., Xu T., Vogelstein, J. T. (2019).
-                A Consistent Independence Test for Multivariate Time-Series.
-                *ArXiv*
+                 A Consistent Independence Test for Multivariate Time-Series.
+                 ArXiv
     """
 
     def __init__(self, compute_distance="euclidean", max_lag=0, **kwargs):

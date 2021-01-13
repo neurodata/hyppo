@@ -1,7 +1,7 @@
 Tutorials
 *********
 
-.. _tut_package:
+.. _indep_tutorials:
 
 Independence Tests
 ------------------
@@ -25,6 +25,8 @@ the algorithms included against each other.
     tutorials/independence/indep_alg_speed
 
 
+.. _ksamp_tutorials:
+
 *K*-sample Tests
 ------------------
 The *k*-sample testing problem is generalized as follows: consider random variables
@@ -43,6 +45,7 @@ This tutorial overview how to use *k*-sample tests in ``hyppo``.
 
     tutorials/ksample/ksample
 
+.. _ts_tutorials:
 
 Time-Series Tests
 -----------------
@@ -69,6 +72,8 @@ This tutorial overview how to use time_series based tests in ``hyppo``.
 
     tutorials/time_series/time_series
 
+
+.. _sims_tutorials:
 
 Sims
 ----

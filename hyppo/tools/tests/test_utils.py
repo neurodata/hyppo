@@ -1,11 +1,12 @@
-from ..common import _PermTree
+import numpy as np
 from numpy.testing import (
-    assert_array_less,
     assert_allclose,
+    assert_array_less,
     assert_equal,
     assert_raises,
 )
-import numpy as np
+
+from ..common import _PermTree
 
 
 class TestPermTree:
