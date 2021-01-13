@@ -18,13 +18,20 @@ class Hsic(IndependenceTest):
 
     Parameters
     ----------
-    compute_kernel : callable(), optional (default: rbf kernel)
-        A function that computes the similarity among the samples within each
-        data matrix. Set to `None` if `x` and `y` are already similarity
+    compute_kernel : callable(), optional (default: "gaussian")
+        A function that computes the kernel similarity among the samples within each
+        data matrix.
+        Valid strings for ``metric`` are, as defined in
+        ``sklearn.metrics.pairwise.pairwise_kernels``,
+
+            ['additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'gaussian',
+            'laplacian', 'sigmoid', 'cosine']
+
+        Set to `None` or `precomputed` if `x` and `y` are already distance
         matrices. To call a custom function, either create the distance matrix
-        before-hand or create a function of the form ``compute_kernel(x)``
-        where `x` is the data matrix for which pairwise similarties are
-        calculated.
+        before-hand or create a function of the form ``metric(x, **kwargs)``
+        where `x` is the data matrix for which pairwise kernel similarity matrices are
+        calculated and kwargs are extra arguements to send to your custom function.
     bias : bool (default: False)
         Whether or not to use the biased or unbiased test statistics.
 

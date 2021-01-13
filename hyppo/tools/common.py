@@ -129,7 +129,7 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
         dimensions. Alternatively, if `x` and `y` can be distance matrices,
         where the shapes must both be `(n, n)`, no kernel will be computed.
     metric : str, optional (default: "gaussian")
-        A function that computes the distance among the samples within each
+        A function that computes the kernel similarity among the samples within each
         data matrix.
         Valid strings for ``metric`` are, as defined in
         ``sklearn.metrics.pairwise.pairwise_kernels``,
@@ -140,7 +140,7 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
         Set to `None` or `precomputed` if `x` and `y` are already distance
         matrices. To call a custom function, either create the distance matrix
         before-hand or create a function of the form ``metric(x, **kwargs)``
-        where `x` is the data matrix for which pairwise distances are
+        where `x` is the data matrix for which pairwise kernel similarity matrices are
         calculated and kwargs are extra arguements to send to your custom function.
     workers : int, optional (default: 1)
         The number of cores to parallelize the p-value computation over.
@@ -191,7 +191,7 @@ def compute_dist(x, y, metric="euclidean", workers=None, **kwargs):
         `n` is the number of samples and `p` and `q` are the number of
         dimensions. Alternatively, if `x` and `y` can be distance matrices,
         where the shapes must both be `(n, n)`, no kernel will be computed.
-    metric : str, optional (default: "gaussian")
+    metric : str, optional (default: "euclidean")
         A function that computes the distance among the samples within each
         data matrix.
         Valid strings for ``metric`` are, as defined in
@@ -421,7 +421,7 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
         Defines blocks of exchangeable samples during the permutation test.
         If None, all samples can be permuted with one another. Requires `n`
         rows. Constructs a tree graph with all samples initially at
-        the root node. Each column partitions samples from the same leaf with 
+        the root node. Each column partitions samples from the same leaf with
         shared column label into a child of that leaf. During the permutation
         test, samples within the same final leaf node are exchangeable
         and blocks of samples with a common parent node are exchangeable. If a
