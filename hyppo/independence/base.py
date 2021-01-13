@@ -57,6 +57,14 @@ class IndependenceTest(ABC):
             recursively partition samples based on unique labels. Groups at
             each partition are exchangeable under a permutation but remain
             fixed if label is negative.
+        perm_blocks : ndarray, optional (default None)
+            Defines blocks of exchangeable samples during the permutation test.
+            If None, all samples can be permuted with one another. Requires `n`
+            rows. At each column, samples with matching column value are
+            recursively partitioned into blocks of samples. Within each final
+            block, samples are exchangeable. Blocks of samples from the same
+            partition are also exchangeable between one another. If a column
+            value is negative, that block is fixed and cannot be exchanged.
 
         Returns
         -------
