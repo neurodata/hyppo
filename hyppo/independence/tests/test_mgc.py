@@ -1,8 +1,8 @@
-import pytest
 import numpy as np
+import pytest
 from numpy.testing import assert_approx_equal
 
-from ...tools import linear, spiral, multimodal_independence
+from ...tools import linear, multimodal_independence, spiral
 from .. import MGC
 
 

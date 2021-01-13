@@ -1,9 +1,9 @@
 import numpy as np
 from numba import njit
 
-from ..tools import compute_dist, chi2_approx, check_perm_blocks_dim
-from .base import IndependenceTest
+from ..tools import check_perm_blocks_dim, chi2_approx, compute_dist
 from ._utils import _CheckInputs
+from .base import IndependenceTest
 
 
 class Dcorr(IndependenceTest):
@@ -89,10 +89,10 @@ class Dcorr(IndependenceTest):
     ----------
     .. [#1Dcor] Székely, G. J., Rizzo, M. L., & Bakirov, N. K. (2007).
                 Measuring and testing dependence by correlation of distances.
-                *The annals of statistics*, 35(6), 2769-2794.
+                The annals of statistics, 35(6), 2769-2794.
     .. [#2Dcor] Székely, G. J., & Rizzo, M. L. (2014). Partial distance
-                correlation with methods for dissimilarities. *The Annals of
-                Statistics*, 42(6), 2382-2412.
+                correlation with methods for dissimilarities. The Annals of
+                Statistics, 42(6), 2382-2412.
     """
 
     def __init__(self, compute_distance="euclidean", bias=False, **kwargs):

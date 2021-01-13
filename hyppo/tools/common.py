@@ -1,7 +1,7 @@
 import warnings
-from joblib import Parallel, delayed
 
 import numpy as np
+from joblib import Parallel, delayed
 from scipy.stats.distributions import chi2
 from sklearn.metrics import pairwise_distances
 from sklearn.metrics.pairwise import pairwise_kernels

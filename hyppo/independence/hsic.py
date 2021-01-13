@@ -1,9 +1,9 @@
 import numpy as np
 
-from .base import IndependenceTest
-from ._utils import _CheckInputs
+from ..tools import chi2_approx, compute_kern
 from . import Dcorr
-from ..tools import compute_kern, chi2_approx
+from ._utils import _CheckInputs
+from .base import IndependenceTest
 
 
 class Hsic(IndependenceTest):
@@ -91,10 +91,10 @@ class Hsic(IndependenceTest):
     ----------
     .. [#1Hsic] Gretton, A., Fukumizu, K., Teo, C. H., Song, L., Schölkopf,
                 B., & Smola, A. J. (2008). A kernel statistical test of
-                independence. In *Advances in neural information processing
-                systems* (pp. 585-592).
+                independence. In Advances in neural information processing
+                systems (pp. 585-592).
     .. [#2Hsic] Gretton, A., & GyĂśrfi, L. (2010). Consistent nonparametric
-                tests of independence. *Journal of Machine Learning Research*,
+                tests of independence. Journal of Machine Learning Research,
                 11(Apr), 1391-1423.
     """
 

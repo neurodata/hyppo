@@ -1,28 +1,28 @@
-import pytest
 import numpy as np
+import pytest
 from numpy.testing import assert_equal
 
 from .. import (
-    linear,
-    spiral,
-    exponential,
+    circle,
     cubic,
-    joint_normal,
-    step,
-    quadratic,
-    w_shaped,
-    uncorrelated_bernoulli,
-    logarithmic,
+    diamond,
+    ellipse,
+    exponential,
     fourth_root,
+    joint_normal,
+    linear,
+    logarithmic,
+    multimodal_independence,
+    multiplicative_noise,
+    quadratic,
     sin_four_pi,
     sin_sixteen_pi,
-    two_parabolas,
-    circle,
-    ellipse,
-    diamond,
-    multiplicative_noise,
+    spiral,
     square,
-    multimodal_independence,
+    step,
+    two_parabolas,
+    uncorrelated_bernoulli,
+    w_shaped,
 )
 
 

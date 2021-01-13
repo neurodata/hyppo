@@ -2,8 +2,8 @@ import numpy as np
 from numba import njit
 
 from ..tools import compute_dist
-from .base import IndependenceTest
 from ._utils import _CheckInputs
+from .base import IndependenceTest
 
 
 class HHG(IndependenceTest):
@@ -84,7 +84,7 @@ class HHG(IndependenceTest):
     ----------
     .. [#1HHG] Heller, R., Heller, Y., & Gorfine, M. (2012). A consistent
                multivariate test of association based on ranks of distances.
-               *Biometrika*, 100(2), 503-510.
+               Biometrika, 100(2), 503-510.
     """
 
     def __init__(self, compute_distance="euclidean", **kwargs):

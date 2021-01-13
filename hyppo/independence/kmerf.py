@@ -1,11 +1,10 @@
 import numpy as np
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import pairwise_distances
 
-from .base import IndependenceTest
-from ._utils import _CheckInputs, sim_matrix
 from . import Dcorr
-
+from ._utils import _CheckInputs, sim_matrix
+from .base import IndependenceTest
 
 FOREST_TYPES = {
     "classifier": RandomForestClassifier,

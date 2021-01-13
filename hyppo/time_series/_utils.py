@@ -2,14 +2,14 @@ import warnings
 
 import numpy as np
 
+from ..independence import MGC
 from ..tools import (
-    contains_nan,
     check_ndarray_xy,
-    convert_xy_float64,
     check_reps,
     compute_dist,
+    contains_nan,
+    convert_xy_float64,
 )
-from ..independence import MGC
 
 
 class _CheckInputs:

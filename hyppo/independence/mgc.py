@@ -1,9 +1,10 @@
 import warnings
+
 from scipy.stats import multiscale_graphcorr
 
 from ..tools import compute_dist
-from .base import IndependenceTest
 from ._utils import _CheckInputs
+from .base import IndependenceTest
 
 
 class MGC(IndependenceTest):
@@ -53,7 +54,7 @@ class MGC(IndependenceTest):
     the distance matrix of :math:`y`. :math:`D^x` and :math:`D^y` are
     modified to be mean zero columnwise. This results in two
     :math:`n \times n` distance matrices :math:`A` and :math:`B` (the
-    centering and unbiased modification) [3]_.
+    centering and unbiased modification) [#3MGC]_.
 
     + For all values :math:`k` and :math:`l` from :math:`1, ..., n`,
 

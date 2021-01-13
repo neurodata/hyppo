@@ -1,11 +1,11 @@
 import numpy as np
 
+from ..independence import CCA, HHG, KMERF, MGC, RV, Dcorr, Hsic
 from ..tools import contains_nan
-from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC, KMERF
 
 
 class _CheckInputs:
-    def __init__(self, inputs, indep_test, reps=None):
+    def __init__(self, inputs, indep_test=None, reps=None):
         self.inputs = inputs
         self.reps = reps
         self.indep_test = indep_test
@@ -58,7 +58,7 @@ class _CheckInputs:
 
     def _check_indep_test(self):
         tests = [CCA, Dcorr, HHG, RV, Hsic, MGC, KMERF]
-        if self.indep_test.__class__ not in tests and self.indep_test:
+        if self.indep_test.__class__ not in tests or self.indep_test is not None:
             raise ValueError("indep_test must be in {}".format(tests))
 
     def _check_min_samples(self):

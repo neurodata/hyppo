@@ -1,10 +1,10 @@
-import pytest
 import numpy as np
+import pytest
 from numpy.testing import assert_almost_equal, assert_raises
 
+from ...independence import CCA, Dcorr
 from ...tools import linear, rot_2samp
 from .. import KSample
-from ...independence import CCA, Dcorr
 
 
 class TestKSample:

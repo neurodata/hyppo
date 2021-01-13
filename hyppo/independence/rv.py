@@ -1,7 +1,7 @@
 import numpy as np
 
-from .base import IndependenceTest
 from ._utils import _CheckInputs
+from .base import IndependenceTest
 
 
 class RV(IndependenceTest):
@@ -44,11 +44,11 @@ class RV(IndependenceTest):
     References
     ----------
     .. [#1RV] Robert, P., & Escoufier, Y. (1976). A unifying tool for linear
-              multivariate statistical methods: the RV‐coefficient. *Journal
+              multivariate statistical methods: the RV‐coefficient. Journal
               of the Royal Statistical Society: Series C (Applied
-              Statistics)*, 25(3), 257-265.
+              Statistics), 25(3), 257-265.
     .. [#2RV] Escoufier, Y. (1973). Le traitement des variables vectorielles.
-              *Biometrics*, 751-760.
+              Biometrics, 751-760.
     """
 
     def __init__(self):

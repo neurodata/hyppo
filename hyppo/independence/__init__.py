@@ -1,9 +1,9 @@
-from .rv import RV
 from .cca import CCA
-from .hhg import HHG
 from .dcorr import Dcorr
+from .hhg import HHG
 from .hsic import Hsic
-from .mgc import MGC
 from .kmerf import KMERF
+from .mgc import MGC
+from .rv import RV
 
 __all__ = [s for s in dir()]  # add imported tests to __all__

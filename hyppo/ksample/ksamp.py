@@ -1,6 +1,6 @@
-from .base import KSampleTest
-from ..independence import CCA, Dcorr, HHG, RV, Hsic, MGC, KMERF
+from ..independence import CCA, HHG, KMERF, MGC, RV, Dcorr, Hsic
 from ._utils import _CheckInputs, k_sample_transform
+from .base import KSampleTest
 
 
 class KSample(KSampleTest):
@@ -47,8 +47,8 @@ class KSample(KSampleTest):
 
     The closely related independence testing problem can be generalized
     similarly: Given a set of paired data
-    :math:`\{\left(x_i, y_i \right) \stackrel{iid}{\sim} F_{XY},
-    \ i = 1, ..., N\}`, the problem that we are testing is,
+    :math:`\{\left(x_i, y_i \right) \stackrel{iid}{\sim} F_{XY}, \ i = 1, ..., N\}`,
+    the problem that we are testing is,
 
     .. math::
 
@@ -58,7 +58,7 @@ class KSample(KSampleTest):
     By manipulating the inputs of the *k*-sample test, we can create
     concatenated versions of the inputs and another label matrix which are
     necessarily paired. Then, any nonparametric test can be performed on
-    this data. That is,
+    this data.
 
     Letting :math:`n = \sum_{i=1}^k n_i`, define new data matrices
     :math:`\mathbf{x}` and :math:`\mathbf{y}` such that,
@@ -122,7 +122,7 @@ class KSample(KSampleTest):
     proportional to how many labels (ways) samples differ by, a hierarchy of distances
     between samples thought to be true if the null hypothesis is rejected.
 
-    Performing a multilevel test involves constructing :math:x` and :math:`y` using
+    Performing a multilevel test involves constructing :math:`x` and :math:`y` using
     either of the methods above and then performing a block permutation [#2Ksamp]_.
     Essentially, the permutation is striated, where permutation is limited to be within
     a block of samples or between blocks of samples, but not both. This is done because

@@ -1,6 +1,6 @@
-from .base import TimeSeriesTest
-from ._utils import _CheckInputs, compute_stat, compute_scale_at_lag
 from ..independence import MGC
+from ._utils import _CheckInputs, compute_scale_at_lag, compute_stat
+from .base import TimeSeriesTest
 
 
 class MGCX(TimeSeriesTest):
@@ -32,7 +32,7 @@ class MGCX(TimeSeriesTest):
 
     Notes
     -----
-    The statistic can be derived as follows:
+    The statistic can be derived as follows [#1MgcX]_:
 
     Let :math:`x` and :math:`y` be :math:`(n, p)` and :math:`(n, q)` series
     respectively, which each contain :math:`y` observations of the series :math:`(X_t)`
@@ -43,14 +43,14 @@ class MGCX(TimeSeriesTest):
 
     .. math::
 
-        \mathrm{MGCX}_n (x, y) =  \sum_{j=0}^M frac{n-j}{n}
-                                  \mathrm{MGC}_n (x[j:n], y[0:(n-j)])
+        MGCX_n (x, y) =  \sum_{j=0}^M \frac{n-j}{n}
+                                  MGC_n (x[j:n], y[0:(n-j)])
 
     References
     ----------
-    .. [#1DcorX] Mehta, R., Chung, J., Shen C., Xu T., Vogelstein, J. T. (2019).
+    .. [#1MgcX] Mehta, R., Chung, J., Shen C., Xu T., Vogelstein, J. T. (2019).
                 A Consistent Independence Test for Multivariate Time-Series.
-                *ArXiv*
+                ArXiv
     """
 
     def __init__(self, compute_distance="euclidean", max_lag=0, **kwargs):
