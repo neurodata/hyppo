@@ -6,3 +6,7 @@
 Nonpar MANOVA via Independence Testing
 --------------------------------------
 .. autoclass:: KSample
+
+Energy
+------
+.. autoclass:: Energy
