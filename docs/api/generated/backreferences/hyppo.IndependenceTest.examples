@@ -1,0 +1,23 @@
+
+
+Examples using ``hyppo.IndependenceTest``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="hyppo is a multivariate hypothesis testing package, dealing with problems such as independence ...">
+
+.. only:: html
+
+ .. figure:: /tutorials/images/thumb/sphx_glr_overview_thumb.png
+     :alt: Overview
+
+     :ref:`sphx_glr_tutorials_overview.py`
+
+.. raw:: html
+
+    </div>
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_overview.py`
