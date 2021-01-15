@@ -5,7 +5,7 @@ from .base import TimeSeriesTest
 
 class MGCX(TimeSeriesTest):
     r"""
-    Class for running the MGCX test for independence of time series.
+    Cross Multiscale Graph Correlation (MGCX) test statistic and p-value.
 
     MGCX is an independence test between two (paired) time series of
     not necessarily equal dimensions. The population parameter is 0 if and only if the
@@ -55,7 +55,7 @@ class MGCX(TimeSeriesTest):
 
     .. math::
 
-        MGCX_n (x, y) =  \sum_{j=0}^M \frac{n-j}{n}
+        \mathrm{MGCX}_n (x, y) =  \sum_{j=0}^M \frac{n-j}{n}
                                   MGC_n (x[j:n], y[0:(n-j)])
 
     References

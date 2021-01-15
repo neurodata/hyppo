@@ -8,7 +8,7 @@ from .base import IndependenceTest
 
 class HHG(IndependenceTest):
     r"""
-    Class for calculating the HHG test statistic and p-value.
+    Heller Heller Gorfine (HHG) test statistic and p-value.
 
     This is a powerful test for independence based on calculating pairwise
     euclidean distances and associations between these distance matrices. The

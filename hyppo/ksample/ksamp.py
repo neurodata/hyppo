@@ -5,7 +5,7 @@ from .base import KSampleTest
 
 class KSample(KSampleTest):
     r"""
-    Class for calculating the *k*-sample test statistic and p-value.
+    Nonpar MANOVA via Independence Testing test statistic and p-value.
 
     A *k*-sample test tests equality in distribution among groups. Groups
     can be of different sizes, but generally have the same dimensionality.

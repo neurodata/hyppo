@@ -8,7 +8,7 @@ from .base import IndependenceTest
 
 class Hsic(IndependenceTest):
     r"""
-    Class for calculating the Hsic test statistic and p-value.
+    Hilbert Schmidt Independence Criterion (Hsic) test statistic and p-value.
 
     Hsic is a kernel based independence test and is a way to measure
     multivariate nonlinear associations given a specified kernel [#1Hsic]_.

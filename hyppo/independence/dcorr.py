@@ -8,7 +8,7 @@ from .base import IndependenceTest
 
 class Dcorr(IndependenceTest):
     r"""
-    Class for calculating the Dcorr test statistic and p-value.
+    Distance Correlation (Dcorr) test statistic and p-value.
 
     Dcorr is a measure of dependence between two paired random matrices of
     not necessarily equal dimensions. The coefficient is 0 if and only if the

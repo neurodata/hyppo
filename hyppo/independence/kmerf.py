@@ -14,7 +14,7 @@ FOREST_TYPES = {
 
 class KMERF(IndependenceTest):
     r"""
-    Class for calculating the KMERF test statistic and p-value.
+    Kernel Mean Embedding Random Forest (KMERF) test statistic and p-value.
 
     The KMERF test statistic is a kernel method for calculating independence by using
     a random forest induced similarity matrix as an input, and has been shown to have
@@ -77,7 +77,7 @@ class KMERF(IndependenceTest):
 
       .. math::
 
-         KMERF_n(\mathbf{x}, \mathbf{y}) = \frac{1}{n(n-3)}
+         \mathrm{KMERF}_n(\mathbf{x}, \mathbf{y}) = \frac{1}{n(n-3)}
          \mathrm{tr} \left( \mathbf{L}^{\mathbf{x}} \mathbf{L}^{\mathbf{y}} \right)
 
     The p-value returned is calculated using a permutation test using a

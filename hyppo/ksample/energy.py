@@ -10,7 +10,7 @@ from .ksamp import KSample
 
 class Energy(KSampleTest):
     r"""
-    Class for calculating the Energy test statistic and p-value.
+    Energy test statistic and p-value.
 
     Energy is a powerful multivariate 2-sample test. It leverages distance matrix
     capabilities (similar to tests like distance correlation or Dcorr). In fact, Energy
@@ -38,7 +38,7 @@ class Energy(KSampleTest):
 
     .. math::
 
-        Energy_{n, m}(\mathbf{u}, \mathbf{v}) = \frac{1}{n^2 m^2}
+        \mathrm{Energy}_{n, m}(\mathbf{u}, \mathbf{v}) = \frac{1}{n^2 m^2}
         \left( 2nm \sum_{i = 1}^n \sum_{j = 1}^m d(u_i, v_j) - m^2
         \sum_{i,j=1}^n d(u_i, u_j) - n^2 \sum_{i, j=1}^m d(v_i, v_j) \right)
 

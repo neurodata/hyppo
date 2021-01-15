@@ -5,7 +5,7 @@ from .base import TimeSeriesTest
 
 class DcorrX(TimeSeriesTest):
     r"""
-    Class for running the DcorrX test for independence of time series.
+    Cross Distance Correlation (DcorrX) test statistic and p-value.
 
     DcorrX is an independence test between two (paired) time series of
     not necessarily equal dimensions. The population parameter is 0 if and only if the
@@ -56,7 +56,7 @@ class DcorrX(TimeSeriesTest):
 
     .. math::
 
-        DcorrX_n (x, y) =  \sum_{j=0}^M \frac{n-j}{n}
+        \mathrm{DcorrX}_n (x, y) =  \sum_{j=0}^M \frac{n-j}{n}
                                     Dcorr_n (x[j:n], y[0:(n-j)])
 
     References

@@ -42,7 +42,7 @@ def _calc_eps(n):
 
 def linear(n, p, noise=False, low=-1, high=1):
     r"""
-    Simulates univariate or multivariate linear data.
+    Linear simulation.
 
     Parameters
     ----------
@@ -94,7 +94,7 @@ def linear(n, p, noise=False, low=-1, high=1):
 
 def exponential(n, p, noise=False, low=0, high=3):
     r"""
-    Simulates univariate or multivariate exponential data.
+    Exponential simulation.
 
     Parameters
     ----------
@@ -146,7 +146,7 @@ def exponential(n, p, noise=False, low=0, high=3):
 
 def cubic(n, p, noise=False, low=-1, high=1, cubs=[-12, 48, 128], scale=1 / 3):
     r"""
-    Simulates univariate or multivariate cubic data.
+    Cubic simulation.
 
     Parameters
     ----------
@@ -219,7 +219,7 @@ def cubic(n, p, noise=False, low=-1, high=1, cubs=[-12, 48, 128], scale=1 / 3):
 
 def joint_normal(n, p, noise=False):
     r"""
-    Simulates univariate or multivariate joint-normal data.
+    Joint Normal simulation.
 
     Parameters
     ----------
@@ -279,7 +279,7 @@ def joint_normal(n, p, noise=False):
 
 def step(n, p, noise=False, low=-1, high=1):
     r"""
-    Simulates univariate or multivariate step data.
+    Step simulation.
 
     Parameters
     ----------
@@ -337,7 +337,7 @@ def step(n, p, noise=False, low=-1, high=1):
 
 def quadratic(n, p, noise=False, low=-1, high=1):
     r"""
-    Simulates univariate or multivariate quadratic data.
+    Quadratic simulation.
 
     Parameters
     ----------
@@ -391,7 +391,7 @@ def quadratic(n, p, noise=False, low=-1, high=1):
 
 def w_shaped(n, p, noise=False, low=-1, high=1):
     r"""
-    Simulates univariate or multivariate quadratic data.
+    W-Shaped simulation.
 
     Parameters
     ----------
@@ -449,7 +449,7 @@ def w_shaped(n, p, noise=False, low=-1, high=1):
 
 def spiral(n, p, noise=False, low=0, high=5):
     r"""
-    Simulates univariate or multivariate spiral data.
+    Spiral simulation.
 
     Parameters
     ----------
@@ -515,7 +515,7 @@ def spiral(n, p, noise=False, low=0, high=5):
 
 def uncorrelated_bernoulli(n, p, noise=False, prob=0.5):
     r"""
-    Simulates univariate or multivariate uncorrelated Bernoulli data.
+    Uncorrelated Bernoulli simulation.
 
     Parameters
     ----------
@@ -574,7 +574,7 @@ def uncorrelated_bernoulli(n, p, noise=False, prob=0.5):
 
 def logarithmic(n, p, noise=False):
     r"""
-    Simulates univariate or multivariate logarithmic data.
+    Logarithmic simulation.
 
     Parameters
     ----------
@@ -625,7 +625,7 @@ def logarithmic(n, p, noise=False):
 
 def fourth_root(n, p, noise=False, low=-1, high=1):
     r"""
-    Simulates univariate or multivariate fourth root data.
+    Fourth Root simulation.
 
     Parameters
     ----------
@@ -702,7 +702,7 @@ def _sin(n, p, noise=False, low=-1, high=1, period=4 * np.pi):
 
 def sin_four_pi(n, p, noise=False, low=-1, high=1):
     r"""
-    Simulates univariate or multivariate sine 4 :math:`\pi` data.
+    Sine 4:math:`\pi` simulation.
 
     Parameters
     ----------
@@ -747,7 +747,7 @@ def sin_four_pi(n, p, noise=False, low=-1, high=1):
 
 def sin_sixteen_pi(n, p, noise=False, low=-1, high=1):
     r"""
-    Simulates univariate or multivariate sine 16 :math:`\pi` data.
+    Sine 16:math:`\pi` simulation.
 
     Parameters
     ----------
@@ -809,7 +809,7 @@ def _square_diamond(n, p, noise=False, low=-1, high=1, period=-np.pi / 2):
 
 def square(n, p, noise=False, low=-1, high=1):
     r"""
-    Simulates univariate or multivariate square data.
+    Square simulation.
 
     Parameters
     ----------
@@ -855,7 +855,7 @@ def square(n, p, noise=False, low=-1, high=1):
 
 def two_parabolas(n, p, noise=False, low=-1, high=1, prob=0.5):
     r"""
-    Simulates univariate or multivariate two parabolas data.
+    Two Parabolas simulation.
 
     Parameters
     ----------
@@ -938,7 +938,7 @@ def _circle_ellipse(n, p, noise=False, low=-1, high=1, radius=1):
 
 def circle(n, p, noise=False, low=-1, high=1):
     r"""
-    Simulates univariate or multivariate circle data.
+    Circle simulation.
 
     Parameters
     ----------
@@ -986,7 +986,7 @@ def circle(n, p, noise=False, low=-1, high=1):
 
 def ellipse(n, p, noise=False, low=-1, high=1):
     r"""
-    Simulates univariate or multivariate ellipse data.
+    Ellipse simulation.
 
     Parameters
     ----------
@@ -1034,7 +1034,7 @@ def ellipse(n, p, noise=False, low=-1, high=1):
 
 def diamond(n, p, noise=False, low=-1, high=1):
     r"""
-    Simulates univariate or multivariate diamond data.
+    Diamond simulation.
 
     Parameters
     ----------
@@ -1080,7 +1080,7 @@ def diamond(n, p, noise=False, low=-1, high=1):
 
 def multiplicative_noise(n, p):
     r"""
-    Simulates univariate or multivariate multiplicative noise data.
+    Multiplicative Noise simulation.
 
     Parameters
     ----------
@@ -1127,7 +1127,7 @@ def multiplicative_noise(n, p):
 
 def multimodal_independence(n, p, prob=0.5, sep1=3, sep2=2):
     r"""
-    Simulates univariate or multimodal independence data.
+    Multimodal Independence data.
 
     Parameters
     ----------

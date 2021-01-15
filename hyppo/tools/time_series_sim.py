@@ -23,7 +23,7 @@ class _CheckInputs:
 
 def indep_ar(n, lag=1, phi=0.5, sigma=1):
     r"""
-    Simulates two independent, stationary, autoregressive time series.
+    2 independent, stationary, autoregressive time series simulation.
 
     Parameters
     ----------
@@ -86,7 +86,7 @@ def indep_ar(n, lag=1, phi=0.5, sigma=1):
 
 def cross_corr_ar(n, lag=1, phi=0.5, sigma=1):
     r"""
-    Simulates two linearly dependent time series.
+    2 linearly dependent time series simulation.
 
     Parameters
     ----------
@@ -148,7 +148,7 @@ def cross_corr_ar(n, lag=1, phi=0.5, sigma=1):
 
 def nonlinear_process(n, lag=1, phi=1, sigma=1):
     r"""
-    Simulates two nonlinearly dependent time series.
+    2 nonlinearly dependent time series simulation.
 
     Parameters
     ----------

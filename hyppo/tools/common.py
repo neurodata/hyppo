@@ -118,7 +118,7 @@ def _check_kernmat(x, y):
 
 def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
     """
-    Compute kernel similarity matrix for the input matrices.
+    Kernel similarity matrices for the inputs.
 
     Parameters
     ----------
@@ -181,7 +181,7 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
 
 def compute_dist(x, y, metric="euclidean", workers=None, **kwargs):
     """
-    Compute kernel similarity matrix for the input matrices.
+    Distance matrices for the inputs.
 
     Parameters
     ----------
@@ -215,7 +215,7 @@ def compute_dist(x, y, metric="euclidean", workers=None, **kwargs):
         The number of cores to parallelize the p-value computation over.
         Supply -1 to use all cores available to the Process.
     **kwargs : optional
-        Optional arguments provided to ``sklearn.metrics.pairwise_distances`` or a
+        Optional arguments provided to :meth:`sklearn.metrics.pairwise_distances` or a
         custom kernel function.
 
     Returns
@@ -391,7 +391,7 @@ def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None):
 
 def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_blocks=None):
     """
-    Calculate the p-value for a nonparametric test via permutation.
+    Permutation test for the p-value of a nonparametric test.
 
     This process is completed by first randomly permuting :math:`y` to estimate the null
     distribution and then calculating the probability of observing a test
@@ -456,7 +456,7 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
 
 def chi2_approx(calc_stat, x, y):
     """
-    Calculate the p-value for Dcorr and Hsic via a chi-squared approximation.
+    Fast chi-squared approximation for the p-value of Dcorr and Hsic.
 
     In the case of distance and kernel methods, Dcorr (and by extension Hsic
     [#2ChiSq]_) can be approximated via a chi-squared distribution [#1ChiSq].

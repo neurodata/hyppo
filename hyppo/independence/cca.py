@@ -6,7 +6,7 @@ from .base import IndependenceTest
 
 class CCA(IndependenceTest):
     r"""
-    Class for calculating the CCA test statistic and p-value.
+    Cannonical Correlation Analysis (CCA) test statistic and p-value.
 
     This test can be thought of inferring information from cross-covariance
     matrices [#1CCA]_. It has been thought that virtually all parametric tests
@@ -21,7 +21,7 @@ class CCA(IndependenceTest):
     -----
     The statistic can be derived as follows [#4CCA]_:
 
-    Let :math:`x` and :math:`y` be `:math:`(n, p)` samples of random variables
+    Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
     :math:`X` and :math:`Y`. We can center :math:`x` and :math:`y` and then
     calculate the sample covariance matrix :math:`\hat{\Sigma}_{xy} = x^T y`
     and the variance matrices for :math:`x` and :math:`y` are defined

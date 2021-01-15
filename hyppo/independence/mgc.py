@@ -9,7 +9,7 @@ from .base import IndependenceTest
 
 class MGC(IndependenceTest):
     r"""
-    Class for calculating the MGC test statistic and p-value.
+    Multiscale Graph Correlation (MGC) test statistic and p-value.
 
     Specifically, for each point, MGC finds the :math:`k`-nearest neighbors for
     one property (e.g. cloud density), and the :math:`l`-nearest neighbors for
@@ -92,7 +92,7 @@ class MGC(IndependenceTest):
 
       .. math::
 
-         MGC_n (x, y) = \max_{(k, l)} R \left(c^{kl} \left( x_n, y_n \right)
+         \mathrm{MGC}_n (x, y) = \max_{(k, l)} R \left(c^{kl} \left( x_n, y_n \right)
                                                     \right)
 
     The test statistic returns a value between :math:`(-1, 1)` since it is

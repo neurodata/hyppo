@@ -6,7 +6,7 @@ from .base import IndependenceTest
 
 class RV(IndependenceTest):
     r"""
-    Class for calculating the RV test statistic and p-value.
+    Rank Value (RV) test statistic and p-value.
 
     RV is the multivariate generalization of the squared Pearson correlation
     coefficient [#1RV]_. The RV coefficient can be thought to be closely
