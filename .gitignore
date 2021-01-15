@@ -89,6 +89,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+doc/api/generated
 
 # Spyder project settings
 .spyderproject
