@@ -56,30 +56,27 @@ The original version was designed and written by Satish Palaniappan, Sambit
 Panda, Junhao Xiong, Sandhya Ramachandran, and Ronak Mehtra. This new version
 was written by Sambit Panda.
 
-Documentation
-=============
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Getting Started
+
+   tutorials/overview.rst
+   install
+   gallery/index.rst
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
+   :hidden:
+   :caption: User Guide
 
-   install
    tutorials
-   reference/index
-   contributing
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Reference Docs
+
+   api/index
    news
    license
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Useful Links
-
-   hyppo @ GitHub <https://github.com/neurodata/hyppo>
-   hyppo @ PyPi <https://pypi.org/project/hyppo/>
-   Issue Tracker <https://github.com/neurodata/hyppo/issues>
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`search`
