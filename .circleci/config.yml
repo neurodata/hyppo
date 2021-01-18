@@ -40,7 +40,7 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip install pytest pytest-cov codecov black
-            pip install -r dev-requirements.txt
+            pip install -r requirements.txt
             pip install -e .
       - save_cache:
           key: v1-dependency-cache-{{ checksum "requirements.txt" }}
