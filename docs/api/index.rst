@@ -53,6 +53,21 @@ Time-Series
 
 
 
+.. automodule:: hyppo.discrim
+
+.. currentmodule:: hyppo.discrim
+
+Discriminability
+-----------------
+
+.. autosummary::
+   :toctree: generated/
+
+   DiscrimOneSample
+   DiscrimTwoSample
+
+
+
 .. automodule:: hyppo.tools
 
 .. currentmodule:: hyppo.tools
