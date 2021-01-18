@@ -7,10 +7,10 @@ orbs:
 workflows:
   build_and_deploy:
     jobs:
-      - build:
-          filters:
-            tags:
-              only: /.*/
+      # - build:
+      #     filters:
+      #       tags:
+      #         only: /.*/
       - test-python-install:
           version: "3.6"
           requires:
@@ -33,34 +33,34 @@ workflows:
               ignore: /.*/
 
 jobs:
-  build:
-    docker:
-      - image: cimg/python:3.8
-    steps:
-      - checkout
-      - restore_cache:
-          key: v1-dependency-cache-{{ checksum "setup.py" }}
-      - run:
-          name: install python dependencies
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install pytest pytest-cov black coverage twine codecov
-            pip install -r requirements.txt
-            pip install -e .
-      - save_cache:
-          key: v1-dependency-cache-{{ checksum "setup.py" }}
-          paths:
-            - "venv"
-      - run:
-          name: run tests
-          command: |
-            . venv/bin/activate
-            pytest hyppo/
-            coverage html
-            codecov
-      - store_artifacts:
-          path: htmlcov/
+  # build:
+  #   docker:
+  #     - image: cimg/python:3.8
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         key: v1-dependency-cache-{{ checksum "setup.py" }}
+  #     - run:
+  #         name: install python dependencies
+  #         command: |
+  #           python3 -m venv venv
+  #           . venv/bin/activate
+  #           pip install pytest pytest-cov black coverage twine codecov
+  #           pip install -r requirements.txt
+  #           pip install -e .
+  #     - save_cache:
+  #         key: v1-dependency-cache-{{ checksum "setup.py" }}
+  #         paths:
+  #           - "venv"
+  #     - run:
+  #         name: run tests
+  #         command: |
+  #           . venv/bin/activate 
+  #           pytest hyppo/
+  #           coverage html
+  #           codecov
+  #     - store_artifacts:
+  #         path: htmlcov/
   test-python-install:
     parameters:
       version:
