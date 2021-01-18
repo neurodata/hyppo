@@ -1,9 +1,10 @@
 import os
 import sys
 
-from circleci.__init__ import __version__
 from setuptools import find_packages, setup
 from setuptools.command.install import install
+
+from hyppo.__init__ import __version__
 
 PACKAGE_NAME = "hyppo"
 DESCRIPTION = "A comprehensive independence testing package"
