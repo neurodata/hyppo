@@ -52,6 +52,8 @@ jobs:
       - store_test_results:
           path: test-reports/
   deploy:
+    docker:
+      - image: cimg/python:3.8
     steps:
       - checkout
       - run:
