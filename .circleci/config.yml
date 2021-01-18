@@ -33,7 +33,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-dependency-cache-{{ checksum "requirements.txt" }}
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
@@ -43,7 +43,7 @@ jobs:
             pip install -r requirements.txt
             pip install -e .
       - save_cache:
-          key: v1-dependency-cache-{{ checksum "requirements.txt" }}
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - "venv"
       - run:
@@ -65,7 +65,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-dependency-cache-{{ checksum "requirements.txt" }}
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
@@ -75,7 +75,7 @@ jobs:
             pip install -r requirements.txt
             pip install -e .
       - save_cache:
-          key: v1-dependency-cache-{{ checksum "requirements.txt" }}
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - "venv"
       - run:
@@ -103,7 +103,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-dependency-cache-{{ checksum "requirements.txt" }}
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
@@ -112,7 +112,7 @@ jobs:
             pip install -r requirements.txt
             pip install -e .
       - save_cache:
-          key: v1-dependency-cache-{{ checksum "requirements.txt" }}
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - "venv"
       - run:
