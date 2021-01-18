@@ -100,8 +100,6 @@ jobs:
             sudo pip3 install hyppo
   integration:
     docker:
-      - image: circleci/python:3.6
-      - image: cimg/python:3.7
       - image: cimg/python:3.8
     steps:
       - run: echo "It works!"
