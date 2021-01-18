@@ -1,54 +1,147 @@
 version: 2.1
 
 orbs:
-  # The python orb contains a set of prepackaged circleci configuration you can use repeatedly in your configurations files
-  # Orb commands and jobs help you with common scripting around a language/tool
-  # so you dont have to copy and paste it everywhere.
-  # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
   python: circleci/python@1.2
   codecov: codecov/codecov@1.1.3
 
 workflows:
-  sample:  # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run. 
-    # For more details on extending your workflow, see the configuration docs: https://circleci.com/docs/2.0/configuration-reference/#workflows 
+  build_and_deploy:
     jobs:
-      - build-and-test
-
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - test-python-install:
+          version: "3.6"
+          requires:
+            - build
+      - test-python-install:
+          version: "3.7"
+          requires:
+            - build
+      - test-python-install:
+          version: "3.8"
+          requires:
+            - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore: /.*/
 
 jobs:
-  build-and-test:  # This is the name of the job, feel free to change it to better match what you're trying to do!
-    # These next lines defines a docker executors: https://circleci.com/docs/2.0/executor-types/
-    # You can specify an image from dockerhub or use one of the convenience images from CircleCI's Developer Hub
-    # A list of available CircleCI docker convenience images are available here: https://circleci.com/developer/images/image/cimg/python
-    # The executor is the environment in which the steps below will be executed - below will use a python 3.9 container
-    # Change the version below to your required version of python
+  build:
     docker:
-      - image: cimg/python:3.6
-      - image: cimg/python:3.7
       - image: cimg/python:3.8
-    parallelism: 4
-
-    # Checkout the code as the first step. This is a dedicated CircleCI step.
-    # The python orb's install-packages step will install the dependencies from a Pipfile via Pipenv by default.
-    # Here we're making sure we use just use the system-wide pip. By default it uses the project root's requirements.txt.
-    # Then run your tests!
-    # CircleCI will report the results back to your VCS provider.
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
-      - python/install-packages:
-          pkg-manager: pip
-          args: pytest, pytest-cov, black
-          # app-dir: ~/project/package-directory/  # If you're requirements.txt isn't in the root directory.
-          # pip-dependency-file: test-requirements.txt  # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
+      - restore_cache:
+          key: v1-dependency-cache-{{ checksum "setup.py" }}
       - run:
-          name: Run tests
-          # This assumes pytest is installed via the install-package step above
-          command: pytest hyppo/
+          name: install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install pytest pytest-cov black coverage twine
+            pip install -r requirements.txt
+            pip install -e .
+      - save_cache:
+          key: v1-dependency-cache-{{ checksum "setup.py" }}
+          paths:
+            - "venv"
       - run:
-          name: Check black formatting
-          command: black --check --diff ./hyppo
-      - codecov/upload
-
+          name: run tests
+          command: |
+            . venv/bin/activate
+            pytest hyppo/
+            coverage html
+            codecov
+      - store_artifacts:
+          path: htmlcov/
+  test-python-install:
+    parameters:
+      version:
+        type: string
+        default: latest
+    docker:
+      - image: cimg/python:<< parameters.version >>
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-dependency-cache-{{ checksum "setup.py" }}
+      - run:
+          name: install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install pytest pytest-cov black coverage twine
+            pip install -r requirements.txt
+            pip install -e .
+      - save_cache:
+          key: v1-dependency-cache-{{ checksum "setup.py" }}
+          paths:
+            - "venv"
+      - run:
+          name: run tests
+          command: |
+            . venv/bin/activate
+            pytest hyppo/
+            coverage html
+            codecov
+      - store_artifacts:
+          path: htmlcov/
+      - run:
+          name: Smoke Test Install
+          command: |
+            python --version
+            sudo pip3 install hyppo
+  integration:
+    docker:
+      - image: circleci/python:3.6
+      - image: cimg/python:3.7
+      - image: cimg/python:3.8
+    steps:
+      - run: echo "It works!"
+  deploy:
+    docker:
+      - image: cimg/python:3.8
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-dependency-cache-{{ checksum "setup.py" }}
+      - run:
+          name: install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install pytest pytest-cov black coverage twine
+            pip install -r requirements.txt
+            pip install -e .
+      - save_cache:
+          key: v1-dependency-cache-{{ checksum "setup.py" }}
+          paths:
+            - "venv"
+      - run:
+          name: verify git tag vs. version
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            python setup.py verify
+      - run:
+          name: init .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      - run:
+          name: create packages
+          command: |
+            python setup.py sdist
+      - run:
+          name: upload to pypi
+          command: |
+            . venv/bin/activate
+            twine upload dist/*
