@@ -1,77 +1,32 @@
 version: 2.1
 
 orbs:
-  python: circleci/python@1.2
+  python: circleci/python@1.3.2
   codecov: codecov/codecov@1.1.3
 
 workflows:
-  build_and_deploy:
+  build-deploy:
     jobs:
-      # - build:
-      #     filters:
-      #       tags:
-      #         only: /.*/
-      - test-python-install:
-          version: "3.6"
-          # requires:
-          #   - build
-      - test-python-install:
-          version: "3.7"
-          # requires:
-          #   - build
-      - test-python-install:
-          version: "3.8"
-          # requires:
-          #   - build
+      - build
       - deploy:
-          # requires:
-          #   - build
+          requires:
+            - build
           filters:
             tags:
               only: /[0-9]+(\.[0-9]+)*/
             branches:
-              ignore: /.*/
+              only: master
 
 jobs:
-  # build:
-  #   docker:
-  #     - image: cimg/python:3.8
-  #   steps:
-  #     - checkout
-  #     - restore_cache:
-  #         key: v1-dependency-cache-{{ checksum "setup.py" }}
-  #     - run:
-  #         name: install python dependencies
-  #         command: |
-  #           python3 -m venv venv
-  #           . venv/bin/activate
-  #           pip install pytest pytest-cov black coverage twine codecov
-  #           pip install -r requirements.txt
-  #           pip install -e .
-  #     - save_cache:
-  #         key: v1-dependency-cache-{{ checksum "setup.py" }}
-  #         paths:
-  #           - "venv"
-  #     - run:
-  #         name: run tests
-  #         command: |
-  #           . venv/bin/activate 
-  #           pytest hyppo/
-  #           coverage html
-  #           codecov
-  #     - store_artifacts:
-  #         path: htmlcov/
-  test-python-install:
-    parameters:
-      version:
-        type: string
-        default: latest
+  build:
     docker:
-      - image: cimg/python:<< parameters.version >>
+      - image: cimg/python:3.6
+      - image: cimg/python:3.7
+      - image: cimg/python:3.8
     steps:
       - checkout
       - restore_cache:
-          key: v1-dependency-cache-{{ checksum "setup.py" }}
+          key: deps1-{{ .Branch }}-{{ checksum "setup.py" }}
       - run:
           name: install python dependencies
           command: |
@@ -81,7 +36,7 @@ jobs:
             pip install -r requirements.txt
             pip install -e .
       - save_cache:
-          key: v1-dependency-cache-{{ checksum "setup.py" }}
+          key: deps1-{{ .Branch }}-{{ checksum "setup.py" }}
           paths:
             - "venv"
       - run:
@@ -92,34 +47,22 @@ jobs:
             coverage html
             codecov
       - store_artifacts:
-          path: htmlcov/
-      - run:
-          name: Smoke Test Install
-          command: |
-            python --version
-            sudo pip3 install hyppo
-  integration:
-    docker:
-      - image: cimg/python:3.8
-    steps:
-      - run: echo "It works!"
+          path: test-reports/
+          destination: tr1
+      - store_test_results:
+          path: test-reports/
   deploy:
-    docker:
-      - image: cimg/python:3.8
     steps:
       - checkout
-      - restore_cache:
-          key: v1-dependency-cache-{{ checksum "setup.py" }}
       - run:
           name: install python dependencies
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            pip install pytest pytest-cov black coverage twine codecov
+            pip install twine
             pip install -r requirements.txt
-            pip install -e .
       - save_cache:
-          key: v1-dependency-cache-{{ checksum "setup.py" }}
+          key: deps1-{{ .Branch }}-{{ checksum "setup.py" }}
           paths:
             - "venv"
       - run:
