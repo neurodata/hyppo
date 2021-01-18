@@ -1,7 +1,7 @@
-import numpy as np
-from numba import njit
+# import numpy as np
+# from numba import njit
 
-from ..independence.dcorr import _center_distmat
+from ..independence.hsic import _dcov
 from ..tools import compute_dist
 from ._utils import _CheckInputs
 from .base import KSampleTest
@@ -72,7 +72,7 @@ class Energy(KSampleTest):
             self, compute_distance=compute_distance, bias=bias, **kwargs
         )
 
-    def _statistic(self, x, y):
+    def statistic(self, x, y):
         r"""
         Calulates the Energy test statistic.
 
@@ -142,7 +142,7 @@ class Energy(KSampleTest):
         >>> y = x
         >>> stat, pvalue = Energy().test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
-        '0.000, 1.0'
+        '0.267, 1.0'
         """
         check_input = _CheckInputs(
             inputs=[x, y],
@@ -151,27 +151,10 @@ class Energy(KSampleTest):
         x, y = check_input()
 
         # observed statistic
-        stat = Energy()._statistic(x, y)
+        stat = Energy().statistic(x, y)
 
         # since stat transformation is invariant under permutation, 2-sample Dcorr
         # pvalue is identical to Energy
         _, pvalue = KSample("Dcorr").test(x, y, reps=reps, workers=workers, auto=auto)
 
         return stat, pvalue
-
-
-@njit
-def _dcov(distx, disty, bias):  # pragma: no cover
-    """Calculate the Dcorr test statistic"""
-    # center distance matrices
-    cent_distx = _center_distmat(distx, bias)
-    cent_disty = _center_distmat(disty, bias)
-
-    N = distx.shape[0]
-
-    if bias:
-        stat = 1 / (N ** 2) * np.trace(np.multiply(cent_distx, cent_disty))
-    else:
-        stat = 1 / (N * (N - 3)) * np.trace(np.multiply(cent_distx, cent_disty))
-
-    return stat

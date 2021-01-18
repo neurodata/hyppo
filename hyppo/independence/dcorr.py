@@ -14,38 +14,6 @@ class Dcorr(IndependenceTest):
     not necessarily equal dimensions. The coefficient is 0 if and only if the
     matrices are independent. It is an example of an energy distance.
 
-    Parameters
-    ----------
-    compute_distance : callable(), optional (default: "euclidean")
-        A function that computes the distance among the samples within each
-        data matrix.
-        Valid strings for ``metric`` are, as defined in
-        ``sklearn.metrics.pairwise_distances``,
-
-            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
-              ‘manhattan’] See the documentation for scipy.spatial.distance for details
-              on these metrics.
-            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
-              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
-              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
-              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
-              documentation for scipy.spatial.distance for details on these metrics.
-
-        Set to `None` or `precomputed` if `x` and `y` are already distance
-        matrices. To call a custom function, either create the distance matrix
-        before-hand or create a function of the form ``metric(x, **kwargs)``
-        where `x` is the data matrix for which pairwise distances are
-        calculated and kwargs are extra arguements to send to your custom function.
-    bias : bool (default: False)
-        Whether or not to use the biased or unbiased test statistics.
-
-    See Also
-    --------
-    Hsic : Hilbert-Schmidt independence criterion test statistic and p-value.
-    HHG : Heller Heller Gorfine test statistic and p-value.
-
-    Notes
-    -----
     The statistic can be derived as follows:
 
     Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
@@ -55,20 +23,21 @@ class Dcorr(IndependenceTest):
 
     .. math::
 
-        \mathrm{Dcov}_n (x, y) = \frac{1}{n^2} \mathrm{tr} (D^x H D^y H)
+        \mathrm{Dcov}^b_n (x, y) = \frac{1}{n^2} \mathrm{tr} (D^x H D^y H)
 
     where :math:`\mathrm{tr} (\cdot)` is the trace operator and :math:`H` is
     defined as :math:`H = I - (1/n) J` where :math:`I` is the identity matrix
     and :math:`J` is a matrix of ones. The normalized version of this
-    covariance is Dcorr [#1Dcor]_ and is
+    covariance is distance correlation `[1]`_ and is
 
     .. math::
 
-        \mathrm{Dcorr}_n (x, y) = \frac{\mathrm{Dcov}_n (x, y)}
-                                       {\sqrt{\mathrm{Dcov}_n (x, x)
-                                              \mathrm{Dcov}_n (y, y)}}
+        \mathrm{Dcorr}^b_n (x, y) = \frac{\mathrm{Dcov}^b_n (x, y)}
+                                       {\sqrt{\mathrm{Dcov}^b_n (x, x)
+                                              \mathrm{Dcov}^b_n (y, y)}}
 
-    This version of distance correlation is defined using the following
+    This is a biased test statistic. An unbiased alternative also exists, and is
+    defined using the following: Consider the
     centering process where :math:`\mathbb{1}(\cdot)` is the indicator
     function:
 
@@ -83,29 +52,50 @@ class Dcorr(IndependenceTest):
 
     .. math::
 
-        \mathrm{UDcov}_n (x, y) = \frac{1}{n (n-3)} \mathrm{tr} (C^x C^y)
+        \mathrm{Dcov}_n (x, y) = \frac{1}{n (n-3)} \mathrm{tr} (C^x C^y)
 
-    The normalized version of this covariance [#2Dcor]_ is
+    The normalized version of this covariance `[2]`_ is
 
     .. math::
 
-        \mathrm{UDcorr}_n (x, y) = \frac{\mathrm{UDcov}_n (x, y)}
-                                        {\sqrt{\mathrm{UDcov}_n (x, x)
-                                               \mathrm{UDcov}_n (y, y)}}
+        \mathrm{Dcorr}_n (x, y) = \frac{\mathrm{Dcov}_n (x, y)}
+                                        {\sqrt{\mathrm{Dcov}_n (x, x)
+                                               \mathrm{Dcov}_n (y, y)}}
 
-    The p-value returned is calculated using a permutation test using a
-    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
-    The fast version of the test uses a
-    `chi squared approximation <https://hyppo.neurodata.io/reference/tools.html#chi-squared-approximation>`_.
+    The p-value returned is calculated using a permutation test using
+    :meth:`hyppo.tools.perm_test`. The fast version of the test uses
+    :meth:`hyppo.tools.chi2_approx`.
 
-    References
+    .. _[1]: https://projecteuclid.org/euclid.aos/1201012979
+    .. _[2]: https://projecteuclid.org/euclid.aos/1413810731
+
+    Parameters
     ----------
-    .. [#1Dcor] Székely, G. J., Rizzo, M. L., & Bakirov, N. K. (2007).
-                Measuring and testing dependence by correlation of distances.
-                The annals of statistics, 35(6), 2769-2794.
-    .. [#2Dcor] Székely, G. J., & Rizzo, M. L. (2014). Partial distance
-                correlation with methods for dissimilarities. The Annals of
-                Statistics, 42(6), 2382-2412.
+    compute_distance : str, callable, or None, default: "euclidean"
+        A function that computes the distance among the samples within each
+        data matrix.
+        Valid strings for ``compute_distance`` are, as defined in
+        ``sklearn.metrics.pairwise_distances``,
+
+            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
+              ‘manhattan’] See the documentation for scipy.spatial.distance for details
+              on these metrics.
+            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
+              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
+              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
+              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
+              documentation for scipy.spatial.distance for details on these metrics.
+
+        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already distance
+        matrices. To call a custom function, either create the distance matrix
+        before-hand or create a function of the form ``metric(x, **kwargs)``
+        where ``x`` is the data matrix for which pairwise distances are
+        calculated and ``**kwargs`` are extra arguements to send to your custom
+        function.
+    bias : bool, default: False
+        Whether or not to use the biased or unbiased test statistics.
+    **kwargs
+        Arbitrary keyword arguments for ``compute_distance``.
     """
 
     def __init__(self, compute_distance="euclidean", bias=False, **kwargs):
@@ -116,18 +106,18 @@ class Dcorr(IndependenceTest):
         self.bias = bias
         IndependenceTest.__init__(self, compute_distance=compute_distance, **kwargs)
 
-    def _statistic(self, x, y):
+    def statistic(self, x, y):
         r"""
         Helper function that calculates the Dcorr test statistic.
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices. `x` and `y` must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        x,y : ndarray
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, `x` and `y` can be distance matrices,
-            where the shapes must both be `(n, n)`.
+            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
+            where the shapes must both be ``(n, n)``.
 
         Returns
         -------
@@ -147,30 +137,32 @@ class Dcorr(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1, auto=True, bias=False, perm_blocks=None):
+    def test(self, x, y, reps=1000, workers=1, auto=True, perm_blocks=None):
         r"""
         Calculates the Dcorr test statistic and p-value.
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices. `x` and `y` must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        x,y : ndarray
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, `x` and `y` can be distance matrices,
-            where the shapes must both be `(n, n)`.
-        reps : int, optional (default: 1000)
+            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
+            where the shapes must both be ``(n, n)``.
+        reps : int, default: 1000
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        workers : int, optional (default: 1)
+        workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
-            Supply -1 to use all cores available to the Process.
-        auto : bool (default: True)
-            Automatically uses fast approximation when sample size and size of array
-            is greater than 20. If True, and sample size is greater than 20, a fast
-            chi2 approximation will be run. Parameters ``reps`` and ``workers`` are
-            irrelevant in this case.
-        perm_blocks : ndarray, optional (default None)
+            Supply ``-1`` to use all cores available to the Process.
+        auto : bool, default: True
+            Automatically uses fast approximation when `n` and size of array
+            is greater than 20. If ``True``, and sample size is greater than 20, then
+            :class:`hyppo.tools.chi2_approx` will be run. Parameters ``reps`` and
+            ``workers`` are
+            irrelevant in this case. Otherwise, :class:`hyppo.tools.perm_test` will be
+            run.
+        perm_blocks : None or ndarray, default: None
             Defines blocks of exchangeable samples during the permutation test.
             If None, all samples can be permuted with one another. Requires `n`
             rows. At each column, samples with matching column value are
@@ -193,17 +185,6 @@ class Dcorr(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = Dcorr().test(x, y)
-        >>> '%.1f, %.2f' % (stat, pvalue)
-        '1.0, 0.00'
-
-        The number of replications can give p-values with higher confidence
-        (greater alpha levels).
-
-        >>> import numpy as np
-        >>> from hyppo.independence import Dcorr
-        >>> x = np.arange(7)
-        >>> y = x
-        >>> stat, pvalue = Dcorr().test(x, y, reps=10000)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
 
@@ -230,7 +211,7 @@ class Dcorr(IndependenceTest):
             check_perm_blocks_dim(perm_blocks, y)
 
         if auto and x.shape[0] > 20 and perm_blocks is None:
-            stat, pvalue = chi2_approx(self._statistic, x, y)
+            stat, pvalue = chi2_approx(self.statistic, x, y)
             self.stat = stat
             self.pvalue = pvalue
             self.null_dist = None
@@ -269,15 +250,18 @@ def _center_distmat(distx, bias):  # pragma: no cover
 
 @njit
 def _dcorr(distx, disty, bias):  # pragma: no cover
-    """Calculate the Dcorr test statistic"""
+    """
+    Calculate the Dcorr test statistic. Note that though Dcov is calculated
+    and stored in covar, but not called due to a slower implementation.
+    """
     # center distance matrices
     cent_distx = _center_distmat(distx, bias)
     cent_disty = _center_distmat(disty, bias)
 
-    # calculate covariances and variances
-    covar = np.sum(np.multiply(cent_distx, cent_disty.T))
-    varx = np.sum(np.multiply(cent_distx, cent_distx.T))
-    vary = np.sum(np.multiply(cent_disty, cent_disty.T))
+    # # calculate covariances and variances
+    covar = np.trace(cent_distx @ cent_disty)
+    varx = np.trace(cent_distx @ cent_distx)
+    vary = np.trace(cent_disty @ cent_disty)
 
     # stat is 0 with negative variances (would make denominator undefined)
     if varx <= 0 or vary <= 0:
