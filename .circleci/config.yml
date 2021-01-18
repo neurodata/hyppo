@@ -26,7 +26,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "setup.py" }}
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
@@ -36,7 +36,7 @@ jobs:
             pip install -r requirements.txt
             pip install -e .
       - save_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "setup.py" }}
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - "venv"
       - run:
