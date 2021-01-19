@@ -23,7 +23,7 @@ workflows:
 jobs:
   build:
     docker:
-      - image: cimg/python:3.7
+      - image: cimg/python:3.8
     steps:
       - checkout
       - restore_cache:
@@ -59,7 +59,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: deps2-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          key: deps<< parameters.version >>-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
@@ -69,7 +69,7 @@ jobs:
             pip install -r requirements.txt
             pip install -e .
       - save_cache:
-          key: deps2-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          key: deps<< parameters.version >>-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - "venv"
       - run:
@@ -88,12 +88,12 @@ jobs:
             sudo pip install hyppo
   integration:
     docker:
-      - image: cimg/python:3.7
+      - image: cimg/python:3.8
     steps:
       - run: echo "It works!"
   deploy:
     docker:
-      - image: cimg/python:3.7
+      - image: cimg/python:3.8
     steps:
       - checkout
       - restore_cache:
