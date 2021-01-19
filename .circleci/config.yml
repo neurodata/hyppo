@@ -69,20 +69,17 @@ jobs:
       - SCIKIT_LEARN_VERSION: 'min'
     steps:
       - checkout
-      - restore_cache:
-          key: deps<< parameters.version >>-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
             python3 -m venv venv
             . venv/bin/activate
             pip install pytest pytest-cov codecov black
-            pip install -r requirements.txt
+            pip install numpy==1.17
+            pip install scipy==1.4.0
+            pip install numba==0.46
+            pip install scikit-learn==0.19.1
             pip install -e .
-      - save_cache:
-          key: deps<< parameters.version >>-{{ .Branch }}-{{ checksum "requirements.txt" }}
-          paths:
-            - "venv"
       - run:
           name: run tests
           command: |
