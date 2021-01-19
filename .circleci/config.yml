@@ -53,6 +53,7 @@ jobs:
       - store_artifacts:
           path: htmlcov/
   test-python-install:
+    # test at minimum package levels
     parameters:
       version:
         type: string
