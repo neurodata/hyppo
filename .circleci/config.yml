@@ -80,11 +80,6 @@ jobs:
             codecov
       - store_artifacts:
           path: htmlcov/
-      - run:
-          name: Smoke Test Install
-          command: |
-            python --version
-            sudo pip install hyppo
   integration:
     docker:
       - image: cimg/python:3.8
