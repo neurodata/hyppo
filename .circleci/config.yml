@@ -71,6 +71,7 @@ jobs:
             pip install scipy==1.4.0
             pip install numba==0.46
             pip install scikit-learn==0.19.1
+            pip install joblib==0.17.0
             pip install -e .
       - run:
           name: run tests
