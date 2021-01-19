@@ -14,10 +14,7 @@ workflows:
           version: "3.7"
           requires:
             - build
-      - test-python-install:
-          version: "3.8"
-          requires:
-            - build
+      # don't test python 3.8 since we are already (build)
       - deploy:
           requires:
             - build
@@ -62,11 +59,6 @@ jobs:
         default: latest
     docker:
       - image: cimg/python:<< parameters.version >>
-    environment:
-      - NUMPY_VERSION: 'min'
-      - SCIPY_VERSION: 'min'
-      - NUMBA_VERSION: 'min'
-      - SCIKIT_LEARN_VERSION: 'min'
     steps:
       - checkout
       - run:
