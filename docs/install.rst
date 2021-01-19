@@ -58,6 +58,7 @@ Python package dependencies
 - `numpy <https://numpy.org/>`_
 - `scipy <https://docs.scipy.org/doc/scipy/reference/>`_
 - `scikit-learn <https://scikit-learn.org/stable/>`_
+- `joblib <https://joblib.readthedocs.io/en/latest/>`_
 
 Hardware requirements
 ---------------------

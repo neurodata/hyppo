@@ -179,7 +179,7 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
     return simx, simy
 
 
-def compute_dist(x, y, metric="euclidean", workers=None, **kwargs):
+def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
     """
     Distance matrices for the inputs.
 

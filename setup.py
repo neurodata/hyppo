@@ -1,8 +1,10 @@
 import os
 import sys
-from sys import platform
 
 from setuptools import find_packages, setup
+from setuptools.command.install import install
+
+from hyppo.__init__ import __version__
 
 PACKAGE_NAME = "hyppo"
 DESCRIPTION = "A comprehensive independence testing package"
@@ -34,6 +36,22 @@ def check_python_version():
 
 check_python_version()
 
+
+class VerifyVersionCommand(install):
+    """Custom command to verify that the git tag matches our version"""
+
+    description = "verify that the git tag matches our version"
+
+    def run(self):
+        tag = os.getenv("CIRCLE_TAG")
+
+        if tag != __version__:
+            info = "Git tag: {0} does not match the version of this app: {1}".format(
+                tag, __version__
+            )
+            sys.exit(info)
+
+
 setup(
     name=PACKAGE_NAME,
     version=VERSION,
@@ -58,4 +76,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     test_suite="tests",
+    cmdclass={
+        "verify": VerifyVersionCommand,
+    },
 )
