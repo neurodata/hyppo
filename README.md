@@ -76,6 +76,7 @@ numba
 numpy
 scipy
 scikit-learn
+joblib
 ```
 
 `hyppo` package requires only a standard computer with enough RAM to support the in-memory operations. This package is supported for all major operating systems. The following versions of operating systems was tested on Travis CI:

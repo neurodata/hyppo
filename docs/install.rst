@@ -53,6 +53,7 @@ Python package dependencies
 - numpy
 - scipy
 - scikit-learn
+- joblib
 
 Hardware requirements
 ---------------------

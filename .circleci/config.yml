@@ -1,0 +1,126 @@
+version: 2.1
+workflows:
+  build_and_deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - test-python-install:
+          version: "3.6"
+          requires:
+            - build
+      - test-python-install:
+          version: "3.7"
+          requires:
+            - build
+      # don't test python 3.8 since we are already (build)
+      - deploy:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore: /.*/
+jobs:
+  build:
+    docker:
+      - image: cimg/python:3.8
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-deps-{{ checksum "requirements.txt" }}
+      - run:
+          name: install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install pytest pytest-cov codecov black
+            pip install -r requirements.txt
+            pip install -e .
+      - save_cache:
+          key: v1-deps-{{ checksum "requirements.txt" }}
+          paths:
+            - "venv"
+      - run:
+          name: run tests
+          command: |
+            . venv/bin/activate
+            pytest hyppo/
+            black --check --diff ./hyppo
+            codecov
+      - store_artifacts:
+          path: htmlcov/
+  test-python-install:
+    # test at minimum package levels
+    parameters:
+      version:
+        type: string
+        default: latest
+    docker:
+      - image: cimg/python:<< parameters.version >>
+    steps:
+      - checkout
+      - run:
+          name: install python dependencies
+          # llvmlite version set for numba
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install pytest pytest-cov codecov black
+            pip install numpy==1.17 scipy==1.4.0 llvmlite==0.30.0 numba==0.46 scikit-learn==0.22 joblib==0.17.0
+            pip install -e .
+      - run:
+          name: run tests
+          command: |
+            . venv/bin/activate
+            pytest hyppo/
+            black --check --diff ./hyppo
+            codecov
+      - store_artifacts:
+          path: htmlcov/
+  integration:
+    docker:
+      - image: cimg/python:3.8
+    steps:
+      - run: echo "It works!"
+  deploy:
+    docker:
+      - image: cimg/python:3.8
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-deps-{{ checksum "requirements.txt" }}
+      - run:
+          name: install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+            pip install -e .
+      - save_cache:
+          key: v1-deps-{{ checksum "requirements.txt" }}
+          paths:
+            - "venv"
+      - run:
+          name: verify git tag vs. version
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            python setup.py verify
+      - run:
+          name: init .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      - run:
+          name: create packages
+          command: |
+            python setup.py sdist
+      - run:
+          name: upload to pypi
+          command: |
+            . venv/bin/activate
+            twine upload dist/*
