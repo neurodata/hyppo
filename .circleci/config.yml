@@ -8,10 +8,16 @@ workflows:
               only: /.*/
       - test-python-install:
           version: "3.6"
+          requires:
+            - build
       - test-python-install:
           version: "3.7"
-      - test-python-install:
-          version: "3.8"
+          requires:
+            - build
+      # - test-python-install:
+      #     version: "3.8"
+      #     requires:
+      #       - build
       - deploy:
           requires:
             - build
