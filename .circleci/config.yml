@@ -63,16 +63,12 @@ jobs:
       - checkout
       - run:
           name: install python dependencies
+          # llvmlite version set for numba
           command: |
             python3 -m venv venv
             . venv/bin/activate
             pip install pytest pytest-cov codecov black
-            pip install numpy==1.17
-            pip install scipy==1.4.0
-            pip install numba==0.46
-            pip install llvmlite==0.34.0
-            pip install scikit-learn==0.19.1
-            pip install joblib==0.17.0
+            pip install numpy==1.17 scipy==1.4.0 llvmlite==0.30.0 numba==0.46 scikit-learn==0.19.1 joblib==0.17.0
             pip install -e .
       - run:
           name: run tests
