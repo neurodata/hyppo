@@ -29,7 +29,7 @@ workflows:
 jobs:
   build:
     docker:
-      - image: cimg/python:3.8
+      - image: circleci/python:3.7
     steps:
       - checkout
       - restore_cache:
@@ -61,11 +61,11 @@ jobs:
         type: string
         default: latest
     docker:
-      - image: cimg/python:<< parameters.version >>
+      - image: circleci/python:<< parameters.version >>
     steps:
       - checkout
-      # - restore_cache:
-      #     key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      - restore_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
@@ -74,10 +74,10 @@ jobs:
             pip install pytest pytest-cov codecov black
             pip install -r requirements.txt
             pip install -e .
-      # - save_cache:
-      #     key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
-      #     paths:
-      #       - "venv"
+      - save_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          paths:
+            - "venv"
       - run:
           name: run tests
           command: |
@@ -94,12 +94,12 @@ jobs:
             sudo pip install hyppo
   integration:
     docker:
-      - image: cimg/python:3.8
+      - image: circleci/python:3.7
     steps:
       - run: echo "It works!"
   deploy:
     docker:
-      - image: cimg/python:3.8
+      - image: circleci/python:3.7
     steps:
       - checkout
       - restore_cache:
