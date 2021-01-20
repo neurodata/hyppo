@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  codecov: codecov/codecov@1.0.2
-
 jobs:
   build:
     parameters:
@@ -65,14 +62,6 @@ jobs:
             coverage html
       - store_artifacts:
           path: htmlcov/
-  coverage:
-    docker:
-      - image: cimg/python:3.8
-    steps:
-      - checkout
-      - codecov/upload:
-          file:
-
   deploy:
     docker:
       - image: cimg/python:3.8
@@ -150,16 +139,13 @@ workflows:
           module: "tools"
           requires:
             - "v3.8"
-      - coverage:
+      - deploy:
           requires:
             - "independence"
             - "ksample"
             - "time_series"
             - "discrim"
             - "tools"
-      - deploy:
-          requires:
-            - coverage
           filters:
             tags:
               only: /[0-9]+(\.[0-9]+)*/
