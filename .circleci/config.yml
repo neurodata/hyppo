@@ -2,9 +2,9 @@ version: 2.1
 
 jobs:
   build-python:
-    parameters:
-      name:
-        type: string
+    # parameters:
+    #   name:
+    #     type: string
     docker:
       - image: cimg/python:<< parameters.name >>
     steps:
@@ -27,9 +27,9 @@ jobs:
             . venv/bin/activate
             python3 setup.py install
   test-module:
-    parameters:
-      name:
-        type: string
+    # parameters:
+    #   name:
+    #     type: string
     docker:
       - image: cimg/python:3.8
     steps:
