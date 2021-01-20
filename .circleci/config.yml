@@ -60,15 +60,13 @@ jobs:
           name: run tests and coverage
           command: |
             . venv/bin/activate
-            pytest --junitxml=test-reports/junit.xml --cov-report=html:htmlcov --cov=hyppo/<< parameters.module >> hyppo/<< parameters.module >>
+            pytest --junitxml=test-reports/junit.xml --cov-report=xml --cov=hyppo/<< parameters.module >> hyppo/<< parameters.module >>
       - store_test_results:
           path: test-reports
       - store_artifacts:
           path: test-reports
-      - store_artifacts:
-          path: htmlcov
       - codecov/upload:
-          file: "./htmlcov/index.html"
+          file: "coverage.xml"
   deploy:
     docker:
       - image: cimg/python:3.8
