@@ -1,0 +1,10 @@
+numpy
+scipy
+numba
+scikit-learn
+joblib
+pytest
+pytest-cov
+codecov
+black
+twine
