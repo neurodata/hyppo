@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  build-python:
+  build:
     parameters:
       version:
         type: string
@@ -103,49 +103,39 @@ jobs:
 workflows:
   build-test-deploy:
     jobs:
-      - build-python:
+      - build:
           name: "v3.6"
           version: "3.6"
-      - build-python:
+      - build:
           name: "v3.7"
           version: "3.7"
-      - build-python:
+      - build:
           name: "v3.8"
           version: "3.8"
       - test-module:
           name: "independence"
           module: "independence"
           requires:
-            - "v3.6"
-            - "v3.7"
             - "v3.8"
       - test-module:
           name: "ksample"
           module: "ksample"
           requires:
-            - "v3.6"
-            - "v3.7"
             - "v3.8"
       - test-module:
           name: "time_series"
           module: "time_series"
           requires:
-            - "v3.6"
-            - "v3.7"
             - "v3.8"
       - test-module:
           name: "discrim"
           module: "discrim"
           requires:
-            - "v3.6"
-            - "v3.7"
             - "v3.8"
       - test-module:
           name: "tools"
           module: "tools"
           requires:
-            - "v3.6"
-            - "v3.7"
             - "v3.8"
       - deploy:
           requires:
