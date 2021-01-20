@@ -64,7 +64,7 @@ jobs:
           command: |
             . venv/bin/activate
             python3 setup.py install
-  test-python-install:
+  test-module:
     parameters:
       module:
         type: string
