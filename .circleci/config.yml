@@ -69,7 +69,7 @@ jobs:
           path: htmlcov
           destination: coverage
       - codecov/upload:
-          file: "./htmlcov/*"
+          file: ".coverage"
   deploy:
     docker:
       - image: cimg/python:3.8
