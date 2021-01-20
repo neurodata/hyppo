@@ -12,23 +12,23 @@ workflows:
       - test-module:
           module: "independence"
           requires:
-            - build-other
+            - build-python
       - test-module:
           module: "ksample"
           requires:
-            - build
+            - build-python
       - test-module:
           module: "time_series"
           requires:
-            - build
+            - build-python
       - test-module:
           module: "discrim"
           requires:
-            - build
+            - build-python
       - test-module:
           module: "tools"
           requires:
-            - build
+            - build-python
       - deploy:
           requires:
             - test-module
