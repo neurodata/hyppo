@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  codecov: codecov/codecov@1.0.2
+
 jobs:
   build:
     parameters:
@@ -67,24 +70,9 @@ jobs:
       - image: cimg/python:3.8
     steps:
       - checkout
-      - restore_cache:
-          key: v1-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
-      - run:
-          name: install python dependencies
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r dev-requirements.txt
-            pip install -e .
-      - save_cache:
-          key: v1-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
-          paths:
-            - "venv"
-      - run:
-          name: upload coverage
-          command: |
-            . venv/bin/activate
-            codecov
+      - codecov/upload:
+        file: htmlcov/
+
   deploy:
     docker:
       - image: cimg/python:3.8
