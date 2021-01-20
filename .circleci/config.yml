@@ -68,7 +68,7 @@ jobs:
       - store_artifacts:
           path: htmlcov
       - codecov/upload:
-          file: "./"
+          file: "."
   deploy:
     docker:
       - image: cimg/python:3.8
