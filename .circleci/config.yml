@@ -57,10 +57,34 @@ jobs:
           name: run tests and coverage
           command: |
             . venv/bin/activate
-            pytest hyppo/<< parameters.module >>
-            codecov
+            coverage run -m pytest hyppo/<< parameters.module >>
+            coverage report
+            coverage html
       - store_artifacts:
           path: htmlcov/
+  coverage:
+    docker:
+      - image: cimg/python:3.8
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
+      - run:
+          name: install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r dev-requirements.txt
+            pip install -e .
+      - save_cache:
+          key: v1-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          paths:
+            - "venv"
+      - run:
+          name: upload coverage
+          command: |
+            . venv/bin/activate
+            codecov
   deploy:
     docker:
       - image: cimg/python:3.8
@@ -138,13 +162,16 @@ workflows:
           module: "tools"
           requires:
             - "v3.8"
-      - deploy:
+      - coverage:
           requires:
             - "independence"
             - "ksample"
             - "time_series"
             - "discrim"
             - "tools"
+      - deploy:
+          requires:
+            - coverage
           filters:
             tags:
               only: /[0-9]+(\.[0-9]+)*/
