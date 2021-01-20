@@ -1,5 +1,5 @@
-numpy~=1.17; python_version <= '3.6'
-numpy; python_version > '3.6'
+numpy==1.17; python_version < '3.7'
+numpy; python_version >= '3.7'
 scipy
 numba
 scikit-learn
