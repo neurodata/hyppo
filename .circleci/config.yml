@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  codecov: codecov/codecov@1.0.2
+
 jobs:
   build:
     parameters:
@@ -57,11 +60,16 @@ jobs:
           name: run tests and coverage
           command: |
             . venv/bin/activate
-            coverage run -m pytest hyppo/<< parameters.module >>
-            coverage report
-            coverage html
+            pytest --junitxml=test-reports/junit.xml --cov-report=html:htmlcov hyppo/<< parameters.module >>
+      - store_test_results:
+          path: test-reports
       - store_artifacts:
-          path: htmlcov/
+          path: test-reports
+      - store_artifacts:
+          path: htmlcov
+          destination: coverage
+      - codecov/upload:
+          file: htmlcov
   deploy:
     docker:
       - image: cimg/python:3.8
