@@ -3,14 +3,14 @@ version: 2.1
 jobs:
   build-python:
     parameters:
-      version:
+      name:
         type: string
     docker:
-      - image: cimg/python:<< parameters.version >>
+      - image: cimg/python:<< parameters.name >>
     steps:
       - checkout
       - restore_cache:
-          key: v1-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v1-<< parameters.name >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
@@ -18,7 +18,7 @@ jobs:
             . venv/bin/activate
             pip install -r dev-requirements.txt
       - save_cache:
-          key: v1-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v1-<< parameters.name >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
           paths:
             - "venv"
       - run:
@@ -28,7 +28,7 @@ jobs:
             python3 setup.py install
   test-module:
     parameters:
-      module:
+      name:
         type: string
     docker:
       - image: cimg/python:3.8
@@ -51,12 +51,12 @@ jobs:
           name: run code linting
           command: |
             . venv/bin/activate
-            black --check --diff ./hyppo/<< parameters.module >>
+            black --check --diff ./hyppo/<< parameters.name >>
       - run:
           name: run tests and coverage
           command: |
             . venv/bin/activate
-            pytest hyppo/<< parameters.module >>
+            pytest hyppo/<< parameters.name >>
             codecov
       - store_artifacts:
           path: htmlcov/
