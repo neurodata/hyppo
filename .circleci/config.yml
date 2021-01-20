@@ -1,43 +1,5 @@
 version: 2.1
 
-workflows:
-  build-test-deploy:
-    jobs:
-      - build-python:
-          version: "3.6"
-      - build-python:
-          version: "3.7"
-      - build-python:
-          version: "3.8"
-      - test-module:
-          module: "independence"
-          requires:
-            - build-python
-      - test-module:
-          module: "ksample"
-          requires:
-            - build-python
-      - test-module:
-          module: "time_series"
-          requires:
-            - build-python
-      - test-module:
-          module: "discrim"
-          requires:
-            - build-python
-      - test-module:
-          module: "tools"
-          requires:
-            - build-python
-      - deploy:
-          requires:
-            - test-module
-          filters:
-            tags:
-              only: /[0-9]+(\.[0-9]+)*/
-            branches:
-              ignore: /.*/
-
 jobs:
   build-python:
     parameters:
@@ -137,3 +99,55 @@ jobs:
           command: |
             . venv/bin/activate
             twine upload dist/*
+
+workflows:
+  build-test-deploy:
+    jobs:
+      - build-python:
+          name: "3.6"
+      - build-python:
+          name: "3.7"
+      - build-python:
+          name: "3.8"
+      - test-module:
+          name: "independence"
+          requires:
+            - "3.6"
+            - "3.7"
+            - "3.8"
+      - test-module:
+          name: "ksample"
+          requires:
+            - "3.6"
+            - "3.7"
+            - "3.8"
+      - test-module:
+          name: "time_series"
+          requires:
+            - "3.6"
+            - "3.7"
+            - "3.8"
+      - test-module:
+          name: "discrim"
+          requires:
+            - "3.6"
+            - "3.7"
+            - "3.8"
+      - test-module:
+          name: "tools"
+          requires:
+            - "3.6"
+            - "3.7"
+            - "3.8"
+      - deploy:
+          requires:
+            - "independence"
+            - "ksample"
+            - "time_series"
+            - "discrim"
+            - "tools"
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore: /.*/
