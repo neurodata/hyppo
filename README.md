@@ -41,7 +41,7 @@ pip install --upgrade hyppo
 ```
 
 The documentation includes more detailed [installation instructions](https://hyppo.neurodata.io/install.html).
-`hyppo` is free software; you can redistribute it and/or modify it under the
+hyppo is free software; you can redistribute it and/or modify it under the
 terms of the [license](https://hyppo.neurodata.io/license.html).
 
 ## Changelog
@@ -60,14 +60,12 @@ has detailed information about contributing code, documentation and tests.
 - Download releases: [https://pypi.org/project/hyppo/](https://pypi.org/project/hyppo/)
 - Issue tracker: [https://github.com/neurodata/hyppo/issues](https://github.com/neurodata/hyppo/issues)
 
-**Note: We have recently moved our `benchmarks` (with relevant figure replication code for our papers) folder to a new [repo](https://github.com/neurodata/hyppo-papers)!** We aim to add test development code and paper figure replication code there, and will add relevant tests (with tutorials) to `hyppo`.
+**Note: We have recently moved our `benchmarks` (with relevant figure replication code for our papers) folder to a new [repo](https://github.com/neurodata/hyppo-papers)!** We aim to add test development code and paper figure replication code there, and will add relevant tests (with tutorials) to hyppo.
 
 ## Project History
 
 
-`hyppo` is a rebranding of `mgcpy`, which was founded in Novemember 2018.
-The original version was designed and written by Satish Palaniappan, Sambit
-Panda, Junhao Xiong, Sandhya Ramachandran, and Ronak Mehtra. This new version
+hyppo is a rebranding of mgcpy, which was founded in Novemember 2018.
+mgcpy was designed and written by Satish Palaniappan, Sambit
+Panda, Junhao Xiong, Sandhya Ramachandran, and Ronak Mehtra. hyppo
 was designed and written by Sambit Panda and first released February 2020.
-
-**Note**: `hyppo` was previously referred to as `mgcpy`.
