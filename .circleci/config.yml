@@ -1,106 +1,90 @@
 version: 2.1
-workflows:
-  build_and_deploy:
-    jobs:
-      - build:
-          filters:
-            tags:
-              only: /.*/
-      - test-python-install:
-          version: "3.6"
-          requires:
-            - build
-      - test-python-install:
-          version: "3.7"
-          requires:
-            - build
-      # don't test python 3.8 since we are already (build)
-      - deploy:
-          requires:
-            - build
-          filters:
-            tags:
-              only: /[0-9]+(\.[0-9]+)*/
-            branches:
-              ignore: /.*/
+
+orbs:
+  codecov: codecov/codecov@1.0.2
+
 jobs:
   build:
+    parameters:
+      version:
+        type: string
+    docker:
+      - image: cimg/python:<< parameters.version >>
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
+      - run:
+          name: install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install -r dev-requirements.txt
+      - save_cache:
+          key: v1-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          paths:
+            - "venv"
+      - run:
+          name: test if package installs
+          command: |
+            . venv/bin/activate
+            python3 setup.py install
+  test-module:
+    parameters:
+      module:
+        type: string
     docker:
       - image: cimg/python:3.8
     steps:
       - checkout
       - restore_cache:
-          key: v1-deps-{{ checksum "requirements.txt" }}
+          key: v1-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            pip install pytest pytest-cov codecov black
-            pip install -r requirements.txt
+            pip install -r dev-requirements.txt
             pip install -e .
       - save_cache:
-          key: v1-deps-{{ checksum "requirements.txt" }}
+          key: v1-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
           paths:
             - "venv"
       - run:
-          name: run tests
+          name: run code linting
           command: |
             . venv/bin/activate
-            pytest hyppo/
-            black --check --diff ./hyppo
-            codecov
-      - store_artifacts:
-          path: htmlcov/
-  test-python-install:
-    # test at minimum package levels
-    parameters:
-      version:
-        type: string
-        default: latest
-    docker:
-      - image: cimg/python:<< parameters.version >>
-    steps:
-      - checkout
+            black --check --diff ./hyppo/<< parameters.module >>
       - run:
-          name: install python dependencies
-          # llvmlite version set for numba
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install pytest pytest-cov codecov black
-            pip install numpy==1.17 scipy==1.4.0 llvmlite==0.30.0 numba==0.46 scikit-learn==0.22 joblib==0.17.0
-            pip install -e .
-      - run:
-          name: run tests
+          name: run tests and coverage
           command: |
             . venv/bin/activate
-            pytest hyppo/
-            black --check --diff ./hyppo
-            codecov
+            pytest --junitxml=test-reports/junit.xml --cov-report=html:htmlcov --cov=hyppo/<< parameters.module >> hyppo/<< parameters.module >>
+      - store_test_results:
+          path: test-reports
       - store_artifacts:
-          path: htmlcov/
-  integration:
-    docker:
-      - image: cimg/python:3.8
-    steps:
-      - run: echo "It works!"
+          path: test-reports
+      - store_artifacts:
+          path: htmlcov
+      - codecov/upload:
+          file: "./htmlcov/index.html"
   deploy:
     docker:
       - image: cimg/python:3.8
     steps:
       - checkout
       - restore_cache:
-          key: v1-deps-{{ checksum "requirements.txt" }}
+          key: v1-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            pip install -r requirements.txt
+            pip install -r dev-requirements.txt
             pip install -e .
       - save_cache:
-          key: v1-deps-{{ checksum "requirements.txt" }}
+          key: v1-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
           paths:
             - "venv"
       - run:
@@ -124,3 +108,53 @@ jobs:
           command: |
             . venv/bin/activate
             twine upload dist/*
+
+workflows:
+  build-test-deploy:
+    jobs:
+      - build:
+          name: "v3.6"
+          version: "3.6"
+      - build:
+          name: "v3.7"
+          version: "3.7"
+      - build:
+          name: "v3.8"
+          version: "3.8"
+      - test-module:
+          name: "independence"
+          module: "independence"
+          requires:
+            - "v3.8"
+      - test-module:
+          name: "ksample"
+          module: "ksample"
+          requires:
+            - "v3.8"
+      - test-module:
+          name: "time_series"
+          module: "time_series"
+          requires:
+            - "v3.8"
+      - test-module:
+          name: "discrim"
+          module: "discrim"
+          requires:
+            - "v3.8"
+      - test-module:
+          name: "tools"
+          module: "tools"
+          requires:
+            - "v3.8"
+      - deploy:
+          requires:
+            - "independence"
+            - "ksample"
+            - "time_series"
+            - "discrim"
+            - "tools"
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore: /.*/
