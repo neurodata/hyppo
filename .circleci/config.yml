@@ -67,9 +67,8 @@ jobs:
           path: test-reports
       - store_artifacts:
           path: htmlcov
-          destination: coverage
       - codecov/upload:
-          file: ".coverage"
+          file: "./htmlcov/index.html"
   deploy:
     docker:
       - image: cimg/python:3.8
