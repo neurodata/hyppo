@@ -3,16 +3,16 @@ version: 2.1
 workflows:
   build-test-deploy:
     jobs:
-      - build:
+      - build-python:
           version: "3.6"
-      - build:
+      - build-python:
           version: "3.7"
-      - build:
+      - build-python:
           version: "3.8"
       - test-module:
           module: "independence"
           requires:
-            - build
+            - build-other
       - test-module:
           module: "ksample"
           requires:
@@ -39,7 +39,7 @@ workflows:
               ignore: /.*/
 
 jobs:
-  build:
+  build-python:
     parameters:
       version:
         type: string
