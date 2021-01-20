@@ -71,7 +71,7 @@ jobs:
     steps:
       - checkout
       - codecov/upload:
-          file: htmlcov/
+          file:
 
   deploy:
     docker:
