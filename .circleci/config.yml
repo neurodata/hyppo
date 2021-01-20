@@ -16,7 +16,8 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            pip install --no-build-isolation -r dev-requirements.txt
+            pip install --upgrade pip
+            pip install -r dev-requirements.txt
       - save_cache:
           key: v1-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
           paths:
@@ -41,7 +42,7 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            pip install --no-build-isolation -r dev-requirements.txt
+            pip install -r dev-requirements.txt
             pip install -e .
       - save_cache:
           key: v1-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
@@ -72,7 +73,7 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            pip install --no-build-isolation -r dev-requirements.txt
+            pip install -r dev-requirements.txt
             pip install -e .
       - save_cache:
           key: v1-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
