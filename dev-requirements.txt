@@ -1,7 +1,8 @@
 numpy==1.17; python_version < '3.7'
 numpy; python_version >= '3.7'
 scipy
-numba
+numba==0.49.1; python_version < '3.7'
+numba; python_version >= '3.7'
 scikit-learn
 joblib
 pytest
