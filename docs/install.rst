@@ -1,5 +1,5 @@
-Install
-=======
+Installing
+============
 
 Which Python?
 -------------
@@ -21,7 +21,7 @@ First, make sure you have the latest version of ``pip`` (the Python package
 manager) installed. If you do not, refer to the `Pip documentation
 <https://pip.pypa.io/en/stable/installing/>`_ and install ``pip`` first.
 
-Install the current release of ``hyppo`` from the Terminal with ``pip``::
+Install the current release of hyppo from the Terminal with ``pip``::
 
     $ pip install hyppo
 
@@ -36,7 +36,7 @@ into your user directory using the ``--user`` flag::
 
 Install from Github
 -------------------
-You can manually download ``hyppo`` by cloning the git repo master version and
+You can manually download hyppo by cloning the git repo master version and
 running the ``setup.py`` file. That is, unzip the compressed package folder
 and run the following from the top-level source directory using the Terminal::
 
@@ -52,29 +52,22 @@ Or, alternatively, you can use ``pip``::
 
 Python package dependencies
 ---------------------------
-``hyppo`` requires the following packages:
+hyppo requires the following:
 
-- `numba <https://numba.pydata.org/>`_
-- `numpy <https://numpy.org/>`_
-- `scipy <https://docs.scipy.org/doc/scipy/reference/>`_
-- `scikit-learn <https://scikit-learn.org/stable/>`_
-- `joblib <https://joblib.readthedocs.io/en/latest/>`_
+- `python <https://www.python.org/>`_ (>= 3.6)
+- `numba <https://numba.pydata.org/>`_ (>= 0.46)
+- `numpy <https://numpy.org/>`_  (>= 1.17)
+- `scipy <https://docs.scipy.org/doc/scipy/reference/>`_ (>= 1.4.0)
+- `scikit-learn <https://scikit-learn.org/stable/>`_ (>= 0.22)
+- `joblib <https://joblib.readthedocs.io/en/latest/>`_ (>= 0.17.0)
 
 Hardware requirements
 ---------------------
-``hyppo`` package requires only a standard computer with enough RAM to support
-the in-memory operations.
-
-OS Requirements
----------------
-This package is supported for all major operating systems. The following
-versions of operating systems was tested on Travis CI:
-
-- **Linux:** Ubuntu Xenial 16.04
-- **Windows:** Windows Server, version 1803
+hyppo package requires only a standard computer with enough RAM to support
+the in-memory operations. This package is supported for all major operating systems.
 
 Testing
 -------
-``hyppo`` uses the Python ``pytest`` testing package.  If you don't already have
+hyppo uses the Python ``pytest`` testing package.  If you don't already have
 that package installed, follow the directions on the `pytest homepage
 <https://docs.pytest.org/en/latest/>`_.
