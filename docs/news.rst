@@ -16,7 +16,7 @@ v0.1.3
 
 **Maintenance:**
 
-* Used ``chi2.sf`` instead of ``1 - chi2.cdf`` for ``chi2_approx``
+* Used ``sf`` from :meth:`scipy.stats.chi2` instead of ``1 - cdf`` for :meth:`hyppo.tools.chi2_approx`
 
 **Authors:**
 
@@ -52,7 +52,7 @@ v0.1.1
 
 * Pearson, Spearman, and Kendall are no longer tests within the package.
 * Python 3.5 no longer supported.
-* ``pairwise_distances`` from ``sklearn`` used instead of ``cdist`` from ``scipy``.
+* :meth:`sklearn.pairwise.pairwise_distances` used instead of :meth:`scipy.spatial.distance.cdist`.
 * Null distribution added as a class atribute
 * Calculate kernel once before calculating p-value
 * Upper and lower-case inputs are available for ``indep_test``
@@ -76,7 +76,7 @@ v0.1.0
 **New features:**
 
 * Parallelization added to all tests
-* ``hyppo.independence.Hsic`` is now a stand alone class
+* :class:`hyppo.independence.Hsic` is now a stand alone class
 * Simulations are given module, with new k-sample and time series modules
 * Discrimnability ported from r-mgc
 * Benchmarks folder added with relevant notebooks comparing implementations
