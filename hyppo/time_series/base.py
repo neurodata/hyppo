@@ -58,7 +58,7 @@ class TimeSeriesTest(ABC):
         super().__init__()
 
     @abstractmethod
-    def _statistic(self, x, y):
+    def statistic(self, x, y):
         """
         Calulates the independence test statistic.
 
@@ -101,14 +101,14 @@ class TimeSeriesTest(ABC):
         )
 
         # calculate observed test statistic
-        stat_list = self._statistic(x, y)
+        stat_list = self.statistic(x, y)
         stat = stat_list[0]
 
         # calculate null distribution
         null_dist = np.array(
             Parallel(n_jobs=workers)(
                 [
-                    delayed(_perm_stat)(self._statistic, self.distx, self.disty)
+                    delayed(_perm_stat)(self.statistic, self.distx, self.disty)
                     for rep in range(reps)
                 ]
             )

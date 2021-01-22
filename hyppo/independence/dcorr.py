@@ -78,13 +78,15 @@ class Dcorr(IndependenceTest):
         ``sklearn.metrics.pairwise_distances``,
 
             - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
-              ‘manhattan’] See the documentation for scipy.spatial.distance for details
+              ‘manhattan’] See the documentation for
+              :mod:`scipy.spatial.distance` for details
               on these metrics.
             - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
               ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
               ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
               ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
-              documentation for scipy.spatial.distance for details on these metrics.
+              documentation for
+              :mod:`scipy.spatial.distance` for details on these metrics.
 
         Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already distance
         matrices. To call a custom function, either create the distance matrix

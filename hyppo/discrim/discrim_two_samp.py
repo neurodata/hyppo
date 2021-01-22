@@ -8,24 +8,11 @@ from .base import DiscriminabilityTest
 
 class DiscrimTwoSample(DiscriminabilityTest):
     r"""
-    A class that compares the discriminability of two datasets.
+    2 Sample Discriminability test statistic and p-value.
 
     Two sample test measures whether the discriminability is different for
-    one dataset compared to another. More details can be described in [#1Dscr]_.
+    one dataset compared to another. More details can be described in `[1]`_.
 
-    Parameters
-    ----------
-    is_dist : bool, optional (default: False)
-        Whether `x1` and `x2` are distance matrices or not.
-    remove_isolates : bool, optional (default: True)
-        Whether to remove the measurements with a single instance or not.
-
-    See Also
-    --------
-    DiscrimOneSample : One sample test for discriminability of a single measurement
-
-    Notes
-    -----
     Let :math:`\hat D_{x_1}` denote the sample discriminability of one approach,
     and :math:`\hat D_{x_2}` denote the sample discriminability of another approach.
     Then,
@@ -37,6 +24,15 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
     Alternatively, tests can be done for :math:`D_{x_1} < D_{x_2}` and
     :math:`D_{x_1} \neq D_{x_2}`.
+
+    .. _[1]: https://www.biorxiv.org/content/10.1101/802629v1
+
+    Parameters
+    ----------
+    is_dist : bool, default: False
+        Whether inputs are distance matrices or not.
+    remove_isolates : bool, default: True
+        Whether to remove the measurements with a single instance or not.
     """
 
     def __init__(self, is_dist=False, remove_isolates=True):
@@ -44,56 +40,56 @@ class DiscrimTwoSample(DiscriminabilityTest):
         self.remove_isolates = remove_isolates
         DiscriminabilityTest.__init__(self)
 
-    def _statistic(self, x, y):
+    def statistic(self, x, y):
         """
         Helper function that calculates the discriminability test statistic.
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices. `x` and `y` must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        x,y : ndarray
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, `x` and `y` can be distance matrices,
-            where the shapes must both be `(n, n)`.
+            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
+            where the shapes must both be ``(n, n)``.
 
         Returns
         -------
         stat : float
             The computed two sample discriminability statistic.
         """
-        stat = super(DiscrimTwoSample, self)._statistic(x, y)
+        stat = super(DiscrimTwoSample, self).statistic(x, y)
 
         return stat
 
-    def test(self, x1, x2, y, reps=1000, alt="neq", workers=-1):
+    def test(self, x1, x2, y, reps=1000, alt="neq", workers=1):
         r"""
         Calculates the test statistic and p-value for a two sample test for
         discriminability.
 
         Parameters
         ----------
-        x1, x2 : ndarray
-            Input data matrices. `x1` and `x2` must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        x1,x2 : ndarray
+            Input data matrices. ``x1`` and ``x2`` must have the same number of
+            samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, `x1` and `x2` can be distance matrices,
-            where the shapes must both be `(n, n)`, and ``is_dist`` must set
+            dimensions. Alternatively, ``x1`` and ``x2`` can be distance matrices,
+            where the shapes must both be ``(n, n)``, and ``is_dist`` must set
             to ``True`` in this case.
         y : ndarray
             A vector containing the sample ids for our `n` samples. Should be matched
             to the inputs such that ``y[i]`` is the corresponding label for
             ``x_1[i, :]`` and ``x_2[i, :]``.
-        reps : int, optional (default: 1000)
+        reps : int, default: 1000
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        alt : {"greater", "less", "neq"} (default: "neq")
+        alt : {"neq", "greater", "less"}, default: "neq"
             The alternative hypothesis for the test. Can test that first dataset is
-            more discriminable (alt = "greater"), less discriminable (alt = "less")
-            or unequal discriminability (alt = "neq").
-        workers : int, optional (default: -1)
+            more discriminable (``alt="greater"``), less discriminable (``alt="less"``)
+            or unequal discriminability (``alt="neq"``).
+        workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
-            Supply -1 to use all cores available to the Process.
+            Supply ``-1`` to use all cores available to the Process.
 
         Returns
         -------
@@ -127,8 +123,8 @@ class DiscrimTwoSample(DiscriminabilityTest):
         self.x2 = np.asarray(x[1])
         self.y = y
 
-        self.d1 = self._statistic(self.x1, y)
-        self.d2 = self._statistic(self.x2, y)
+        self.d1 = self.statistic(self.x1, y)
+        self.d2 = self.statistic(self.x2, y)
         self.da = self.d1 - self.d2
 
         # use all cores to create function that parallelizes over number of reps
@@ -177,14 +173,14 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
         Returns
         -------
-        perm_stat1, perm_stat2 : float
+        perm_stat1,perm_stat2 : float
             Test statistic for each value in the null distribution.
         """
         permx1 = self._get_convex_comb(self.x1)
         permx2 = self._get_convex_comb(self.x2)
 
-        perm_stat1 = self._statistic(permx1, self.y)
-        perm_stat2 = self._statistic(permx2, self.y)
+        perm_stat1 = self.statistic(permx1, self.y)
+        perm_stat2 = self.statistic(permx2, self.y)
 
         return perm_stat1, perm_stat2
 

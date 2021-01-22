@@ -2,7 +2,7 @@ import numpy as np
 
 
 class _CheckInputs:
-    """ Check if additional arguments are correct """
+    """Check if additional arguments are correct."""
 
     def __init__(self, n, p):
         self.n = n
@@ -26,17 +26,17 @@ class _CheckInputs:
 
 
 def _gen_coeffs(p):
-    """Calculates coefficients polynomials"""
+    """Calculates coefficients polynomials."""
     return np.array([1 / (i + 1) for i in range(p)]).reshape(-1, 1)
 
 
 def _random_uniform(n, p, low=-1, high=1):
-    """Generate random uniform data"""
+    """Generate random uniform data."""
     return np.array(np.random.uniform(low, high, size=(n, p)))
 
 
 def _calc_eps(n):
-    """Calculate noise"""
+    """Calculate noise."""
     return np.random.normal(0, 1, size=(n, 1))
 
 
@@ -44,28 +44,6 @@ def linear(n, p, noise=False, low=-1, high=1):
     r"""
     Linear simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
-        Whether or not to include noise in the simulation.
-    low : float, (default: -1)
-        The lower limit of the uniform distribution simulated from.
-    high : float, (default: -1)
-        The upper limit of the uniform distribution simulated from.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, 1)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
     Linear :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`:
 
     .. math::
@@ -73,12 +51,25 @@ def linear(n, p, noise=False, low=-1, high=1):
         X &\sim \mathcal{U}(-1, 1)^p \\
         Y &= w^T X + \kappa \epsilon
 
-    Examples
-    --------
-    >>> from hyppo.tools import linear
-    >>> x, y = linear(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 1)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, default: False
+        Whether or not to include noise in the simulation.
+    low : float, default: -1
+        The lower limit of the uniform distribution simulated from.
+    high : float, default: 1
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     extra_args = [(noise, bool), (low, float), (high, float)]
     check_in = _CheckInputs(n, p)
@@ -96,28 +87,6 @@ def exponential(n, p, noise=False, low=0, high=3):
     r"""
     Exponential simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
-        Whether or not to include noise in the simulation.
-    low : float, (default: 0)
-        The lower limit of the uniform distribution simulated from.
-    high : float, (default: 3)
-        The upper limit of the uniform distribution simulated from.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, 1)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
     Exponential :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`:
 
     .. math::
@@ -125,12 +94,25 @@ def exponential(n, p, noise=False, low=0, high=3):
         X &\sim \mathcal{U}(0, 3)^p \\
         Y &= \exp (w^T X) + 10 \kappa \epsilon
 
-    Examples
-    --------
-    >>> from hyppo.tools import exponential
-    >>> x, y = exponential(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 1)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, default: False
+        Whether or not to include noise in the simulation.
+    low : float, default: 0
+        The lower limit of the uniform distribution simulated from.
+    high : float, default: 3
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     extra_args = [(noise, bool), (low, float), (high, float)]
     check_in = _CheckInputs(n, p)
@@ -148,33 +130,6 @@ def cubic(n, p, noise=False, low=-1, high=1, cubs=[-12, 48, 128], scale=1 / 3):
     r"""
     Cubic simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
-        Whether or not to include noise in the simulation.
-    low : float, (default: -1)
-        The lower limit of the uniform distribution simulated from.
-    high : float, (default: -1)
-        The upper limit of the uniform distribution simulated from.
-    cubs : list of ints (default: [-12, 48, 128])
-        Coefficients of the cubic function where each value corresponds to the
-        order of the cubic polynomial.
-    scale : float (default: 1/3)
-        Scaling center of the cubic.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, 1)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
     Cubic :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`:
 
     .. math::
@@ -185,12 +140,30 @@ def cubic(n, p, noise=False, low=-1, high=1, cubs=[-12, 48, 128], scale=1 / 3):
              - 12 \left( w^T X - \frac{1}{3} \right)
              + 80 \kappa \epsilon
 
-    Examples
-    --------
-    >>> from hyppo.tools import cubic
-    >>> x, y = cubic(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 1)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, default: False
+        Whether or not to include noise in the simulation.
+    low : float, default: -1
+        The lower limit of the uniform distribution simulated from.
+    high : float, default: 1
+        The upper limit of the uniform distribution simulated from.
+    cubs : list of ints, default: [-12, 48, 128]
+        Coefficients of the cubic function where each value corresponds to the
+        order of the cubic polynomial.
+    scale : float, default: 1/3
+        Scaling center of the cubic.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     extra_args = [
         (noise, bool),
@@ -221,24 +194,6 @@ def joint_normal(n, p, noise=False):
     r"""
     Joint Normal simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
-        Whether or not to include noise in the simulation.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
     Joint Normal :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`: Let
     :math:`\rho = \frac{1}{2} p`, :math:`I_p` be the identity matrix of size
     :math:`p \times p`, :math:`J_p` be the matrix of ones of size
@@ -250,12 +205,21 @@ def joint_normal(n, p, noise=False):
 
         (X, Y) \sim \mathcal{N}(0, \Sigma)
 
-    Examples
-    --------
-    >>> from hyppo.tools import joint_normal
-    >>> x, y = joint_normal(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 2)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, default: False
+        Whether or not to include noise in the simulation.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     if p > 10:
         raise ValueError("Covariance matrix for p>10 is not positive" "semi-definite")
@@ -281,28 +245,6 @@ def step(n, p, noise=False, low=-1, high=1):
     r"""
     Step simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
-        Whether or not to include noise in the simulation.
-    low : float, (default: -1)
-        The lower limit of the uniform distribution simulated from.
-    high : float, (default: -1)
-        The upper limit of the uniform distribution simulated from.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, 1)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
     Step :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`:
 
     .. math::
@@ -312,12 +254,25 @@ def step(n, p, noise=False, low=-1, high=1):
 
     where :math:`\mathbb{1}` is the indicator function.
 
-    Examples
-    --------
-    >>> from hyppo.tools import step
-    >>> x, y = step(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 1)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, default: False
+        Whether or not to include noise in the simulation.
+    low : float, default: -1
+        The lower limit of the uniform distribution simulated from.
+    high : float, default: 1
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     extra_args = [(noise, bool), (low, float), (high, float)]
     check_in = _CheckInputs(n, p)
@@ -339,28 +294,6 @@ def quadratic(n, p, noise=False, low=-1, high=1):
     r"""
     Quadratic simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
-        Whether or not to include noise in the simulation.
-    low : float, (default: -1)
-        The lower limit of the uniform distribution simulated from.
-    high : float, (default: -1)
-        The upper limit of the uniform distribution simulated from.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, 1)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
     Quadratic :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`:
 
     .. math::
@@ -368,12 +301,25 @@ def quadratic(n, p, noise=False, low=-1, high=1):
         X &\sim \mathcal{U}(-1, 1)^p \\
         Y &= (w^T X)^2 + 0.5 \kappa \epsilon
 
-    Examples
-    --------
-    >>> from hyppo.tools import quadratic
-    >>> x, y = quadratic(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 1)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, default: False
+        Whether or not to include noise in the simulation.
+    low : float, default: -1
+        The lower limit of the uniform distribution simulated from.
+    high : float, default: 1
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     extra_args = [(noise, bool), (low, float), (high, float)]
     check_in = _CheckInputs(n, p)
@@ -393,28 +339,6 @@ def w_shaped(n, p, noise=False, low=-1, high=1):
     r"""
     W-Shaped simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
-        Whether or not to include noise in the simulation.
-    low : float, (default: -1)
-        The lower limit of the uniform distribution simulated from.
-    high : float, (default: -1)
-        The upper limit of the uniform distribution simulated from.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, 1)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
     W-Shaped :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`:
     :math:`\mathcal{U}(-1, 1)^p`,
 
@@ -424,12 +348,25 @@ def w_shaped(n, p, noise=False, low=-1, high=1):
         Y &= \left[ \left( (w^T X)^2 - \frac{1}{2} \right)^2
                             + \frac{w^T U}{500} \right] + 0.5 \kappa \epsilon
 
-    Examples
-    --------
-    >>> from hyppo.tools import w_shaped
-    >>> x, y = w_shaped(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 1)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, default: False
+        Whether or not to include noise in the simulation.
+    low : float, default: -1
+        The lower limit of the uniform distribution simulated from.
+    high : float, default: 1
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     extra_args = [(noise, bool), (low, float), (high, float)]
     check_in = _CheckInputs(n, p)
@@ -451,28 +388,6 @@ def spiral(n, p, noise=False, low=0, high=5):
     r"""
     Spiral simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
-        Whether or not to include noise in the simulation.
-    low : float, (default: 0)
-        The lower limit of the uniform distribution simulated from.
-    high : float, (default: 5)
-        The upper limit of the uniform distribution simulated from.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, 1)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
     Spiral :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`:
     :math:`U \sim \mathcal{U}(0, 5)`, :math:`\epsilon \sim \mathcal{N}(0, 1)`
 
@@ -482,12 +397,25 @@ def spiral(n, p, noise=False, low=0, high=5):
         X_{|p|} &= U \cos^p(\pi U) \\
         Y &= U \sin(\pi U) + 0.4 p \epsilon
 
-    Examples
-    --------
-    >>> from hyppo.tools import spiral
-    >>> x, y = spiral(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 1)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, default: False
+        Whether or not to include noise in the simulation.
+    low : float, default: 0
+        The lower limit of the uniform distribution simulated from.
+    high : float, default: 5
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     extra_args = [(noise, bool), (low, float), (high, float)]
     check_in = _CheckInputs(n, p)
@@ -517,26 +445,6 @@ def uncorrelated_bernoulli(n, p, noise=False, prob=0.5):
     r"""
     Uncorrelated Bernoulli simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
-        Whether or not to include noise in the simulation.
-    prob : float, (default: 0.5)
-        The probability of the bernoulli distribution simulated from.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, 1)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
     Uncorrelated Bernoulli :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`:
     :math:`U \sim \mathcal{B}(0.5)`, :math:`\epsilon_1 \sim \mathcal{N}(0, I_p)`,
     :math:`\epsilon_2 \sim \mathcal{N}(0, 1)`,
@@ -546,12 +454,23 @@ def uncorrelated_bernoulli(n, p, noise=False, prob=0.5):
         X &= \mathcal{B}(0.5)^p + 0.5 \epsilon_1 \\
         Y &= (2U - 1) w^T X + 0.5 \epsilon_2
 
-    Examples
-    --------
-    >>> from hyppo.tools import uncorrelated_bernoulli
-    >>> x, y = uncorrelated_bernoulli(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 1)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, default: False
+        Whether or not to include noise in the simulation.
+    prob : float, default: 0.5
+        The probability of the bernoulli distribution simulated from.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     extra_args = [(noise, bool), (prob, float)]
     check_in = _CheckInputs(n, p)
@@ -576,24 +495,6 @@ def logarithmic(n, p, noise=False):
     r"""
     Logarithmic simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
-        Whether or not to include noise in the simulation.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
     Logarithmic :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
     :math:`\epsilon \sim \mathcal{N}(0, I_p)`,
 
@@ -603,12 +504,21 @@ def logarithmic(n, p, noise=False):
         Y_{|d|} &= 2 \log_2 (|X_{|d|}|) + 3 \kappa \epsilon_{|d|}
                    \ \mathrm{for}\ d = 1, ..., p
 
-    Examples
-    --------
-    >>> from hyppo.tools import logarithmic
-    >>> x, y = logarithmic(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 2)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, default: False
+        Whether or not to include noise in the simulation.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     extra_args = [(noise, bool)]
     check_in = _CheckInputs(n, p)
@@ -627,28 +537,6 @@ def fourth_root(n, p, noise=False, low=-1, high=1):
     r"""
     Fourth Root simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
-        Whether or not to include noise in the simulation.
-    low : float, (default: -1)
-        The lower limit of the uniform distribution simulated from.
-    high : float, (default: -1)
-        The upper limit of the uniform distribution simulated from.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, 1)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
     Fourth Root :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}`:
 
     .. math::
@@ -656,12 +544,25 @@ def fourth_root(n, p, noise=False, low=-1, high=1):
         X &\sim \mathcal{U}(-1, 1)^p \\
         Y &= |w^T X|^\frac{1}{4} + \frac{\kappa}{4} \epsilon
 
-    Examples
-    --------
-    >>> from hyppo.tools import fourth_root
-    >>> x, y = fourth_root(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 1)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, default: False
+        Whether or not to include noise in the simulation.
+    low : float, default: -1
+        The lower limit of the uniform distribution simulated from.
+    high : float, default: 1
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     extra_args = [(noise, bool), (low, float), (high, float)]
     check_in = _CheckInputs(n, p)
@@ -702,31 +603,9 @@ def _sin(n, p, noise=False, low=-1, high=1, period=4 * np.pi):
 
 def sin_four_pi(n, p, noise=False, low=-1, high=1):
     r"""
-    Sine 4:math:`\pi` simulation.
+    Sine 4\ :math:`\pi` simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
-        Whether or not to include noise in the simulation.
-    low : float, (default: -1)
-        The lower limit of the uniform distribution simulated from.
-    high : float, (default: -1)
-        The upper limit of the uniform distribution simulated from.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
-    Sine 4:math:`\pi` :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
+    Sine 4\ :math:`\pi` :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
     :math:`U \sim \mathcal{U}(-1, 1)`, :math:`V \sim \mathcal{N}(0, 1)^p`,
     :math:`\theta = 4 \pi`,
 
@@ -735,43 +614,34 @@ def sin_four_pi(n, p, noise=False, low=-1, high=1):
         X_{|d|} &= U + 0.02 p V_{|d|}\ \mathrm{for}\ d = 1, ..., p \\
         Y &= \sin (\theta X) + \kappa \epsilon
 
-    Examples
-    --------
-    >>> from hyppo.tools import sin_four_pi
-    >>> x, y = sin_four_pi(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 2)
-    """
-    return _sin(n, p, noise=noise, low=low, high=high, period=4 * np.pi)
-
-
-def sin_sixteen_pi(n, p, noise=False, low=-1, high=1):
-    r"""
-    Sine 16:math:`\pi` simulation.
-
     Parameters
     ----------
     n : int
         The number of samples desired by the simulation.
     p : int
         The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
+    noise : bool, default: False
         Whether or not to include noise in the simulation.
-    low : float, (default: -1)
+    low : float, default: -1
         The lower limit of the uniform distribution simulated from.
-    high : float, (default: -1)
+    high : float, default: 1
         The upper limit of the uniform distribution simulated from.
 
     Returns
     -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
+    """
+    return _sin(n, p, noise=noise, low=low, high=high, period=4 * np.pi)
 
-    Notes
-    -----
-    Sine 16:math:`\pi` :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
+
+def sin_sixteen_pi(n, p, noise=False, low=-1, high=1):
+    r"""
+    Sine 16\ :math:`\pi` simulation.
+
+    Sine 16\ :math:`\pi` :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
     :math:`U \sim \mathcal{U}(-1, 1)`, :math:`V \sim \mathcal{N}(0, 1)^p`,
     :math:`\theta = 16 \pi`,
 
@@ -780,12 +650,25 @@ def sin_sixteen_pi(n, p, noise=False, low=-1, high=1):
         X_{|d|} &= U + 0.02 p V_{|d|}\ \mathrm{for}\ d = 1, ..., p \\
         Y &= \sin (\theta X) + \kappa \epsilon
 
-    Examples
-    --------
-    >>> from hyppo.tools import sin_sixteen_pi
-    >>> x, y = sin_sixteen_pi(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 2)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, default: False
+        Whether or not to include noise in the simulation.
+    low : float, default: 1
+        The lower limit of the uniform distribution simulated from.
+    high : float, default: 1
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     return _sin(n, p, noise=noise, low=low, high=high, period=16 * np.pi)
 
@@ -811,28 +694,6 @@ def square(n, p, noise=False, low=-1, high=1):
     r"""
     Square simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
-        Whether or not to include noise in the simulation.
-    low : float, (default: -1)
-        The lower limit of the uniform distribution simulated from.
-    high : float, (default: -1)
-        The upper limit of the uniform distribution simulated from.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
     Square :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
     :math:`U \sim \mathcal{U}(-1, 1)`, :math:`V \sim \mathcal{N}(0, 1)^p`,
     :math:`\theta = -\frac{\pi}{8}`,
@@ -843,12 +704,25 @@ def square(n, p, noise=False, low=-1, high=1):
         \ \mathrm{for}\ d = 1, ..., p \\
         Y_{|d|} &= -U \sin(\theta) + V \cos(\theta)
 
-    Examples
-    --------
-    >>> from hyppo.tools import square
-    >>> x, y = square(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 2)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, default: False
+        Whether or not to include noise in the simulation.
+    low : float, default: -1
+        The lower limit of the uniform distribution simulated from.
+    high : float, default: 1
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     return _square_diamond(n, p, noise=noise, low=low, high=high, period=-np.pi / 8)
 
@@ -857,30 +731,6 @@ def two_parabolas(n, p, noise=False, low=-1, high=1, prob=0.5):
     r"""
     Two Parabolas simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
-        Whether or not to include noise in the simulation.
-    low : float, (default: -1)
-        The lower limit of the uniform distribution simulated from.
-    high : float, (default: -1)
-        The upper limit of the uniform distribution simulated from.
-    prob : float, (default: 0.5)
-        The probability of the bernoulli distribution simulated from.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, 1)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
     Two Parabolas :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
 
     .. math::
@@ -888,12 +738,27 @@ def two_parabolas(n, p, noise=False, low=-1, high=1, prob=0.5):
         X &\sim \mathcal{U}(-1, 1)^p \\
         Y &= ((w^T X)^2 + 2 \kappa \epsilon) \times \left( U = \frac{1}{2} \right)
 
-    Examples
-    --------
-    >>> from hyppo.tools import two_parabolas
-    >>> x, y = two_parabolas(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 2)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, default: False
+        Whether or not to include noise in the simulation.
+    low : float, default: -1
+        The lower limit of the uniform distribution simulated from.
+    high : float, default: 1
+        The upper limit of the uniform distribution simulated from.
+    prob : float, default: 0.5
+        The probability of the bernoulli distribution simulated from.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     extra_args = [(noise, bool), (low, float), (high, float), (prob, float)]
     check_in = _CheckInputs(n, p)
@@ -940,28 +805,6 @@ def circle(n, p, noise=False, low=-1, high=1):
     r"""
     Circle simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
-        Whether or not to include noise in the simulation.
-    low : float, (default: -1)
-        The lower limit of the uniform distribution simulated from.
-    high : float, (default: -1)
-        The upper limit of the uniform distribution simulated from.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
     Circle :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
     :math:`U \sim \mathcal{U}(-1, 1)^p`, :math:`\epsilon \sim \mathcal{N}(0, I_p)`,
     :math:`r = 1`,
@@ -974,12 +817,25 @@ def circle(n, p, noise=False, low=-1, high=1):
         + 0.4 \epsilon_{|p|} \right) \\
         Y_{|d|} &= \sin(\pi U_{|1|})
 
-    Examples
-    --------
-    >>> from hyppo.tools import circle
-    >>> x, y = circle(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 2)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, default: False
+        Whether or not to include noise in the simulation.
+    low : float, default: -1
+        The lower limit of the uniform distribution simulated from.
+    high : float, default: 1
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     return _circle_ellipse(n, p, noise=noise, low=low, high=high, radius=1)
 
@@ -988,28 +844,6 @@ def ellipse(n, p, noise=False, low=-1, high=1):
     r"""
     Ellipse simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
-        Whether or not to include noise in the simulation.
-    low : float, (default: -1)
-        The lower limit of the uniform distribution simulated from.
-    high : float, (default: -1)
-        The upper limit of the uniform distribution simulated from.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
     Ellipse :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
     :math:`U \sim \mathcal{U}(-1, 1)^p`, :math:`\epsilon \sim \mathcal{N}(0, I_p)`,
     :math:`r = 5`,
@@ -1022,12 +856,25 @@ def ellipse(n, p, noise=False, low=-1, high=1):
         + 0.4 \epsilon_{|p|} \right) \\
         Y_{|d|} &= \sin(\pi U_{|1|})
 
-    Examples
-    --------
-    >>> from hyppo.tools import ellipse
-    >>> x, y = ellipse(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 2)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, default: False
+        Whether or not to include noise in the simulation.
+    low : float, default: -1
+        The lower limit of the uniform distribution simulated from.
+    high : float, default: 1
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     return _circle_ellipse(n, p, noise=noise, low=low, high=high, radius=5)
 
@@ -1036,28 +883,6 @@ def diamond(n, p, noise=False, low=-1, high=1):
     r"""
     Diamond simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, (default: False)
-        Whether or not to include noise in the simulation.
-    low : float, (default: -1)
-        The lower limit of the uniform distribution simulated from.
-    high : float, (default: -1)
-        The upper limit of the uniform distribution simulated from.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
     Diamond :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
     :math:`U \sim \mathcal{U}(-1, 1)`, :math:`V \sim \mathcal{N}(0, 1)^p`,
     :math:`\theta = -\frac{\pi}{4}`,
@@ -1068,12 +893,25 @@ def diamond(n, p, noise=False, low=-1, high=1):
         + 0.05 p \epsilon_{|d|}\ \mathrm{for}\ d = 1, ..., p \\
         Y_{|d|} &= -U \sin(\theta) + V \cos(\theta)
 
-    Examples
-    --------
-    >>> from hyppo.tools import diamond
-    >>> x, y = diamond(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 2)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    noise : bool, default: False
+        Whether or not to include noise in the simulation.
+    low : float, default: -1
+        The lower limit of the uniform distribution simulated from.
+    high : float, default: 1
+        The upper limit of the uniform distribution simulated from.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     return _square_diamond(n, p, noise=noise, low=low, high=high, period=-np.pi / 4)
 
@@ -1081,6 +919,14 @@ def diamond(n, p, noise=False, low=-1, high=1):
 def multiplicative_noise(n, p):
     r"""
     Multiplicative Noise simulation.
+
+    Multiplicative Noise :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
+    :math:`\U \sim \mathcal{N}(0, I_p)`,
+
+    .. math::
+
+        X &\sim \mathcal{N}(0, I_p) \\
+        Y_{|d|} &= U_{|d|} X_{|d|}\ \mathrm{for}\ d = 1, ..., p
 
     Parameters
     ----------
@@ -1091,27 +937,10 @@ def multiplicative_noise(n, p):
 
     Returns
     -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
-
-    Notes
-    -----
-    Multiplicative Noise :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
-    :math:`\U \sim \mathcal{N}(0, I_p)`,
-
-    .. math::
-
-        X &\sim \mathcal{N}(0, I_p) \\
-        Y_{|d|} &= U_{|d|} X_{|d|}\ \mathrm{for}\ d = 1, ..., p
-
-    Examples
-    --------
-    >>> from hyppo.tools import multiplicative_noise
-    >>> x, y = multiplicative_noise(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 2)
     """
     extra_args = []
     check_in = _CheckInputs(n, p)
@@ -1129,26 +958,6 @@ def multimodal_independence(n, p, prob=0.5, sep1=3, sep2=2):
     r"""
     Multimodal Independence data.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    prob : float, (default: 0.5)
-        The probability of the bernoulli distribution simulated from.
-    sep1, sep2: float, (default: 3, 2)
-        The separation between clusters of normally distributed data.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n, p)` and `(n, p)`
-        where `n` is the number of samples and `p` is the number of
-        dimensions.
-
-    Notes
-    -----
     Multimodal Independence :math:`(X, Y) \in \mathbb{R}^p \times \mathbb{R}^p`:
     :math:`U \sim \mathcal{N}(0, I_p)`, :math:`V \sim \mathcal{N}(0, I_p)`,
     :math:`U^\prime \sim \mathcal{B}(0.5)^p`, :math:`V^\prime \sim \mathcal{B}(0.5)^p`,
@@ -1158,12 +967,23 @@ def multimodal_independence(n, p, prob=0.5, sep1=3, sep2=2):
         X &= \frac{U}{3} + 2 U^\prime - 1 \\
         Y &= \frac{V}{3} + 2 V^\prime - 1
 
-    Examples
-    --------
-    >>> from hyppo.tools import multimodal_independence
-    >>> x, y = multimodal_independence(100, 2)
-    >>> print(x.shape, y.shape)
-    (100, 2) (100, 2)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation.
+    p : int
+        The number of dimensions desired by the simulation.
+    prob : float, default: 0.5
+        The probability of the bernoulli distribution simulated from.
+    sep1, sep2: float, default: 3, 2
+        The separation between clusters of normally distributed data.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
+        where `n` is the number of samples and `p` is the number of
+        dimensions.
     """
     extra_args = [(prob, float), (sep1, float), (sep2, float)]
     check_in = _CheckInputs(n, p)

@@ -49,21 +49,21 @@ class Hsic(IndependenceTest):
 
     Parameters
     ----------
-    compute_kernel : str, callable, or None, default: "gaussian"
+    metric : str, callable, or None, default: "gaussian"
         A function that computes the kernel similarity among the samples within each
         data matrix.
-        Valid strings for ``compute_kernel`` are, as defined in
-        ``sklearn.metrics.pairwise.pairwise_kernels``,
+        Valid strings for ``metric`` are, as defined in
+        :meth:`sklearn.metrics.pairwise.pairwise_kernels`,
 
-            ['additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'gaussian',
+            ['additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'rbf',
             'laplacian', 'sigmoid', 'cosine']
 
-        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already kernel
-        matrices. To call a custom function, either create the kernel matrix
-        before-hand or create a function of the form ``metric(x, **kwargs)``
-        where ``x`` is the data matrix for which pairwise similarities are
-        calculated and ``**kwargs`` are extra arguements to send to your custom
-        function.
+        Note ``'rbf'`` and ``'gaussian'`` are the same metric.
+        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already distance
+        matrices. To call a custom function, either create the distance matrix
+        before-hand or create a function of the form :func:`metric(x, **kwargs)`
+        where ``x`` is the data matrix for which pairwise kernel similarity matrices are
+        calculated and kwargs are extra arguements to send to your custom function.
     bias : bool, default: False
         Whether or not to use the biased or unbiased test statistics.
     **kwargs
@@ -163,8 +163,8 @@ class Hsic(IndependenceTest):
 
         >>> import numpy as np
         >>> from hyppo.independence import Hsic
-        >>> x = np.ones((10, 10)) - np.identity(10)
-        >>> y = 2 * x
+        >>> x = np.ones((10, 10))
+        >>> y = 2 * x - np.identity(10)
         >>> hsic = Hsic(compute_kernel=None)
         >>> stat, pvalue = hsic.test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)

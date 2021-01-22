@@ -12,39 +12,7 @@ class KSample(KSampleTest):
     There are not many non-parametric *k*-sample tests, but this version
     cleverly leverages the power of some of the implemented independence
     tests to test this equality of distribution.
-
-    Parameters
-    ----------
-    indep_test : {"CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC"}
-        A string corresponding to the desired independence test from
-        ``mgc.independence``. This is not case sensitive.
-    compute_distance : callable(), optional (default: "euclidean")
-        A function that computes the distance among the samples within each
-        data matrix.
-        Valid strings for ``metric`` are, as defined in
-        ``sklearn.metrics.pairwise_distances``,
-
-            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
-              ‘manhattan’] See the documentation for scipy.spatial.distance for details
-              on these metrics.
-            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
-              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
-              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
-              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
-              documentation for scipy.spatial.distance for details on these metrics.
-
-        Set to `None` or `precomputed` if `x` and `y` are already distance
-        matrices. To call a custom function, either create the distance matrix
-        before-hand or create a function of the form ``metric(x, **kwargs)``
-        where `x` is the data matrix for which pairwise distances are
-        calculated and kwargs are extra arguements to send to your custom function.
-    bias : bool (default: False)
-        Whether or not to use the biased or unbiased test statistics. Only
-        applies to ``Dcorr`` and ``Hsic``.
-
-    Notes
-    -----
-    The formulation for this implementation is as follows [#1Ksamp]_:
+    The formulation for this implementation is as follows `[1]`_:
 
     The *k*-sample testing problem can be thought of as a generalization of
     the two sample testing problem. Define
@@ -136,25 +104,51 @@ class KSample(KSampleTest):
     between samples thought to be true if the null hypothesis is rejected.
 
     Performing a multilevel test involves constructing :math:`x` and :math:`y` using
-    either of the methods above and then performing a block permutation [#2Ksamp]_.
+    either of the methods above and then performing a block permutation `[2]`_.
     Essentially, the permutation is striated, where permutation is limited to be within
     a block of samples or between blocks of samples, but not both. This is done because
     the data is not freely exchangeable, so it is necessary to block the permutation to
-    preserve the joint distribution [#2Ksamp]_.
+    preserve the joint distribution `[2]`_.
 
-    The p-value returned is calculated using a permutation test using a
-    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
-    The fast version of the test (for :math:`k`-sample Dcorr and Hsic) uses a
-    `chi squared approximation <https://hyppo.neurodata.io/reference/tools.html#chi-squared-approximation>`_.
+    The p-value returned is calculated using a permutation test uses
+    :meth:`hyppo.tools.perm_test`.
+    The fast version of the test uses :meth:`hyppo.tools.chi2_approx`.
 
-    References
+    .. _[1]: https://arxiv.org/abs/1910.08883
+    .. _[2]: https://www.sciencedirect.com/science/article/pii/S105381191500508X
+
+    Parameters
     ----------
-    .. [#1Ksamp] Panda, S., Shen, C., Perry, R., Zorn, J., Lutz, A., Priebe, C. E., &
-                 Vogelstein, J. T. (2019). Nonparametric MANOVA via Independence
-                 Testing. arXiv e-prints, arXiv-1910.
-    .. [#2Ksamp] Winkler, A. M., Webster, M. A., Vidaurre, D., Nichols, T. E., &
-                 Smith, S. M. (2015). Multi-level block permutation. Neuroimage, 123,
-                 253-268.
+    indep_test : {"CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC", "KMERF"}
+        A string corresponding to the desired independence test from
+        :mod:`hyppo.independence. This is not case sensitive.
+    compute_distance : str, callable, or None, default: "euclidean"
+        A function that computes the distance among the samples within each
+        data matrix.
+        Valid strings for ``compute_distance`` are, as defined in
+        ``sklearn.metrics.pairwise_distances``,
+
+            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
+              ‘manhattan’] See the documentation for
+              :mod:`scipy.spatial.distance` for details
+              on these metrics.
+            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
+              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
+              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
+              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
+              documentation for
+              :mod:`scipy.spatial.distance` for details on these metrics.
+
+        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already distance
+        matrices. To call a custom function, either create the distance matrix
+        before-hand or create a function of the form ``metric(x, **kwargs)``
+        where ``x`` is the data matrix for which pairwise distances are
+        calculated and ``**kwargs`` are extra arguements to send to your custom
+        function.
+    bias : bool, default: False
+        Whether or not to use the biased or unbiased test statistics.
+    **kwargs
+        Arbitrary keyword arguments for ``compute_distance``.
     """
 
     def __init__(self, indep_test, compute_distance="euclidean", bias=False, **kwargs):
@@ -202,18 +196,22 @@ class KSample(KSampleTest):
             self, compute_distance=compute_distance, bias=bias, **kwargs
         )
 
-    def _statistic(self, *args):
+    def statistic(self, *args):
         r"""
         Calulates the *k*-sample test statistic.
 
         Parameters
         ----------
-        *args : ndarrays
+        *args : ndarray
             Variable length input data matrices. All inputs must have the same
             number of samples. That is, the shapes must be `(n, p)` and
-            `(m, p)` where `n` and `m` are the number of samples and `p` are
-            the number of dimensions. Alternatively, inputs can be distance
-            matrices, where the shapes must all be `(n, n)`.
+            `(m, p)`, ... where `n`, `m`, ... are the number of samples and `p` is
+            the number of dimensions.
+
+        Returns
+        -------
+        stat : float
+            The computed *k*-Sample statistic.
         """
         inputs = list(args)
         if self.indep_test_name == "kmerf":
@@ -221,7 +219,7 @@ class KSample(KSampleTest):
         else:
             u, v = k_sample_transform(inputs)
 
-        return self.indep_test._statistic(u, v)
+        return self.indep_test.statistic(u, v)
 
     def test(self, *args, reps=1000, workers=1, auto=True):
         r"""
@@ -229,23 +227,25 @@ class KSample(KSampleTest):
 
         Parameters
         ----------
-        *args : ndarrays
+        *args : ndarray
             Variable length input data matrices. All inputs must have the same
             number of samples. That is, the shapes must be `(n, p)` and
-            `(m, p)` where `n` and `m` are the number of samples and `p` are
-            the number of dimensions. Alternatively, inputs can be distance
-            matrices, where the shapes must all be `(n, n)`.
-        reps : int, optional (default: 1000)
+            `(m, p)`, ... where `n`, `m`, ... are the number of samples and `p` is
+            the number of dimensions.
+        reps : int, default: 1000
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        workers : int, optional (default: 1)
+        workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
-            Supply -1 to use all cores available to the Process.
-        auto : bool (default: True)
-            Automatically uses fast approximation when sample size and size of array
-            is greater than 20. If True, and sample size is greater than 20, a fast
-            chi2 approximation will be run. Parameters ``reps`` and ``workers`` are
-            irrelevant in this case. Only applies to ``Dcorr`` and ``Hsic``.
+            Supply ``-1`` to use all cores available to the Process.
+        auto : bool, default: True
+            Only applies to ``Dcorr`` and ``Hsic``.
+            Automatically uses fast approximation when `n` and size of array
+            is greater than 20. If ``True``, and sample size is greater than 20, then
+            :class:`hyppo.tools.chi2_approx` will be run. Parameters ``reps`` and
+            ``workers`` are
+            irrelevant in this case. Otherwise, :class:`hyppo.tools.perm_test` will be
+            run.
 
         Returns
         -------
@@ -253,6 +253,9 @@ class KSample(KSampleTest):
             The computed *k*-Sample statistic.
         pvalue : float
             The computed *k*-Sample p-value.
+        dict
+            A dictionary containing optional parameters for tests that return them.
+            See the relevant test in :mod:`hyppo.independence`.
 
         Examples
         --------

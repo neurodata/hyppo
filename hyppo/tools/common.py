@@ -122,31 +122,33 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
 
     Parameters
     ----------
-    x, y : ndarray
-        Input data matrices. `x` and `y` must have the same number of
-        samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+    x,y : ndarray
+        Input data matrices. ``x`` and ``y`` must have the same number of
+        samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
         `n` is the number of samples and `p` and `q` are the number of
-        dimensions. Alternatively, if `x` and `y` can be distance matrices,
-        where the shapes must both be `(n, n)`, no kernel will be computed.
-    metric : str, optional (default: "gaussian")
+        dimensions. Alternatively, ``x`` and ``y`` can be kernel similarity matrices,
+        where the shapes must both be ``(n, n)``.
+    metric : str, callable, or None, default: "gaussian"
         A function that computes the kernel similarity among the samples within each
         data matrix.
         Valid strings for ``metric`` are, as defined in
-        ``sklearn.metrics.pairwise.pairwise_kernels``,
+        :meth:`sklearn.metrics.pairwise.pairwise_kernels`,
 
-            ['additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'gaussian',
+            ['additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'rbf',
             'laplacian', 'sigmoid', 'cosine']
 
-        Set to `None` or `precomputed` if `x` and `y` are already distance
+        Note ``'rbf'`` and ``'gaussian'`` are the same metric.
+        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already distance
         matrices. To call a custom function, either create the distance matrix
-        before-hand or create a function of the form ``metric(x, **kwargs)``
-        where `x` is the data matrix for which pairwise kernel similarity matrices are
+        before-hand or create a function of the form :func:`metric(x, **kwargs)`
+        where ``x`` is the data matrix for which pairwise kernel similarity matrices are
         calculated and kwargs are extra arguements to send to your custom function.
-    workers : int, optional (default: 1)
+    workers : int, default: 1
         The number of cores to parallelize the p-value computation over.
-        Supply -1 to use all cores available to the Process.
-    **kwargs : optional
-        Optional arguments provided to ``sklearn.metrics.pairwise.pairwise_kernels``
+        Supply ``-1`` to use all cores available to the Process.
+    **kwargs
+        Arbitrary keyword arguments provided to
+        :meth:`sklearn.metrics.pairwise.pairwise_kernels`
         or a custom kernel function.
 
     Returns
@@ -185,17 +187,17 @@ def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
 
     Parameters
     ----------
-    x, y : ndarray
-        Input data matrices. `x` and `y` must have the same number of
-        samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+    x,y : ndarray
+        Input data matrices. ``x`` and ``y`` must have the same number of
+        samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
         `n` is the number of samples and `p` and `q` are the number of
-        dimensions. Alternatively, if `x` and `y` can be distance matrices,
-        where the shapes must both be `(n, n)`, no kernel will be computed.
-    metric : str, optional (default: "euclidean")
+        dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
+        where the shapes must both be ``(n, n)``.
+    metric : str, callable, or None, default: "euclidean"
         A function that computes the distance among the samples within each
         data matrix.
         Valid strings for ``metric`` are, as defined in
-        ``sklearn.metrics.pairwise_distances``,
+        :meth:`sklearn.metrics.pairwise_distances`,
 
             - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
               ‘manhattan’] See the documentation for scipy.spatial.distance for details
@@ -206,17 +208,19 @@ def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
               ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
               documentation for scipy.spatial.distance for details on these metrics.
 
-        Set to `None` or `precomputed` if `x` and `y` are already distance
+        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already distance
         matrices. To call a custom function, either create the distance matrix
         before-hand or create a function of the form ``metric(x, **kwargs)``
-        where `x` is the data matrix for which pairwise distances are
-        calculated and kwargs are extra arguements to send to your custom function.
-    workers : int, optional (default: 1)
+        where ``x`` is the data matrix for which pairwise distances are
+        calculated and ``**kwargs`` are extra arguements to send to your custom
+        function.
+    workers : int, default: 1
         The number of cores to parallelize the p-value computation over.
-        Supply -1 to use all cores available to the Process.
-    **kwargs : optional
-        Optional arguments provided to :meth:`sklearn.metrics.pairwise_distances` or a
-        custom kernel function.
+        Supply ``-1`` to use all cores available to the Process.
+    **kwargs
+        Arbitrary keyword arguments provided to
+        :meth:`sklearn.metrics.pairwise_distances` or a
+        custom distance function.
 
     Returns
     -------
@@ -400,24 +404,24 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
 
     Parameters
     ----------
-    calc_stat : callable()
-        The method used to calculate the test statistic (must use hyppo API)
-    x, y : ndarray
-        Input data matrices. `x` and `y` must have the same number of
-        samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+    calc_stat : callable
+        The method used to calculate the test statistic (must use hyppo API).
+    x,y : ndarray
+        Input data matrices. ``x`` and ``y`` must have the same number of
+        samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
         `n` is the number of samples and `p` and `q` are the number of
-        dimensions. Alternatively, `x` and `y` can be distance matrices,
-        where the shapes must both be `(n, n)`.
-    reps : int, optional (default: 1000)
+        dimensions. Alternatively, ``x`` and ``y`` can be distance or similarity
+        matrices,
+        where the shapes must both be ``(n, n)``.
+    reps : int, default: 1000
         The number of replications used to estimate the null distribution
         when using the permutation test used to calculate the p-value.
-    workers : int, optional (default: 1)
+    workers : int, default: 1
         The number of cores to parallelize the p-value computation over.
-        Supply -1 to use all cores available to the Process.
-    is_distsim : bool, optional (default: True)
-        Whether or not `x` and `y` are distance or similarity matrices. Changes the
-        permutation style of `y`.
-    perm_blocks : ndarray, optional (default None)
+        Supply ``-1`` to use all cores available to the Process.
+    is_distsim : bool, default: True
+        Whether or not ``x`` and ``y`` are distance or similarity matrices.
+    perm_blocks : ndarray, default: None
         Defines blocks of exchangeable samples during the permutation test.
         If None, all samples can be permuted with one another. Requires `n`
         rows. Constructs a tree graph with all samples initially at
@@ -433,8 +437,8 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
         The computed test statistic.
     pvalue : float
         The computed p-value.
-    pvalue : float
-        The approximated null distribution of shape `(reps,)`.
+    null_dist : list of float
+        The approximated null distribution of shape ``(reps,)``.
     """
     # calculate observed test statistic
     stat = calc_stat(x, y)
@@ -456,23 +460,28 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
 
 def chi2_approx(calc_stat, x, y):
     """
-    Fast chi-squared approximation for the p-value of Dcorr and Hsic.
+    Fast chi-squared approximation for the p-value.
 
     In the case of distance and kernel methods, Dcorr (and by extension Hsic
-    [#2ChiSq]_) can be approximated via a chi-squared distribution [#1ChiSq].
+    `[2]`_) can be approximated via a chi-squared distribution `[1]`_.
     This approximation is also applicable for the nonparametric MANOVA via
-    independence testing method in our package [#3ChiSq]_.
+    independence testing method in our package `[3]`_.
+
+    .. _[1]: https://arxiv.org/abs/1912.12150
+    .. _[2]: https://arxiv.org/abs/1806.05514
+    .. _[3]: https://arxiv.org/abs/1910.08883
 
     Parameters
     ----------
-    calc_stat : callable()
+    calc_stat : callable
         The method used to calculate the test statistic (must use hyppo API).
-    x, y : ndarray
-        Input data matrices. `x` and `y` must have the same number of
-        samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+    x,y : ndarray
+        Input data matrices. ``x`` and ``y`` must have the same number of
+        samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
         `n` is the number of samples and `p` and `q` are the number of
-        dimensions. Alternatively, `x` and `y` can be distance matrices,
-        where the shapes must both be `(n, n)`.
+        dimensions. Alternatively, ``x`` and ``y`` can be distance or similarity
+        matrices,
+        where the shapes must both be ``(n, n)``.
 
     Returns
     -------
@@ -480,17 +489,6 @@ def chi2_approx(calc_stat, x, y):
         The computed test statistic.
     pvalue : float
         The computed p-value.
-
-    References
-    ----------
-    .. [#1ChiSq] Shen, C., & Vogelstein, J. T. (2019). The Chi-Square Test of Distance
-                 Correlation. arXiv preprint arXiv:1912.12150.
-    .. [#2ChiSq] Shen, C., & Vogelstein, J. T. (2018). The exact equivalence of
-                 distance and kernel methods for hypothesis testing. arXiv preprint
-                 arXiv:1806.05514.
-    .. [#3ChiSq] Panda, S., Shen, C., Perry, R., Zorn, J., Lutz, A., Priebe, C. E., &
-                 Vogelstein, J. T. (2019). Nonparametric MANOVA via Independence
-                 Testing. arXiv e-prints, arXiv-1910.
     """
     n = x.shape[0]
     stat = calc_stat(x, y)

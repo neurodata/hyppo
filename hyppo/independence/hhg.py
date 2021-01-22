@@ -13,40 +13,10 @@ class HHG(IndependenceTest):
     This is a powerful test for independence based on calculating pairwise
     euclidean distances and associations between these distance matrices. The
     test statistic is a function of ranks of these distances, and is
-    consistent against similar tests [#1HHG]_. It can also operate on multiple
-    dimensions [#1HHG]_.
+    consistent against similar tests `[1]`_. It can also operate on multiple
+    dimensions `[1]`_.
 
-    Parameters
-    ----------
-    compute_distance : callable(), optional (default: "euclidean")
-        A function that computes the distance among the samples within each
-        data matrix.
-        Valid strings for ``metric`` are, as defined in
-        ``sklearn.metrics.pairwise_distances``,
-
-            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
-              ‘manhattan’] See the documentation for scipy.spatial.distance for details
-              on these metrics.
-            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
-              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
-              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
-              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
-              documentation for scipy.spatial.distance for details on these metrics.
-
-        Set to `None` or `precomputed` if `x` and `y` are already distance
-        matrices. To call a custom function, either create the distance matrix
-        before-hand or create a function of the form ``metric(x, **kwargs)``
-        where `x` is the data matrix for which pairwise distances are
-        calculated and kwargs are extra arguements to send to your custom function.
-
-    See Also
-    --------
-    Dcorr : Distance correlation test statistic and p-value.
-    Hsic : Hilbert-Schmidt independence criterion test statistic and p-value.
-
-    Notes
-    -----
-    The statistic can be derived as follows [#1HHG]_:
+    The statistic can be derived as follows `[1]`_:
 
     Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
     :math:`X` and :math:`Y`. For every sample :math:`j \neq i`, calculate the
@@ -90,14 +60,38 @@ class HHG(IndependenceTest):
 
         \mathrm{HHG}_n (x, y) = \sum_{i=1}^n \sum_{j=1, j \neq i}^n S(i, j)
 
-    The p-value returned is calculated using a permutation test using a
-    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
+    The p-value returned is calculated using a permutation test using
+    :meth:`hyppo.tools.perm_test`.
 
-    References
+    .. _[1]: https://arxiv.org/abs/1201.3522
+
+    Parameters
     ----------
-    .. [#1HHG] Heller, R., Heller, Y., & Gorfine, M. (2012). A consistent
-               multivariate test of association based on ranks of distances.
-               Biometrika, 100(2), 503-510.
+    compute_distance : str, callable, or None, default: "euclidean"
+        A function that computes the distance among the samples within each
+        data matrix.
+        Valid strings for ``compute_distance`` are, as defined in
+        ``sklearn.metrics.pairwise_distances``,
+
+            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
+              ‘manhattan’] See the documentation for
+              :mod:`scipy.spatial.distance` for details
+              on these metrics.
+            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
+              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
+              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
+              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
+              documentation for
+              :mod:`scipy.spatial.distance` for details on these metrics.
+
+        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already distance
+        matrices. To call a custom function, either create the distance matrix
+        before-hand or create a function of the form ``metric(x, **kwargs)``
+        where ``x`` is the data matrix for which pairwise distances are
+        calculated and ``**kwargs`` are extra arguements to send to your custom
+        function.
+    **kwargs
+        Arbitrary keyword arguments for ``compute_distance``.
     """
 
     def __init__(self, compute_distance="euclidean", **kwargs):
@@ -106,18 +100,18 @@ class HHG(IndependenceTest):
             self.is_distance = True
         IndependenceTest.__init__(self, compute_distance=compute_distance, **kwargs)
 
-    def _statistic(self, x, y):
+    def statistic(self, x, y):
         r"""
         Helper function that calculates the HHG test statistic.
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices. `x` and `y` must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        x,y : ndarray
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, `x` and `y` can be distance matrices,
-            where the shapes must both be `(n, n)`.
+            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
+            where the shapes must both be ``(n, n)``.
 
         Returns
         -------
@@ -143,18 +137,18 @@ class HHG(IndependenceTest):
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices. `x` and `y` must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        x,y : ndarray
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, `x` and `y` can be distance matrices,
-            where the shapes must both be `(n, n)`.
-        reps : int, optional (default: 1000)
+            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
+            where the shapes must both be ``(n, n)``.
+        reps : int, default: 1000
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        workers : int, optional (default: 1)
+        workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
-            Supply -1 to use all cores available to the Process.
+            Supply ``-1`` to use all cores available to the Process.
 
         Returns
         -------
@@ -170,17 +164,6 @@ class HHG(IndependenceTest):
         >>> x = np.arange(7)
         >>> y = x
         >>> stat, pvalue = HHG().test(x, y)
-        >>> '%.1f, %.2f' % (stat, pvalue)
-        '160.0, 0.00'
-
-        The number of replications can give p-values with higher confidence
-        (greater alpha levels).
-
-        >>> import numpy as np
-        >>> from hyppo.independence import HHG
-        >>> x = np.arange(7)
-        >>> y = x
-        >>> stat, pvalue = HHG().test(x, y, reps=10000)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '160.0, 0.00'
 

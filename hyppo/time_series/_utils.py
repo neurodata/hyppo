@@ -86,7 +86,7 @@ def compute_stat(x, y, indep_test, compute_distance, max_lag, **kwargs):
     # calculate dep_lag when max_lag is 0
     dep_lag = []
     indep_test = indep_test(compute_distance=compute_distance)
-    indep_test_stat = indep_test._statistic(x, y)
+    indep_test_stat = indep_test.statistic(x, y)
     dep_lag.append(indep_test_stat)
 
     # loop over time points and find max test statistic
@@ -94,7 +94,7 @@ def compute_stat(x, y, indep_test, compute_distance, max_lag, **kwargs):
     for j in range(1, max_lag + 1):
         slice_distx = distx[j:n, j:n]
         slice_disty = disty[0 : (n - j), 0 : (n - j)]
-        stat = indep_test._statistic(slice_distx, slice_disty)
+        stat = indep_test.statistic(slice_distx, slice_disty)
         dep_lag.append((n - j) * stat / n)
 
     # calculate optimal lag and test statistic
