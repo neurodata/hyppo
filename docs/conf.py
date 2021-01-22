@@ -51,10 +51,31 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     "sphinx_gallery.gen_gallery",
+    "recommonmark",
 ]
+
+
+autodoc_typehints = "none"
+
+napoleon_google_docstring = False
+napoleon_numpy_docstring = True
+
+napoleon_use_param = False
+napoleon_use_rtype = False
+napoleon_preprocess_types = True
+napoleon_type_aliases = {
+    # general terms
+    "sequence": ":term:`sequence`",
+    "iterable": ":term:`iterable`",
+    "callable": ":py:func:`callable`",
+    "dict_like": ":term:`dict-like <mapping>`",
+    # objects without namespace
+    "ndarray": "~numpy.ndarray",
+}
 
 # -- numpydoc
 # Below is needed to prevent errors
+numpydoc_class_members_toctree = True
 numpydoc_show_class_members = False
 
 # -- sphinx.ext.autosummary
@@ -98,10 +119,9 @@ sphinx_gallery_conf = {
 # -- sphinx.ext.intersphinx
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
-    "numpy": ("https://docs.scipy.org/doc/numpy", None),
+    "numpy": ("https://numpy.org/doc/stable", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
-    "sklearn": ("http://scikit-learn.org/stable/", None),
-    "matplotlib": ("https://matplotlib.org/", None),
+    "matplotlib": ("https://matplotlib.org", None),
 }
 
 # Always show the source code that generates a plot
@@ -126,7 +146,7 @@ html_show_sourcelink = False
 html_show_sphinx = True
 html_show_copyright = True
 
-pygments_style = "default"
+pygments_style = "sphinx"
 smartquotes = False
 
 # Use RTD Theme
