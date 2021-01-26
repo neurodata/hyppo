@@ -35,6 +35,7 @@ Independence
 
    KSample
    Energy
+   MMD
 
 
 
@@ -108,8 +109,7 @@ Independence Simulations
 .. autosummary::
    :toctree: generated/
 
-   rot_2samp
-   trans_2samp
+   rot_ksamp
    gaussian_3samp
 
 Time-Series Simulations

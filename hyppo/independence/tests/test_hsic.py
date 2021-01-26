@@ -7,9 +7,8 @@ from .. import Hsic
 
 
 class TestHsicStat:
-    @pytest.mark.parametrize(
-        "n, obs_stat", [(10, 560.0), (50, 112800.0), (100, 950600.0)]
-    )
+    @pytest.mark.parametrize("n, obs_stat", [(100, 0.107), (200, 0.102)])
+    @pytest.mark.parametrize("obs_pvalue", [1 / 1000])
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
         x, y = linear(n, 1)

@@ -1,5 +1,5 @@
 """
-Independence Simulations
+Independence Sims
 ===========================
 
 Independence simulations are found in :mod:`hyppo.tools`. Here, we visualize what these
@@ -7,6 +7,7 @@ simulations look like. Noise-free simulations are overlaid over the noisy simula
 Note that the last 2 simulations have no noise parameter. These simulations were chosen
 as an aggregate of many popularly tested equations in the literature.
 """
+
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -35,6 +36,8 @@ from hyppo.tools import (
 
 # make plots look pretty
 sns.set(color_codes=True, style="white", context="talk", font_scale=2)
+PALETTE = sns.color_palette("Greys", n_colors=9)
+sns.set_palette(PALETTE[2::2])
 
 # constants
 NOISY = 100  # sample size of noisy simulation
@@ -88,10 +91,8 @@ def plot_sims():
                 x_no_noise, y_no_noise = sim(NO_NOISE, 1)
 
             # plot the nose and noise-free sims
-            col.scatter(x, y, c="#d9d9d9", marker="+", label="Noisy")
-            col.scatter(
-                x_no_noise, y_no_noise, c="#525252", marker="x", label="No Noise"
-            )
+            col.scatter(x, y, label="Noisy")
+            col.scatter(x_no_noise, y_no_noise, label="No Noise")
 
             # make the plot look pretty
             col.set_title("{}".format(sim_title))

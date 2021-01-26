@@ -49,17 +49,17 @@ class Hsic(IndependenceTest):
 
     Parameters
     ----------
-    metric : str, callable, or None, default: "gaussian"
+    compute_kernel : str, callable, or None, default: "gaussian"
         A function that computes the kernel similarity among the samples within each
         data matrix.
-        Valid strings for ``metric`` are, as defined in
+        Valid strings for ``compute_kernel`` are, as defined in
         :meth:`sklearn.metrics.pairwise.pairwise_kernels`,
 
             ['additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'rbf',
             'laplacian', 'sigmoid', 'cosine']
 
         Note ``'rbf'`` and ``'gaussian'`` are the same metric.
-        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already distance
+        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already similarity
         matrices. To call a custom function, either create the distance matrix
         before-hand or create a function of the form :func:`metric(x, **kwargs)`
         where ``x`` is the data matrix for which pairwise kernel similarity matrices are
@@ -156,19 +156,6 @@ class Hsic(IndependenceTest):
         >>> stat, pvalue = Hsic().test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
         '0.2, 0.00'
-
-        In addition, the inputs can be distance matrices. Using this is the,
-        same as before, except the ``compute_kernel`` parameter must be set
-        to ``None``.
-
-        >>> import numpy as np
-        >>> from hyppo.independence import Hsic
-        >>> x = np.ones((10, 10))
-        >>> y = 2 * x - np.identity(10)
-        >>> hsic = Hsic(compute_kernel=None)
-        >>> stat, pvalue = hsic.test(x, y)
-        >>> '%.1f, %.2f' % (stat, pvalue)
-        '0.0, 1.00'
         """
         check_input = _CheckInputs(
             x,

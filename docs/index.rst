@@ -21,7 +21,8 @@ hyppo
    :hidden:
    :caption: Tutorials
 
-   tutorials/independence
+   tutorials/independence.rst
+   sample_data/index.rst
 
 .. toctree::
    :maxdepth: 2

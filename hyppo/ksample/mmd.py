@@ -1,41 +1,41 @@
-from ..independence.hsic import _dcov
-from ..tools import compute_dist
 from ._utils import _CheckInputs
 from .base import KSampleTest
 from .ksamp import KSample
 
 
-class Energy(KSampleTest):
+class MMD(KSampleTest):
     r"""
-    Energy test statistic and p-value.
+    Maximum Mean Discrepency (MMD) test statistic and p-value.
 
-    Energy is a powerful multivariate 2-sample test. It leverages distance matrix
-    capabilities (similar to tests like distance correlation or Dcorr). In fact, Energy
+    MMD is a powerful multivariate 2-sample test. It leverages kernel similarity
+    matrices
+    capabilities (similar to tests like distance correlation or Dcorr). In fact, MMD
     statistic is equivalent to our 2-sample formulation nonparametric MANOVA via
     independence testing, i.e. :class:`hyppo.ksample.Ksample`,
     and to
     :class:`hyppo.independence.Dcorr`,
     :class:`hyppo.independence.DISCO`,
     :class:`hyppo.independence.Hsic`, and
-    :class:`hyppo.ksample.MMD` `[1]`_ `[2]`_.
+    :class:`hyppo.ksample.Energy` `[1]`_ `[2]`_.
 
-    Traditionally, the formulation for the 2-sample Energy statistic
+    Traditionally, the formulation for the 2-sample MMD statistic
     is as follows `[3]`_:
 
     Define
     :math:`\{ u_i \stackrel{iid}{\sim} F_U,\ i = 1, ..., n \}` and
     :math:`\{ v_j \stackrel{iid}{\sim} F_V,\ j = 1, ..., m \}` as two groups
     of samples deriving from different distributions with the same
-    dimensionality. If :math:`d(\cdot, \cdot)` is a distance metric (i.e. euclidean)
+    dimensionality. If :math:`k(\cdot, \cdot)` is a kernel metric (i.e. gaussian)
     then,
 
     .. math::
 
-        \mathrm{Energy}_{n, m}(\mathbf{u}, \mathbf{v}) = \frac{1}{n^2 m^2}
-        \left( 2nm \sum_{i = 1}^n \sum_{j = 1}^m d(u_i, v_j) - m^2
-        \sum_{i,j=1}^n d(u_i, u_j) - n^2 \sum_{i, j=1}^m d(v_i, v_j) \right)
+        \mathrm{MMD}_{n, m}(\mathbf{u}, \mathbf{v}) =
+        \frac{1}{m(m - 1)} \sum_{i = 1}^m \sum_{j \neq i}^m k(u_i, u_j)
+        + \frac{1}{n(n - 1)} \sum_{i = 1}^n \sum_{j \neq i}^n k(v_i, v_j)
+        - \frac{2}{mn} \sum_{i = 1}^n \sum_{j \neq i}^n k(v_i, v_j)
 
-    The implementation in the ``hyppo.ksample.KSample`` class (using Dcorr) is in
+    The implementation in the ``hyppo.ksample.KSample`` class (using Hsic) is in
     fact equivalent to this implementation (for p-values) and statistics are
     equivalent up to a scaling factor `[1]`_.
 
@@ -45,36 +45,28 @@ class Energy(KSampleTest):
 
     .. _[1]: https://arxiv.org/abs/1910.08883
     .. _[2]: https://arxiv.org/abs/1806.05514
-    .. _[3]: https://www.semanticscholar.org/paper/TESTING-FOR-EQUAL-DISTRIBUTIONS-IN-HIGH-DIMENSION-Sz%C3%A9kely-Rizzo/ad5e91905a85d6f671c04a67779fd1377e86d199
+    .. _[3]: https://www.jmlr.org/papers/volume13/gretton12a/gretton12a.pdf
 
     Parameters
     ----------
-    compute_distance : str, callable, or None, default: "euclidean"
-        A function that computes the distance among the samples within each
+    compute_kernel : str, callable, or None, default: "gaussian"
+        A function that computes the kernel similarity among the samples within each
         data matrix.
-        Valid strings for ``compute_distance`` are, as defined in
-        ``sklearn.metrics.pairwise_distances``,
+        Valid strings for ``compute_kernel`` are, as defined in
+        :meth:`sklearn.metrics.pairwise.pairwise_kernels`,
 
-            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
-              ‘manhattan’] See the documentation for
-              :mod:`scipy.spatial.distance` for details
-              on these metrics.
-            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
-              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
-              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
-              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
-              documentation for
-              :mod:`scipy.spatial.distance` for details on these metrics.
+            ['additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'rbf',
+            'laplacian', 'sigmoid', 'cosine']
 
-        To call a custom function, either create the distance matrix
-        before-hand or create a function of the form ``metric(x, **kwargs)``
-        where ``x`` is the data matrix for which pairwise distances are
-        calculated and ``**kwargs`` are extra arguements to send to your custom
-        function.
+        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already similarity
+        matrices. To call a custom function, either create the distance matrix
+        before-hand or create a function of the form :func:`metric(x, **kwargs)`
+        where ``x`` is the data matrix for which pairwise kernel similarity matrices are
+        calculated and kwargs are extra arguements to send to your custom function.
     bias : bool, default: False
         Whether or not to use the biased or unbiased test statistics.
     **kwargs
-        Arbitrary keyword arguments for ``compute_distance``.
+        Arbitrary keyword arguments for ``compute_kernel``.
     """
 
     def __init__(self, compute_distance="euclidean", bias=False, **kwargs):
@@ -88,7 +80,7 @@ class Energy(KSampleTest):
 
     def statistic(self, x, y):
         r"""
-        Calulates the Energy test statistic.
+        Calulates the MMD test statistic.
 
         Parameters
         ----------
@@ -101,21 +93,24 @@ class Energy(KSampleTest):
         Returns
         -------
         stat : float
-            The computed Energy statistic.
+            The computed MMD statistic.
         """
-        distx = x
-        disty = y
         n = x.shape[0]
         m = y.shape[0]
 
-        if not self.is_distance:
-            distx, disty = compute_dist(
-                x, y, metric=self.compute_distance, **self.kwargs
-            )
-
-        # exact equivalence transformation Dcorr and Energy
+        # exact equivalence transformation Hsic and MMD
         stat = (
-            _dcov(distx, disty, self.bias) * (2 * (n ** 2) * (m ** 2)) / ((n + m) ** 4)
+            KSample(
+                indep_test="Hsic",
+                compute_distance=self.compute_distance,
+                bias=self.bias,
+                **self.kwargs
+            ).statistic(
+                x,
+                y,
+            )
+            * (2 * (n ** 2) * (m ** 2))
+            / ((n + m) ** 4)
         )
         self.stat = stat
 
@@ -123,7 +118,7 @@ class Energy(KSampleTest):
 
     def test(self, x, y, reps=1000, workers=1, auto=True):
         r"""
-        Calculates the Energy test statistic and p-value.
+        Calculates the MMD test statistic and p-value.
 
         Parameters
         ----------
@@ -149,33 +144,33 @@ class Energy(KSampleTest):
         Returns
         -------
         stat : float
-            The computed Energy statistic.
+            The computed MMD statistic.
         pvalue : float
-            The computed Energy p-value.
+            The computed MMD p-value.
 
         Examples
         --------
         >>> import numpy as np
-        >>> from hyppo.ksample import Energy
+        >>> from hyppo.ksample import MMD
         >>> x = np.arange(7)
         >>> y = x
-        >>> stat, pvalue = Energy().test(x, y)
+        >>> stat, pvalue = MMD().test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
         '0.267, 1.0'
         """
         check_input = _CheckInputs(
             inputs=[x, y],
-            indep_test="dcorr",
+            indep_test="hsic",
         )
         x, y = check_input()
 
         # observed statistic
         stat = self.statistic(x, y)
 
-        # since stat transformation is invariant under permutation, 2-sample Dcorr
-        # pvalue is identical to Energy
+        # since stat transformation is invariant under permutation, 2-sample Hsic
+        # pvalue is identical to MMD
         _, pvalue = KSample(
-            indep_test="Dcorr",
+            indep_test="Hsic",
             compute_distance=self.compute_distance,
             bias=self.bias,
             **self.kwargs

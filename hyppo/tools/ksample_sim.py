@@ -115,9 +115,9 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
     return x_rot, y_rot
 
 
-def rot_2samp(sim, n, p, noise=True, degree=90):
+def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
     r"""
-    Rotates input simulations to produce a 2-sample simulation.
+    Rotates input simulations to produce a `k`-sample simulation.
 
     Parameters
     ----------
@@ -127,82 +127,54 @@ def rot_2samp(sim, n, p, noise=True, degree=90):
         The number of samples desired by the simulation.
     p : int
         The number of dimensions desired by the simulation.
+    k : int, default: 2
+        The number of groups to simulate.
     noise : bool, default: True
         Whether or not to include noise in the simulation.
-    degree : float, default: 90
+    degree : float or list of float, default: 90
         The number of degrees to rotate the input simulation by (in first dimension).
+        The list must be the same size as ``k - 1``.
+    pow_type : {"samp", "dim"}, default: "samp"
+        Simulation type, (increasing sample size or dimension)
+    **kwargs
+        Additional keyword arguements for the independence simulation.
 
     Returns
     -------
-    samp1,samp2 : ndarray
-        Rotated data matrices. ``samp1`` and ``samp2`` have shape ``(n, p+1)``
-        or `1(n, 2p)`1 depending on the independence simulation. Here, `n`
-        is the number of samples and `p` is the number of dimensions.
-    """
-    if sim not in _SIMS:
-        raise ValueError("Not valid simulation")
-
-    if sim.__name__ == "multimodal_independence":
-        x, y = sim(n, p)
-        x_rot, y_rot = sim(n, p)
-    else:
-        if sim.__name__ == "multiplicative_noise":
-            x, y = sim(n, p)
-        else:
-            x, y = sim(n, p, noise=noise)
-        x_rot, y_rot = _2samp_rotate(sim, x, y, p, degree=degree, pow_type="samp")
-    samp1 = np.hstack([x, y])
-    samp2 = np.hstack([x_rot, y_rot])
-
-    return samp1, samp2
-
-
-def trans_2samp(sim, n, p, noise=True, degree=90, trans=0.3):
-    r"""
-    Translates and rotates input simulations to produce a 2-sample
-    simulation.
-
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    p : int
-        The number of dimensions desired by the simulation.
-    noise : bool, default: True
-        Whether or not to include noise in the simulation.
-    degree : float, default: 90
-        The number of degrees to rotate the input simulation by (in first dimension).
-    trans : float, default: 0.3
-        The amount to translate the second simulation by (in first dimension).
-
-    Returns
-    -------
-    samp1,samp2 : ndarray
-        Rotated and/or translated data matrices. ``samp1`` and ``samp2`` have shape
-        ``(n, p+1)``
+    sims : list of ndarray
+        Rotated data matrices. ``sims`` is a list of arrays of shape ``(n, p+1)``
         or ``(n, 2p)`` depending on the independence simulation. Here, `n`
         is the number of samples and `p` is the number of dimensions.
     """
     if sim not in _SIMS:
         raise ValueError("Not valid simulation")
 
+    if (k - 1) > 1:
+        if (k - 1) != len(degree):
+            raise ValueError(
+                "k={} not equal to length of degree={}".format(k - 1, len(degree))
+            )
+
     if sim.__name__ == "multimodal_independence":
-        x, y = sim(n, p)
-        x_trans, y_trans = sim(n, p)
+        sims = [np.hstack(sim(n, p)) for _ in range(k)]
     else:
-        if sim.__name__ == "multiplicative_noise":
-            x, y = sim(n, p)
+        if sim.__name__ != "multiplicative_noise":
+            kwargs["noise"] = noise
+        x, y = sim(n, p, **kwargs)
+        if (k - 1) == 1:
+            sims = [
+                np.hstack([x, y]),
+                np.hstack(
+                    _2samp_rotate(sim, x, y, p, degree=degree, pow_type=pow_type)
+                ),
+            ]
         else:
-            x, y = sim(n, p, noise=noise)
-        x, y = _normalize(x, y)
-        x_trans, y_trans = _2samp_rotate(sim, x, y, p, degree=degree, pow_type="dim")
-        x_trans[:, 0] += trans
-        y_trans[:, 0] = y_trans[:, -1]
+            sims = [np.hstack([x, y])] + [
+                np.hstack(_2samp_rotate(sim, x, y, p, degree=deg, pow_type=pow_type))
+                for deg in degree
+            ]
 
-    samp1 = np.hstack([x, y])
-    samp2 = np.hstack([x_trans, y_trans])
-
-    return samp1, samp2
+    return sims
 
 
 def gaussian_3samp(n, epsilon=1, weight=0, case=1):

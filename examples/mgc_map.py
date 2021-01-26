@@ -18,6 +18,9 @@ import seaborn as sns
 from hyppo.independence import MGC
 from hyppo.tools import linear, spiral
 
+# make plots look pretty
+sns.set(color_codes=True, style="white", context="talk", font_scale=1)
+
 # make a dictionary that maps the simulation function to a string
 sims = {
     "Linear": linear,
@@ -35,8 +38,7 @@ def run_test(sim_type="Linear"):
     # calculate the MGC test statistic, p-value, and get a dictionary with the
     # mgc_map (shows the geometric nature of the relationship) and the optimal
     # scale, which is the k,l nearest neighbors that maximize the test statistic
-    stat, pvalue, mgc_dict = MGC().test(x, y)
-    print(stat, pvalue)
+    _, _, mgc_dict = MGC().test(x, y, reps=0)
 
     # plot the MGC map with a map of the local correlations (as mentioned before,
     # shows the geometric nature of the relationship), and the optimal scale,
@@ -59,7 +61,7 @@ def run_test(sim_type="Linear"):
     ax.scatter(opt_scale[1], opt_scale[0], marker="X", s=200, color="red")
 
     # make plots look nice
-    fig.suptitle("MGC Map - {}".format(sim_type), fontsize=17)
+    ax.set_title("MGC Map - {}".format(sim_type))
     ax.xaxis.set_major_locator(ticker.MultipleLocator(10))
     ax.xaxis.set_major_formatter(ticker.ScalarFormatter())
     ax.yaxis.set_major_locator(ticker.MultipleLocator(10))

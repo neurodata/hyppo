@@ -94,9 +94,9 @@ from sphinx_gallery.sorting import FileNameSortKey
 
 sphinx_gallery_conf = {
     # path to your examples scripts
-    "examples_dirs": ["../examples", "../tutorials"],
+    "examples_dirs": ["../examples", "../tutorials", "../sample_data"],
     # path where to save gallery generated examples
-    "gallery_dirs": ["gallery", "tutorials"],
+    "gallery_dirs": ["gallery", "tutorials", "sample_data"],
     "filename_pattern": r"\.py",
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
@@ -191,7 +191,10 @@ html_context = {
     "conf_py_path": "docs/",
     "galleries": sphinx_gallery_conf["gallery_dirs"],
     "gallery_dir": dict(
-        zip(sphinx_gallery_conf["gallery_dirs"], sphinx_gallery_conf["examples_dirs"])
+        zip(
+            sphinx_gallery_conf["gallery_dirs"],
+            sphinx_gallery_conf["examples_dirs"],
+        )
     ),
 }
 

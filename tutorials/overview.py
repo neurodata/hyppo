@@ -59,9 +59,16 @@ x, y = spiral(100, 1, noise=True)
 # :math:`X` and :math:`Y` and returns realizations as :class:`numpy.ndarray`:
 
 import matplotlib.pyplot as plt
+import seaborn as sns
 
-plt.figure()
+# make plots look pretty
+sns.set(color_codes=True, style="white", context="talk", font_scale=1)
+
+plt.figure(figsize=(5, 5))
 plt.scatter(x, y)
+plt.xticks([])
+plt.yticks([])
+sns.despine(left=True, bottom=True, right=True)
 plt.show()
 
 ########################################################################################

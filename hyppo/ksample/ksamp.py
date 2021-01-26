@@ -139,10 +139,9 @@ class KSample(KSampleTest):
               documentation for
               :mod:`scipy.spatial.distance` for details on these metrics.
 
-        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already distance
-        matrices. To call a custom function, either create the distance matrix
+        To call a custom function, either create the distance matrix
         before-hand or create a function of the form ``metric(x, **kwargs)``
-        where ``x`` is the data matrix for which pairwise distances are
+        where ``x`` is the data matrix for which pairwise distances or are
         calculated and ``**kwargs`` are extra arguements to send to your custom
         function.
     bias : bool, default: False
