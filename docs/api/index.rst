@@ -36,6 +36,7 @@ Independence
    KSample
    Energy
    MMD
+   DISCO
 
 
 

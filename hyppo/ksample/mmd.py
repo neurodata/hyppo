@@ -70,10 +70,6 @@ class MMD(KSampleTest):
     """
 
     def __init__(self, compute_distance="euclidean", bias=False, **kwargs):
-        # set is_distance to true if compute_distance is None
-        self.is_distance = False
-        if not compute_distance:
-            self.is_distance = True
         KSampleTest.__init__(
             self, compute_distance=compute_distance, bias=bias, **kwargs
         )

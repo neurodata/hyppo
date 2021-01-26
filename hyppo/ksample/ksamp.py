@@ -203,7 +203,7 @@ class KSample(KSampleTest):
         ----------
         *args : ndarray
             Variable length input data matrices. All inputs must have the same
-            number of samples. That is, the shapes must be `(n, p)` and
+            number of dimensions. That is, the shapes must be `(n, p)` and
             `(m, p)`, ... where `n`, `m`, ... are the number of samples and `p` is
             the number of dimensions.
 
@@ -228,7 +228,7 @@ class KSample(KSampleTest):
         ----------
         *args : ndarray
             Variable length input data matrices. All inputs must have the same
-            number of samples. That is, the shapes must be `(n, p)` and
+            number of dimensions. That is, the shapes must be `(n, p)` and
             `(m, p)`, ... where `n`, `m`, ... are the number of samples and `p` is
             the number of dimensions.
         reps : int, default: 1000
