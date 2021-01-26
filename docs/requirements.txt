@@ -7,3 +7,5 @@ sphinx_rtd_theme==0.4.3
 sphinx-gallery==0.8.2
 numpydoc==0.7.0
 recommonmark
+matplotlib
+seaborn
