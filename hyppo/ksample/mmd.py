@@ -152,7 +152,7 @@ class MMD(KSampleTest):
         >>> y = x
         >>> stat, pvalue = MMD().test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
-        '0.267, 1.0'
+        '0.000, 1.0'
         """
         check_input = _CheckInputs(
             inputs=[x, y],

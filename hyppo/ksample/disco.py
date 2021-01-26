@@ -169,7 +169,7 @@ class DISCO(KSampleTest):
         >>> y = x
         >>> stat, pvalue = DISCO().test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
-        '0.267, 1.0'
+        '-1.566, 1.0'
         """
         inputs = list(args)
         check_input = _CheckInputs(
