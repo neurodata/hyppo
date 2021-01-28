@@ -53,7 +53,7 @@ class MMD(KSampleTest):
         A function that computes the kernel similarity among the samples within each
         data matrix.
         Valid strings for ``compute_kernel`` are, as defined in
-        :meth:`sklearn.metrics.pairwise.pairwise_kernels`,
+        :func:`sklearn.metrics.pairwise_distances`,
 
             ['additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'rbf',
             'laplacian', 'sigmoid', 'cosine']

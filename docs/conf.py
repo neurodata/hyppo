@@ -122,6 +122,7 @@ intersphinx_mapping = {
     "numpy": ("https://numpy.org/doc/stable", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "matplotlib": ("https://matplotlib.org", None),
+    "sklearn": ("http://scikit-learn.org/stable", None),
 }
 
 # Always show the source code that generates a plot
@@ -169,6 +170,10 @@ html_context = {
         (
             '<i class="fa fa-users fa-fw"></i> Contributing',
             "https://github.com/neurodata/hyppo/blob/master/CONTRIBUTING.md",
+        ),
+        (
+            '<i class="fa fa-gavel fa-fw"></i> Code of Conduct',
+            "https://neurodata.io/about/codeofconduct/",
         ),
         (
             '<i class="fa fa-exclamation-circle fa-fw"></i> Issue Tracker',

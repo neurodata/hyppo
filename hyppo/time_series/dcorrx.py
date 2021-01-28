@@ -35,7 +35,7 @@ class DcorrX(TimeSeriesTest):
         A function that computes the distance among the samples within each
         data matrix.
         Valid strings for ``compute_distance`` are, as defined in
-        ``sklearn.metrics.pairwise_distances``,
+        :func:`sklearn.metrics.pairwise_distances`,
 
             - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
               ‘manhattan’] See the documentation for

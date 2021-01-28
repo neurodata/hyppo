@@ -79,8 +79,8 @@ plt.show()
 # running our test.
 #
 # First, we initalize the class. Most tests have a ``compute_distance`` parameter that
-# can use accept any metric from :meth:`sklearn.metric.pairwise_distances`
-# (or :meth:`sklearn.metrics.pairwise.pairwise_kernels` for kernel-based methods)
+# can use accept any metric from :func:`sklearn.metric.pairwise_distances`
+# (or :func:`sklearn.metrics.pairwise.pairwise_kernels` for kernel-based methods)
 # and additional keyword arguments for the method.
 # The parameter can also accept a custom function, or ``None`` in the case where the
 # inputs are already distance matrices.
@@ -133,6 +133,20 @@ print(stat, pvalue)
 # A number of tests within :mod:`hyppo.independence` use the concept of inter-sample
 # distance, or kernel similarity, to generate powerful indpendence tests.
 #
+# **Heller Heller Gorfine (HHG)** is a powerful multivariate independence test that
+# compares intersample distance, and computes a Pearson statistic.
+# More details can be found in :class:`hyppo.independence.HHG`.
+#
+# .. note::
+#
+#    :Pros: - Very accurate in certain settings
+#    :Cons: - Very slow (computationally complex)
+#           - Test statistic not very interpretable, not between (-1, 1)
+#
+# This test runs like :ref:`any other test<general indep>`.
+#
+# ------------
+#
 # **Distance Correlation (Dcorr)** is a powerful multivariate independence test based on
 # energy distance.
 # **Hilbert Schmidt Independence Criterion (Hsic)** is a kernel-based analogue to Dcorr
@@ -182,6 +196,8 @@ print(u"Fast time: {0:.3g}s".format(fast_time))
 # and so is far faster than the permutation method.
 # To call it, simply set ``auto`` to ``True``, which is the default, and if your data
 # has a sample size greater than 20, then the test will run.
+#
+# ------------
 
 ########################################################################################
 # **Multiscale graph correlation (MGC)** is a powerful independence test the uses the
@@ -191,9 +207,9 @@ print(u"Fast time: {0:.3g}s".format(fast_time))
 #
 # .. note::
 #
-#    We recently added the majority of the source code of this algorithm to SciPy!
-#    Please see :meth:`scipy.stats.multiscale_graphcorr`. This class serves as a
-#    wrapper for that implementation.
+#    We recently added the majority of the source code of this algorithm to
+#    :func:`scipy.stats.multiscale_graphcorr`.
+#    This class serves as a wrapper for that implementation.
 #
 # .. note::
 #
@@ -201,6 +217,9 @@ print(u"Fast time: {0:.3g}s".format(fast_time))
 #             data
 #           - Gives information about geometric nature of the dependency
 #    :Cons: - Slightly slower than similar tests in this section
+#
+# MGC has some specific differences outlined below, but creating the instance of the
+# class was demonstrated in the :ref:`general indep` section.
 
 from hyppo.independence import MGC
 

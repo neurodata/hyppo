@@ -132,7 +132,7 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
         A function that computes the kernel similarity among the samples within each
         data matrix.
         Valid strings for ``metric`` are, as defined in
-        :meth:`sklearn.metrics.pairwise.pairwise_kernels`,
+        :func:`sklearn.metrics.pairwise.pairwise_kernels`,
 
             ['additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'rbf',
             'laplacian', 'sigmoid', 'cosine']
@@ -148,7 +148,7 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
         Supply ``-1`` to use all cores available to the Process.
     **kwargs
         Arbitrary keyword arguments provided to
-        :meth:`sklearn.metrics.pairwise.pairwise_kernels`
+        :func:`sklearn.metrics.pairwise.pairwise_kernels`
         or a custom kernel function.
 
     Returns
@@ -197,7 +197,7 @@ def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
         A function that computes the distance among the samples within each
         data matrix.
         Valid strings for ``metric`` are, as defined in
-        :meth:`sklearn.metrics.pairwise_distances`,
+        :func:`sklearn.metrics.pairwise_distances`,
 
             - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
               ‘manhattan’] See the documentation for scipy.spatial.distance for details
@@ -219,7 +219,7 @@ def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
         Supply ``-1`` to use all cores available to the Process.
     **kwargs
         Arbitrary keyword arguments provided to
-        :meth:`sklearn.metrics.pairwise_distances` or a
+        :func:`sklearn.metrics.pairwise_distances` or a
         custom distance function.
 
     Returns
