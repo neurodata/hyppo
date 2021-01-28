@@ -61,9 +61,9 @@ def plot_gaussian_sims():
         sns.despine(left=True, bottom=True, right=True)
 
     leg = plt.legend(
-        bbox_to_anchor=(0.5, 0.15),
+        bbox_to_anchor=(0.5, 0.17),
         bbox_transform=plt.gcf().transFigure,
-        ncol=5,
+        ncol=3,
         loc="upper center",
     )
     leg.get_frame().set_linewidth(0.0)
