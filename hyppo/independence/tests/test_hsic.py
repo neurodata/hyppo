@@ -63,9 +63,3 @@ class TestHsicErrorWarn:
         # raises error if reps is negative
         x = np.arange(20)
         assert_raises(ValueError, Hsic().test, x, x, reps=reps)
-
-    def test_warns_reps(self):
-        # raises warning when reps is less than 1000
-        x = np.arange(20)
-        reps = 100
-        assert_warns(RuntimeWarning, Hsic().test, x, x, reps=reps)
