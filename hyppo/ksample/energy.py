@@ -1,4 +1,4 @@
-from ..independence.hsic import _dcov
+from ..independence.dcorr import _dcov
 from ..tools import compute_dist
 from ._utils import _CheckInputs
 from .base import KSampleTest

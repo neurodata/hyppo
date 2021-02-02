@@ -66,8 +66,13 @@ class Dcorr(IndependenceTest):
     :meth:`hyppo.tools.perm_test`. The fast version of the test uses
     :meth:`hyppo.tools.chi2_approx`.
 
+    When the data is 1 dimension and the distance metric is euclidean,
+    and even faster version of the algorithm is run (computational
+    complexity is :math:`\mathcal{O}(n \log n)`) `[3]`_.
+
     .. _[1]: https://projecteuclid.org/euclid.aos/1201012979
     .. _[2]: https://projecteuclid.org/euclid.aos/1413810731
+    .. _[3]: https://www.sciencedirect.com/science/article/pii/S0167947319300313
 
     Parameters
     ----------
@@ -106,6 +111,7 @@ class Dcorr(IndependenceTest):
         if not compute_distance:
             self.is_distance = True
         self.bias = bias
+        self.is_fast = False
         IndependenceTest.__init__(self, compute_distance=compute_distance, **kwargs)
 
     def statistic(self, x, y):
@@ -129,12 +135,15 @@ class Dcorr(IndependenceTest):
         distx = x
         disty = y
 
-        if not self.is_distance:
+        if x.shape[1] == 1 and y.shape[1] == 1 and self.compute_distance == "euclidean":
+            self.is_fast = True
+
+        if not self.is_distance and not self.is_fast:
             distx, disty = compute_dist(
                 x, y, metric=self.compute_distance, **self.kwargs
             )
 
-        stat = _dcorr(distx, disty, self.bias)
+        stat = _dcorr(distx, disty, bias=self.bias, is_fast=self.is_fast)
         self.stat = stat
 
         return stat
@@ -164,6 +173,8 @@ class Dcorr(IndependenceTest):
             ``workers`` are
             irrelevant in this case. Otherwise, :class:`hyppo.tools.perm_test` will be
             run.
+            If ``x`` and ``y`` have `p` equal to 1 and ``compute_distance`` set to
+            ``'euclidean'``, then and :math:`\mathcal{O}(n \log n)` version is run.
         perm_blocks : None or ndarray, default: None
             Defines blocks of exchangeable samples during the permutation test.
             If None, all samples can be permuted with one another. Requires `n`
@@ -184,7 +195,7 @@ class Dcorr(IndependenceTest):
         --------
         >>> import numpy as np
         >>> from hyppo.independence import Dcorr
-        >>> x = np.arange(7)
+        >>> x = np.arange(25)
         >>> y = x
         >>> stat, pvalue = Dcorr().test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
@@ -212,16 +223,27 @@ class Dcorr(IndependenceTest):
         if perm_blocks is not None:
             check_perm_blocks_dim(perm_blocks, y)
 
+        if (
+            auto
+            and x.shape[1] == 1
+            and y.shape[1] == 1
+            and self.compute_distance == "euclidean"
+        ):
+            self.is_fast = True
+
         if auto and x.shape[0] > 20 and perm_blocks is None:
             stat, pvalue = chi2_approx(self.statistic, x, y)
             self.stat = stat
             self.pvalue = pvalue
             self.null_dist = None
         else:
-            x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
-            self.is_distance = True
+            is_distsim = False
+            if not self.is_fast:
+                x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
+                self.is_distance = True
+                is_distsim = True
             stat, pvalue = super(Dcorr, self).test(
-                x, y, reps, workers, perm_blocks=perm_blocks
+                x, y, reps, workers, perm_blocks=perm_blocks, is_distsim=is_distsim
             )
 
         return stat, pvalue
@@ -251,19 +273,144 @@ def _center_distmat(distx, bias):  # pragma: no cover
 
 
 @njit
-def _dcorr(distx, disty, bias):  # pragma: no cover
+def _cpu_cumsum(data):
+    """Create cumulative sum since numba doesn't sum over axes."""
+    cumsum = data
+    if data.shape[0] != 1 and data.shape[1] != 1:
+        for i in range(1, data.shape[0]):
+            cumsum[i, :] = data[i, :] + cumsum[i - 1, :]
+    return cumsum
+
+
+@njit
+def _fast_1d_dcov(x, y, bias=False):  # pragma: no cover
     """
     Calculate the Dcorr test statistic. Note that though Dcov is calculated
     and stored in covar, but not called due to a slower implementation.
     """
-    # center distance matrices
-    cent_distx = _center_distmat(distx, bias)
-    cent_disty = _center_distmat(disty, bias)
+    n = x.shape[0]
 
-    # # calculate covariances and variances
-    covar = np.trace(cent_distx @ cent_disty)
-    varx = np.trace(cent_distx @ cent_distx)
-    vary = np.trace(cent_disty @ cent_disty)
+    # sort inputs
+    x = np.sort(x.ravel())
+    y = y[np.argsort(x)]
+    x = x.reshape(-1, 1)  # for numba
+
+    # cumulative sum
+    si = _cpu_cumsum(x)
+    ax = np.arange(-(n - 2), n + 1, 2).reshape(-1, 1) * x + (
+        si[-1] - 2 * si.copy().reshape(-1, 1)
+    )
+
+    v = np.hstack((x, y, x * y))
+    nw = v.shape[1]
+
+    idx = np.vstack((np.arange(n), np.zeros(n))).astype(np.int64).T
+    ivs = [np.zeros(n)] * 4
+
+    i = 0
+    r = 0
+    s = 1
+    while i < n:
+        gap = 2 * (i + 1)
+        k = 0
+        idx_r = idx[:, r]
+        csumv = np.vstack((np.zeros(nw).reshape(1, -1), _cpu_cumsum(v[idx_r, :])))
+        for j in range(0, n, gap):
+            sts = [j, j + i]
+            es = [min(sts[0] + i, n), min(sts[1] + i, n)]
+
+            while (sts[0] < es[0]) and (sts[1] < es[1]):
+                indexes = [idx_r[sts[0]], idx_r[sts[1]]]
+
+                if y[indexes[0]] >= y[indexes[1]]:
+                    idx[k, s] = indexes[0]
+                    sts[0] += 1
+                else:
+                    idx[k, s] = indexes[1]
+                    sts[1] += 1
+                    ivs[0][indexes[1]] += es[0] - sts[0] + 1
+                    ivs[1][indexes[1]] += csumv[es[0], 0] - csumv[sts[0], 0]
+                    ivs[2][indexes[1]] += csumv[es[0], 1] - csumv[sts[0], 1]
+                    ivs[3][indexes[1]] += csumv[es[0], 2] - csumv[sts[0], 2]
+                k += 1
+
+            if sts[0] < es[0]:
+                kf = k + es[0] - sts[0]
+                idx[k:kf, s] = idx_r[sts[0] : es[0]]
+                k = kf
+            elif sts[1] < es[1]:
+                kf = k + es[1] - sts[1]
+                idx[k:kf, s] = idx_r[sts[1] : es[1]]
+                k = kf
+
+        i = gap
+        r = 1 - r
+        s = 1 - s
+
+    covterm = n * (x - np.mean(x)).T @ (y - np.mean(y))
+    cs = [ivs[0].T @ v[:, 2].copy(), np.sum(ivs[3]), ivs[1].T @ y, ivs[2].T @ x]
+    d = 4 * ((cs[0] + cs[1]) - (cs[2] + cs[3])) - 2 * covterm
+
+    y = y[np.flip(idx[:, r])]
+    si = _cpu_cumsum(y)
+    by = np.zeros((n, 1))
+    by[np.flip(idx[:, r])] = np.arange(-(n - 2), n + 1, 2).reshape(-1, 1) * y + (
+        si[-1] - 2 * si.copy().reshape(-1, 1)
+    )
+
+    if bias:
+        denom = [n ** 2, n ** 3, n ** 4]
+    else:
+        denom = [n * (n - 3), n * (n - 3) * (n - 2), n * (n - 3) * (n - 2) * (n - 1)]
+
+    stat = np.sum(
+        (d / denom[0])
+        + (np.sum(ax) * np.sum(by) / denom[2])
+        - (2 * (ax.T @ by) / denom[1])
+    )
+
+    return stat
+
+
+@njit
+def _dcov(distx, disty, bias=False, only_dcov=True):  # pragma: no cover
+    """Calculate the Dcov test statistic"""
+    if only_dcov:
+        # center distance matrices
+        distx = _center_distmat(distx, bias)
+        disty = _center_distmat(disty, bias)
+
+    N = distx.shape[0]
+    covar = np.sum(distx * disty)
+
+    if bias:
+        stat = 1 / (N ** 2) * covar
+    else:
+        stat = 1 / (N * (N - 3)) * covar
+
+    return stat
+
+
+@njit
+def _dcorr(distx, disty, bias=False, is_fast=False):  # pragma: no cover
+    """
+    Calculate the Dcorr test statistic. Note that though Dcov is calculated
+    and stored in covar, but not called due to a slower implementation.
+    """
+    if is_fast:
+        # calculate covariances and variances
+        covar = _fast_1d_dcov(distx, disty, bias=bias)
+        varx = _fast_1d_dcov(distx, distx, bias=bias)
+        vary = _fast_1d_dcov(disty, disty, bias=bias)
+    else:
+        # center distance matrices
+        distx = _center_distmat(distx, bias)
+        disty = _center_distmat(disty, bias)
+
+        # calculate covariances and variances
+        covar = _dcov(distx, disty, bias=bias, only_dcov=False)
+        varx = _dcov(distx, distx, bias=bias, only_dcov=False)
+        vary = _dcov(disty, disty, bias=bias, only_dcov=False)
 
     # stat is 0 with negative variances (would make denominator undefined)
     if varx <= 0 or vary <= 0:

@@ -1,10 +1,9 @@
 import numpy as np
-from numba import njit
 
 from ..tools import chi2_approx, compute_kern
 from ._utils import _CheckInputs
 from .base import IndependenceTest
-from .dcorr import Dcorr, _center_distmat
+from .dcorr import _dcov
 
 
 class Hsic(IndependenceTest):
@@ -175,21 +174,3 @@ class Hsic(IndependenceTest):
             stat, pvalue = super(Hsic, self).test(x, y, reps, workers)
 
         return stat, pvalue
-
-
-@njit
-def _dcov(distx, disty, bias):  # pragma: no cover
-    """Calculate the Dcov test statistic"""
-    # center distance matrices
-    cent_distx = _center_distmat(distx, bias)
-    cent_disty = _center_distmat(disty, bias)
-
-    N = distx.shape[0]
-    covar = np.trace(cent_distx @ cent_disty)
-
-    if bias:
-        stat = 1 / (N ** 2) * covar
-    else:
-        stat = 1 / (N * (N - 3)) * covar
-
-    return stat

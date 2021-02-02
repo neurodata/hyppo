@@ -178,17 +178,24 @@ import numpy as np
 setup_code = """
 from hyppo.independence import Dcorr
 from hyppo.tools import w_shaped
-x, y = w_shaped(n=100, p=1, noise=True)
+x1, y1 = w_shaped(n=100, p=3, noise=True)
+x2, y2 = w_shaped(n=100, p=1, noise=True)
 """
 
-t_perm = timeit.Timer(stmt="Dcorr().test(x, y, auto=False)", setup=setup_code)
-t_fast = timeit.Timer(stmt="Dcorr().test(x, y, auto=True)", setup=setup_code)
+t_perm = timeit.Timer(stmt="Dcorr().test(x1, y1, auto=False)", setup=setup_code)
+t_chisq = timeit.Timer(stmt="Dcorr().test(x1, y1, auto=True)", setup=setup_code)
+t_fast_perm = timeit.Timer(stmt="Dcorr().test(x2, y2, auto=True)", setup=setup_code)
+t_fast_chisq = timeit.Timer(stmt="Dcorr().test(x2, y2, auto=True)", setup=setup_code)
 
 perm_time = np.array(t_perm.timeit(number=1))  # permutation Dcorr
-fast_time = np.array(t_fast.timeit(number=1000)) / 1000  # fast Dcorr
+chisq_time = np.array(t_chisq.timeit(number=1000)) / 1000  # fast Dcorr
+fast_perm_time = np.array(t_fast_perm.timeit(number=1))  # permutation Dcorr
+fast_chisq_time = np.array(t_fast_chisq.timeit(number=1000)) / 1000  # fast Dcorr
 
 print(u"Permutation time: {0:.3g}s".format(perm_time))
-print(u"Fast time: {0:.3g}s".format(fast_time))
+print(u"Fast time (chi-square): {0:.3g}s".format(chisq_time))
+print(u"Permutation time (fast statistic): {0:.3g}s".format(fast_perm_time))
+print(u"Fast time (fast statistic chi-square): {0:.3g}s".format(fast_chisq_time))
 
 ########################################################################################
 # Look at the time increases when using the fast test!
@@ -196,6 +203,8 @@ print(u"Fast time: {0:.3g}s".format(fast_time))
 # and so is far faster than the permutation method.
 # To call it, simply set ``auto`` to ``True``, which is the default, and if your data
 # has a sample size greater than 20, then the test will run.
+# In the case where the data is 1 dimensional and euclidean, an even faster version is
+# run.
 #
 # ------------
 

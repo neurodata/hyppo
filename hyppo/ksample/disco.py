@@ -1,6 +1,6 @@
 import numpy as np
 
-from ..independence.hsic import _dcov
+from ..independence.dcorr import _dcov
 from ..tools import compute_dist
 from ._utils import _CheckInputs, k_sample_transform
 from .base import KSampleTest
