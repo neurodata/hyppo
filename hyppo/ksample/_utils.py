@@ -67,6 +67,34 @@ class _CheckInputs:
 
 
 def k_sample_transform(inputs, test_type="normal"):
+    """
+    Computes a `k`-sample transform of the inputs.
+
+    For `k` groups, this creates two matrices, the first vertically stacks the inputs.
+    In order to use this function, the inputs must have the same number of dimensions
+    `p` and can have varying number of samples `n`. The second output is a label
+    matrix the one-hoc encodes the groups. The outputs are thus ``(N, p)`` and
+    ``(N, k)`` where `N` is the total number of samples. In the case where the test
+    a random forest based tests, it creates a ``(N, 1)`` where the entries are
+    varlues from 1 to `k` based on the number of samples.
+
+    Parameters
+    ----------
+    inputs : list of ndarray
+        A list of the inputs. All inputs must be ``(n, p)`` where `n` is the number
+        of samples and `p` is the number of dimensions. `n` can vary between samples,
+        but `p` must be the same among all the samples.
+    test_type : {"normal", "rf"}, default: "normal"
+        Whether to one-hoc encode the inputs ("normal") or use a one-dimensional
+        categorical encoding ("rf").
+
+    Returns
+    -------
+    u : ndarray
+        The matrix of concatenated inputs of shape ``(N, p)``.
+    v : ndarray
+        The label matrix of shape ``(N, k)`` ("normal") or ``(N, 1)`` ("rf").
+    """
     n_inputs = len(inputs)
     u = np.vstack(inputs)
     if np.var(u) == 0:

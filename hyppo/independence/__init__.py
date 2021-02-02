@@ -1,3 +1,4 @@
+from ._utils import sim_matrix
 from .cca import CCA
 from .dcorr import Dcorr
 from .hhg import HHG

@@ -1,3 +1,4 @@
+from ._utils import k_sample_transform
 from .disco import DISCO
 from .energy import Energy
 from .ksamp import KSample

@@ -74,7 +74,7 @@ Discriminability
 
 .. currentmodule:: hyppo.tools
 
-Tools
+Simulations
 -------------
 
 Independence Simulations
@@ -123,13 +123,21 @@ Time-Series Simulations
    cross_corr_ar
    nonlinear_process
 
+
+
+.. automodule:: hyppo
+
+.. currentmodule:: hyppo
+
 Miscellaneous
-""""""""""""""""""""""""
+-----------------
 
 .. autosummary::
    :toctree: generated/
 
-   compute_kern
-   compute_dist
-   perm_test
-   chi2_approx
+   independence.sim_matrix
+   ksample.k_sample_transform
+   tools.compute_kern
+   tools.compute_dist
+   tools.perm_test
+   tools.chi2_approx
