@@ -9,7 +9,6 @@ as an aggregate of many popularly tested equations in the literature.
 """
 
 import matplotlib.pyplot as plt
-import numpy as np
 import seaborn as sns
 from hyppo.tools import (
     circle,
