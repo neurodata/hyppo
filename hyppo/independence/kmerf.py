@@ -2,9 +2,9 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import pairwise_distances
 
-from . import Dcorr
 from ._utils import _CheckInputs, sim_matrix
 from .base import IndependenceTest
+from .dcorr import _dcorr
 
 FOREST_TYPES = {
     "classifier": RandomForestClassifier,
@@ -74,7 +74,7 @@ class KMERF(IndependenceTest):
 
     Parameters
     ----------
-    forest : {"regressor", "classifier"}, default: "regressor"
+    forest : "regressor", "classifier", default: "regressor"
         Type of forest used when running the independence test. If the `y` input in
         ``test`` is categorial, use the "classifier" keyword.
     ntrees : int, default: 500
@@ -114,7 +114,7 @@ class KMERF(IndependenceTest):
         distx = np.sqrt(1 - sim_matrix(self.clf, x))
         y = y.reshape(-1, 1)
         disty = pairwise_distances(y, metric="euclidean")
-        stat = Dcorr(compute_distance=None).statistic(distx, disty)
+        stat = _dcorr(distx, disty, bias=False, is_fast=False)
         self.stat = stat
 
         # get normalalized feature importances

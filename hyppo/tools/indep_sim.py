@@ -8,21 +8,27 @@ class _CheckInputs:
         self.n = n
         self.p = p
 
-    def __call__(self, *args):
+    def __call__(self, **kwargs):
         if type(self.n) is not int or type(self.p) is not int:
-            raise ValueError("n and p must be ints")
-
-        if self.n < 5 or self.p < 1:
             raise ValueError(
-                "n must be greater than or equal to 5 and p "
-                "must be greater than or equal to than 1"
+                "Expected n and p of type int, got {} and {}".format(
+                    type(self.n), type(self.p)
+                )
             )
 
-        for arg in args:
-            if arg[1] is float and type(arg[0]) is int:
+        if self.n < 5:
+            raise ValueError("n must be >= 5, got {}".format(self.n))
+
+        if self.p < 1:
+            raise ValueError("p must be >= 1, got {}".format(self.p))
+
+        for key, value in kwargs.items():
+            if value[1] is float and type(value[0]) is int:
                 continue
-            if type(arg[0]) is not arg[1]:
-                raise ValueError("Incorrect input variable type")
+            if type(value[0]) is not value[1]:
+                raise ValueError(
+                    "Expected {} type {} got {}".format(key, value[1], type(value[0]))
+                )
 
 
 def _gen_coeffs(p):
@@ -54,9 +60,9 @@ def linear(n, p, noise=False, low=-1, high=1):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
     low : float, default: -1
@@ -71,9 +77,13 @@ def linear(n, p, noise=False, low=-1, high=1):
         where `n` is the number of samples and `p` is the number of
         dimensions.
     """
-    extra_args = [(noise, bool), (low, float), (high, float)]
+    extra_args = {
+        "noise": (noise, bool),
+        "low": (low, float),
+        "high": (high, float),
+    }
     check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     x = _random_uniform(n, p, low, high)
     coeffs = _gen_coeffs(p)
@@ -97,9 +107,9 @@ def exponential(n, p, noise=False, low=0, high=3):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
     low : float, default: 0
@@ -114,9 +124,13 @@ def exponential(n, p, noise=False, low=0, high=3):
         where `n` is the number of samples and `p` is the number of
         dimensions.
     """
-    extra_args = [(noise, bool), (low, float), (high, float)]
+    extra_args = {
+        "noise": (noise, bool),
+        "low": (low, float),
+        "high": (high, float),
+    }
     check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     x = _random_uniform(n, p, low, high)
     coeffs = _gen_coeffs(p)
@@ -143,9 +157,9 @@ def cubic(n, p, noise=False, low=-1, high=1, cubs=[-12, 48, 128], scale=1 / 3):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
     low : float, default: -1
@@ -165,15 +179,15 @@ def cubic(n, p, noise=False, low=-1, high=1, cubs=[-12, 48, 128], scale=1 / 3):
         where `n` is the number of samples and `p` is the number of
         dimensions.
     """
-    extra_args = [
-        (noise, bool),
-        (low, float),
-        (high, float),
-        (cubs, list),
-        (scale, float),
-    ]
+    extra_args = {
+        "noise": (noise, bool),
+        "low": (low, float),
+        "high": (high, float),
+        "cubs": (cubs, list),
+        "scale": (scale, float),
+    }
     check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     x = _random_uniform(n, p, low, high)
     coeffs = _gen_coeffs(p)
@@ -208,9 +222,9 @@ def joint_normal(n, p, noise=False):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
 
@@ -222,11 +236,13 @@ def joint_normal(n, p, noise=False):
         dimensions.
     """
     if p > 10:
-        raise ValueError("Covariance matrix for p>10 is not positive" "semi-definite")
+        raise ValueError("Covariance matrix for p > 10 is not positive semi-definite")
 
-    extra_args = [(noise, bool)]
+    extra_args = {
+        "noise": (noise, bool),
+    }
     check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     rho = 1 / (2 * p)
     cov1 = np.concatenate((np.identity(p), rho * np.ones((p, p))), axis=1)
@@ -257,9 +273,9 @@ def step(n, p, noise=False, low=-1, high=1):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
     low : float, default: -1
@@ -274,9 +290,13 @@ def step(n, p, noise=False, low=-1, high=1):
         where `n` is the number of samples and `p` is the number of
         dimensions.
     """
-    extra_args = [(noise, bool), (low, float), (high, float)]
+    extra_args = {
+        "noise": (noise, bool),
+        "low": (low, float),
+        "high": (high, float),
+    }
     check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     if p > 1:
         noise = True
@@ -304,9 +324,9 @@ def quadratic(n, p, noise=False, low=-1, high=1):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
     low : float, default: -1
@@ -321,9 +341,13 @@ def quadratic(n, p, noise=False, low=-1, high=1):
         where `n` is the number of samples and `p` is the number of
         dimensions.
     """
-    extra_args = [(noise, bool), (low, float), (high, float)]
+    extra_args = {
+        "noise": (noise, bool),
+        "low": (low, float),
+        "high": (high, float),
+    }
     check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     x = _random_uniform(n, p, low, high)
     coeffs = _gen_coeffs(p)
@@ -351,9 +375,9 @@ def w_shaped(n, p, noise=False, low=-1, high=1):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
     low : float, default: -1
@@ -368,9 +392,13 @@ def w_shaped(n, p, noise=False, low=-1, high=1):
         where `n` is the number of samples and `p` is the number of
         dimensions.
     """
-    extra_args = [(noise, bool), (low, float), (high, float)]
+    extra_args = {
+        "noise": (noise, bool),
+        "low": (low, float),
+        "high": (high, float),
+    }
     check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     x = _random_uniform(n, p, low, high)
     u = _random_uniform(n, p, 0, 1)
@@ -400,9 +428,9 @@ def spiral(n, p, noise=False, low=0, high=5):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
     low : float, default: 0
@@ -417,9 +445,13 @@ def spiral(n, p, noise=False, low=0, high=5):
         where `n` is the number of samples and `p` is the number of
         dimensions.
     """
-    extra_args = [(noise, bool), (low, float), (high, float)]
+    extra_args = {
+        "noise": (noise, bool),
+        "low": (low, float),
+        "high": (high, float),
+    }
     check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     if p > 1:
         noise = True
@@ -457,9 +489,9 @@ def uncorrelated_bernoulli(n, p, noise=False, prob=0.5):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
     prob : float, default: 0.5
@@ -472,9 +504,12 @@ def uncorrelated_bernoulli(n, p, noise=False, prob=0.5):
         where `n` is the number of samples and `p` is the number of
         dimensions.
     """
-    extra_args = [(noise, bool), (prob, float)]
+    extra_args = {
+        "noise": (noise, bool),
+        "prob": (prob, float),
+    }
     check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     binom = np.random.binomial(1, prob, size=(n, 1))
     sig = np.identity(p)
@@ -507,9 +542,9 @@ def logarithmic(n, p, noise=False):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
 
@@ -520,9 +555,11 @@ def logarithmic(n, p, noise=False):
         where `n` is the number of samples and `p` is the number of
         dimensions.
     """
-    extra_args = [(noise, bool)]
+    extra_args = {
+        "noise": (noise, bool),
+    }
     check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     sig = np.identity(p)
     x = np.random.multivariate_normal(np.zeros(p), sig, size=n)
@@ -547,9 +584,9 @@ def fourth_root(n, p, noise=False, low=-1, high=1):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
     low : float, default: -1
@@ -564,9 +601,13 @@ def fourth_root(n, p, noise=False, low=-1, high=1):
         where `n` is the number of samples and `p` is the number of
         dimensions.
     """
-    extra_args = [(noise, bool), (low, float), (high, float)]
+    extra_args = {
+        "noise": (noise, bool),
+        "low": (low, float),
+        "high": (high, float),
+    }
     check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     x = _random_uniform(n, p, low, high)
     eps = _calc_eps(n)
@@ -580,9 +621,14 @@ def fourth_root(n, p, noise=False, low=-1, high=1):
 
 def _sin(n, p, noise=False, low=-1, high=1, period=4 * np.pi):
     """Helper function to calculate sine simulation"""
-    extra_args = [(noise, bool), (low, float), (high, float), (period, float)]
+    extra_args = {
+        "noise": (noise, bool),
+        "low": (low, float),
+        "high": (high, float),
+        "period": (period, float),
+    }
     check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     x = _random_uniform(n, p, low, high)
     if p > 1 or noise:
@@ -617,9 +663,9 @@ def sin_four_pi(n, p, noise=False, low=-1, high=1):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
     low : float, default: -1
@@ -653,9 +699,9 @@ def sin_sixteen_pi(n, p, noise=False, low=-1, high=1):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
     low : float, default: 1
@@ -675,9 +721,14 @@ def sin_sixteen_pi(n, p, noise=False, low=-1, high=1):
 
 def _square_diamond(n, p, noise=False, low=-1, high=1, period=-np.pi / 2):
     """Helper function to calculate square/diamond simulation"""
-    extra_args = [(noise, bool), (low, float), (high, float), (period, float)]
+    extra_args = {
+        "noise": (noise, bool),
+        "low": (low, float),
+        "high": (high, float),
+        "period": (period, float),
+    }
     check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     u = _random_uniform(n, p, low, high)
     v = _random_uniform(n, p, low, high)
@@ -707,9 +758,9 @@ def square(n, p, noise=False, low=-1, high=1):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
     low : float, default: -1
@@ -741,9 +792,9 @@ def two_parabolas(n, p, noise=False, low=-1, high=1, prob=0.5):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
     low : float, default: -1
@@ -760,9 +811,14 @@ def two_parabolas(n, p, noise=False, low=-1, high=1, prob=0.5):
         where `n` is the number of samples and `p` is the number of
         dimensions.
     """
-    extra_args = [(noise, bool), (low, float), (high, float), (prob, float)]
+    extra_args = {
+        "noise": (noise, bool),
+        "low": (low, float),
+        "high": (high, float),
+        "prob": (prob, float),
+    }
     check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     x = _random_uniform(n, p, low, high)
     coeffs = _gen_coeffs(p)
@@ -777,9 +833,14 @@ def two_parabolas(n, p, noise=False, low=-1, high=1, prob=0.5):
 
 def _circle_ellipse(n, p, noise=False, low=-1, high=1, radius=1):
     """Helper function to calculate circle/ellipse simulation"""
-    extra_args = [(noise, bool), (low, float), (high, float), (radius, float)]
+    extra_args = {
+        "noise": (noise, bool),
+        "low": (low, float),
+        "high": (high, float),
+        "radius": (radius, float),
+    }
     check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     if p > 1:
         noise = True
@@ -820,9 +881,9 @@ def circle(n, p, noise=False, low=-1, high=1):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
     low : float, default: -1
@@ -859,9 +920,9 @@ def ellipse(n, p, noise=False, low=-1, high=1):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
     low : float, default: -1
@@ -896,9 +957,9 @@ def diamond(n, p, noise=False, low=-1, high=1):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     noise : bool, default: False
         Whether or not to include noise in the simulation.
     low : float, default: -1
@@ -931,9 +992,9 @@ def multiplicative_noise(n, p):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
 
     Returns
     -------
@@ -942,9 +1003,8 @@ def multiplicative_noise(n, p):
         where `n` is the number of samples and `p` is the number of
         dimensions.
     """
-    extra_args = []
     check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
+    check_in()
 
     sig = np.identity(p)
     x = np.random.multivariate_normal(np.zeros(p), sig, size=n)
@@ -970,9 +1030,9 @@ def multimodal_independence(n, p, prob=0.5, sep1=3, sep2=2):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by the simulation (>= 1).
     prob : float, default: 0.5
         The probability of the bernoulli distribution simulated from.
     sep1, sep2: float, default: 3, 2
@@ -985,9 +1045,13 @@ def multimodal_independence(n, p, prob=0.5, sep1=3, sep2=2):
         where `n` is the number of samples and `p` is the number of
         dimensions.
     """
-    extra_args = [(prob, float), (sep1, float), (sep2, float)]
+    extra_args = {
+        "prob": (prob, float),
+        "sep1": (sep1, float),
+        "sep2": (sep2, float),
+    }
     check_in = _CheckInputs(n, p)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     sig = np.identity(p)
     u = np.random.multivariate_normal(np.zeros(p), sig, size=n)

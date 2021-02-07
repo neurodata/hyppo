@@ -7,18 +7,20 @@ class _CheckInputs:
     def __init__(self, n):
         self.n = n
 
-    def __call__(self, *args):
+    def __call__(self, **kwargs):
         if type(self.n) is not int:
-            raise ValueError("n must be int")
+            raise ValueError("Expected n of type int, got {}".format(type(self.n)))
 
         if self.n < 5:
-            raise ValueError("n must be greater than or equal to 5")
+            raise ValueError("n must be >= 5, got {}".format(self.n))
 
-        for arg in args:
-            if arg[1] is float and type(arg[0]) is int:
+        for key, value in kwargs.items():
+            if value[1] is float and type(value[0]) is int:
                 continue
-            if type(arg[0]) is not arg[1]:
-                raise ValueError("Incorrect input variable type")
+            if type(value[0]) is not value[1]:
+                raise ValueError(
+                    "Expected {} type {} got {}".format(key, value[1], type(value[0]))
+                )
 
 
 def indep_ar(n, lag=1, phi=0.5, sigma=1):
@@ -53,13 +55,13 @@ def indep_ar(n, lag=1, phi=0.5, sigma=1):
         Simulated data matrices. ``x`` and ``y`` have shape ``(n,)``
         where `n` is the number of samples.
     """
-    extra_args = [
-        (lag, float),
-        (phi, float),
-        (sigma, float),
-    ]
+    extra_args = {
+        "lag": (lag, float),
+        "phi": (phi, float),
+        "sigma": (sigma, float),
+    }
     check_in = _CheckInputs(n)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     epsilons = np.random.normal(0, sigma, n)
     etas = np.random.normal(0, sigma, n)
@@ -107,13 +109,13 @@ def cross_corr_ar(n, lag=1, phi=0.5, sigma=1):
         Simulated data matrices. ``x`` and ``y`` have shape ``(n,)``
         where `n` is the number of samples.
     """
-    extra_args = [
-        (lag, float),
-        (phi, float),
-        (sigma, float),
-    ]
+    extra_args = {
+        "lag": (lag, float),
+        "phi": (phi, float),
+        "sigma": (sigma, float),
+    }
     check_in = _CheckInputs(n)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     epsilons = np.random.normal(0, sigma, n)
     etas = np.random.normal(0, sigma, n)
@@ -157,13 +159,13 @@ def nonlinear_process(n, lag=1, phi=1, sigma=1):
         Simulated data matrices. ``x`` and ``y`` have shape ``(n,)``
         where `n` is the number of samples.
     """
-    extra_args = [
-        (lag, float),
-        (phi, float),
-        (sigma, float),
-    ]
+    extra_args = {
+        "lag": (lag, float),
+        "phi": (phi, float),
+        "sigma": (sigma, float),
+    }
     check_in = _CheckInputs(n)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     epsilons = np.random.normal(0, sigma, n)
     etas = np.random.normal(0, sigma, n)

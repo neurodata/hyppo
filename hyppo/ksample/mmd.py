@@ -11,10 +11,10 @@ class MMD(KSampleTest):
     matrices
     capabilities (similar to tests like distance correlation or Dcorr). In fact, MMD
     statistic is equivalent to our 2-sample formulation nonparametric MANOVA via
-    independence testing, i.e. :class:`hyppo.ksample.Ksample`,
+    independence testing, i.e. :class:`hyppo.ksample.KSample`,
     and to
     :class:`hyppo.independence.Dcorr`,
-    :class:`hyppo.independence.DISCO`,
+    :class:`hyppo.ksample.DISCO`,
     :class:`hyppo.independence.Hsic`, and
     :class:`hyppo.ksample.Energy` `[1]`_ `[2]`_.
 
@@ -35,7 +35,8 @@ class MMD(KSampleTest):
         + \frac{1}{n(n - 1)} \sum_{i = 1}^n \sum_{j \neq i}^n k(v_i, v_j)
         - \frac{2}{mn} \sum_{i = 1}^n \sum_{j \neq i}^n k(v_i, v_j)
 
-    The implementation in the ``hyppo.ksample.KSample`` class (using Hsic) is in
+    The implementation in the :class:`hyppo.ksample.KSample` class (using
+    :class:`hyppo.independence.Hsic` using 2 samples) is in
     fact equivalent to this implementation (for p-values) and statistics are
     equivalent up to a scaling factor `[1]`_.
 
@@ -53,13 +54,15 @@ class MMD(KSampleTest):
         A function that computes the kernel similarity among the samples within each
         data matrix.
         Valid strings for ``compute_kernel`` are, as defined in
-        :func:`sklearn.metrics.pairwise_distances`,
+        :func:`sklearn.metrics.pairwise.pairwise_kernels`,
 
-            ['additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'rbf',
-            'laplacian', 'sigmoid', 'cosine']
+            [``"additive_chi2"``, ``"chi2"``, ``"linear"``, ``"poly"``,
+            ``"polynomial"``, ``"rbf"``,
+            ``"laplacian"``, ``"sigmoid"``, ``"cosine"``]
 
-        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already similarity
-        matrices. To call a custom function, either create the distance matrix
+        Note ``"rbf"`` and ``"gaussian"`` are the same metric.
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already similarity
+        matrices. To call a custom function, either create the similarity matrix
         before-hand or create a function of the form :func:`metric(x, **kwargs)`
         where ``x`` is the data matrix for which pairwise kernel similarity matrices are
         calculated and kwargs are extra arguements to send to your custom function.
@@ -80,7 +83,7 @@ class MMD(KSampleTest):
 
         Parameters
         ----------
-        x, y : ndarray
+        x,y : ndarray
             Input data matrices. ``x`` and ``y`` must have the same number of
             dimensions. That is, the shapes must be ``(n, p)`` and ``(m, p)`` where
             `n` is the number of samples and `p` and `q` are the number of

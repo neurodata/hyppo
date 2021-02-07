@@ -59,7 +59,7 @@ class _CheckInputs:
 
         if nx != ny:
             raise ValueError(
-                "Shape mismatch, x and y must have shape " "[n, p] and [n, q]."
+                "Shape mismatch, x and y must have shape [n, p] and [n, q]."
             )
 
     def _check_max_lag(self):
@@ -79,13 +79,11 @@ class _CheckInputs:
 def compute_stat(x, y, indep_test, compute_distance, max_lag, **kwargs):
     """Compute time series test statistic"""
     # calculate distance matrices
-    if not compute_distance:
-        compute_distance = "precomputed"
     distx, disty = compute_dist(x, y, metric=compute_distance, **kwargs)
 
     # calculate dep_lag when max_lag is 0
     dep_lag = []
-    indep_test = indep_test(compute_distance=compute_distance)
+    indep_test = indep_test(compute_distance=compute_distance, **kwargs)
     indep_test_stat = indep_test.statistic(x, y)
     dep_lag.append(indep_test_stat)
 

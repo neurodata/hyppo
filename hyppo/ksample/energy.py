@@ -12,10 +12,10 @@ class Energy(KSampleTest):
     Energy is a powerful multivariate 2-sample test. It leverages distance matrix
     capabilities (similar to tests like distance correlation or Dcorr). In fact, Energy
     statistic is equivalent to our 2-sample formulation nonparametric MANOVA via
-    independence testing, i.e. :class:`hyppo.ksample.Ksample`,
+    independence testing, i.e. :class:`hyppo.ksample.KSample`,
     and to
     :class:`hyppo.independence.Dcorr`,
-    :class:`hyppo.independence.DISCO`,
+    :class:`hyppo.ksample.DISCO`,
     :class:`hyppo.independence.Hsic`, and
     :class:`hyppo.ksample.MMD` `[1]`_ `[2]`_.
 
@@ -35,7 +35,8 @@ class Energy(KSampleTest):
         \left( 2nm \sum_{i = 1}^n \sum_{j = 1}^m d(u_i, v_j) - m^2
         \sum_{i,j=1}^n d(u_i, u_j) - n^2 \sum_{i, j=1}^m d(v_i, v_j) \right)
 
-    The implementation in the ``hyppo.ksample.KSample`` class (using Dcorr) is in
+    The implementation in the :class:`hyppo.ksample.KSample` class (using
+    :class:`hyppo.independence.Dcorr` using 2 samples) is in
     fact equivalent to this implementation (for p-values) and statistics are
     equivalent up to a scaling factor `[1]`_.
 
@@ -55,18 +56,20 @@ class Energy(KSampleTest):
         Valid strings for ``compute_distance`` are, as defined in
         :func:`sklearn.metrics.pairwise_distances`,
 
-            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
-              ‘manhattan’] See the documentation for
+            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
+              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
               :mod:`scipy.spatial.distance` for details
               on these metrics.
-            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
-              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
-              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
-              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
-              documentation for
-              :mod:`scipy.spatial.distance` for details on these metrics.
+            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
+              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
+              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
+              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
+              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
+              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
+              details on these metrics.
 
-        To call a custom function, either create the distance matrix
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
+        matrices. To call a custom function, either create the distance matrix
         before-hand or create a function of the form ``metric(x, **kwargs)``
         where ``x`` is the data matrix for which pairwise distances are
         calculated and ``**kwargs`` are extra arguements to send to your custom
@@ -92,7 +95,7 @@ class Energy(KSampleTest):
 
         Parameters
         ----------
-        x, y : ndarray
+        x,y : ndarray
             Input data matrices. ``x`` and ``y`` must have the same number of
             dimensions. That is, the shapes must be ``(n, p)`` and ``(m, p)`` where
             `n` is the number of samples and `p` and `q` are the number of

@@ -19,9 +19,10 @@ hyppo
 .. toctree::
    :maxdepth: 2
    :hidden:
-   :caption: Tutorials
+   :caption: User Guide
 
    tutorials/independence.rst
+   tutorials/ksample.rst
    sample_data/index.rst
 
 .. toctree::

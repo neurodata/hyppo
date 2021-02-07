@@ -449,7 +449,7 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
         Parallel(n_jobs=workers)(
             [
                 delayed(_perm_stat)(calc_stat, x, y, is_distsim, permuter)
-                for rep in range(reps)
+                for _ in range(reps)
             ]
         )
     )

@@ -73,18 +73,19 @@ class HHG(IndependenceTest):
         Valid strings for ``compute_distance`` are, as defined in
         :func:`sklearn.metrics.pairwise_distances`,
 
-            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
-              ‘manhattan’] See the documentation for
+            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
+              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
               :mod:`scipy.spatial.distance` for details
               on these metrics.
-            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
-              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
-              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
-              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
-              documentation for
-              :mod:`scipy.spatial.distance` for details on these metrics.
+            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
+              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
+              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
+              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
+              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
+              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
+              details on these metrics.
 
-        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already distance
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
         matrices. To call a custom function, either create the distance matrix
         before-hand or create a function of the form ``metric(x, **kwargs)``
         where ``x`` is the data matrix for which pairwise distances are
@@ -126,7 +127,10 @@ class HHG(IndependenceTest):
                 x, y, metric=self.compute_distance, **self.kwargs
             )
 
-        stat = _hhg(distx, disty)
+        S = _pearson_stat(distx, disty)
+        mask = np.ones(S.shape, dtype=bool)
+        np.fill_diagonal(mask, 0)
+        stat = np.sum(S[mask])
         self.stat = stat
 
         return stat
@@ -213,13 +217,3 @@ def _pearson_stat(distx, disty):  # pragma: no cover
                     S[i, j] = ((n - 2) * (t12 * t21 - t11 * t22) ** 2) / denom
 
     return S
-
-
-def _hhg(distx, disty):
-    """Calculate the HHG test statistic"""
-    S = _pearson_stat(distx, disty)
-    mask = np.ones(S.shape, dtype=bool)
-    np.fill_diagonal(mask, 0)
-    stat = np.sum(S[mask])
-
-    return stat

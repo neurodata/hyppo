@@ -82,18 +82,19 @@ class Dcorr(IndependenceTest):
         Valid strings for ``compute_distance`` are, as defined in
         :func:`sklearn.metrics.pairwise_distances`,
 
-            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
-              ‘manhattan’] See the documentation for
+            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
+              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
               :mod:`scipy.spatial.distance` for details
               on these metrics.
-            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
-              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
-              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
-              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
-              documentation for
-              :mod:`scipy.spatial.distance` for details on these metrics.
+            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
+              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
+              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
+              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
+              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
+              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
+              details on these metrics.
 
-        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already distance
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
         matrices. To call a custom function, either create the distance matrix
         before-hand or create a function of the form ``metric(x, **kwargs)``
         where ``x`` is the data matrix for which pairwise distances are
@@ -134,9 +135,6 @@ class Dcorr(IndependenceTest):
         """
         distx = x
         disty = y
-
-        if x.shape[1] == 1 and y.shape[1] == 1 and self.compute_distance == "euclidean":
-            self.is_fast = True
 
         if not self.is_distance and not self.is_fast:
             distx, disty = compute_dist(
@@ -380,13 +378,14 @@ def _dcov(distx, disty, bias=False, only_dcov=True):  # pragma: no cover
         distx = _center_distmat(distx, bias)
         disty = _center_distmat(disty, bias)
 
-    N = distx.shape[0]
-    covar = np.sum(distx * disty)
+    stat = np.sum(distx * disty)
 
-    if bias:
-        stat = 1 / (N ** 2) * covar
-    else:
-        stat = 1 / (N * (N - 3)) * covar
+    if only_dcov:
+        N = distx.shape[0]
+        if bias:
+            stat = 1 / (N ** 2) * stat
+        else:
+            stat = 1 / (N * (N - 3)) * stat
 
     return stat
 

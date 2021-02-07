@@ -11,7 +11,7 @@ class Hsic(IndependenceTest):
     Hilbert Schmidt Independence Criterion (Hsic) test statistic and p-value.
 
     Hsic is a kernel based independence test and is a way to measure
-    multivariate nonlinear associations given a specified kernel [#1Hsic]_.
+    multivariate nonlinear associations given a specified kernel `[1]`_.
     The default choice is the Gaussian kernel, which uses the median distance
     as the bandwidth, which is a characteristic kernel that guarantees that
     Hsic is a consistent test `[1]`_ `[2]`_.
@@ -54,12 +54,13 @@ class Hsic(IndependenceTest):
         Valid strings for ``compute_kernel`` are, as defined in
         :func:`sklearn.metrics.pairwise.pairwise_kernels`,
 
-            ['additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'rbf',
-            'laplacian', 'sigmoid', 'cosine']
+            [``"additive_chi2"``, ``"chi2"``, ``"linear"``, ``"poly"``,
+            ``"polynomial"``, ``"rbf"``,
+            ``"laplacian"``, ``"sigmoid"``, ``"cosine"``]
 
-        Note ``'rbf'`` and ``'gaussian'`` are the same metric.
-        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already similarity
-        matrices. To call a custom function, either create the distance matrix
+        Note ``"rbf"`` and ``"gaussian"`` are the same metric.
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already similarity
+        matrices. To call a custom function, either create the similarity matrix
         before-hand or create a function of the form :func:`metric(x, **kwargs)`
         where ``x`` is the data matrix for which pairwise kernel similarity matrices are
         calculated and kwargs are extra arguements to send to your custom function.
@@ -150,11 +151,11 @@ class Hsic(IndependenceTest):
         --------
         >>> import numpy as np
         >>> from hyppo.independence import Hsic
-        >>> x = np.arange(7)
+        >>> x = np.arange(100)
         >>> y = x
         >>> stat, pvalue = Hsic().test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
-        '0.2, 0.00'
+        '0.1, 0.00'
         """
         check_input = _CheckInputs(
             x,

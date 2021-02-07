@@ -124,9 +124,9 @@ def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
     sim : callable
         The simulation (from the :mod:`hyppo.tools module) that is to be rotated.
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by ``sim`` (>= 5).
     p : int
-        The number of dimensions desired by the simulation.
+        The number of dimensions desired by ``sim`` (>= 1).
     k : int, default: 2
         The number of groups to simulate.
     noise : bool, default: True
@@ -134,8 +134,8 @@ def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
     degree : float or list of float, default: 90
         The number of degrees to rotate the input simulation by (in first dimension).
         The list must be the same size as ``k - 1``.
-    pow_type : {"samp", "dim"}, default: "samp"
-        Simulation type, (increasing sample size or dimension)
+    pow_type : "samp", "dim", default: "samp"
+        Simulation type, (increasing sample size or dimension).
     **kwargs
         Additional keyword arguements for the independence simulation.
 
@@ -150,10 +150,20 @@ def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
         raise ValueError("Not valid simulation")
 
     if (k - 1) > 1:
-        if (k - 1) != len(degree):
-            raise ValueError(
-                "k={} not equal to length of degree={}".format(k - 1, len(degree))
-            )
+        if type(degree) is list:
+            if (k - 1) != len(degree):
+                raise ValueError(
+                    "k={}, so length of degree must be {}, got {}".format(
+                        k, k - 1, len(degree)
+                    )
+                )
+        else:
+            if (k - 1) != 1:
+                raise ValueError(
+                    "k={}, so degree must be list of length {}, got {}".format(
+                        k, k - 1, type(degree)
+                    )
+                )
 
     if sim.__name__ == "multimodal_independence":
         sims = [np.hstack(sim(n, p)) for _ in range(k)]
@@ -184,13 +194,13 @@ def gaussian_3samp(n, epsilon=1, weight=0, case=1):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 5).
     epsilon : float, default: 1
         The amount to translate simulation by (amount  depends on case).
     weight : float, default: False
         Number between 0 and 1 corresponding to weight of the second Gaussian
-        (used in case 4 and 5 to produce a mixture of Gaussians)
-    case : {1, 2, 3, 4, 5}, default: 1
+        (used in case 4 and 5 to produce a mixture of Gaussians).
+    case : 1, 2, 3, 4, 5, default: 1
         The case in which to evaluate statistical power for each test.
 
     Returns
@@ -199,6 +209,9 @@ def gaussian_3samp(n, epsilon=1, weight=0, case=1):
         List of 3 2-dimensional multivariate Gaussian each
         corresponding to the desired case.
     """
+    if n < 5:
+        raise ValueError("n must be >= 5, got {}".format(n))
+
     old_case = case
     if old_case == 4:
         case = 2

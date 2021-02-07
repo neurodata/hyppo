@@ -5,7 +5,7 @@ from .base import KSampleTest
 
 class KSample(KSampleTest):
     r"""
-    Nonpar MANOVA via Independence Testing test statistic and p-value.
+    Nonparametric `K`-Sample Testing test statistic and p-value.
 
     A *k*-sample test tests equality in distribution among groups. Groups
     can be of different sizes, but generally have the same dimensionality.
@@ -119,38 +119,53 @@ class KSample(KSampleTest):
 
     Parameters
     ----------
-    indep_test : {"CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC", "KMERF"}
+    indep_test : "CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC", "KMERF"
         A string corresponding to the desired independence test from
-        :mod:`hyppo.independence. This is not case sensitive.
-    compute_distance : str, callable, or None, default: "euclidean"
+        :mod:`hyppo.independence`. This is not case sensitive.
+    compute_distkern : str, callable, or None, default: "euclidean" or "gaussian"
         A function that computes the distance among the samples within each
         data matrix.
         Valid strings for ``compute_distance`` are, as defined in
         :func:`sklearn.metrics.pairwise_distances`,
 
-            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
-              ‘manhattan’] See the documentation for
+            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
+              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
               :mod:`scipy.spatial.distance` for details
               on these metrics.
-            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
-              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
-              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
-              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
-              documentation for
-              :mod:`scipy.spatial.distance` for details on these metrics.
+            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
+              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
+              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
+              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
+              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
+              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
+              details on these metrics.
 
-        To call a custom function, either create the distance matrix
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
+        or similarity
+        matrices. To call a custom function, either create the distance or similarity
+        matrix
         before-hand or create a function of the form ``metric(x, **kwargs)``
-        where ``x`` is the data matrix for which pairwise distances or are
+        where ``x`` is the data matrix for which pairwise distances or similarities are
         calculated and ``**kwargs`` are extra arguements to send to your custom
         function.
+
+        Alternatively, this function computes the kernel similarity among the
+        samples within each data matrix.
+        Valid strings for ``compute_kernel`` are, as defined in
+        :func:`sklearn.metrics.pairwise.pairwise_kernels`,
+
+            [``"additive_chi2"``, ``"chi2"``, ``"linear"``, ``"poly"``,
+            ``"polynomial"``, ``"rbf"``,
+            ``"laplacian"``, ``"sigmoid"``, ``"cosine"``]
+
+        Note ``"rbf"`` and ``"gaussian"`` are the same metric.
     bias : bool, default: False
         Whether or not to use the biased or unbiased test statistics.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
     """
 
-    def __init__(self, indep_test, compute_distance="euclidean", bias=False, **kwargs):
+    def __init__(self, indep_test, compute_distkern="euclidean", bias=False, **kwargs):
         indep_test = indep_test.lower()
         test_names = {
             "rv": RV,
@@ -163,23 +178,23 @@ class KSample(KSampleTest):
         }
         if indep_test not in test_names.keys():
             raise ValueError("Test is not a valid independence test")
-        if indep_test == "hsic" and compute_distance == "euclidean":
-            compute_distance = "gaussian"
+        if indep_test == "hsic" and compute_distkern == "euclidean":
+            compute_distkern = "gaussian"
         self.indep_test_name = indep_test
         indep_test = test_names[indep_test]
 
         if self.indep_test_name in ["dcorr", "hhg", "hsic", "mgc"]:
             if self.indep_test_name == "hsic":
                 self.indep_test = indep_test(
-                    compute_kernel=compute_distance, bias=bias, **kwargs
+                    compute_kernel=compute_distkern, bias=bias, **kwargs
                 )
             elif self.indep_test_name == "dcorr":
                 self.indep_test = indep_test(
-                    compute_distance=compute_distance, bias=bias, **kwargs
+                    compute_distance=compute_distkern, bias=bias, **kwargs
                 )
             else:
                 self.indep_test = indep_test(
-                    compute_distance=compute_distance, **kwargs
+                    compute_distance=compute_distkern, **kwargs
                 )
         elif self.indep_test_name == "kmerf":
             self.indep_test = indep_test(forest_type="classifier", **kwargs)
@@ -188,11 +203,11 @@ class KSample(KSampleTest):
 
         # set is_distance to true if compute_distance is None
         self.is_distance = False
-        if not compute_distance:
+        if not compute_distkern:
             self.is_distance = True
 
         KSampleTest.__init__(
-            self, compute_distance=compute_distance, bias=bias, **kwargs
+            self, compute_distance=compute_distkern, bias=bias, **kwargs
         )
 
     def statistic(self, *args):
@@ -238,7 +253,7 @@ class KSample(KSampleTest):
             The number of cores to parallelize the p-value computation over.
             Supply ``-1`` to use all cores available to the Process.
         auto : bool, default: True
-            Only applies to ``Dcorr`` and ``Hsic``.
+            Only applies to ``"Dcorr"`` and ``"Hsic"``.
             Automatically uses fast approximation when `n` and size of array
             is greater than 20. If ``True``, and sample size is greater than 20, then
             :class:`hyppo.tools.chi2_approx` will be run. Parameters ``reps`` and
@@ -265,7 +280,7 @@ class KSample(KSampleTest):
         >>> z = np.arange(10)
         >>> stat, pvalue = KSample("Dcorr").test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
-        '-0.136, 1.0'
+        '0.000, 1.0'
         """
         inputs = list(args)
         check_input = _CheckInputs(
