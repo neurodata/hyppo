@@ -37,6 +37,8 @@ Independence
    Energy
    MMD
    DISCO
+   MANOVA
+   Hotelling
 
 
 
