@@ -1,5 +1,5 @@
 import numpy as np
-from numba import njit
+from numba import jit
 from scipy._lib._util import MapWrapper
 
 from ._utils import _CheckInputs
@@ -185,7 +185,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
         return perm_stat1, perm_stat2
 
 
-@njit
+@jit(nopython=True, cache=True)
 def calculate_diff_null(null_dist, reps):
     """
     Helper function to calculate the distribution of thedifference under

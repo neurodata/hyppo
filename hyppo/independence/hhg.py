@@ -1,5 +1,5 @@
 import numpy as np
-from numba import njit
+from numba import jit
 
 from ..tools import compute_dist
 from ._utils import _CheckInputs
@@ -193,7 +193,7 @@ class HHG(IndependenceTest):
         return super(HHG, self).test(x, y, reps, workers)
 
 
-@njit
+@jit(nopython=True, cache=True)
 def _pearson_stat(distx, disty):  # pragma: no cover
     """Calculate the Pearson chi square stats"""
 

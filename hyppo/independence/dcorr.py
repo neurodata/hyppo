@@ -1,5 +1,5 @@
 import numpy as np
-from numba import njit
+from numba import jit
 
 from ..tools import check_perm_blocks_dim, chi2_approx, compute_dist
 from ._utils import _CheckInputs
@@ -247,7 +247,7 @@ class Dcorr(IndependenceTest):
         return stat, pvalue
 
 
-@njit
+@jit(nopython=True, cache=True)
 def _center_distmat(distx, bias):  # pragma: no cover
     """Centers the distance matrices"""
     n = distx.shape[0]
@@ -270,7 +270,7 @@ def _center_distmat(distx, bias):  # pragma: no cover
     return cent_distx
 
 
-@njit
+@jit(nopython=True, cache=True)
 def _cpu_cumsum(data):
     """Create cumulative sum since numba doesn't sum over axes."""
     cumsum = data
@@ -280,7 +280,7 @@ def _cpu_cumsum(data):
     return cumsum
 
 
-@njit
+@jit(nopython=True, cache=True)
 def _fast_1d_dcov(x, y, bias=False):  # pragma: no cover
     """
     Calculate the Dcorr test statistic. Note that though Dcov is calculated
@@ -370,7 +370,7 @@ def _fast_1d_dcov(x, y, bias=False):  # pragma: no cover
     return stat
 
 
-@njit
+@jit(nopython=True, cache=True)
 def _dcov(distx, disty, bias=False, only_dcov=True):  # pragma: no cover
     """Calculate the Dcov test statistic"""
     if only_dcov:
@@ -390,7 +390,7 @@ def _dcov(distx, disty, bias=False, only_dcov=True):  # pragma: no cover
     return stat
 
 
-@njit
+@jit(nopython=True, cache=True)
 def _dcorr(distx, disty, bias=False, is_fast=False):  # pragma: no cover
     """
     Calculate the Dcorr test statistic. Note that though Dcov is calculated

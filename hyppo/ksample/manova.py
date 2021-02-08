@@ -1,5 +1,5 @@
 import numpy as np
-from numba import njit
+from numba import jit
 from scipy.stats import f
 
 from ._utils import _CheckInputs
@@ -176,7 +176,7 @@ def _perm_stat(calc_stat, *args):
     return perm_stat
 
 
-@njit
+@jit(nopython=True, cache=True)
 def _compute_w(inputs, cmean):  # pragma: no cover
     """Calculate the W matrix"""
 
@@ -190,7 +190,7 @@ def _compute_w(inputs, cmean):  # pragma: no cover
     return W
 
 
-@njit
+@jit(nopython=True, cache=True)
 def _compute_b(inputs, cmean, gmean):  # pragma: no cover
     """Calculate the B matrix"""
 
