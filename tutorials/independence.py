@@ -60,7 +60,7 @@ Now, let's look at unique properties of some of the tests in :mod:`hyppo.indepen
 #
 # Neither of these test are distance based, and so do not have a ``compute_distance``
 # parameter.
-# These tests runs like :ref:`any other test<general indep>`.
+# Otherwise, these tests runs like :ref:`any other test<general indep>`.
 
 ########################################################################################
 # Distance (and Kernel) Based Tests

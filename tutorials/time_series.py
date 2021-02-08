@@ -1,5 +1,5 @@
 r"""
-.. _ksample:
+.. _time_series:
 
 Time Series Testing
 *********************
@@ -55,7 +55,7 @@ The p-value returned is calculated using a permutation test.
 
 ########################################################################################
 # **Cross multiscale graph correlation (MGCX)** and
-# **cross distance correlation (Dcorr)** are time series tests of independence. They
+# **cross distance correlation (DcorrX)** are time series tests of independence. They
 # are a more powerful alternative to pairwise Pearson's correlation comparisons that
 # are the standard in the literature, and is multivariate and distance based.
 # More details can be found in :class:`hyppo.time_series.MGCX` and
