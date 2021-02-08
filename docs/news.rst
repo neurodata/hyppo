@@ -5,6 +5,72 @@ Changelog
 
 *Note: People with a "+" by their names contributed a patch for the first time.*
 
+v0.2.0
+------
+| **Release date:** 02 February 2021
+| **Supports:** Python 3.6+.
+
+**New features:**
+
+* Added restricted permutation functionality for Dcorr
+* Kernel functions now wrap scikit-learn and support keyword arguments
+* :class:`hyppo.ksample.Energy`
+* :class:`hyppo.ksample.DISCO`
+* :class:`hyppo.ksample.MMD`
+* Fast 1D exact Dcorr :math:`\mathcal{O}(n \log n)`
+* :class:`hyppo.ksample.Hotelling`
+* :class:`hyppo.ksample.MANOVA`
+* :class:`hyppo.independence.MaxMargin`
+
+**Bug Fixes:**
+
+* Fixed error check for k-sample tests to be between samples instead of within
+* Time series doesn't clip negative values
+* Fix docs not building on netlify
+* Fix p-value calculations for permutation tests to be more in line with literature
+* Fix :class:`hyppo.independence.Dcorr` and :class:`hyppo.independence.Hsic` incorrect stats
+
+**Documentation:**
+
+* Update badges and README to FIRM guidelines
+* Incorrect equation in :meth:`hyppo.tools.circle` docstring
+* Update README to be in line with scikit-learn
+* Remove literature reference section in docstrings, add links to papers
+* Add docstrings for :mod:`hyppo.tools` functions
+* Add ``overview.py`` file for overview of package
+* Add tutorials folder, rewrite so it is more user-friendly (port independence, k-sample, time series)
+* Add examples folder with more information about unique features
+* Move to ``sphinx-gallery`` instead of nbconvert
+* Use ``automodule`` instead of ``autoclass``
+* Make clear about the package requirements and docs requirements
+* Make ``changelog`` into a single file
+* Add external links to neurodata and code of conduct
+* Add citing page to cite the package papers
+* Make index page a clone of README
+* Update MakeFile for more options
+* Add intersphinx mapping with links externally (``numpy``, ``scipy``, etc.) and internally
+* Add docs for statistic function
+* Add discriminability tutorial
+
+**Maintenance:**
+
+* Fix typos in warning commits
+* Updated tests to precalculate distance matrix
+* Moved from Travis CI to Circle CI
+* Raise base ``requirements.txt`` to fix failing tests on CircleCI
+* Add codecoverage config files
+* Add documentation folders and files to ``.gitignore``
+* Remove ``reps`` warning test
+* Cache numba after first call to speed up runs
+* Fix netlify config to new doc build structure
+
+**Authors:**
+
+* Sambit Panda
+* Vivek Gopalakrishnan +
++ Ronak Mehta
+* Ronan Perry +
+
 v0.1.3
 ------
 | **Release date:** 24 July 2020
