@@ -10,7 +10,7 @@ You will need to install all the dependencies as defined in `requirements.txt` f
 
     pip3 install -r requirements.txt
 
-in the `docs/` directory.
+in the `docs/` directory. This is of course in addition to the package requirements.
 
 ## Pandoc dependency
 

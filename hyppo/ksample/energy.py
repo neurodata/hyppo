@@ -1,7 +1,4 @@
-import numpy as np
-from numba import njit
-
-from ..independence.dcorr import _center_distmat
+from ..independence.dcorr import _dcov
 from ..tools import compute_dist
 from ._utils import _CheckInputs
 from .base import KSampleTest
@@ -10,24 +7,20 @@ from .ksamp import KSample
 
 class Energy(KSampleTest):
     r"""
-    Class for calculating the Energy test statistic and p-value.
+    Energy test statistic and p-value.
 
     Energy is a powerful multivariate 2-sample test. It leverages distance matrix
     capabilities (similar to tests like distance correlation or Dcorr). In fact, Energy
-    statistic is equivalent to our 2-sample formulation nonparametric MANOVa via
-    independence testing, i.e. ``hyppo.ksample.Ksample``,
-    and to Dcorr, Hilbert Schmidt Independence Criterion (Hsic), and Maximum Mean
-    Discrepancy [#1Ener]_ [#2Ener]_  (see "See Also" section for links).
+    statistic is equivalent to our 2-sample formulation nonparametric MANOVA via
+    independence testing, i.e. :class:`hyppo.ksample.KSample`,
+    and to
+    :class:`hyppo.independence.Dcorr`,
+    :class:`hyppo.ksample.DISCO`,
+    :class:`hyppo.independence.Hsic`, and
+    :class:`hyppo.ksample.MMD` `[1]`_ `[2]`_.
 
-    Parameters
-    ----------
-    bias : bool (default: False)
-        Whether or not to use the biased or unbiased test statistics.
-
-    Notes
-    -----
     Traditionally, the formulation for the 2-sample Energy statistic
-    is as follows [#3Ener]_:
+    is as follows `[3]`_:
 
     Define
     :math:`\{ u_i \stackrel{iid}{\sim} F_U,\ i = 1, ..., n \}` and
@@ -38,29 +31,53 @@ class Energy(KSampleTest):
 
     .. math::
 
-        Energy_{n, m}(\mathbf{u}, \mathbf{v}) = \frac{1}{n^2 m^2}
+        \mathrm{Energy}_{n, m}(\mathbf{u}, \mathbf{v}) = \frac{1}{n^2 m^2}
         \left( 2nm \sum_{i = 1}^n \sum_{j = 1}^m d(u_i, v_j) - m^2
         \sum_{i,j=1}^n d(u_i, u_j) - n^2 \sum_{i, j=1}^m d(v_i, v_j) \right)
 
-    The implementation in the ``hyppo.ksample.KSample`` class (using Dcorr) is in
+    The implementation in the :class:`hyppo.ksample.KSample` class (using
+    :class:`hyppo.independence.Dcorr` using 2 samples) is in
     fact equivalent to this implementation (for p-values) and statistics are
-    equivalent up to a scaling factor [#1Ener]_.
+    equivalent up to a scaling factor `[1]`_.
 
-    The p-value returned is calculated using a permutation test using a
-    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
-    The fast version of the test (for :math:`k`-sample Dcorr and Hsic) uses a
-    `chi squared approximation <https://hyppo.neurodata.io/reference/tools.html#chi-squared-approximation>`_.
+    The p-value returned is calculated using a permutation test uses
+    :meth:`hyppo.tools.perm_test`.
+    The fast version of the test uses :meth:`hyppo.tools.chi2_approx`.
 
-    References
+    .. _[1]: https://arxiv.org/abs/1910.08883
+    .. _[2]: https://arxiv.org/abs/1806.05514
+    .. _[3]: https://www.semanticscholar.org/paper/TESTING-FOR-EQUAL-DISTRIBUTIONS-IN-HIGH-DIMENSION-Sz%C3%A9kely-Rizzo/ad5e91905a85d6f671c04a67779fd1377e86d199
+
+    Parameters
     ----------
-    .. [#1Ener] Panda, S., Shen, C., Perry, R., Zorn, J., Lutz, A., Priebe, C. E., &
-                Vogelstein, J. T. (2019). Nonparametric MANOVA via Independence
-                Testing. arXiv e-prints, arXiv-1910.
-    .. [#2Ener] Shen, C., & Vogelstein, J. T. (2018). The exact equivalence of distance
-                and kernel methods for hypothesis testing. arXiv preprint
-                arXiv:1806.05514.
-    .. [#3Ener] Székely, G. J., & Rizzo, M. L. (2004). Testing for equal distributions
-                in high dimension. InterStat, 5(16.10), 1249-1272.
+    compute_distance : str, callable, or None, default: "euclidean"
+        A function that computes the distance among the samples within each
+        data matrix.
+        Valid strings for ``compute_distance`` are, as defined in
+        :func:`sklearn.metrics.pairwise_distances`,
+
+            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
+              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
+              :mod:`scipy.spatial.distance` for details
+              on these metrics.
+            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
+              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
+              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
+              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
+              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
+              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
+              details on these metrics.
+
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
+        matrices. To call a custom function, either create the distance matrix
+        before-hand or create a function of the form ``metric(x, **kwargs)``
+        where ``x`` is the data matrix for which pairwise distances are
+        calculated and ``**kwargs`` are extra arguements to send to your custom
+        function.
+    bias : bool, default: False
+        Whether or not to use the biased or unbiased test statistics.
+    **kwargs
+        Arbitrary keyword arguments for ``compute_distance``.
     """
 
     def __init__(self, compute_distance="euclidean", bias=False, **kwargs):
@@ -72,18 +89,22 @@ class Energy(KSampleTest):
             self, compute_distance=compute_distance, bias=bias, **kwargs
         )
 
-    def _statistic(self, x, y):
+    def statistic(self, x, y):
         r"""
         Calulates the Energy test statistic.
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices. `x` and `y` must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        x,y : ndarray
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            dimensions. That is, the shapes must be ``(n, p)`` and ``(m, p)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, `x` and `y` can be distance matrices,
-            where the shapes must both be `(n, n)`.
+            dimensions.
+
+        Returns
+        -------
+        stat : float
+            The computed Energy statistic.
         """
         distx = x
         disty = y
@@ -109,30 +130,31 @@ class Energy(KSampleTest):
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices. `x` and `y` must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        x,y : ndarray
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            dimensions. That is, the shapes must be ``(n, p)`` and ``(m, p)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, `x` and `y` can be distance matrices,
-            where the shapes must both be `(n, n)`.
-        reps : int, optional (default: 1000)
+            dimensions.
+        reps : int, default: 1000
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        workers : int, optional (default: 1)
+        workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
-            Supply -1 to use all cores available to the Process.
-        auto : bool (default: True)
-            Automatically uses fast approximation when sample size and size of array
-            is greater than 20. If True, and sample size is greater than 20, a fast
-            chi2 approximation will be run. Parameters ``reps`` and ``workers`` are
-            irrelevant in this case.
+            Supply ``-1`` to use all cores available to the Process.
+        auto : bool, default: True
+            Automatically uses fast approximation when `n` and size of array
+            is greater than 20. If ``True``, and sample size is greater than 20, then
+            :class:`hyppo.tools.chi2_approx` will be run. Parameters ``reps`` and
+            ``workers`` are
+            irrelevant in this case. Otherwise, :class:`hyppo.tools.perm_test` will be
+            run.
 
         Returns
         -------
         stat : float
-            The computed *k*-Sample statistic.
+            The computed Energy statistic.
         pvalue : float
-            The computed *k*-Sample p-value.
+            The computed Energy p-value.
 
         Examples
         --------
@@ -142,7 +164,7 @@ class Energy(KSampleTest):
         >>> y = x
         >>> stat, pvalue = Energy().test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
-        '0.000, 1.0'
+        '0.267, 1.0'
         """
         check_input = _CheckInputs(
             inputs=[x, y],
@@ -151,27 +173,15 @@ class Energy(KSampleTest):
         x, y = check_input()
 
         # observed statistic
-        stat = Energy()._statistic(x, y)
+        stat = self.statistic(x, y)
 
         # since stat transformation is invariant under permutation, 2-sample Dcorr
         # pvalue is identical to Energy
-        _, pvalue = KSample("Dcorr").test(x, y, reps=reps, workers=workers, auto=auto)
+        _, pvalue = KSample(
+            indep_test="Dcorr",
+            compute_distkern=self.compute_distance,
+            bias=self.bias,
+            **self.kwargs
+        ).test(x, y, reps=reps, workers=workers, auto=auto)
 
         return stat, pvalue
-
-
-@njit
-def _dcov(distx, disty, bias):  # pragma: no cover
-    """Calculate the Dcorr test statistic"""
-    # center distance matrices
-    cent_distx = _center_distmat(distx, bias)
-    cent_disty = _center_distmat(disty, bias)
-
-    N = distx.shape[0]
-
-    if bias:
-        stat = 1 / (N ** 2) * np.trace(np.multiply(cent_distx, cent_disty))
-    else:
-        stat = 1 / (N * (N - 3)) * np.trace(np.multiply(cent_distx, cent_disty))
-
-    return stat

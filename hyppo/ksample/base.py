@@ -43,7 +43,7 @@ class KSampleTest(ABC):
         super().__init__()
 
     @abstractmethod
-    def _statistic(self, inputs):
+    def statistic(self, inputs):
         r"""
         Calulates the *k*-sample test statistic.
 

@@ -1,39 +1,143 @@
-Contributing to hyppo
-=====================
+# Contributing to hyppo
 
 (adopted from scikit-learn)
 
-The latest contributing guide is available in the repository at
-`docs/contributing.rst`, or online at:
+## Submitting a bug report or a feature request
 
-[https://hyppo.neurodata.io/contributing.html](https://hyppo.neurodata.io/contributing.html)
+We use GitHub issues to track all bugs and feature requests; feel free to open
+an issue if you have found a bug or wish to see a feature implemented.
 
-There are many ways to contribute to `hyppo`, with the most common ones
-being contribution of code or documentation to the project. Improving the
-documentation is no less important than improving the library itself. If you
-find a typo in the documentation, or have made improvements,do not hesitate to
-submit a GitHub pull request. Documentation can be found under the
-[docs/](https://github.com/neurodata/hyppo/tree/master/docs) directory.
+In case you experience issues using this package, do not hesitate to submit a
+ticket to the
+[Issue Tracker](https://github.com/neurodata/hyppo/issues). You are
+also welcome to post feature requests or pull requests.
 
-But there are many other ways to help. In particular answering queries on the
-[issue tracker](https://github.com/neurodata/hyppo/issues), and
-investigating bugs are very valuable contributions that decrease the burden on
-the project maintainers.
+It is recommended to check that your issue complies with the
+following rules before submitting:
 
-Another way to contribute is to report issues you're facing, and give a "thumbs
-up" on issues that others reported and that are relevant to you. It also helps
-us if you spread the word: reference the project from your blog and articles,
-link to it from your website, or simply star it in GitHub to say "I use it".
+-  Verify that your issue is not being currently addressed by other
+   [issues](https://github.com/neurodata/hyppo/issues?q=)
+   or [pull requests](https://github.com/neurodata/hyppo/pulls?q=)
+-  If you are submitting a bug report, we strongly encourage you to follow the above guidelines
 
-Quick links
------------
+## How to make a good bug report
 
-* [Submitting a bug report or feature request](http://hyppo.neurodata.io/contributing.html#submitting-a-bug-report-or-a-feature-request)
-* [Contributing code](http://hyppo.neurodata.io/contributing.html#contributing-code)
-* [Coding guidelines](http://hyppo.neurodata.io/contributing.html#coding-guidelines)
+When you submit an issue to [Github](https://github.com/neurodata/hyppo/issues), please do your best to
+follow these guidelines! This will make it a lot easier to provide you with
+good feedback:
 
-Code of Conduct
----------------
+- The ideal bug report contains a **short reproducible code snippet**, this way
+  anyone can try to reproduce the bug easily (see [this](
+  https://stackoverflow.com/help/mcve) for more details). If your snippet is
+  longer than around 50 lines, please link to a [gist](https://gist.github.com) or a github repo.
+- If not feasible to include a reproducible snippet, please be specific about
+  what **classes and/or functions are involved and the shape of the data**.
+- If an exception is raised, please **provide the full traceback**.
+- Please include your **operating system type and version number**, as well as
+  your **Python and ``hyppo`` versions**. This information
+  can be found by running the following code snippet
+    ```Python
+    import platform; print(platform.platform())
+    import sys; print("Python", sys.version)
+    import hyppo; print("hyppo", hyppo.__version__)
+    ```
+- Please ensure all **code snippets and error messages are formatted in
+  appropriate code blocks**.  See
+  [creating and highlighting code blocks](https://help.github.com/articles/creating-and-highlighting-code-blocks)
+  for more details.
+
+## Contributing Code
+
+The preferred workflow for contributing to ``hyppo`` is to fork the main
+repository on GitHub, clone, and develop on a branch. Steps:
+
+1. Fork the [project repository](https://github.com/neurodata/hyppo) by clicking
+   on the ‘Fork’ button near the top right of the page. This creates a copy
+   of the code under your GitHub user account. For more details on how to
+   fork a repository see [this guide](https://help.github.com/articles/fork-a-repo/)
+
+2. Clone your fork of the ``hyppo`` repo from your GitHub account to your
+   local disk:
+    ```sh
+    $ git clone git@github.com:YourLogin/hyppo.git
+    $ cd hyppo
+    ```
+
+3. Create a ``feature`` branch to hold your development changes:
+    ```sh
+    $ git checkout -b my-feature
+    ```
+   Always use a ``feature`` branch. It’s good practice to never work on
+   the ``master`` branch!
+
+4. Develop the feature on your feature branch. Add changed files using
+   ``git add`` and then ``git commit`` files:
+    ```sh
+    $ git add modified_files
+    $ git commit
+    ```
+   to record your changes in Git, then push the changes to your GitHub
+   account with:
+    ```sh
+    $ git push -u origin my-feature
+    ```
+
+## Pull Request Checklist
+
+We recommended that your contribution complies with the following rules
+before you submit a pull request:
+
+-  Follow the [coding-guidelines](#coding-guidelines)
+-  Give your pull request a helpful title that summarises what your
+   contribution does. In some cases ``Fix <ISSUE TITLE>`` is enough.
+   ``Fix #<ISSUE NUMBER>`` is not enough.
+-  All public methods should have informative docstrings with sample
+   usage presented as doctests when appropriate.
+-  At least one paragraph of narrative documentation with links to
+   references in the literature (with PDF links when possible) and
+   the example.
+-  All functions and classes must have unit tests. These should include,
+   at the very least, type checking and ensuring correct computation/outputs.
+-  Ensure all tests are passing locally using ``pytest``. Install the necessary
+   packages by:
+    ```sh
+    $ pip install pytest pytest-cov
+    ```
+   then run
+    ```sh
+    $ pytest
+    ```
+   or you can run pytest on a single test file by
+    ```sh
+    $ pytest path/to/test.py
+    ```
+-  Run an autoformatter. We use ``black`` and would like for you to
+   format all files using ``black``. You can run the following lines to
+   format your files.
+    ```sh
+    $ pip install black
+    $ black path/to/module.py
+    ```
+
+## Coding Guidelines
+
+Uniformly formatted code makes it easier to share code ownership. ``hyppo``
+package closely follows the official Python guidelines detailed in
+[PEP8](https://www.python.org/dev/peps/pep-0008/) that detail how
+code should be formatted and indented. Please read it and follow it.
+
+## Docstring Guidelines
+
+Properly formatted docstrings is required for documentation generation
+by Sphinx. The pygraphstats package closely follows the numpydoc
+guidelines. Please read and follow the
+[numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html#overview)
+guidelines. Refer to the
+[example.py](https://numpydoc.readthedocs.io/en/latest/example.html#example)
+provided by numpydoc.
+
+## Code of Conduct
 
 We abide by the principles of openness, respect, and consideration of others
-of the Python Software Foundation: [https://www.python.org/psf/codeofconduct/](https://www.python.org/psf/codeofconduct/).
+of the Python Software Foundation:
+[https://www.python.org/psf/codeofconduct/](https://www.python.org/psf/codeofconduct/).

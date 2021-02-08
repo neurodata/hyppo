@@ -63,14 +63,6 @@ class TestOneSampleWarn:
 
         assert_raises(ValueError, DiscrimOneSample().test, x, y, reps=reps)
 
-    def test_warns_reps(self):
-        # raises warning when reps is less than 1000
-        x = np.ones((100, 2), dtype=float)
-        y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
-
-        reps = 100
-        assert_warns(RuntimeWarning, DiscrimOneSample().test, x, y, reps=reps)
-
     def test_min_sample(self):
         # raises warning when sample number is less than 10
         x = np.ones((6, 2), dtype=float)

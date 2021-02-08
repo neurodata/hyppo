@@ -4,11 +4,9 @@ import sys
 from setuptools import find_packages, setup
 from setuptools.command.install import install
 
-from hyppo.__init__ import __version__
-
 PACKAGE_NAME = "hyppo"
 DESCRIPTION = "A comprehensive independence testing package"
-with open("README.md", "r") as f:
+with open("README.rst", "r") as f:
     LONG_DESCRIPTION = f.read()
 AUTHOR = ("Sambit Panda",)
 AUTHOR_EMAIL = "spanda3@jhu.edu"
@@ -44,10 +42,11 @@ class VerifyVersionCommand(install):
 
     def run(self):
         tag = os.getenv("CIRCLE_TAG")
+        version = "v{}".format(VERSION)
 
-        if tag != __version__:
+        if tag != version:
             info = "Git tag: {0} does not match the version of this app: {1}".format(
-                tag, __version__
+                tag, version
             )
             sys.exit(info)
 

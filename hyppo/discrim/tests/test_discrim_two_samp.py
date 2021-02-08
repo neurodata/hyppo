@@ -114,12 +114,3 @@ class TestTwoSampleWarn:
         y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
 
         assert_raises(ValueError, DiscrimTwoSample().test, x1, x2, y, reps=reps)
-
-    def test_warns_reps(self):
-        # raises warning when reps is less than 1000
-        x1 = np.ones((100, 2), dtype=float)
-        x2 = np.concatenate((np.zeros((50, 2)), np.ones((50, 2))), axis=0)
-        y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
-
-        reps = 100
-        assert_warns(RuntimeWarning, DiscrimTwoSample().test, x1, x2, y, reps=reps)

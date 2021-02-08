@@ -8,22 +8,23 @@
 
 # -- Path setup --------------------------------------------------------------
 
+import datetime
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-import shutil
 import sys
 
 sys.path.insert(0, os.path.abspath(".."))
-sys.path.insert(0, os.path.abspath("sphinxext"))
-from github_link import make_linkcode_resolve
 
 # -- Project information -----------------------------------------------------
 
+# General information about the project
+year = datetime.date.today().year
 project = "hyppo"
-copyright = "2018"
+copyright = "2018-{}, ".format(year)
 authors = u"Sambit Panda"
 
 # The short X.Y version
@@ -42,32 +43,90 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.todo",
     "sphinx.ext.mathjax",
-    "numpydoc",
+    # "numpydoc",
     "sphinx.ext.ifconfig",
     "sphinx.ext.githubpages",
     "nbsphinx",
     "sphinx.ext.intersphinx",
-    "sphinx.ext.linkcode",
+    "sphinx.ext.napoleon",
+    "sphinx_gallery.gen_gallery",
+    "recommonmark",
 ]
+
+
+autodoc_typehints = "none"
+
+napoleon_google_docstring = False
+napoleon_numpy_docstring = True
+
+napoleon_use_param = False
+napoleon_use_rtype = False
+napoleon_preprocess_types = True
+napoleon_type_aliases = {
+    # general terms
+    "sequence": ":term:`sequence`",
+    "iterable": ":term:`iterable`",
+    "callable": ":py:func:`callable`",
+    "dict_like": ":term:`dict-like <mapping>`",
+    # objects without namespace
+    "ndarray": "~numpy.ndarray",
+}
 
 # -- numpydoc
 # Below is needed to prevent errors
+numpydoc_class_members_toctree = True
 numpydoc_show_class_members = False
 
 # -- sphinx.ext.autosummary
-autosummary_generate = True
+autosummary_generate = []
+
+# Otherwise, the Return parameter list looks different from the Parameters list
+napoleon_use_rtype = False
+# Otherwise, the Attributes parameter list looks different from the Parameters
+# list
+napoleon_use_ivar = True
+
+
+# uncomment line 55
+import sphinx_gallery
+from sphinx_gallery.sorting import FileNameSortKey
+
+sphinx_gallery_conf = {
+    # path to your examples scripts
+    "examples_dirs": ["../examples", "../tutorials", "../sample_data"],
+    # path where to save gallery generated examples
+    "gallery_dirs": ["gallery", "tutorials", "sample_data"],
+    "filename_pattern": r"\.py",
+    # Remove the "Download all examples" button from the top level gallery
+    "download_all_examples": False,
+    # Sort gallery example by file name instead of number of lines (default)
+    "within_subsection_order": FileNameSortKey,
+    # directory where function granular galleries are stored
+    "backreferences_dir": "api/generated/backreferences",
+    # Modules for which function level galleries are created.  In
+    # this case sphinx_gallery and numpy in a tuple of strings.
+    "doc_module": "hyppo",
+    # Insert links to documentation of objects in the examples
+    "reference_url": {"hyppo": None},
+}
 
 # -- sphinx.ext.autodoc
-autoclass_content = "both"
-autodoc_default_flags = ["members", "inherited-members"]
-autodoc_member_order = "bysource"  # default is alphabetical
+# autoclass_content = "both"
+# autodoc_default_flags = ["members", "inherited-members"]
+# autodoc_member_order = "bysource"  # default is alphabetical
 
 # -- sphinx.ext.intersphinx
 intersphinx_mapping = {
-    "numpy": ("https://docs.scipy.org/doc/numpy", None),
-    "python": ("https://docs.python.org/3", None),
+    "python": ("https://docs.python.org/3/", None),
+    "numpy": ("https://numpy.org/doc/stable", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
+    "matplotlib": ("https://matplotlib.org", None),
+    "sklearn": ("http://scikit-learn.org/stable", None),
 }
+
+# Always show the source code that generates a plot
+plot_include_source = True
+plot_formats = ["png"]
 
 # -- sphinx options ----------------------------------------------------------
 source_suffix = ".rst"
@@ -79,7 +138,13 @@ source_encoding = "utf-8"
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 html_static_path = ["_static"]
+html_extra_path = []
 modindex_common_prefix = ["hyppo."]
+html_last_updated_fmt = "%b %d, %Y"
+add_function_parentheses = False
+html_show_sourcelink = False
+html_show_sphinx = True
+html_show_copyright = True
 
 pygments_style = "sphinx"
 smartquotes = False
@@ -89,24 +154,58 @@ import sphinx_rtd_theme
 
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-html_theme_options = {"collapse_navigation": False, "navigation_depth": 4}
+html_theme_options = {
+    "collapse_navigation": True,
+    "navigation_depth": 4,
+}
 
 html_context = {
+    "menu_links_name": "Useful Links",
+    "menu_links": [
+        (
+            '<i class="fa fa-external-link-square fa-fw"></i> NeuroData',
+            "https://neurodata.io/",
+        ),
+        (
+            '<i class="fa fa-users fa-fw"></i> Contributing',
+            "https://github.com/neurodata/hyppo/blob/master/CONTRIBUTING.md",
+        ),
+        (
+            '<i class="fa fa-gavel fa-fw"></i> Code of Conduct',
+            "https://neurodata.io/about/codeofconduct/",
+        ),
+        (
+            '<i class="fa fa-exclamation-circle fa-fw"></i> Issue Tracker',
+            "https://github.com/neurodata/hyppo/issues",
+        ),
+        (
+            '<i class="fa fa-github fa-fw"></i> Source Code',
+            "https://github.com/neurodata/hyppo",
+        ),
+    ],
     # Enable the "Edit in GitHub link within the header of each page.
     "display_github": True,
     # Set the following variables to generate the resulting github URL for each page.
-    # Format Template: https://{{ github_host|default("github.com") }}/{{ github_user }}/{{ github_repo }}/blob/{{ github_version }}{{ conf_py_path }}{{ pagename }}{{ suffix }}
+    # Format Template: https://{{ github_host|default("github.com") }}/{{ github_user }}
+    # /{{ github_repo }}/blob/{{ github_version }}{{ conf_py_path }}{{ pagename }}
+    # {{ suffix }}
     "github_user": "neurodata",
     "github_repo": "hyppo",
-    "github_version": "master/docs/",
+    "github_version": "master",
+    "conf_py_path": "docs/",
+    "galleries": sphinx_gallery_conf["gallery_dirs"],
+    "gallery_dir": dict(
+        zip(
+            sphinx_gallery_conf["gallery_dirs"],
+            sphinx_gallery_conf["examples_dirs"],
+        )
+    ),
 }
 
-linkcode_resolve = make_linkcode_resolve(
-    "hyppo",
-    u"https://github.com/neurodata/"
-    "hyppo/blob/{revision}/"
-    "{package}/{path}#L{lineno}",
-)
+
+html_css_files = [
+    "custom.css",
+]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.

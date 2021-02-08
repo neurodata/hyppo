@@ -67,12 +67,36 @@ class _CheckInputs:
 
 
 def sim_matrix(model, x):
+    """
+    Computes the similarity matrix from a random forest.
+
+    The model used must follow the scikit-learn API. That is, the model is a random
+    forest class and is already trained (use :func:`fit`) before running this function.
+    Also, func:`apply` must be used to push input data down the trained forest. See
+    :class:`sklearn.ensemble.RandomForestClassifier` and
+    :class:`sklearn.ensemble.RandomForestRegressor` for similar classes.
+
+    Parameters
+    ----------
+    model : class
+        A trained random forest object for which the similarity matrix will be
+        calculated.
+    x : ndarray
+        Input data matrice. ``x`` must have shape must be ``(n, p)`` where
+        `n` is the number of samples and `p` are the number of
+        dimensions.
+
+    Returns
+    -------
+    proxMat : ndarray
+        The proximity matrix induced by random kernel.
+    """
     terminals = model.apply(x)
     ntrees = terminals.shape[1]
 
-    proxMat = 1 * np.equal.outer(terminals[:, 0], terminals[:, 0])
-    for i in range(1, ntrees):
-        proxMat += 1 * np.equal.outer(terminals[:, i], terminals[:, i])
-    proxMat = proxMat / ntrees
+    prox_mat = np.sum(
+        np.equal.outer(terminals[:, i], terminals[:, i]) for i in range(ntrees)
+    )
+    prox_mat = prox_mat / ntrees
 
-    return proxMat
+    return prox_mat

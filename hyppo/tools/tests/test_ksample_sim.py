@@ -15,13 +15,12 @@ from .. import (
     multimodal_independence,
     multiplicative_noise,
     quadratic,
-    rot_2samp,
+    rot_ksamp,
     sin_four_pi,
     sin_sixteen_pi,
     spiral,
     square,
     step,
-    trans_2samp,
     two_parabolas,
     uncorrelated_bernoulli,
     w_shaped,
@@ -56,12 +55,10 @@ class TestKSampleShape:
             multimodal_independence,
         ],
     )
-    @pytest.mark.parametrize("sim", [rot_2samp, trans_2samp])
-    def test_shapes(self, indep_sim, n, p, sim):
+    @pytest.mark.parametrize("k, degree", [(2, 90), (3, [90, 90])])
+    def test_shapes(self, indep_sim, k, n, p, degree):
         np.random.seed(123456789)
-        x, y = sim(indep_sim, n, p)
-        nx, px = x.shape
-        ny, py = y.shape
+        sims = rot_ksamp(indep_sim, n, p, k=k, degree=degree)
 
         sim_name = indep_sim.__name__
         if sim_name in [
@@ -77,9 +74,6 @@ class TestKSampleShape:
             "multiplicative_noise",
             "multimodal_independence",
         ]:
-            assert_equal(px, p * 2)
-            assert_equal(py, p * 2)
+            [assert_equal(sim.shape[1], p * 2) for sim in sims]
         else:
-            assert_equal(px, p + 1)
-            assert_equal(py, p + 1)
-        assert_equal(nx, ny)
+            [assert_equal(sim.shape[1], p + 1) for sim in sims]

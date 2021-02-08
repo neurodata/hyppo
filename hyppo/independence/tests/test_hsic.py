@@ -7,8 +7,7 @@ from .. import Hsic
 
 
 class TestHsicStat:
-    @pytest.mark.parametrize("n", [100, 200])
-    @pytest.mark.parametrize("obs_stat", [1.0])
+    @pytest.mark.parametrize("n, obs_stat", [(100, 0.107), (200, 0.102)])
     @pytest.mark.parametrize("obs_pvalue", [1 / 1000])
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
@@ -64,9 +63,3 @@ class TestHsicErrorWarn:
         # raises error if reps is negative
         x = np.arange(20)
         assert_raises(ValueError, Hsic().test, x, x, reps=reps)
-
-    def test_warns_reps(self):
-        # raises warning when reps is less than 1000
-        x = np.arange(20)
-        reps = 100
-        assert_warns(RuntimeWarning, Hsic().test, x, x, reps=reps)

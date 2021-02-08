@@ -58,7 +58,7 @@ class TimeSeriesTest(ABC):
         super().__init__()
 
     @abstractmethod
-    def _statistic(self, x, y):
+    def statistic(self, x, y):
         """
         Calulates the independence test statistic.
 
@@ -96,30 +96,24 @@ class TimeSeriesTest(ABC):
         null_dist : list
             The null distribution of the permuted test statistics.
         """
-        self.distx, self.disty = compute_dist(
-            x, y, metric=self.compute_distance, **self.kwargs
-        )
+        distx, disty = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
 
         # calculate observed test statistic
-        stat_list = self._statistic(x, y)
+        stat_list = self.statistic(x, y)
         stat = stat_list[0]
 
         # calculate null distribution
         null_dist = np.array(
             Parallel(n_jobs=workers)(
                 [
-                    delayed(_perm_stat)(self._statistic, self.distx, self.disty)
+                    delayed(_perm_stat)(self.statistic, distx, disty)
                     for rep in range(reps)
                 ]
             )
         )
         pvalue = (1 + (null_dist >= stat).sum()) / (1 + reps)
-
-        # correct for a p-value of 0. This is because, with bootstrapping
-        # permutations, a p-value of 0 is incorrect
-        if pvalue == 0:
-            pvalue = 1 / reps
         self.pvalue = pvalue
+        self.null_dist = null_dist
 
         return stat, pvalue, stat_list
 

@@ -13,7 +13,7 @@ class DiscriminabilityTest(ABC):
         super().__init__()
 
     @abstractmethod
-    def _statistic(self, x, y):
+    def statistic(self, x, y):
         r"""
         Calulates the independence test statistic.
 

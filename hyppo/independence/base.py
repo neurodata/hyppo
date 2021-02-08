@@ -41,7 +41,7 @@ class IndependenceTest(ABC):
         super().__init__()
 
     @abstractmethod
-    def _statistic(self, x, y):
+    def statistic(self, x, y):
         r"""
         Calulates the independence test statistic.
 
@@ -91,7 +91,7 @@ class IndependenceTest(ABC):
 
         # calculate p-value
         stat, pvalue, null_dist = perm_test(
-            self._statistic,
+            self.statistic,
             x,
             y,
             reps=reps,

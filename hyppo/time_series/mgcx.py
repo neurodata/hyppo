@@ -5,46 +5,13 @@ from .base import TimeSeriesTest
 
 class MGCX(TimeSeriesTest):
     r"""
-    Class for running the MGCX test for independence of time series.
+    Cross Multiscale Graph Correlation (MGCX) test statistic and p-value.
 
     MGCX is an independence test between two (paired) time series of
     not necessarily equal dimensions. The population parameter is 0 if and only if the
     time series are independent. It is based upon energy distance between distributions.
 
-    Parameters
-    ----------
-    compute_distance : callable(), optional (default: "euclidean")
-        A function that computes the distance among the samples within each
-        data matrix.
-        Valid strings for ``metric`` are, as defined in
-        ``sklearn.metrics.pairwise_distances``,
-
-            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
-              ‘manhattan’] See the documentation for scipy.spatial.distance for details
-              on these metrics.
-            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
-              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
-              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
-              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
-              documentation for scipy.spatial.distance for details on these metrics.
-
-        Set to `None` or `precomputed` if `x` and `y` are already distance
-        matrices. To call a custom function, either create the distance matrix
-        before-hand or create a function of the form ``metric(x, **kwargs)``
-        where `x` is the data matrix for which pairwise distances are
-        calculated and kwargs are extra arguements to send to your custom function.
-    max_lag : int, optional (default: 0)
-        The maximum number of lags in the past to check dependence between `x` and the
-        shifted `y`. Also the :math:`M` hyperparmeter below.
-
-    See Also
-    --------
-    MGC: Multiscale graph correlation test statistic and p-value.
-    DcorrX: Cross distance correlation test statistic and p-value.
-
-    Notes
-    -----
-    The statistic can be derived as follows [#1MgcX]_:
+    The statistic can be derived as follows `[1]`_:
 
     Let :math:`x` and :math:`y` be :math:`(n, p)` and :math:`(n, q)` series
     respectively, which each contain :math:`y` observations of the series :math:`(X_t)`
@@ -55,14 +22,42 @@ class MGCX(TimeSeriesTest):
 
     .. math::
 
-        MGCX_n (x, y) =  \sum_{j=0}^M \frac{n-j}{n}
+        \mathrm{MGCX}_n (x, y) =  \sum_{j=0}^M \frac{n-j}{n}
                                   MGC_n (x[j:n], y[0:(n-j)])
 
-    References
+    .. _[1]: https://arxiv.org/abs/1908.06486
+
+    Parameters
     ----------
-    .. [#1MgcX] Mehta, R., Chung, J., Shen C., Xu T., Vogelstein, J. T. (2019).
-                A Consistent Independence Test for Multivariate Time-Series.
-                ArXiv
+    compute_distance : str, callable, or None, default: "euclidean"
+        A function that computes the distance among the samples within each
+        data matrix.
+        Valid strings for ``compute_distance`` are, as defined in
+        :func:`sklearn.metrics.pairwise_distances`,
+
+            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
+              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
+              :mod:`scipy.spatial.distance` for details
+              on these metrics.
+            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
+              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
+              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
+              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
+              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
+              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
+              details on these metrics.
+
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
+        matrices. To call a custom function, either create the distance matrix
+        before-hand or create a function of the form ``metric(x, **kwargs)``
+        where ``x`` is the data matrix for which pairwise distances are
+        calculated and ``**kwargs`` are extra arguements to send to your custom
+        function.
+    max_lag : int, default: 0
+        The maximum number of lags in the past to check dependence between ``x`` and the
+        shifted ``y``. Also the ``M`` hyperparmeter below.
+    **kwargs
+        Arbitrary keyword arguments for ``compute_distance``.
     """
 
     def __init__(self, compute_distance="euclidean", max_lag=0, **kwargs):
@@ -70,18 +65,18 @@ class MGCX(TimeSeriesTest):
             self, compute_distance=compute_distance, max_lag=max_lag, **kwargs
         )
 
-    def _statistic(self, x, y):
+    def statistic(self, x, y):
         r"""
         Helper function that calculates the MGCX test statistic.
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices. `x` and `y` must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        x,y : ndarray
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, `x` and `y` can be distance matrices,
-            where the shapes must both be `(n, n)`.
+            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
+            where the shapes must both be ``(n, n)``.
 
         Returns
         -------
@@ -89,7 +84,7 @@ class MGCX(TimeSeriesTest):
             The computed MGCX statistic.
         opt_lag : int
             The computed optimal lag.
-        opt_scale : tuple
+        opt_scale : (int, int)
             The computed optimal scale as a pair of two elements.
         """
         stat, opt_lag = compute_stat(
@@ -112,23 +107,25 @@ class MGCX(TimeSeriesTest):
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices. `x` and `y` must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        x,y : ndarray
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, `x` and `y` can be distance matrices,
-            where the shapes must both be `(n, n)`.
-        reps : int, optional (default: 1000)
+            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
+            where the shapes must both be ``(n, n)``.
+        reps : int, default: 1000
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        workers : int, optional (default: 1)
+        workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
-            Supply -1 to use all cores available to the Process.
-        auto : bool (default: True)
-            Automatically uses fast approximation when sample size and size of array
-            is greater than 20. If True, and sample size is greater than 20, a fast
-            chi2 approximation will be run. Parameters ``reps`` and ``workers`` are
-            irrelevant in this case.
+            Supply ``-1`` to use all cores available to the Process.
+        auto : bool, default: True
+            Automatically uses fast approximation when `n` and size of array
+            is greater than 20. If ``True``, and sample size is greater than 20, then
+            :class:`hyppo.tools.chi2_approx` will be run. Parameters ``reps`` and
+            ``workers`` are
+            irrelevant in this case. Otherwise, :class:`hyppo.tools.perm_test` will be
+            run.
 
         Returns
         -------
@@ -142,13 +139,13 @@ class MGCX(TimeSeriesTest):
                 - opt_lag : int
                     The optimal lag that maximizes the strength of the relationship
                     with respect to lag.
-                - opt_scale : tuple
+                - opt_scale : (int, int)
                     The optimal scale that maximizes the strength of the relationship
                     with respect to scale.
 
         Examples
         --------
-        The optimal scale should be global `[n, n]` for cases of linear correlation.
+        The optimal scale should be global ``(n, n)`` for cases of linear correlation.
 
         >>> import numpy as np
         >>> from hyppo.time_series import MGCX

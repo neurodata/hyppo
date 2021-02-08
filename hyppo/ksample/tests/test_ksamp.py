@@ -3,7 +3,7 @@ import pytest
 from numpy.testing import assert_almost_equal, assert_raises
 
 from ...independence import CCA, Dcorr
-from ...tools import linear, rot_2samp
+from ...tools import linear, rot_ksamp
 from .. import KSample
 
 
@@ -14,7 +14,7 @@ class TestKSample:
     )
     def test_twosamp_linear_oned(self, n, obs_stat, obs_pvalue, indep_test):
         np.random.seed(123456789)
-        x, y = rot_2samp(linear, n, 1)
+        x, y = rot_ksamp(linear, n, 1, k=2)
         stat, pvalue = KSample(indep_test).test(x, y)
 
         assert_almost_equal(stat, obs_stat, decimal=1)

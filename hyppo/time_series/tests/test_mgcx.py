@@ -32,19 +32,6 @@ class TestMGCXStat:
 
     #     assert_almost_equal(stat1, stat2, decimal=0)
 
-    def test_distance(self):
-        n = 10
-        x = np.arange(1, n + 1)
-        y = np.arange(1, n + 1)
-
-        distx = np.fromfunction(lambda i, j: np.abs(i - j), (n, n))
-        disty = np.fromfunction(lambda i, j: np.abs(i - j), (n, n))
-
-        stat1 = MGCX(max_lag=1).test(x, y)[0]
-        stat2 = MGCX(max_lag=1).test(distx, disty)[0]
-
-        assert_almost_equal(stat1, stat2, decimal=0)
-
     def test_optimal_scale_linear(self):
         n = 10
         x = np.arange(n)

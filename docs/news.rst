@@ -1,28 +1,93 @@
 ..  -*- coding: utf-8 -*-
 
-Release Log
-===========
+Changelog
+=========
+
+*Note: People with a "+" by their names contributed a patch for the first time.*
 
 v0.1.3
 ------
 | **Release date:** 24 July 2020
 | **Supports:** Python 3.6+.
-| :doc:`release/0.1.3-release`.
+
+**Bug Fixes:**
+
+* Prevent division by zero when calculating using default gaussian median kernel
+
+**Maintenance:**
+
+* Used ``sf`` from :meth:`scipy.stats.chi2` instead of ``1 - cdf`` for :meth:`hyppo.tools.chi2_approx`
+
+**Authors:**
+
+* Benjamin Pedigo +
+* Anton Alayakin +
+
 
 v0.1.2
 ------
 | **Release date:** 5 May 2020
 | **Supports:** Python 3.6+.
-| :doc:`release/0.1.2-release`.
+
+**Bug Fixes:**
+
+* Fixed MMD/k-sample Hsic not running
+
+**Authors:**
+
++ Sambit Panda
 
 v0.1.1
 ------
 | **Release date:** 28 April 2020
 | **Supports:** Python 3.6+.
-| :doc:`release/0.1.1-release`.
+
+**Documentation:**
+
+* arXiv badge added to docs.
+* OS/Software requirements and license changes updated in README
+* Reference docs and tutorials added to Time Series module
+
+**Maintenance:**
+
+* Pearson, Spearman, and Kendall are no longer tests within the package.
+* Python 3.5 no longer supported.
+* :meth:`sklearn.pairwise.pairwise_distances` used instead of :meth:`scipy.spatial.distance.cdist`.
+* Null distribution added as a class atribute
+* Calculate kernel once before calculating p-value
+* Upper and lower-case inputs are available for ``indep_test``
+
+**Authors:**
+
++ Ronak Mehta +
++ Sambit Panda
++ Bijan Varjavand +
+
 
 v0.1.0
 ------
 | **Release date:** 25 February 2020
 | **Supports:** Python 3.5+.
-| :doc:`release/0.1.0-release`.
+
+*Note: as compared to `mgcpy`_*
+
+.. _mgcpy: https://github.com/neurodata/mgcpy-old
+
+**New features:**
+
+* Parallelization added to all tests
+* :class:`hyppo.independence.Hsic` is now a stand alone class
+* Simulations are given module, with new k-sample and time series modules
+* Discrimnability ported from r-mgc
+* Benchmarks folder added with relevant notebooks comparing implementations
+
+**Maintenance:**
+
+* Modified scikit-learn API adopted (classes given unique files, organized in
+  independence, *k*-sample, and time series modules.
+
+**Authors:**
+
++ Jayanta Dey +
++ Sambit Panda +
+
