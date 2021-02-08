@@ -72,10 +72,14 @@ class MMD(KSampleTest):
         Arbitrary keyword arguments for ``compute_kernel``.
     """
 
-    def __init__(self, compute_distance="euclidean", bias=False, **kwargs):
-        KSampleTest.__init__(
-            self, compute_distance=compute_distance, bias=bias, **kwargs
-        )
+    def __init__(self, compute_kernel="gaussian", bias=False, **kwargs):
+        self.compute_kernel = compute_kernel
+
+        self.is_kernel = False
+        if not compute_kernel:
+            self.is_kernel = True
+        self.bias = bias
+        KSampleTest.__init__(self, compute_distance=None, bias=bias, **kwargs)
 
     def statistic(self, x, y):
         r"""
@@ -101,7 +105,7 @@ class MMD(KSampleTest):
         stat = (
             KSample(
                 indep_test="Hsic",
-                compute_distance=self.compute_distance,
+                compute_distkern=self.compute_kernel,
                 bias=self.bias,
                 **self.kwargs
             ).statistic(
@@ -170,7 +174,7 @@ class MMD(KSampleTest):
         # pvalue is identical to MMD
         _, pvalue = KSample(
             indep_test="Hsic",
-            compute_distance=self.compute_distance,
+            compute_distkern=self.compute_kernel,
             bias=self.bias,
             **self.kwargs
         ).test(x, y, reps=reps, workers=workers, auto=auto)

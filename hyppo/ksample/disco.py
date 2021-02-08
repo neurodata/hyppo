@@ -192,7 +192,7 @@ class DISCO(KSampleTest):
         # pvalue is identical to DISCO
         _, pvalue = KSample(
             indep_test="Dcorr",
-            compute_distance=self.compute_distance,
+            compute_distkern=self.compute_distance,
             bias=self.bias,
             **self.kwargs
         ).test(*inputs, reps=reps, workers=workers, auto=auto)

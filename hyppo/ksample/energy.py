@@ -179,7 +179,7 @@ class Energy(KSampleTest):
         # pvalue is identical to Energy
         _, pvalue = KSample(
             indep_test="Dcorr",
-            compute_distance=self.compute_distance,
+            compute_distkern=self.compute_distance,
             bias=self.bias,
             **self.kwargs
         ).test(x, y, reps=reps, workers=workers, auto=auto)
