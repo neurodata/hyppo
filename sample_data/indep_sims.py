@@ -74,7 +74,6 @@ def plot_sims():
 
     plt.suptitle("Independence Simulations", y=0.93, va="baseline")
 
-    count = 0
     for i, row in enumerate(ax):
         for j, col in enumerate(row):
             count = 5 * i + j
@@ -89,7 +88,7 @@ def plot_sims():
                 x, y = sim(NOISY, 1, noise=True)
                 x_no_noise, y_no_noise = sim(NO_NOISE, 1)
 
-            # plot the nose and noise-free sims
+            # plot the noise and noise-free sims
             col.scatter(x, y, label="Noisy")
             col.scatter(x_no_noise, y_no_noise, label="No Noise")
 
