@@ -21,10 +21,11 @@ hyppo
    :hidden:
    :caption: User Guide
 
+   sample_data/index.rst
    tutorials/independence.rst
    tutorials/ksample.rst
    tutorials/time_series.rst
-   sample_data/index.rst
+   tutorials/discrim.rst
 
 .. toctree::
    :maxdepth: 2
