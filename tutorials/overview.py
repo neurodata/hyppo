@@ -43,19 +43,22 @@ to use interface. Currently, we include the following modules:
 generate simulated data, that we used to evalue our methods, as well as functions to
 calculate p-values or other important functions commmonly used between modules.
 
-Brief Example
---------------
+.. _general indep:
 
-As an example, let's generate some simulated data using :class:`hyppo.tools.spiral`:
+General Workflow
+------------------
+
+As an example, let's generate some simulated data using :class:`hyppo.tools.w_shaped`:
 """
 
-from hyppo.tools import spiral
+from hyppo.tools import w_shaped
 
-x, y = spiral(100, 1, noise=True)
+# 100 samples, 1D x and 1D y, noise
+x, y = w_shaped(n=100, p=1, noise=True)
 
 
 ########################################################################################
-# The data are points simulating a noisey spiral relationship between random variables
+# The data are points simulating a noisy spiral relationship between random variables
 # :math:`X` and :math:`Y` and returns realizations as :class:`numpy.ndarray`:
 
 import matplotlib.pyplot as plt
@@ -64,6 +67,7 @@ import seaborn as sns
 # make plots look pretty
 sns.set(color_codes=True, style="white", context="talk", font_scale=1)
 
+# look at the simulation
 plt.figure(figsize=(5, 5))
 plt.scatter(x, y)
 plt.xticks([])
@@ -74,9 +78,31 @@ plt.show()
 ########################################################################################
 # Let's ask the question: are ``x`` and ``y`` independent? From the description given
 # above, the answer to that is obviously yes. We can verify that this is in fact true by
-# running an independence test. Let's using the test multiscale graph correlation (MGC)
-# which, as an aside, was the test that started the creation of the package. First, we
-# have to import it, and then run the test:
+# running.
+
+########################################################################################
+# Let's ask the question: are ``x`` and ``y`` independent? From the description given
+# above, the answer to that is obviously yes.
+# From the simulation visualization, it's hard to tell.
+# We can verify whether or not we can see a trend within the data by
+# running our  an independence test. Let's use the test multiscale graph correlation
+# (MGC)
+# which, as an aside, was the test that started the creation of the package.
+# We have to import it, and then run the test.
+#
+# First, we initalize the class. Most tests have a ``compute_distance`` parameter that
+# can use accept any metric from :func:`sklearn.metric.pairwise_distances`
+# (or :func:`sklearn.metrics.pairwise.pairwise_kernels` for kernel-based methods)
+# and additional keyword arguments for the method.
+# The parameter can also accept a custom function, or ``None`` in the case where the
+# inputs are already distance matrices.
+#
+# Each test also has a :func:`test` method that has a
+# ``reps`` parameter that controls the replications of
+# :meth:`hyppo.tools.perm_test` and the ``workers`` parameter controls the number of
+# threads when running the parallelized code (``-1`` uses all available cores). We
+# highly recommend using a number >= 1 in general since speed increases are noticeable.
+#
 
 from hyppo.independence import MGC
 
@@ -84,10 +110,12 @@ stat, pvalue, mgc_dict = MGC().test(x, y)
 print(stat, pvalue)
 
 ########################################################################################
+# Note: MGC, like some tests, have 3 outputs. In general, tests in
+# :mod:`hyppo.independence` have 2 outputs.
+#
 # We see that we are right! Since the p-value is less than the alpha level of 0.05, we
 # can conclude that random variables :math:`X` and :math:`Y` are independent. And
 # that's it!
-
 
 ########################################################################################
 # Wrap Up
