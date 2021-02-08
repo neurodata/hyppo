@@ -23,6 +23,7 @@ hyppo
 
    tutorials/independence.rst
    tutorials/ksample.rst
+   tutorials/time_series.rst
    sample_data/index.rst
 
 .. toctree::
