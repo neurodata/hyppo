@@ -7,7 +7,7 @@ Changelog
 
 v0.2.0
 ------
-| **Release date:** 02 February 2021
+| **Release date:** 08 February 2021
 | **Supports:** Python 3.6+.
 
 **New features:**
