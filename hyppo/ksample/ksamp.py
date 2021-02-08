@@ -1,4 +1,4 @@
-from ..independence import CCA, HHG, KMERF, MGC, RV, Dcorr, Hsic
+from ..independence import CCA, HHG, KMERF, MGC, RV, Dcorr, Hsic, MaxMargin
 from ._utils import _CheckInputs, k_sample_transform
 from .base import KSampleTest
 
@@ -160,9 +160,10 @@ class KSample(KSampleTest):
 
         Note ``"rbf"`` and ``"gaussian"`` are the same metric.
     bias : bool, default: False
-        Whether or not to use the biased or unbiased test statistics.
+        Whether or not to use the biased or unbiased test statistics (for
+        ``indep_test="Dcorr"`` and ``indep_test="Hsic"``).
     **kwargs
-        Arbitrary keyword arguments for ``compute_distance``.
+        Arbitrary keyword arguments for ``compute_distkern``.
     """
 
     def __init__(self, indep_test, compute_distkern="euclidean", bias=False, **kwargs):
@@ -175,6 +176,7 @@ class KSample(KSampleTest):
             "dcorr": Dcorr,
             "mgc": MGC,
             "kmerf": KMERF,
+            "maxmargin": MaxMargin,
         }
         if indep_test not in test_names.keys():
             raise ValueError("Test is not a valid independence test")
@@ -198,6 +200,13 @@ class KSample(KSampleTest):
                 )
         elif self.indep_test_name == "kmerf":
             self.indep_test = indep_test(forest_type="classifier", **kwargs)
+        elif self.indep_test_name == "maxmargin":
+            self.indep_test = indep_test(
+                indep_test=self.indep_test_name,
+                compute_distkern=compute_distkern,
+                bias=bias,
+                **kwargs
+            )
         else:
             self.indep_test = indep_test()
 

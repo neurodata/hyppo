@@ -20,6 +20,7 @@ Independence
    HHG
    CCA
    RV
+   MaxMargin
 
 
 

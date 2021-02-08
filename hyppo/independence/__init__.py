@@ -4,6 +4,7 @@ from .dcorr import Dcorr
 from .hhg import HHG
 from .hsic import Hsic
 from .kmerf import KMERF
+from .max_margin import MaxMargin
 from .mgc import MGC
 from .rv import RV
 

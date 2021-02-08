@@ -37,72 +37,8 @@ parameters unique to those tests. But first, we present the general testing work
 present for all our tests using one of the tests, :class:`hyppo.independence.MGC`, as
 an example.
 
-.. _general indep:
-
-Independence Testing Workflow
----------------------------------------
-
-The first thing that we must do is import the test that we desire. We also import a
-simulation from the :mod:`hyppo.tools` module to generate some data to test against;
-in this case, :meth:`hyppo.tools.w_shaped`.
+Now, let's look at unique properties of some of the tests in :mod:`hyppo.independence`:
 """
-
-from hyppo.independence import MGC
-from hyppo.tools import w_shaped
-
-# 100 samples, 1D x and 1D y, noise
-x, y = w_shaped(n=100, p=1, noise=True)
-
-########################################################################################
-# The data are points simulating a 2D w-shaped relationship between random variables
-# :math:`X` and :math:`Y` and returns realizations as :class:`numpy.ndarray`.
-
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-# make plots look pretty
-sns.set(color_codes=True, style="white", context="talk", font_scale=1)
-
-# look at the simulation
-plt.figure(figsize=(5, 5))
-plt.scatter(x, y)
-plt.xticks([])
-plt.yticks([])
-sns.despine(left=True, bottom=True, right=True)
-plt.show()
-
-########################################################################################
-# Let's ask the question: are ``x`` and ``y`` independent? From the description given
-# above, the answer to that is obviously yes.
-# From the simulation visualization, it's hard to tell.
-# We can verify whether or not we can see a trend within the data by
-# running our test.
-#
-# First, we initalize the class. Most tests have a ``compute_distance`` parameter that
-# can use accept any metric from :func:`sklearn.metric.pairwise_distances`
-# (or :func:`sklearn.metrics.pairwise.pairwise_kernels` for kernel-based methods)
-# and additional keyword arguments for the method.
-# The parameter can also accept a custom function, or ``None`` in the case where the
-# inputs are already distance matrices.
-#
-# Each test also has a :func:`test` method that has a
-# ``reps`` parameter that controls the replications of
-# :meth:`hyppo.tools.perm_test` and the ``workers`` parameter controls the number of
-# threads when running the parallelized code (``-1`` uses all available cores). We
-# highly recommend using a number >= 1 in general since speed increases are noticeable.
-
-stat, pvalue, _ = MGC().test(x, y, reps=1000, workers=-1)
-print(stat, pvalue)
-
-########################################################################################
-# Note: MGC, like some tests, have 3 outputs. In general, tests in
-# :mod:`hyppo.independence` have 2 outputs.
-#
-# We see that we are right! Since the p-value is less than the alpha level of 0.05, we
-# can conclude that random variables :math:`X` and :math:`Y` are independent.
-#
-# Now, let's look at unique properties of some of the tests in
-# :mod:`hyppo.independence`:
 
 ########################################################################################
 # Pearson's Correlation Multivariate Variants
@@ -150,7 +86,7 @@ print(stat, pvalue)
 # **Distance Correlation (Dcorr)** is a powerful multivariate independence test based on
 # energy distance.
 # **Hilbert Schmidt Independence Criterion (Hsic)** is a kernel-based analogue to Dcorr
-# that uses the a gaussian median kernel by default.
+# that uses the a gaussian median kernel by default `[1]`_.
 # More details can be found in :class:`hyppo.independence.Dcorr` and
 # :class:`hyppo.independence.Hsic`.
 # The following applies to both:
@@ -165,7 +101,6 @@ print(stat, pvalue)
 #    :Cons: - Slightly less accurate as the above tests
 #
 # For Hsic, kernels are used instead of distances with the ``compute_kernel`` parameter.
-# Otherwise, this test runs like :ref:`any other test<general indep>`.
 # Any addition, if the bias variant of the test statistic is required, then the ``bias``
 # parameter can be set to ``True``. In general, we do not recommend doing this.
 # Otherwise, these tests runs like :ref:`any other test<general indep>`.
@@ -207,8 +142,7 @@ print(u"Fast time (fast statistic chi-square): {0:.3g}s".format(fast_chisq_time)
 # run.
 #
 # ------------
-
-########################################################################################
+#
 # **Multiscale graph correlation (MGC)** is a powerful independence test the uses the
 # power of Dcorr
 # and `k`-nearest neighbors to create an efficient and powerful independence test.
@@ -228,9 +162,13 @@ print(u"Fast time (fast statistic chi-square): {0:.3g}s".format(fast_chisq_time)
 #    :Cons: - Slightly slower than similar tests in this section
 #
 # MGC has some specific differences outlined below, but creating the instance of the
-# class was demonstrated in the :ref:`general indep` section.
+# class was demonstrated in the :ref:`general indep` in the Overview.
 
 from hyppo.independence import MGC
+from hyppo.tools import w_shaped
+
+# 100 samples, 1D x and 1D y, noise
+x, y = w_shaped(n=100, p=1, noise=True)
 
 # get the MGC map and optimal scale (only need the statistic)
 _, _, mgc_dict = MGC().test(x, y, reps=0)
@@ -308,24 +246,22 @@ plt.show()
 #           - Gives information about releative dimension (or feature) importance
 #    :Cons: - Very slow (requires training a random forest for each permutation)
 #
-# Let's go over the test initialization process. Unlike other tests, there is no
-# ``compute_distance``
+# Unlike other tests, there is no ``compute_distance``
 # parameter. Instead, the number of trees can be set explicityly, and the type of
 # classifier can be set ("classifier" in the case where the return value :math:`y` is
 # categorical, and "regressor" when that is not the case). Check out
 # :class:`sklearn.ensemble.RandomForestClassifier` and
 # :class:`sklearn.ensemble.RandomForestRegressor` for additional parameters to change.
 # Otherwise, this test runs like :ref:`any other test<general indep>`.
-# Using :meth:`hyppo.tools.cubic`:
 
 from hyppo.independence import KMERF
 from hyppo.tools import cubic
 
 # 100 samples, 5D sim
-x2, y2 = cubic(n=100, p=5)
+x, y = cubic(n=100, p=5)
 
 # get the feature importances (only need the statistic)
-_, _, kmerf_dict = KMERF(ntrees=5000).test(x2, y2, reps=0)
+_, _, kmerf_dict = KMERF(ntrees=5000).test(x, y, reps=0)
 
 ########################################################################################
 # Because this test is random-forest based, we can get feature importances. This gives
@@ -349,6 +285,7 @@ plt.xlim([1, 5])
 plt.xticks([1, 2, 3, 4, 5])
 plt.xlabel("Dimensions")
 plt.ylim([0, 1])
+plt.yticks([])
 plt.ylabel("Normalized Feature Importance")
 plt.title("Feature Importances")
 plt.show()
@@ -356,3 +293,25 @@ plt.show()
 ########################################################################################
 # We see that feature importances decreases as dimension increases. This is true for
 # most of the simulations in :mod:`hyppo.tools`.
+#
+# Maximal Margin Correlation
+# ---------------------------------------------
+#
+# **Maximial Margin Correlation** takes the independence tests in
+# :mod:`hyppo.independence`, and compute the maximal correlation of pairwise comparisons
+# between each dimension of `x` and `y`.
+# More details can be found in :class:`hyppo.independence.MaxMargin`.
+#
+# .. note::
+#
+#    :Pros: - As powerful as some of the tests within this module
+#           - Minimal decrease in testing power as dimension increases
+#    :Cons: - Adds computational complexity, so can be slow
+#
+# These tests have an ``indep_test`` parameter corresponding to the desired independence
+# test to be run. All the parameters from the above tests can also be modified, and see
+# the relevant section of reference documentation in :mod:`hyppo.independence` for more
+# information.
+# These tests runs like :ref:`any other test<general indep>`.
+#
+# .. _[1]: https://arxiv.org/abs/1806.05514
