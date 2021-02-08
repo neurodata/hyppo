@@ -77,15 +77,10 @@ plt.show()
 
 ########################################################################################
 # Let's ask the question: are ``x`` and ``y`` independent? From the description given
-# above, the answer to that is obviously yes. We can verify that this is in fact true by
-# running.
-
-########################################################################################
-# Let's ask the question: are ``x`` and ``y`` independent? From the description given
 # above, the answer to that is obviously yes.
 # From the simulation visualization, it's hard to tell.
 # We can verify whether or not we can see a trend within the data by
-# running our  an independence test. Let's use the test multiscale graph correlation
+# running an independence test. Let's use the test multiscale graph correlation
 # (MGC)
 # which, as an aside, was the test that started the creation of the package.
 # We have to import it, and then run the test.
