@@ -13,6 +13,7 @@ Independence
 .. autosummary::
    :toctree: generated/
 
+   MaxMargin
    KMERF
    MGC
    Dcorr
@@ -20,7 +21,6 @@ Independence
    HHG
    CCA
    RV
-   MaxMargin
 
 
 
