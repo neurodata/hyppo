@@ -167,6 +167,8 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
                     l1, (n - 1, n + 1), (l1.itemsize * (n + 1), l1.itemsize)
                 )[:, 1:]
             )
+            # prevents division by zero when used on label vectors
+            med = med if med else 1
             kwargs["gamma"] = 1.0 / (2 * (med ** 2))
         metric = "rbf"
     if callable(metric):
