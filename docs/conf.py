@@ -195,10 +195,7 @@ html_context = {
     "conf_py_path": "docs/",
     "galleries": sphinx_gallery_conf["gallery_dirs"],
     "gallery_dir": dict(
-        zip(
-            sphinx_gallery_conf["gallery_dirs"],
-            sphinx_gallery_conf["examples_dirs"],
-        )
+        zip(sphinx_gallery_conf["gallery_dirs"], sphinx_gallery_conf["examples_dirs"],)
     ),
 }
 
@@ -287,7 +284,7 @@ epub_exclude_files = ["search.html"]
 
 def setup(app):
     # to hide/show the prompt in code examples:
-    app.add_javascript("js/copybutton.js")
+    app.add_js_file("js/copybutton.js")
 
 
 # -- Jupyter Notebook --------------------------------------------------------
