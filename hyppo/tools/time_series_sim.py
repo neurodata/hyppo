@@ -41,7 +41,7 @@ def indep_ar(n, lag=1, phi=0.5, sigma=1):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 3).
     lag : float, default: 1
         The maximum time lag considered between ``x`` and ``y``.
     phi : float, default: 0.5
@@ -95,7 +95,7 @@ def cross_corr_ar(n, lag=1, phi=0.5, sigma=1):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 3).
     lag : float, default: 1
         The maximum time lag considered between ``x`` and ``y``.
     phi : float, default: 0.5
@@ -145,7 +145,7 @@ def nonlinear_process(n, lag=1, phi=1, sigma=1):
     Parameters
     ----------
     n : int
-        The number of samples desired by the simulation.
+        The number of samples desired by the simulation (>= 3).
     lag : float, default: 1
         The maximum time lag considered between `x` and `y`.
     phi : float, default: 1
@@ -177,3 +177,42 @@ def nonlinear_process(n, lag=1, phi=1, sigma=1):
         x[t] = phi * epsilons[t] * y[t - lag]
 
     return x, y
+
+
+TS_SIMS = {
+    "indep_ar": indep_ar,
+    "cross_corr_ar": cross_corr_ar,
+    "nonlinear_process": nonlinear_process,
+}
+
+
+def ts_sim(sim, n, **kwargs):
+    r"""
+    Independence simulation generator.
+
+    Takes a simulation and the required parameters, and outputs the simulated
+    data matrices.
+
+    Parameters
+    ----------
+    sim : str
+        The name of the simulation (from the :mod:`hyppo.tools module) that is to be
+        rotated.
+    n : int
+        The number of samples desired by the simulation (>= 3).
+    **kwargs
+        Additional keyword arguements for the desired simulation.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices.
+    """
+    if sim not in TS_SIMS.keys():
+        raise ValueError(
+            "sim_name must be one of the following: {}".format(list(TS_SIMS.keys()))
+        )
+    else:
+        sim = TS_SIMS[sim]
+
+    return sim(n, **kwargs)
