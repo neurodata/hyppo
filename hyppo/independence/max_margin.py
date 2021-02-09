@@ -11,6 +11,16 @@ from .kmerf import KMERF
 from .mgc import MGC
 from .rv import RV
 
+INDEP_NOT_MAXMARGIN = {
+    "rv": RV,
+    "cca": CCA,
+    "hhg": HHG,
+    "hsic": Hsic,
+    "dcorr": Dcorr,
+    "mgc": MGC,
+    "kmerf": KMERF,
+}
+
 
 class MaxMargin(IndependenceTest):
     r"""
@@ -76,41 +86,26 @@ class MaxMargin(IndependenceTest):
 
     def __init__(self, indep_test, compute_distkern="euclidean", bias=False, **kwargs):
         indep_test = indep_test.lower()
-        test_names = {
-            "rv": RV,
-            "cca": CCA,
-            "hhg": HHG,
-            "hsic": Hsic,
-            "dcorr": Dcorr,
-            "mgc": MGC,
-            "kmerf": KMERF,
-        }
-        if indep_test not in test_names.keys():
+        if indep_test not in INDEP_NOT_MAXMARGIN.keys():
             raise ValueError("Test is not a valid independence test")
         if indep_test == "hsic" and compute_distkern == "euclidean":
             compute_distkern = "gaussian"
         self.indep_test_name = indep_test
-        indep_test = test_names[indep_test]
 
-        if self.indep_test_name in ["dcorr", "hhg", "hsic", "mgc"]:
-            if self.indep_test_name == "hsic":
-                self.indep_test = indep_test(
-                    compute_kernel=compute_distkern, bias=bias, **kwargs
-                )
-            elif self.indep_test_name == "dcorr":
-                self.indep_test = indep_test(
-                    compute_distance=compute_distkern, bias=bias, **kwargs
-                )
-            else:
-                self.indep_test = indep_test(
-                    compute_distance=compute_distkern, **kwargs
-                )
-        elif self.indep_test_name == "kmerf":
-            self.indep_test = indep_test(forest_type="classifier", **kwargs)
-        else:
-            self.indep_test = indep_test()
+        indep_kwargs = {
+            "dcorr": {"bias": bias, "compute_distance": compute_distkern},
+            "hsic": {"bias": bias, "compute_kernel": compute_distkern},
+            "hhg": {"compute_distance": compute_distkern},
+            "mgc": {"compute_distance": compute_distkern},
+            "kmerf": {"forest_type": "classifier"},
+            "rv": {},
+            "cca": {},
+        }
 
-        # set is_distance to true if compute_distance is None
+        self.indep_test = INDEP_NOT_MAXMARGIN[indep_test](
+            **indep_kwargs[indep_test], **kwargs
+        )
+
         self.is_distance = False
         if not compute_distkern:
             self.is_distance = True
@@ -195,11 +190,7 @@ class MaxMargin(IndependenceTest):
         >>> '%.1f, %.3f' % (stat, pvalue)
         '1.0, 0.000'
         """
-        check_input = _CheckInputs(
-            x,
-            y,
-            reps=reps,
-        )
+        check_input = _CheckInputs(x, y, reps=reps,)
         x, y = check_input()
 
         if auto and x.shape[0] > 20 and self.indep_test_name in ["dcorr", "hsic"]:

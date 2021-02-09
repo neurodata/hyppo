@@ -1063,3 +1063,61 @@ def multimodal_independence(n, p, prob=0.5, sep1=3, sep2=2):
     y = v / sep1 + sep2 * v_2 - 1
 
     return x, y
+
+
+SIMULATIONS = {
+    "linear": linear,
+    "exponential": exponential,
+    "cubic": cubic,
+    "joint_normal": joint_normal,
+    "step": step,
+    "quadratic": quadratic,
+    "w_shaped": w_shaped,
+    "spiral": spiral,
+    "uncorrelated_bernoulli": uncorrelated_bernoulli,
+    "logarithmic": logarithmic,
+    "fourth_root": fourth_root,
+    "sin_four_pi": sin_four_pi,
+    "sin_sixteen_pi": sin_sixteen_pi,
+    "square": square,
+    "two_parabolas": two_parabolas,
+    "circle": circle,
+    "ellipse": ellipse,
+    "diamond": diamond,
+    "multiplicative_noise": multiplicative_noise,
+    "multimodal_independence": multimodal_independence,
+}
+
+
+def indep_sim(sim, n, p, **kwargs):
+    r"""
+    Independence simulation generator.
+
+    Takes a simulation and the required parameters, and outputs the simulated
+    data matrices.
+
+    Parameters
+    ----------
+    sim : str
+        The name of the simulation (from the :mod:`hyppo.tools module) that is to be
+        rotated.
+    n : int
+        The number of samples desired by the simulation (>= 5).
+    p : int
+        The number of dimensions desired by the simulation (>= 1).
+    **kwargs
+        Additional keyword arguements for the desired simulation.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices.
+    """
+    if sim not in SIMULATIONS.keys():
+        raise ValueError(
+            "sim_name must be one of the following: {}".format(list(SIMULATIONS.keys()))
+        )
+    else:
+        sim = SIMULATIONS[sim]
+
+    return sim(n, p, **kwargs)

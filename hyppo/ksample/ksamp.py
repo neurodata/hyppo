@@ -1,4 +1,4 @@
-from ..independence import CCA, HHG, KMERF, MGC, RV, Dcorr, Hsic, MaxMargin
+from ..independence import INDEP_TESTS
 from ._utils import _CheckInputs, k_sample_transform
 from .base import KSampleTest
 
@@ -119,9 +119,11 @@ class KSample(KSampleTest):
 
     Parameters
     ----------
-    indep_test : "CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC", "KMERF"
+    indep_test : "CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC", "KMERF", "MaxMargin"
         A string corresponding to the desired independence test from
-        :mod:`hyppo.independence`. This is not case sensitive.
+        :mod:`hyppo.independence`. This is not case sensitive. If using ``"MaxMargin"``
+        then this must be a list containing ``"MaxMargin"`` in the first index and
+        another ``indep_test`` in the second index.
     compute_distkern : str, callable, or None, default: "euclidean" or "gaussian"
         A function that computes the distance among the samples within each
         data matrix.
@@ -168,47 +170,36 @@ class KSample(KSampleTest):
 
     def __init__(self, indep_test, compute_distkern="euclidean", bias=False, **kwargs):
         indep_test = indep_test.lower()
-        test_names = {
-            "rv": RV,
-            "cca": CCA,
-            "hhg": HHG,
-            "hsic": Hsic,
-            "dcorr": Dcorr,
-            "mgc": MGC,
-            "kmerf": KMERF,
-            "maxmargin": MaxMargin,
-        }
-        if indep_test not in test_names.keys():
-            raise ValueError("Test is not a valid independence test")
+        if indep_test not in INDEP_TESTS.keys():
+            raise ValueError("Test is not in {}".format(INDEP_TESTS.keys()))
         if indep_test == "hsic" and compute_distkern == "euclidean":
             compute_distkern = "gaussian"
         self.indep_test_name = indep_test
-        indep_test = test_names[indep_test]
 
-        if self.indep_test_name in ["dcorr", "hhg", "hsic", "mgc"]:
-            if self.indep_test_name == "hsic":
-                self.indep_test = indep_test(
-                    compute_kernel=compute_distkern, bias=bias, **kwargs
-                )
-            elif self.indep_test_name == "dcorr":
-                self.indep_test = indep_test(
-                    compute_distance=compute_distkern, bias=bias, **kwargs
-                )
+        indep_kwargs = {
+            "dcorr": {"bias": bias, "compute_distance": compute_distkern},
+            "hsic": {"bias": bias, "compute_kernel": compute_distkern},
+            "hhg": {"compute_distance": compute_distkern},
+            "mgc": {"compute_distance": compute_distkern},
+            "kmerf": {"forest_type": "classifier"},
+            "rv": {},
+            "cca": {},
+        }
+
+        if type(indep_test) is list:
+            if indep_test[0] == "maxmargin" and indep_test[1] in INDEP_TESTS.keys():
+                indep_kwargs["maxmargin"] = {
+                    "indep_test": indep_test[1],
+                    "compute_distkern": compute_distkern,
+                    "bias": bias,
+                }
             else:
-                self.indep_test = indep_test(
-                    compute_distance=compute_distkern, **kwargs
+                raise ValueError(
+                    "Test 1 must be Maximal Margin, currently {}; Test 2 must be an "
+                    "independence test, currently {}".format(*indep_test)
                 )
-        elif self.indep_test_name == "kmerf":
-            self.indep_test = indep_test(forest_type="classifier", **kwargs)
-        elif self.indep_test_name == "maxmargin":
-            self.indep_test = indep_test(
-                indep_test=self.indep_test_name,
-                compute_distkern=compute_distkern,
-                bias=bias,
-                **kwargs
-            )
-        else:
-            self.indep_test = indep_test()
+
+        self.indep_test = INDEP_TESTS[indep_test](**indep_kwargs[indep_test], **kwargs)
 
         # set is_distance to true if compute_distance is None
         self.is_distance = False
@@ -292,10 +283,7 @@ class KSample(KSampleTest):
         '0.000, 1.0'
         """
         inputs = list(args)
-        check_input = _CheckInputs(
-            inputs=inputs,
-            indep_test=self.indep_test_name,
-        )
+        check_input = _CheckInputs(inputs=inputs, indep_test=self.indep_test_name,)
         inputs = check_input()
         if self.indep_test_name == "kmerf":
             u, v = k_sample_transform(inputs, test_type="rf")

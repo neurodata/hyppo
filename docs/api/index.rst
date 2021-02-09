@@ -106,6 +106,7 @@ Independence Simulations
    diamond
    multiplicative_noise
    multimodal_independence
+   indep_sim
 
 *K*-Sample Simulations
 """"""""""""""""""""""""
@@ -125,6 +126,7 @@ Time-Series Simulations
    indep_ar
    cross_corr_ar
    nonlinear_process
+   ts_sim
 
 
 
@@ -139,6 +141,7 @@ Miscellaneous
    :toctree: generated/
 
    independence.sim_matrix
+   independence.INDEP_TESTS
    ksample.k_sample_transform
    tools.compute_kern
    tools.compute_dist

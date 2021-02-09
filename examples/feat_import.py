@@ -25,28 +25,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 from hyppo.independence import KMERF
-from hyppo.tools import (
-    circle,
-    cubic,
-    diamond,
-    ellipse,
-    exponential,
-    fourth_root,
-    joint_normal,
-    linear,
-    logarithmic,
-    multimodal_independence,
-    multiplicative_noise,
-    quadratic,
-    sin_four_pi,
-    sin_sixteen_pi,
-    spiral,
-    square,
-    step,
-    two_parabolas,
-    uncorrelated_bernoulli,
-    w_shaped,
-)
+from hyppo.tools import SIMULATIONS
 from joblib import Parallel, delayed
 from scipy.stats import norm
 
@@ -62,35 +41,35 @@ DIM = 5  # 5D simulation
 FOREST_SIZE = 5000  # size of forest
 SIM_SIZE = 200  # size of simulation
 
-# dictionary mapping of simulations
-SIMULATIONS = {
-    "linear": (linear, "Linear"),
-    "exponential": (exponential, "Exponential"),
-    "cubic": (cubic, "Cubic"),
-    "joint_normal": (joint_normal, "Joint Normal"),
-    "step": (step, "Step"),
-    "quadratic": (quadratic, "Quadratic"),
-    "w_shaped": (w_shaped, "W-Shaped"),
-    "spiral": (spiral, "Spiral"),
-    "uncorrelated_bernoulli": (uncorrelated_bernoulli, "Bernoulli"),
-    "logarithmic": (logarithmic, "Logarithmic"),
-    "fourth_root": (fourth_root, "Fourth Root"),
-    "sin_four_pi": (sin_four_pi, "Sine 4\u03C0"),
-    "sin_sixteen_pi": (sin_sixteen_pi, "Sine 16\u03C0"),
-    "square": (square, "Square"),
-    "two_parabolas": (two_parabolas, "Two Parabolas"),
-    "circle": (circle, "Circle"),
-    "ellipse": (ellipse, "Ellipse"),
-    "diamond": (diamond, "Diamond"),
-    "multiplicative_noise": (multiplicative_noise, "Noise"),
-    "multimodal_independence": (multimodal_independence, "Independence"),
-}
+# simulation titles
+SIM_TITLES = [
+    "Linear",
+    "Exponential",
+    "Cubic",
+    "Joint Normal",
+    "Step",
+    "Quadratic",
+    "W-Shaped",
+    "Spiral",
+    "Bernoulli",
+    "Logarithmic",
+    "Fourth Root",
+    "Sine 4\u03C0",
+    "Sine 16\u03C0",
+    "Square",
+    "Two Parabolas",
+    "Circle",
+    "Ellipse",
+    "Diamond",
+    "Noise",
+    "Independence",
+]
 
 
 def tree_import(sim_name):
     """Train a random forest for a given simulation, calculate feature importance."""
     # simulate data
-    x, y = SIMULATIONS[sim_name][0](SIM_SIZE, DIM)
+    x, y = SIMULATIONS[sim_name](SIM_SIZE, DIM)
     if y.shape[1] == 1:
         y = y.ravel()
 
@@ -178,7 +157,7 @@ def plot_featimport_confint():
                 col.set_yticks([0, 1])
             col.set_ylabel("")
             col.set_xlabel("")
-            col.set_title(SIMULATIONS[sim_name][1])
+            col.set_title(SIM_TITLES[count])
 
     # misc entire plot
     fig.text(0.5, 0.04, "Dimension", ha="center")

@@ -9,3 +9,15 @@ from .mgc import MGC
 from .rv import RV
 
 __all__ = [s for s in dir()]  # add imported tests to __all__
+
+
+INDEP_TESTS = {
+    "rv": RV,
+    "cca": CCA,
+    "hhg": HHG,
+    "hsic": Hsic,
+    "dcorr": Dcorr,
+    "mgc": MGC,
+    "kmerf": KMERF,
+    "maxmargin": MaxMargin,
+}

@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from numpy.testing import assert_almost_equal, assert_raises
 
-from ...tools import linear, rot_ksamp
+from ...tools import rot_ksamp
 from .. import MANOVA
 
 
@@ -13,7 +13,7 @@ class TestManova:
     )
     def test_energy_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
-        x, y = rot_ksamp(linear, n, 1, k=2, noise=False)
+        x, y = rot_ksamp("linear", n, 1, k=2, noise=False)
         stat, pvalue = MANOVA().test(x, y)
 
         assert_almost_equal(stat, obs_stat, decimal=1)

@@ -1,50 +1,6 @@
 import numpy as np
 
-from .indep_sim import (
-    circle,
-    cubic,
-    diamond,
-    ellipse,
-    exponential,
-    fourth_root,
-    joint_normal,
-    linear,
-    logarithmic,
-    multimodal_independence,
-    multiplicative_noise,
-    quadratic,
-    sin_four_pi,
-    sin_sixteen_pi,
-    spiral,
-    square,
-    step,
-    two_parabolas,
-    uncorrelated_bernoulli,
-    w_shaped,
-)
-
-_SIMS = [
-    linear,
-    spiral,
-    exponential,
-    cubic,
-    joint_normal,
-    step,
-    quadratic,
-    w_shaped,
-    uncorrelated_bernoulli,
-    logarithmic,
-    fourth_root,
-    sin_four_pi,
-    sin_sixteen_pi,
-    two_parabolas,
-    circle,
-    ellipse,
-    diamond,
-    multiplicative_noise,
-    square,
-    multimodal_independence,
-]
+from .indep_sim import SIMULATIONS, indep_sim
 
 
 def _normalize(x, y):
@@ -71,13 +27,13 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
         "multiplicative_noise",
         "multimodal_independence",
     ]
-    if sim.__name__ in same_shape:
+    if sim in same_shape:
         rot_shape = 2 * p
     else:
         rot_shape = p + 1
     rot_mat = np.identity(rot_shape)
     if pow_type == "dim":
-        if sim.__name__ not in [
+        if sim not in [
             "exponential",
             "cubic",
             "spiral",
@@ -107,7 +63,7 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
         raise ValueError("pow_type not a valid flag ('dim', 'samp')")
     rot_data = (rot_mat @ data.T).T
 
-    if sim.__name__ in same_shape:
+    if sim in same_shape:
         x_rot, y_rot = np.hsplit(rot_data, 2)
     else:
         x_rot, y_rot = np.hsplit(rot_data, [-p])
@@ -121,8 +77,9 @@ def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
 
     Parameters
     ----------
-    sim : callable
-        The simulation (from the :mod:`hyppo.tools module) that is to be rotated.
+    sim : str
+        The name of the simulation (from the :mod:`hyppo.tools module) that is to be
+        rotated.
     n : int
         The number of samples desired by ``sim`` (>= 5).
     p : int
@@ -146,7 +103,7 @@ def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
         or ``(n, 2p)`` depending on the independence simulation. Here, `n`
         is the number of samples and `p` is the number of dimensions.
     """
-    if sim not in _SIMS:
+    if sim not in SIMULATIONS.keys():
         raise ValueError("Not valid simulation")
 
     if (k - 1) > 1:
@@ -165,12 +122,12 @@ def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
                     )
                 )
 
-    if sim.__name__ == "multimodal_independence":
-        sims = [np.hstack(sim(n, p)) for _ in range(k)]
+    if sim == "multimodal_independence":
+        sims = [np.hstack(SIMULATIONS[sim](n, p)) for _ in range(k)]
     else:
-        if sim.__name__ != "multiplicative_noise":
+        if sim != "multiplicative_noise":
             kwargs["noise"] = noise
-        x, y = sim(n, p, **kwargs)
+        x, y = SIMULATIONS[sim](n, p, **kwargs)
         if (k - 1) == 1:
             sims = [
                 np.hstack([x, y]),

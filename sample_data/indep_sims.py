@@ -10,28 +10,7 @@ as an aggregate of many popularly tested equations in the literature.
 
 import matplotlib.pyplot as plt
 import seaborn as sns
-from hyppo.tools import (
-    circle,
-    cubic,
-    diamond,
-    ellipse,
-    exponential,
-    fourth_root,
-    joint_normal,
-    linear,
-    logarithmic,
-    multimodal_independence,
-    multiplicative_noise,
-    quadratic,
-    sin_four_pi,
-    sin_sixteen_pi,
-    spiral,
-    square,
-    step,
-    two_parabolas,
-    uncorrelated_bernoulli,
-    w_shaped,
-)
+from hyppo.tools import SIMULATIONS
 
 # make plots look pretty
 sns.set(color_codes=True, style="white", context="talk", font_scale=2)
@@ -42,28 +21,28 @@ sns.set_palette(PALETTE[2::2])
 NOISY = 100  # sample size of noisy simulation
 NO_NOISE = 1000  # sample size of noise-free simulation
 
-# dictionary mapping of simulations
-SIMULATIONS = [
-    (linear, "Linear"),
-    (exponential, "Exponential"),
-    (cubic, "Cubic"),
-    (joint_normal, "Joint Normal"),
-    (step, "Step"),
-    (quadratic, "Quadratic"),
-    (w_shaped, "W-Shaped"),
-    (spiral, "Spiral"),
-    (uncorrelated_bernoulli, "Bernoulli"),
-    (logarithmic, "Logarithmic"),
-    (fourth_root, "Fourth Root"),
-    (sin_four_pi, "Sine 4\u03C0"),
-    (sin_sixteen_pi, "Sine 16\u03C0"),
-    (square, "Square"),
-    (two_parabolas, "Two Parabolas"),
-    (circle, "Circle"),
-    (ellipse, "Ellipse"),
-    (diamond, "Diamond"),
-    (multiplicative_noise, "Noise"),
-    (multimodal_independence, "Independence"),
+# simulation titles
+SIM_TITLES = [
+    "Linear",
+    "Exponential",
+    "Cubic",
+    "Joint Normal",
+    "Step",
+    "Quadratic",
+    "W-Shaped",
+    "Spiral",
+    "Bernoulli",
+    "Logarithmic",
+    "Fourth Root",
+    "Sine 4\u03C0",
+    "Sine 16\u03C0",
+    "Square",
+    "Two Parabolas",
+    "Circle",
+    "Ellipse",
+    "Diamond",
+    "Noise",
+    "Independence",
 ]
 
 
@@ -77,7 +56,8 @@ def plot_sims():
     for i, row in enumerate(ax):
         for j, col in enumerate(row):
             count = 5 * i + j
-            sim, sim_title = SIMULATIONS[count]
+            sim_title = SIM_TITLES[count]
+            sim = list(SIMULATIONS.values())[count]
 
             # the multiplicative noise and independence simulation don't have a noise
             # parameter
