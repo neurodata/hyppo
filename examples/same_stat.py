@@ -5,40 +5,6 @@ Comparisons of Test Statistics
 There are few implementations in :mod:`hyppo.independence` the have implementations
 in R. Here, we compare the test statistics between the R-generated values and our
 package values. As you can see, there is a minimum difference between test statistics.
-
-The following shows the code that was used to compute the R test statistics.
-Certain lines were commented out depending on whether or not they were useful.
-
-.. code-block::
-
-   rm(list=ls())
-
-   require("energy")
-   require("kernlab")
-   require("HHG")
-   # change to your file path using setwd to same_stat/indep and same_stat/ksample
-   # filepath =
-
-   times = seq(1, 20, by=1)
-   statistics <- list()
-   for (t in times){
-     # df <- read.csv(paste(filepath, "/", t, ".csv", sep=""), sep=",")
-     df1 <- read.csv(paste(filepath, "/sim1_", t, ".csv", sep=""), sep=",")
-     df2 <- read.csv(paste(filepath, "/sim2_", t, ".csv", sep=""), sep=",")
-     # x <- df[, 1]
-     # y <- df[, 2]
-     x <- df1[,]
-     y <- df2[,]
-     # stat <- bcdcor(x, y)
-     # Dx = as.matrix(dist((x), diag = TRUE, upper = TRUE))
-     # Dy = as.matrix(dist((y), diag = TRUE, upper = TRUE))
-     # stat <- hhg.test(Dx, Dy, nr.perm=0)$sum.chisq
-     stat <- kmmd(x, y, ntimes=0)@mmdstats[2]
-     statistics <- c(statistics, list(stat))
-   }
-
-   df <- data.frame(matrix(unlist(statistics), nrow=length(statistics), byrow=T), stringsAsFactors=FALSE)
-   write.csv(df, row.names=FALSE)
 """
 
 
@@ -48,13 +14,13 @@ import sys
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import numpy as np
-import seaborn as sns
-
-sys.path.append(os.path.realpath(".."))
 import pandas as pd
+import seaborn as sns
 from hyppo.independence import HHG, Dcorr
 from hyppo.ksample import MMD
 from hyppo.tools import rot_ksamp, spiral
+
+sys.path.append(os.path.realpath(".."))
 
 # make plots look pretty
 sns.set(color_codes=True, style="white", context="talk", font_scale=1)
@@ -136,8 +102,13 @@ def plot_stats():
         data[:, i] = np.abs(hyppo_stat) - np.abs(r_stat)
 
     data = pd.DataFrame(data=data, columns=test_names)
-    sns.violinplot(data=data, inner=None)
-    sns.swarmplot(data=data, color="white", edgecolor="gray")
+    sns.stripplot(
+        data=data,
+        edgecolor="gray",
+        size=5,
+        palette=["#377eb8", "#ff7f00", "#4daf4a"],
+        jitter=1,
+    )
     ax.axhline(y=0, color="red", linewidth=1)
 
     ax.spines["top"].set_visible(False)
@@ -154,5 +125,40 @@ def plot_stats():
     )
 
 
-# plot the feature importances
+# plot the statistic differences
 plot_stats()
+
+########################################################################################
+# The following shows the code that was used to compute the R test statistics.
+# Certain lines were commented out depending on whether or not they were useful.
+#
+# .. code-block::
+#
+#    rm(list=ls())
+#
+#    require("energy")
+#    require("kernlab")
+#    require("HHG")
+#    # change to your file path using setwd to same_stat/indep and same_stat/ksample
+#    # filepath =
+#
+#    times = seq(1, 20, by=1)
+#    statistics <- list()
+#    for (t in times){
+#      # df <- read.csv(paste(filepath, "/", t, ".csv", sep=""), sep=",")
+#      df1 <- read.csv(paste(filepath, "/sim1_", t, ".csv", sep=""), sep=",")
+#      df2 <- read.csv(paste(filepath, "/sim2_", t, ".csv", sep=""), sep=",")
+#      # x <- df[, 1]
+#      # y <- df[, 2]
+#      x <- df1[,]
+#      y <- df2[,]
+#      # stat <- bcdcor(x, y)
+#      # Dx = as.matrix(dist((x), diag = TRUE, upper = TRUE))
+#      # Dy = as.matrix(dist((y), diag = TRUE, upper = TRUE))
+#      # stat <- hhg.test(Dx, Dy, nr.perm=0)$sum.chisq
+#      stat <- kmmd(x, y, ntimes=0)@mmdstats[2]
+#      statistics <- c(statistics, list(stat))
+#    }
+#
+#    df <- data.frame(matrix(unlist(statistics), nrow=length(statistics), byrow=T), stringsAsFactors=FALSE)
+#    write.csv(df, row.names=FALSE)
