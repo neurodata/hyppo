@@ -48,3 +48,14 @@ class TestTwoSample:
 
         assert_almost_equal(d1, obs_d1, decimal=2)
         assert_almost_equal(d2, obs_d2, decimal=2)
+
+
+class TestDiscrErrorWarn:
+    """Tests errors and warnings."""
+
+    def test_no_indeptest(self):
+        # raises error if not indep test
+        x1 = np.arange(20)
+        x2 = np.arange(3, 23)
+        y = np.arange(5, 25)
+        assert_raises(ValueError, DiscrimTwoSample().test, x1, x2, y, alt="abcd")
