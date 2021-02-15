@@ -202,11 +202,7 @@ class MGC(IndependenceTest):
         >>> '%.1f, %.2f' % (stat, pvalue)
         '0.0, 1.00'
         """
-        check_input = _CheckInputs(
-            x,
-            y,
-            reps=reps,
-        )
+        check_input = _CheckInputs(x, y, reps=reps,)
         x, y = check_input()
 
         x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)

@@ -140,9 +140,7 @@ class MANOVA(KSampleTest):
         '0.000, 1.0'
         """
         inputs = list(args)
-        check_input = _CheckInputs(
-            inputs=inputs,
-        )
+        check_input = _CheckInputs(inputs=inputs,)
         inputs = check_input()
 
         N = np.sum([i.shape[0] for i in inputs])

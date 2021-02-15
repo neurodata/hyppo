@@ -114,9 +114,7 @@ class Hotelling(KSampleTest):
         >>> '%.3f, %.1f' % (stat, pvalue)
         '0.000, 1.0'
         """
-        check_input = _CheckInputs(
-            inputs=[x, y],
-        )
+        check_input = _CheckInputs(inputs=[x, y],)
         x, y = check_input()
 
         stat = self.statistic(x, y)
