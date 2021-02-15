@@ -181,7 +181,7 @@ class KSample(KSampleTest):
             "hsic": {"bias": bias, "compute_kernel": compute_distkern},
             "hhg": {"compute_distance": compute_distkern},
             "mgc": {"compute_distance": compute_distkern},
-            "kmerf": {"forest_type": "classifier"},
+            "kmerf": {"forest": "classifier"},
             "rv": {},
             "cca": {},
         }
@@ -200,11 +200,6 @@ class KSample(KSampleTest):
                 )
 
         self.indep_test = INDEP_TESTS[indep_test](**indep_kwargs[indep_test], **kwargs)
-
-        # set is_distance to true if compute_distance is None
-        self.is_distance = False
-        if not compute_distkern:
-            self.is_distance = True
 
         KSampleTest.__init__(
             self, compute_distance=compute_distkern, bias=bias, **kwargs

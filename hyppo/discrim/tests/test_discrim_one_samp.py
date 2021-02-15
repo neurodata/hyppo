@@ -5,7 +5,6 @@ from numpy.testing import assert_almost_equal, assert_raises, assert_warns
 from .. import DiscrimOneSample
 
 
-@pytest.mark.skip(reason="reformat code to speed up test")
 class TestOneSample:
     def test_same_one(self):
         # matches test calculated statistics and p-value for indiscriminable subjects
@@ -15,7 +14,7 @@ class TestOneSample:
         np.random.seed(123456789)
         obs_stat = 0.5
         obs_p = 1
-        stat, p = DiscrimOneSample().test(x, y)
+        stat, p = DiscrimOneSample().test(x, y, reps=0)
 
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(p, obs_p, decimal=2)
@@ -27,8 +26,8 @@ class TestOneSample:
 
         np.random.seed(123456789)
         obs_stat = 1.0
-        obs_p = 0.001
-        stat, p = DiscrimOneSample().test(x, y)
+        obs_p = 1.0
+        stat, p = DiscrimOneSample().test(x, y, reps=0)
 
         assert_almost_equal(stat, obs_stat, decimal=3)
         assert_almost_equal(p, obs_p, decimal=3)

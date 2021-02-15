@@ -81,10 +81,6 @@ class Energy(KSampleTest):
     """
 
     def __init__(self, compute_distance="euclidean", bias=False, **kwargs):
-        # set is_distance to true if compute_distance is None
-        self.is_distance = False
-        if not compute_distance:
-            self.is_distance = True
         KSampleTest.__init__(
             self, compute_distance=compute_distance, bias=bias, **kwargs
         )
@@ -111,10 +107,7 @@ class Energy(KSampleTest):
         n = x.shape[0]
         m = y.shape[0]
 
-        if not self.is_distance:
-            distx, disty = compute_dist(
-                x, y, metric=self.compute_distance, **self.kwargs
-            )
+        distx, disty = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
 
         # exact equivalence transformation Dcorr and Energy
         stat = (
@@ -166,10 +159,7 @@ class Energy(KSampleTest):
         >>> '%.3f, %.1f' % (stat, pvalue)
         '0.267, 1.0'
         """
-        check_input = _CheckInputs(
-            inputs=[x, y],
-            indep_test="dcorr",
-        )
+        check_input = _CheckInputs(inputs=[x, y], indep_test="dcorr",)
         x, y = check_input()
 
         # observed statistic

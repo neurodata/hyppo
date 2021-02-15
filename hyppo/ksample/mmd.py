@@ -74,10 +74,6 @@ class MMD(KSampleTest):
 
     def __init__(self, compute_kernel="gaussian", bias=False, **kwargs):
         self.compute_kernel = compute_kernel
-
-        self.is_kernel = False
-        if not compute_kernel:
-            self.is_kernel = True
         self.bias = bias
         KSampleTest.__init__(self, compute_distance=None, bias=bias, **kwargs)
 
@@ -109,8 +105,7 @@ class MMD(KSampleTest):
                 bias=self.bias,
                 **self.kwargs
             ).statistic(
-                x,
-                y,
+                x, y,
             )
             * (2 * (n ** 2) * (m ** 2))
             / ((n + m) ** 4)
@@ -161,10 +156,7 @@ class MMD(KSampleTest):
         >>> '%.3f, %.1f' % (stat, pvalue)
         '-0.000, 1.0'
         """
-        check_input = _CheckInputs(
-            inputs=[x, y],
-            indep_test="hsic",
-        )
+        check_input = _CheckInputs(inputs=[x, y], indep_test="hsic",)
         x, y = check_input()
 
         # observed statistic

@@ -212,11 +212,7 @@ class Dcorr(IndependenceTest):
         >>> '%.1f, %.2f' % (stat, pvalue)
         '0.0, 1.00'
         """
-        check_input = _CheckInputs(
-            x,
-            y,
-            reps=reps,
-        )
+        check_input = _CheckInputs(x, y, reps=reps,)
         x, y = check_input()
         if perm_blocks is not None:
             check_perm_blocks_dim(perm_blocks, y)
@@ -271,7 +267,7 @@ def _center_distmat(distx, bias):  # pragma: no cover
 
 
 @jit(nopython=True, cache=True)
-def _cpu_cumsum(data):
+def _cpu_cumsum(data):  # pragma: no cover
     """Create cumulative sum since numba doesn't sum over axes."""
     cumsum = data
     if data.shape[0] != 1 and data.shape[1] != 1:

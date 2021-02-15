@@ -1,13 +1,6 @@
 import numpy as np
 
-from .indep_sim import SIMULATIONS, indep_sim
-
-
-def _normalize(x, y):
-    """Normalize input data matricies."""
-    x[:, 0] = x[:, 0] / np.max(np.abs(x[:, 0]))
-    y[:, 0] = y[:, 0] / np.max(np.abs(y[:, 0]))
-    return x, y
+from .indep_sim import SIMULATIONS
 
 
 def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
@@ -78,7 +71,7 @@ def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
     Parameters
     ----------
     sim : str
-        The name of the simulation (from the :mod:`hyppo.tools module) that is to be
+        The name of the simulation (from the :mod:`hyppo.tools` module) that is to be
         rotated.
     n : int
         The number of samples desired by ``sim`` (>= 5).
@@ -94,7 +87,7 @@ def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
     pow_type : "samp", "dim", default: "samp"
         Simulation type, (increasing sample size or dimension).
     **kwargs
-        Additional keyword arguements for the independence simulation.
+        Additional keyword arguments for the independence simulation.
 
     Returns
     -------
@@ -104,7 +97,9 @@ def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
         is the number of samples and `p` is the number of dimensions.
     """
     if sim not in SIMULATIONS.keys():
-        raise ValueError("Not valid simulation")
+        raise ValueError(
+            "Not valid simulation, must be one of {}".format(SIMULATIONS.keys())
+        )
 
     if (k - 1) > 1:
         if type(degree) is list:
