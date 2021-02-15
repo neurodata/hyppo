@@ -126,6 +126,10 @@ package closely follows the official Python guidelines detailed in
 [PEP8](https://www.python.org/dev/peps/pep-0008/) that detail how
 code should be formatted and indented. Please read it and follow it.
 
+When contributing a new test to the package, each module has a base
+class from which to inherit from. See ``base.py`` for the desired module. Helper functions can either be placed in the ``_utils.py``
+file or the same file as the test.
+
 ## Docstring Guidelines
 
 Properly formatted docstrings is required for documentation generation
