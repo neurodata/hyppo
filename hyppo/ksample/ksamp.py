@@ -169,12 +169,18 @@ class KSample(KSampleTest):
     """
 
     def __init__(self, indep_test, compute_distkern="euclidean", bias=False, **kwargs):
-        indep_test = indep_test.lower()
-        if indep_test not in INDEP_TESTS.keys():
-            raise ValueError("Test is not in {}".format(INDEP_TESTS.keys()))
-        if indep_test == "hsic" and compute_distkern == "euclidean":
-            compute_distkern = "gaussian"
-        self.indep_test_name = indep_test
+        if type(indep_test) is list:
+            indep_test = [test.lower() for test in indep_test]
+            self.indep_test_name = indep_test[1]
+        else:
+            indep_test = indep_test.lower()
+            if indep_test not in INDEP_TESTS.keys():
+                raise ValueError(
+                    "Test {} is not in {}".format(indep_test, INDEP_TESTS.keys())
+                )
+            if indep_test == "hsic" and compute_distkern == "euclidean":
+                compute_distkern = "gaussian"
+            self.indep_test_name = indep_test
 
         indep_kwargs = {
             "dcorr": {"bias": bias, "compute_distance": compute_distkern},
@@ -188,11 +194,14 @@ class KSample(KSampleTest):
 
         if type(indep_test) is list:
             if indep_test[0] == "maxmargin" and indep_test[1] in INDEP_TESTS.keys():
+                if indep_test[1] == "hsic" and compute_distkern == "euclidean":
+                    compute_distkern = "gaussian"
                 indep_kwargs["maxmargin"] = {
                     "indep_test": indep_test[1],
                     "compute_distkern": compute_distkern,
                     "bias": bias,
                 }
+                indep_test = "maxmargin"
             else:
                 raise ValueError(
                     "Test 1 must be Maximal Margin, currently {}; Test 2 must be an "

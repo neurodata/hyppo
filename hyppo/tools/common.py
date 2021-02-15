@@ -3,36 +3,14 @@ import warnings
 import numpy as np
 from joblib import Parallel, delayed
 from scipy.stats.distributions import chi2
+from scipy.stats.stats import _contains_nan
 from sklearn.metrics import pairwise_distances
 from sklearn.metrics.pairwise import pairwise_kernels
 
 
 def contains_nan(a):  # from scipy
     """Check if inputs contains NaNs"""
-    try:
-        # Calling np.sum to avoid creating a huge array into memory
-        # e.g. np.isnan(a).any()
-        with np.errstate(invalid="ignore"):
-            contains_nan = np.isnan(np.sum(a))
-    except TypeError:
-        # This can happen when attempting to sum things which are not
-        # numbers (e.g. as in the function `mode`). Try an alternative method:
-        try:
-            contains_nan = np.nan in set(a.ravel())
-        except TypeError:
-            # Don't know what to do. Fall back to omitting nan values and
-            # issue a warning.
-            contains_nan = False
-            msg = (
-                "The input array could not be properly checked for nan "
-                "values. nan values will be ignored."
-            )
-            warnings.warn(msg, RuntimeWarning)
-
-    if contains_nan:
-        raise ValueError("Input contains NaNs. Please omit and try again")
-
-    return contains_nan
+    return _contains_nan(a, nan_policy="raise")
 
 
 def check_ndarray_xy(x, y):
@@ -69,8 +47,8 @@ def check_reps(reps):
 def _check_distmat(x, y):
     """Check if x and y are distance matrices."""
     if (
-        not np.array_equal(x, x.T)
-        or not np.array_equal(y, y.T)
+        not np.allclose(x, x.T)
+        or not np.allclose(y, y.T)
         or not np.all((x.diagonal() == 0))
         or not np.all((y.diagonal() == 0))
     ):
@@ -94,13 +72,14 @@ def _check_distmat(x, y):
 def _check_kernmat(x, y):
     """Check if x and y are similarity matrices."""
     if (
-        not np.array_equal(x, x.T)
-        or not np.array_equal(y, y.T)
+        not np.allclose(x, x.T)
+        or not np.allclose(y, y.T)
         or not np.all((x.diagonal() == 1))
         or not np.all((y.diagonal() == 1))
     ):
         raise ValueError(
-            "x and y must be distance matrices, {is_sym} symmetric and {one_diag} "
+            "x and y must be kernel similarity matrices, "
+            "{is_sym} symmetric and {one_diag} "
             "ones along the diagonal".format(
                 is_sym="x is not"
                 if not np.array_equal(x, x.T)

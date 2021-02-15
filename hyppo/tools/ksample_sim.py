@@ -201,3 +201,40 @@ def gaussian_3samp(n, epsilon=1, weight=0, case=1):
         ]
 
     return sims
+
+
+KSAMP_SIMS = {
+    "rot_ksamp": rot_ksamp,
+    "gaussian_3samp": gaussian_3samp,
+}
+
+
+def ksamp_sim(ksim, n, **kwargs):
+    r"""
+    `K`-sample simulation generator.
+
+    Takes a simulation and the required parameters, and outputs the simulated
+    data matrices.
+
+    Parameters
+    ----------
+    sim : str
+        The name of the simulation (from the :mod:`hyppo.tools module).
+    n : int
+        The number of samples desired by the simulation (>= 3).
+    **kwargs
+        Additional keyword arguements for the desired simulation.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices.
+    """
+    if ksim not in KSAMP_SIMS.keys():
+        raise ValueError(
+            "sim must be one of the following: {}".format(list(KSAMP_SIMS.keys()))
+        )
+    else:
+        ksim = KSAMP_SIMS[ksim]
+
+    return ksim(n=n, **kwargs)

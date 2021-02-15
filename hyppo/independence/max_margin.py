@@ -58,15 +58,6 @@ class MaxMargin(IndependenceTest):
               ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
               details on these metrics.
 
-        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
-        or similarity
-        matrices. To call a custom function, either create the distance or similarity
-        matrix
-        before-hand or create a function of the form ``metric(x, **kwargs)``
-        where ``x`` is the data matrix for which pairwise distances or similarities are
-        calculated and ``**kwargs`` are extra arguements to send to your custom
-        function.
-
         Alternatively, this function computes the kernel similarity among the
         samples within each data matrix.
         Valid strings for ``compute_kernel`` are, as defined in
@@ -106,10 +97,6 @@ class MaxMargin(IndependenceTest):
             **indep_kwargs[indep_test], **kwargs
         )
 
-        self.is_distance = False
-        if not compute_distkern:
-            self.is_distance = True
-
         IndependenceTest.__init__(self, compute_distance=compute_distkern, **kwargs)
 
     def statistic(self, x, y):
@@ -122,8 +109,7 @@ class MaxMargin(IndependenceTest):
             Input data matrices. ``x`` and ``y`` must have the same number of
             samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
-            where the shapes must both be ``(n, n)``.
+            dimensions.
 
         Returns
         -------
@@ -153,8 +139,7 @@ class MaxMargin(IndependenceTest):
             Input data matrices. ``x`` and ``y`` must have the same number of
             samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
-            where the shapes must both be ``(n, n)``.
+            dimensions.
         reps : int, default: 1000
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.

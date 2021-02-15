@@ -188,7 +188,7 @@ TS_SIMS = {
 
 def ts_sim(sim, n, **kwargs):
     r"""
-    Independence simulation generator.
+    Time-series simulation generator.
 
     Takes a simulation and the required parameters, and outputs the simulated
     data matrices.

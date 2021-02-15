@@ -7,6 +7,7 @@ from numpy.testing import (
     assert_array_less,
     assert_equal,
     assert_raises,
+    assert_warns,
 )
 from sklearn.metrics import pairwise_distances
 from sklearn.metrics.pairwise import pairwise_kernels
@@ -153,6 +154,11 @@ class TestErrorWarn:
         # raises error if reps is negative
         assert_raises(ValueError, check_reps, reps)
 
+    def test_warn_reps(self):
+        # raises error if reps is negative
+        reps = 100
+        assert_warns(RuntimeWarning, check_reps, reps)
+
 
 class TestHelper:
     """Tests errors and warnings derived from MGC."""
@@ -179,6 +185,20 @@ class TestHelper:
         kernx, kerny = compute_kern(kernx, kerny, metric=None)
         distx_comp, disty_comp = compute_dist(x, y)
         kernx_comp, kerny_comp = compute_kern(x, y)
+
+        assert_array_equal(distx, distx_comp)
+        assert_array_equal(disty, disty_comp)
+        assert_array_equal(kernx, kernx_comp)
+        assert_array_equal(kerny, kerny_comp)
+
+        def gaussian(x, **kwargs):
+            return pairwise_kernels(x, x, metric="rbf", **kwargs)
+
+        def euclidean(x, **kwargs):
+            return pairwise_distances(x, x, metric="euclidean", **kwargs)
+
+        distx, disty = compute_dist(x, y, metric=euclidean)
+        kernx, kerny = compute_kern(x, y, metric=gaussian, gamma=gamma)
 
         assert_array_equal(distx, distx_comp)
         assert_array_equal(disty, disty_comp)

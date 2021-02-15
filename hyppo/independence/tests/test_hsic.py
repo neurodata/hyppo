@@ -23,7 +23,7 @@ class TestHsicStat:
         x, y = linear(100, 1)
         kernx = pairwise_kernels(x, x)
         kerny = pairwise_kernels(y, y)
-        stat, pvalue = Hsic(compute_kernel=None).test(kernx, kerny)
+        stat, pvalue = Hsic(compute_kernel=None).test(kernx, kerny, auto=False)
 
         assert_almost_equal(stat, 0.124, decimal=2)
         assert_almost_equal(pvalue, 1 / 1000, decimal=2)

@@ -22,9 +22,16 @@ class TestKSample:
     def test_rf(self):
         np.random.seed(123456789)
         x, y = rot_ksamp("linear", 50, 1, k=2)
-        stat = KSample("KMERF").statistic(x, y)
+        stat, _, _ = KSample("KMERF").test(x, y, reps=0)
 
         assert_almost_equal(stat, 0.2714, decimal=1)
+
+    def test_maxmargin(self):
+        np.random.seed(123456789)
+        x, y = rot_ksamp("linear", 50, 1, k=2)
+        stat, _ = KSample(["MaxMargin", "Dcorr"]).test(x, y, reps=0)
+
+        assert_almost_equal(stat, 0.0317, decimal=1)
 
 
 class TestKSampleErrorWarn:
@@ -33,3 +40,8 @@ class TestKSampleErrorWarn:
     def test_no_indeptest(self):
         # raises error if not indep test
         assert_raises(ValueError, KSample, "abcd")
+
+    def test_no_second_maxmargin(self):
+        np.random.seed(123456789)
+        x, y = rot_ksamp("linear", 50, 1, k=2)
+        assert_raises(ValueError, KSample, ["MaxMargin", "abcd"])

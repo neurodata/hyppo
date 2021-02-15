@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 from numpy.testing import assert_almost_equal, assert_raises
+from sklearn.metrics import pairwise_distances
 from sklearn.metrics.pairwise import pairwise_kernels
 
 from ...tools import linear
@@ -23,16 +24,14 @@ class TestMaxMarginStat:
     def test_kernstat(self):
         np.random.seed(123456789)
         x, y = linear(100, 1)
-        kernx = pairwise_kernels(x, x)
-        kerny = pairwise_kernels(y, y)
-        stat, pvalue = MaxMargin("Hsic", compute_distkern=None).test(kernx, kerny)
+        stat, pvalue = MaxMargin("Hsic").test(x, y, auto=False)
 
-        assert_almost_equal(stat, 0.3465, decimal=2)
+        assert_almost_equal(stat, 0.1072, decimal=2)
         assert_almost_equal(pvalue, 1 / 1000, decimal=2)
 
 
 class TestMaxMarginErrorWarn:
-    """Tests errors and warnings derived from MGC."""
+    """Tests errors and warnings."""
 
     def test_no_indeptest(self):
         # raises error if not indep test

@@ -143,7 +143,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
         return self.d1, self.d2, self.pvalue
 
-    def _get_convex_comb(self, x):
+    def _get_convex_comb(self, x):  # pragma: no cover
         """Get random convex combination of input x."""
         n, _ = x.shape
 
@@ -176,7 +176,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
 
 @jit(nopython=True, cache=True)
-def calculate_diff_null(null_dist, reps):
+def calculate_diff_null(null_dist, reps):  # pragma: no cover
     """
     Helper function to calculate the distribution of thedifference under
     null.

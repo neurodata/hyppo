@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from numpy.testing import assert_approx_equal
+from numpy.testing import assert_approx_equal, assert_raises
 
 from ...tools import linear, multimodal_independence, spiral
 from .. import KMERF
@@ -30,3 +30,11 @@ class TestKMERFStat(object):
         assert_approx_equal(stat1, obs_stat, significant=1)
         assert_approx_equal(stat2, obs_stat, significant=1)
         assert_approx_equal(pvalue, obs_pvalue, significant=1)
+
+
+class TestKmerfErrorWarn:
+    """Tests errors and warnings derived from MGC."""
+
+    def test_no_indeptest(self):
+        # raises error if not indep test
+        assert_raises(ValueError, KMERF, "abcd")
