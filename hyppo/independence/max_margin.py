@@ -190,7 +190,11 @@ class MaxMargin(IndependenceTest):
         >>> '%.1f, %.3f' % (stat, pvalue)
         '1.0, 0.000'
         """
-        check_input = _CheckInputs(x, y, reps=reps,)
+        check_input = _CheckInputs(
+            x,
+            y,
+            reps=reps,
+        )
         x, y = check_input()
 
         if auto and x.shape[0] > 20 and self.indep_test_name in ["dcorr", "hsic"]:

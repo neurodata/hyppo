@@ -278,7 +278,10 @@ class KSample(KSampleTest):
         '0.000, 1.0'
         """
         inputs = list(args)
-        check_input = _CheckInputs(inputs=inputs, indep_test=self.indep_test_name,)
+        check_input = _CheckInputs(
+            inputs=inputs,
+            indep_test=self.indep_test_name,
+        )
         inputs = check_input()
         if self.indep_test_name == "kmerf":
             u, v = k_sample_transform(inputs, test_type="rf")

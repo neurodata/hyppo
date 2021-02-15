@@ -195,7 +195,10 @@ html_context = {
     "conf_py_path": "docs/",
     "galleries": sphinx_gallery_conf["gallery_dirs"],
     "gallery_dir": dict(
-        zip(sphinx_gallery_conf["gallery_dirs"], sphinx_gallery_conf["examples_dirs"],)
+        zip(
+            sphinx_gallery_conf["gallery_dirs"],
+            sphinx_gallery_conf["examples_dirs"],
+        )
     ),
 }
 

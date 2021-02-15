@@ -168,7 +168,10 @@ class DISCO(KSampleTest):
         '-1.566, 1.0'
         """
         inputs = list(args)
-        check_input = _CheckInputs(inputs=inputs, indep_test="dcorr",)
+        check_input = _CheckInputs(
+            inputs=inputs,
+            indep_test="dcorr",
+        )
         inputs = check_input()
         N = [i.shape[0] for i in inputs]
 

@@ -168,7 +168,11 @@ class MGCX(TimeSeriesTest):
         >>> '%.1f, %.2f, %d' % (stat, pvalue, mgcx_dict['opt_lag'])
         '1.1, 0.01, 1'
         """
-        check_input = _CheckInputs(x, y, max_lag=self.max_lag,)
+        check_input = _CheckInputs(
+            x,
+            y,
+            max_lag=self.max_lag,
+        )
         x, y = check_input()
 
         stat, pvalue, stat_list = super(MGCX, self).test(x, y, reps, workers)

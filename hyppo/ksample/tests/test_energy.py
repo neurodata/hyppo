@@ -8,7 +8,8 @@ from .. import Energy
 
 class TestEnergy:
     @pytest.mark.parametrize(
-        "n, obs_stat, obs_pvalue", [(200, 4.28e-7, 0.001), (100, 8.24e-5, 0.001)],
+        "n, obs_stat, obs_pvalue",
+        [(200, 4.28e-7, 0.001), (100, 8.24e-5, 0.001)],
     )
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)

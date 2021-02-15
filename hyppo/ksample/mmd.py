@@ -105,7 +105,8 @@ class MMD(KSampleTest):
                 bias=self.bias,
                 **self.kwargs
             ).statistic(
-                x, y,
+                x,
+                y,
             )
             * (2 * (n ** 2) * (m ** 2))
             / ((n + m) ** 4)
@@ -156,7 +157,10 @@ class MMD(KSampleTest):
         >>> '%.3f, %.1f' % (stat, pvalue)
         '-0.000, 1.0'
         """
-        check_input = _CheckInputs(inputs=[x, y], indep_test="hsic",)
+        check_input = _CheckInputs(
+            inputs=[x, y],
+            indep_test="hsic",
+        )
         x, y = check_input()
 
         # observed statistic

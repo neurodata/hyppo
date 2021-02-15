@@ -212,7 +212,11 @@ class Dcorr(IndependenceTest):
         >>> '%.1f, %.2f' % (stat, pvalue)
         '0.0, 1.00'
         """
-        check_input = _CheckInputs(x, y, reps=reps,)
+        check_input = _CheckInputs(
+            x,
+            y,
+            reps=reps,
+        )
         x, y = check_input()
         if perm_blocks is not None:
             check_perm_blocks_dim(perm_blocks, y)

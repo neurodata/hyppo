@@ -157,7 +157,11 @@ class Hsic(IndependenceTest):
         >>> '%.1f, %.2f' % (stat, pvalue)
         '0.1, 0.00'
         """
-        check_input = _CheckInputs(x, y, reps=reps,)
+        check_input = _CheckInputs(
+            x,
+            y,
+            reps=reps,
+        )
         x, y = check_input()
 
         if auto and x.shape[0] > 20:

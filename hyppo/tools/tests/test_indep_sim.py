@@ -9,7 +9,8 @@ class TestIndepShape:
     @pytest.mark.parametrize("n", [100, 1000])
     @pytest.mark.parametrize("p", [1, 5])
     @pytest.mark.parametrize(
-        "sim", SIMULATIONS.keys(),
+        "sim",
+        SIMULATIONS.keys(),
     )
     def test_shapes(self, n, p, sim):
         np.random.seed(123456789)

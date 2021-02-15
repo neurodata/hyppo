@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from numpy.testing import assert_almost_equal, assert_raises
+from numpy.testing import assert_almost_equal
 
 from ...tools import rot_ksamp
 from .. import MMD
@@ -8,7 +8,8 @@ from .. import MMD
 
 class TestMMD:
     @pytest.mark.parametrize(
-        "n, obs_stat, obs_pvalue", [(200, 4.28e-7, 0.001), (100, 8.24e-5, 0.001)],
+        "n, obs_stat, obs_pvalue",
+        [(200, 4.28e-7, 0.001), (100, 8.24e-5, 0.001)],
     )
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)

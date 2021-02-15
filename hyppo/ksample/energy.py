@@ -159,7 +159,10 @@ class Energy(KSampleTest):
         >>> '%.3f, %.1f' % (stat, pvalue)
         '0.267, 1.0'
         """
-        check_input = _CheckInputs(inputs=[x, y], indep_test="dcorr",)
+        check_input = _CheckInputs(
+            inputs=[x, y],
+            indep_test="dcorr",
+        )
         x, y = check_input()
 
         # observed statistic

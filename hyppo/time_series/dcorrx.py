@@ -137,7 +137,11 @@ class DcorrX(TimeSeriesTest):
         >>> '%.1f, %.2f, %d' % (stat, pvalue, dcorrx_dict['opt_lag'])
         '1.0, 0.01, 0'
         """
-        check_input = _CheckInputs(x, y, max_lag=self.max_lag,)
+        check_input = _CheckInputs(
+            x,
+            y,
+            max_lag=self.max_lag,
+        )
         x, y = check_input()
 
         stat, pvalue, stat_list = super(DcorrX, self).test(x, y, reps, workers)

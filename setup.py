@@ -75,5 +75,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     test_suite="tests",
-    cmdclass={"verify": VerifyVersionCommand,},
+    cmdclass={
+        "verify": VerifyVersionCommand,
+    },
 )

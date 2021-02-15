@@ -38,7 +38,16 @@ class TestPermTree:
     def test_within_permutatins(self):
         np.random.seed(1)
         # i.e. case: y = np.asarray([0,1,0,1,0,1])
-        blocks = np.vstack(([-1, 1], [-1, 2], [-2, 1], [-2, 2], [-3, 1], [-3, 2],))
+        blocks = np.vstack(
+            (
+                [-1, 1],
+                [-1, 2],
+                [-2, 1],
+                [-2, 2],
+                [-3, 1],
+                [-3, 2],
+            )
+        )
         perm_tree = _PermTree(blocks)
         original_indices = perm_tree.original_indices()
         perms = np.asarray([perm_tree.permute_indices() for _ in range(10)])
@@ -50,7 +59,16 @@ class TestPermTree:
     def test_across_permutations(self):
         np.random.seed(0)
         # i.e. case: y = np.asarray([0,0,1,1,2,2])
-        blocks = np.vstack(([1, -1], [1, -2], [2, -1], [2, -2], [3, -1], [3, -2],))
+        blocks = np.vstack(
+            (
+                [1, -1],
+                [1, -2],
+                [2, -1],
+                [2, -2],
+                [3, -1],
+                [3, -2],
+            )
+        )
         perm_tree = _PermTree(blocks)
         _ = perm_tree.original_indices()
         perms = np.asarray([perm_tree.permute_indices() for _ in range(100)])
