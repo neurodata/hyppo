@@ -147,3 +147,4 @@ Miscellaneous
    tools.compute_dist
    tools.perm_test
    tools.chi2_approx
+   tools.power
