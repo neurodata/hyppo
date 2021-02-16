@@ -28,6 +28,7 @@ clean:
 	rm -rf gallery
 	rm -rf tutorials
 	rm -rf sample_data
+	rm -rf benchmarks
 	rm -rf .ipynb_checkpoints
 
 api:

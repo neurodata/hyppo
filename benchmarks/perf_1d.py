@@ -1,5 +1,5 @@
 """
-Performance Comparisons 1D
+1D Performance Comparisons
 =================================
 
 There are few implementations in :mod:`hyppo.independence` the have implementations
@@ -46,7 +46,7 @@ def estimate_wall_times(test_type, tests, **kwargs):
             _ = test().test(x, y, workers=-1, **kwargs)
             times.append(timeit.default_timer() - start_time)
         np.savetxt(
-            "../examples/perf/{}_{}.csv".format(test_type, test.__name__),
+            "../benchmarks/perf/{}_{}.csv".format(test_type, test.__name__),
             times,
             delimiter=",",
         )
@@ -66,7 +66,7 @@ TEST_METADATA = {
     "HHG": {"test_name": "HHG (hyppo)", "color": "#4daf4a"},
     "Dcorr": {"test_name": "Dcorr (hyppo)", "color": "#377eb8"},
     "ksample_Hsic": {"test_name": "MMD (hyppo)", "color": "#ff7f00"},
-    "fast_Dcorr": {"test_name": "Fast Dcorr (n log(n)) (hyppo)", "color": "#984ea3"},
+    "fast_Dcorr": {"test_name": "Fast 1D Dcorr (hyppo)", "color": "#984ea3"},
     "HHG_hhg": {"test_name": "HHG (HHG)", "color": "#4daf4a"},
     "Dcorr_energy": {"test_name": "Dcorr (energy)", "color": "#377eb8"},
     "Dcorr_kernlab": {"test_name": "MMD (kernlab)", "color": "#ff7f00"},
@@ -74,14 +74,14 @@ TEST_METADATA = {
 
 
 def plot_wall_times():
-    _ = plt.figure(figsize=(10, 7))
+    _ = plt.figure(figsize=(10, 10))
     ax = plt.subplot(111)
 
     i = 0
     kwargs = {}
     for file_name, metadata in TEST_METADATA.items():
         test_times = np.genfromtxt(
-            "../examples/perf/{}.csv".format(file_name), delimiter=","
+            "../benchmarks/perf/{}.csv".format(file_name), delimiter=","
         )
 
         if file_name in ["HHG_hhg", "Dcorr_energy", "Dcorr_kernlab"]:
@@ -106,7 +106,7 @@ def plot_wall_times():
     ax.set_yticks([1e-4, 1e-2, 1e0, 1e2, 1e4])
 
     leg = plt.legend(
-        bbox_to_anchor=(0.5, -0.05),
+        bbox_to_anchor=(0.5, 0.95),
         bbox_transform=plt.gcf().transFigure,
         ncol=2,
         loc="upper center",

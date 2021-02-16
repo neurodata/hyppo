@@ -43,13 +43,13 @@ TESTS = {
 # for i in range(N):
 #     x, y = spiral(1000, 1, noise=True)
 #     sim = np.hstack([x, y])
-#     np.savetxt("../examples/same_stat/indep/{}.csv".format(i + 1), sim, delimiter=",")
+#     np.savetxt("../benchmarks/same_stat/indep/{}.csv".format(i + 1), sim, delimiter=",")
 #     sim1, sim2 = rot_ksamp("spiral", 200, 1, noise=True)
 #     np.savetxt(
-#         "../examples/same_stat/ksample/sim1_{}.csv".format(i + 1), sim, delimiter=","
+#         "../benchmarks/same_stat/ksample/sim1_{}.csv".format(i + 1), sim, delimiter=","
 #     )
 #     np.savetxt(
-#         "../examples/same_stat/ksample/sim2_{}.csv".format(i + 1), sim, delimiter=","
+#         "../benchmarks/same_stat/ksample/sim2_{}.csv".format(i + 1), sim, delimiter=","
 #     )
 
 
@@ -59,22 +59,22 @@ TESTS = {
 #     for i in range(N):
 #         if key == "MMD":
 #             sim1 = np.genfromtxt(
-#                 "../examples/same_stat/ksample/sim1_{}.csv".format(i + 1),
+#                 "../benchmarks/same_stat/ksample/sim1_{}.csv".format(i + 1),
 #                 delimiter=",",
 #             )
 #             sim2 = np.genfromtxt(
-#                 "../examples/same_stat/ksample/sim2_{}.csv".format(i + 1),
+#                 "../benchmarks/same_stat/ksample/sim2_{}.csv".format(i + 1),
 #                 delimiter=",",
 #             )
 #             stat = test(bias=True).statistic(sim1, sim2)
 #         else:
 #             sim = np.genfromtxt(
-#                 "../examples/same_stat/indep/{}.csv".format(i + 1), delimiter=","
+#                 "../benchmarks/same_stat/indep/{}.csv".format(i + 1), delimiter=","
 #             )
 #             x, y = np.hsplit(sim, 2)
 #             stat = test().statistic(x, y)
 #         stats.append(stat)
-#     np.savetxt("../examples/same_stat/{}.csv".format(key), stats, delimiter=",")
+#     np.savetxt("../benchmarks/same_stat/{}.csv".format(key), stats, delimiter=",")
 
 
 def plot_stats():
@@ -85,14 +85,14 @@ def plot_stats():
     data = np.zeros((N, len(test_names)))
     for i in range(len(test_names)):
         if test_names[i] == "MMD":
-            hyppo_stat = np.genfromtxt("../examples/same_stat/MMD.csv", delimiter=",")
-            r_stat = np.genfromtxt("../examples/same_stat/RMMD.csv", delimiter=",")
+            hyppo_stat = np.genfromtxt("../benchmarks/same_stat/MMD.csv", delimiter=",")
+            r_stat = np.genfromtxt("../benchmarks/same_stat/RMMD.csv", delimiter=",")
         else:
             hyppo_stat = np.genfromtxt(
-                "../examples/same_stat/{}.csv".format(test_names[i]), delimiter=","
+                "../benchmarks/same_stat/{}.csv".format(test_names[i]), delimiter=","
             )
             r_stat = np.genfromtxt(
-                "../examples/same_stat/R{}.csv".format(test_names[i]), delimiter=","
+                "../benchmarks/same_stat/R{}.csv".format(test_names[i]), delimiter=","
             )
             if (
                 test_names[i] == "HHG"
