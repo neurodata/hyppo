@@ -37,7 +37,7 @@ v0.2.0
 * Update README to be in line with scikit-learn
 * Remove literature reference section in docstrings, add links to papers
 * Add docstrings for :mod:`hyppo.tools` functions
-* Add ``overview.py`` file for overview of package
+* Add ``overview.py`` file for an overview of the package
 * Add tutorials folder, rewrite so it is more user-friendly (port independence, k-sample, time series)
 * Add examples folder with more information about unique features
 * Move to ``sphinx-gallery`` instead of nbconvert
@@ -58,7 +58,7 @@ v0.2.0
 * Updated tests to precalculate distance matrix
 * Moved from Travis CI to Circle CI
 * Raise base ``requirements.txt`` to fix failing tests on CircleCI
-* Add codecoverage config files
+* Add code coverage config files
 * Add documentation folders and files to ``.gitignore``
 * Remove ``reps`` warning test
 * Cache numba after first call to speed up runs
@@ -66,10 +66,10 @@ v0.2.0
 
 **Authors:**
 
-* Sambit Panda
-* Vivek Gopalakrishnan +
++ Sambit Panda
++ Vivek Gopalakrishnan +
 + Ronak Mehta
-* Ronan Perry +
++ Ronan Perry +
 
 v0.1.3
 ------

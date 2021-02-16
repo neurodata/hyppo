@@ -1,57 +1,6 @@
 import numpy as np
 
-from .indep_sim import (
-    circle,
-    cubic,
-    diamond,
-    ellipse,
-    exponential,
-    fourth_root,
-    joint_normal,
-    linear,
-    logarithmic,
-    multimodal_independence,
-    multiplicative_noise,
-    quadratic,
-    sin_four_pi,
-    sin_sixteen_pi,
-    spiral,
-    square,
-    step,
-    two_parabolas,
-    uncorrelated_bernoulli,
-    w_shaped,
-)
-
-_SIMS = [
-    linear,
-    spiral,
-    exponential,
-    cubic,
-    joint_normal,
-    step,
-    quadratic,
-    w_shaped,
-    uncorrelated_bernoulli,
-    logarithmic,
-    fourth_root,
-    sin_four_pi,
-    sin_sixteen_pi,
-    two_parabolas,
-    circle,
-    ellipse,
-    diamond,
-    multiplicative_noise,
-    square,
-    multimodal_independence,
-]
-
-
-def _normalize(x, y):
-    """Normalize input data matricies."""
-    x[:, 0] = x[:, 0] / np.max(np.abs(x[:, 0]))
-    y[:, 0] = y[:, 0] / np.max(np.abs(y[:, 0]))
-    return x, y
+from .indep_sim import SIMULATIONS
 
 
 def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
@@ -71,13 +20,13 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
         "multiplicative_noise",
         "multimodal_independence",
     ]
-    if sim.__name__ in same_shape:
+    if sim in same_shape:
         rot_shape = 2 * p
     else:
         rot_shape = p + 1
     rot_mat = np.identity(rot_shape)
     if pow_type == "dim":
-        if sim.__name__ not in [
+        if sim not in [
             "exponential",
             "cubic",
             "spiral",
@@ -107,7 +56,7 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
         raise ValueError("pow_type not a valid flag ('dim', 'samp')")
     rot_data = (rot_mat @ data.T).T
 
-    if sim.__name__ in same_shape:
+    if sim in same_shape:
         x_rot, y_rot = np.hsplit(rot_data, 2)
     else:
         x_rot, y_rot = np.hsplit(rot_data, [-p])
@@ -121,8 +70,9 @@ def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
 
     Parameters
     ----------
-    sim : callable
-        The simulation (from the :mod:`hyppo.tools module) that is to be rotated.
+    sim : str
+        The name of the simulation (from the :mod:`hyppo.tools` module) that is to be
+        rotated.
     n : int
         The number of samples desired by ``sim`` (>= 5).
     p : int
@@ -137,7 +87,7 @@ def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
     pow_type : "samp", "dim", default: "samp"
         Simulation type, (increasing sample size or dimension).
     **kwargs
-        Additional keyword arguements for the independence simulation.
+        Additional keyword arguments for the independence simulation.
 
     Returns
     -------
@@ -146,8 +96,10 @@ def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
         or ``(n, 2p)`` depending on the independence simulation. Here, `n`
         is the number of samples and `p` is the number of dimensions.
     """
-    if sim not in _SIMS:
-        raise ValueError("Not valid simulation")
+    if sim not in SIMULATIONS.keys():
+        raise ValueError(
+            "Not valid simulation, must be one of {}".format(SIMULATIONS.keys())
+        )
 
     if (k - 1) > 1:
         if type(degree) is list:
@@ -165,12 +117,12 @@ def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
                     )
                 )
 
-    if sim.__name__ == "multimodal_independence":
-        sims = [np.hstack(sim(n, p)) for _ in range(k)]
+    if sim == "multimodal_independence":
+        sims = [np.hstack(SIMULATIONS[sim](n, p)) for _ in range(k)]
     else:
-        if sim.__name__ != "multiplicative_noise":
+        if sim != "multiplicative_noise":
             kwargs["noise"] = noise
-        x, y = sim(n, p, **kwargs)
+        x, y = SIMULATIONS[sim](n, p, **kwargs)
         if (k - 1) == 1:
             sims = [
                 np.hstack([x, y]),
@@ -249,3 +201,40 @@ def gaussian_3samp(n, epsilon=1, weight=0, case=1):
         ]
 
     return sims
+
+
+KSAMP_SIMS = {
+    "rot_ksamp": rot_ksamp,
+    "gaussian_3samp": gaussian_3samp,
+}
+
+
+def ksamp_sim(ksim, n, **kwargs):
+    r"""
+    `K`-sample simulation generator.
+
+    Takes a simulation and the required parameters, and outputs the simulated
+    data matrices.
+
+    Parameters
+    ----------
+    sim : str
+        The name of the simulation (from the :mod:`hyppo.tools module).
+    n : int
+        The number of samples desired by the simulation (>= 3).
+    **kwargs
+        Additional keyword arguements for the desired simulation.
+
+    Returns
+    -------
+    x,y : ndarray
+        Simulated data matrices.
+    """
+    if ksim not in KSAMP_SIMS.keys():
+        raise ValueError(
+            "sim must be one of the following: {}".format(list(KSAMP_SIMS.keys()))
+        )
+    else:
+        ksim = KSAMP_SIMS[ksim]
+
+    return ksim(n=n, **kwargs)

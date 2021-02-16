@@ -10,30 +10,7 @@ symmetry of the simulation.
 
 import matplotlib.pyplot as plt
 import seaborn as sns
-from hyppo.tools import (
-    circle,
-    cubic,
-    diamond,
-    ellipse,
-    exponential,
-    fourth_root,
-    gaussian_3samp,
-    joint_normal,
-    linear,
-    logarithmic,
-    multimodal_independence,
-    multiplicative_noise,
-    quadratic,
-    rot_ksamp,
-    sin_four_pi,
-    sin_sixteen_pi,
-    spiral,
-    square,
-    step,
-    two_parabolas,
-    uncorrelated_bernoulli,
-    w_shaped,
-)
+from hyppo.tools import SIMULATIONS, rot_ksamp
 
 # make plots look pretty
 sns.set(color_codes=True, style="white", context="talk", font_scale=2)
@@ -45,31 +22,29 @@ N = 500  # sample size
 P = 1  # dimensionality
 DEGREE = [5, -5]  # angle
 
-# dictionary mapping of simulations
-SIMULATIONS = [
-    (linear, "Linear"),
-    (exponential, "Exponential"),
-    (cubic, "Cubic"),
-    (joint_normal, "Joint Normal"),
-    (step, "Step"),
-    (quadratic, "Quadratic"),
-    (w_shaped, "W-Shaped"),
-    (spiral, "Spiral"),
-    (uncorrelated_bernoulli, "Bernoulli"),
-    (logarithmic, "Logarithmic"),
-    (fourth_root, "Fourth Root"),
-    (sin_four_pi, "Sine 4\u03C0"),
-    (sin_sixteen_pi, "Sine 16\u03C0"),
-    (square, "Square"),
-    (two_parabolas, "Two Parabolas"),
-    (circle, "Circle"),
-    (ellipse, "Ellipse"),
-    (diamond, "Diamond"),
-    (multiplicative_noise, "Noise"),
-    (multimodal_independence, "Independence"),
+# simulation titles
+SIM_TITLES = [
+    "Linear",
+    "Exponential",
+    "Cubic",
+    "Joint Normal",
+    "Step",
+    "Quadratic",
+    "W-Shaped",
+    "Spiral",
+    "Bernoulli",
+    "Logarithmic",
+    "Fourth Root",
+    "Sine 4\u03C0",
+    "Sine 16\u03C0",
+    "Square",
+    "Two Parabolas",
+    "Circle",
+    "Ellipse",
+    "Diamond",
+    "Noise",
+    "Independence",
 ]
-
-CASES = [1, 2, 3, 4, 5]
 
 
 # make a function that runs the code depending on the simulation
@@ -83,7 +58,8 @@ def plot_sims(k=2, degree=DEGREE):
     for i, row in enumerate(ax):
         for j, col in enumerate(row):
             count = 5 * i + j
-            sim, sim_title = SIMULATIONS[count]
+            sim_title = SIM_TITLES[count]
+            sim = list(SIMULATIONS.keys())[count]
 
             # rotated k-sample simulation
             sims = rot_ksamp(sim, N, P, k=k, degree=degree, noise=False)

@@ -74,10 +74,6 @@ class MMD(KSampleTest):
 
     def __init__(self, compute_kernel="gaussian", bias=False, **kwargs):
         self.compute_kernel = compute_kernel
-
-        self.is_kernel = False
-        if not compute_kernel:
-            self.is_kernel = True
         self.bias = bias
         KSampleTest.__init__(self, compute_distance=None, bias=bias, **kwargs)
 

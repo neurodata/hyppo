@@ -93,9 +93,9 @@ from sphinx_gallery.sorting import FileNameSortKey
 
 sphinx_gallery_conf = {
     # path to your examples scripts
-    "examples_dirs": ["../examples", "../tutorials", "../sample_data"],
+    "examples_dirs": ["../examples", "../tutorials", "../sample_data", "../benchmarks"],
     # path where to save gallery generated examples
-    "gallery_dirs": ["gallery", "tutorials", "sample_data"],
+    "gallery_dirs": ["gallery", "tutorials", "sample_data", "benchmarks"],
     "filename_pattern": r"\.py",
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
@@ -163,7 +163,7 @@ html_context = {
     "menu_links_name": "Useful Links",
     "menu_links": [
         (
-            '<i class="fa fa-external-link-square fa-fw"></i> NeuroData',
+            '<i class="fa fa-external-link-square fa-fw"></i> Neurodata',
             "https://neurodata.io/",
         ),
         (
@@ -287,7 +287,7 @@ epub_exclude_files = ["search.html"]
 
 def setup(app):
     # to hide/show the prompt in code examples:
-    app.add_javascript("js/copybutton.js")
+    app.add_js_file("js/copybutton.js")
 
 
 # -- Jupyter Notebook --------------------------------------------------------

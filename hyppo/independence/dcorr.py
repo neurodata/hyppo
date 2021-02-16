@@ -271,7 +271,7 @@ def _center_distmat(distx, bias):  # pragma: no cover
 
 
 @jit(nopython=True, cache=True)
-def _cpu_cumsum(data):
+def _cpu_cumsum(data):  # pragma: no cover
     """Create cumulative sum since numba doesn't sum over axes."""
     cumsum = data
     if data.shape[0] != 1 and data.shape[1] != 1:

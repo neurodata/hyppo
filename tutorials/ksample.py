@@ -95,11 +95,11 @@ let's look at unique properties of some of these tests:
 # to use :class:`hyppo.independence.MGC` as the example independence test.
 
 from hyppo.ksample import KSample
-from hyppo.tools import linear, rot_ksamp
+from hyppo.tools import rot_ksamp
 
 # 100 samples, 1D cubic independence simulation, 3 groups sim, 60 degree rotation, no
 # noise
-sims = rot_ksamp(linear, n=100, p=1, k=3, degree=[60, -60], noise=True)
+sims = rot_ksamp("linear", n=100, p=1, k=3, degree=[60, -60], noise=True)
 
 ########################################################################################
 # The data are points simulating a 1D linear relationship between random variables
