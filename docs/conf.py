@@ -163,7 +163,7 @@ html_context = {
     "menu_links_name": "Useful Links",
     "menu_links": [
         (
-            '<i class="fa fa-external-link-square fa-fw"></i> NeuroData',
+            '<i class="fa fa-external-link-square fa-fw"></i> Neurodata',
             "https://neurodata.io/",
         ),
         (
