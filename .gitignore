@@ -94,6 +94,7 @@ docs/_build
 docs/gallery
 docs/tutorials
 docs/sample_data
+docs/benchmarks
 
 # Spyder project settings
 .spyderproject
