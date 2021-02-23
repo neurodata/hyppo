@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from numpy.testing import assert_almost_equal
 
-from ...tools import joint_normal, linear
+from ...tools import joint_normal, linear, power
 from .. import CCA
 
 
@@ -28,3 +28,18 @@ class TestCCAStat:
 
         assert_almost_equal(stat, obs_stat, decimal=1)
         assert_almost_equal(pvalue, obs_pvalue, decimal=1)
+
+
+class TestCCATypeIError:
+    def test_oned(self):
+        np.random.seed(123456789)
+        est_power = power(
+            "CCA",
+            sim_type="indep",
+            sim="multimodal_independence",
+            n=1000,
+            p=1,
+            alpha=0.05,
+        )
+
+        assert_almost_equal(est_power, 0.05, decimal=2)

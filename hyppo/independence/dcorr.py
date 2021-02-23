@@ -136,7 +136,7 @@ class Dcorr(IndependenceTest):
         distx = x
         disty = y
 
-        if not self.is_distance and not self.is_fast:
+        if not (self.is_distance or self.is_fast):
             distx, disty = compute_dist(
                 x, y, metric=self.compute_distance, **self.kwargs
             )
@@ -235,13 +235,16 @@ class Dcorr(IndependenceTest):
             self.pvalue = pvalue
             self.null_dist = None
         else:
-            is_distsim = False
             if not self.is_fast:
                 x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
                 self.is_distance = True
-                is_distsim = True
             stat, pvalue = super(Dcorr, self).test(
-                x, y, reps, workers, perm_blocks=perm_blocks, is_distsim=is_distsim
+                x,
+                y,
+                reps,
+                workers,
+                perm_blocks=perm_blocks,
+                is_distsim=self.is_distance,
             )
 
         return stat, pvalue
@@ -274,7 +277,6 @@ def _center_distmat(distx, bias):  # pragma: no cover
 def _cpu_cumsum(data):  # pragma: no cover
     """Create cumulative sum since numba doesn't sum over axes."""
     cumsum = data.copy()
-    # if data.shape[0] != 1 and data.shape[1] != 1:
     for i in range(1, data.shape[0]):
         cumsum[i, :] = data[i, :] + cumsum[i - 1, :]
     return cumsum
@@ -352,10 +354,10 @@ def _fast_1d_dcov(x, y, bias=False):  # pragma: no cover
         s = 1 - s
 
     covterm = np.sum(n * (x - np.mean(x)).T @ (y - np.mean(y)))
-    c1 = iv1.T @ v[:, 2].copy()
+    c1 = np.sum(iv1.T @ v[:, 2].copy())
     c2 = np.sum(iv4)
-    c3 = iv2.T @ y
-    c4 = iv3.T @ x
+    c3 = np.sum(iv2.T @ y)
+    c4 = np.sum(iv3.T @ x)
     d = 4 * ((c1 + c2) - (c3 + c4)) - 2 * covterm
 
     y_sorted = y[idx[n::-1, r], :]
@@ -364,7 +366,6 @@ def _fast_1d_dcov(x, y, bias=False):  # pragma: no cover
     by[idx[::-1, r]] = (np.arange(-(n - 2), n + 1, 2) * y_sorted.ravel()).reshape(
         -1, 1
     ) + (si[-1] - 2 * si)
-    print(by)
 
     if bias:
         denom = [n ** 2, n ** 3, n ** 4]
@@ -403,8 +404,7 @@ def _dcov(distx, disty, bias=False, only_dcov=True):  # pragma: no cover
 @jit(nopython=True, cache=True)
 def _dcorr(distx, disty, bias=False, is_fast=False):  # pragma: no cover
     """
-    Calculate the Dcorr test statistic. Note that though Dcov is calculated
-    and stored in covar, but not called due to a slower implementation.
+    Calculate the Dcorr test statistic.
     """
     if is_fast:
         # calculate covariances and variances

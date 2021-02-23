@@ -3,7 +3,7 @@ import numpy as np
 from ..tools import chi2_approx, compute_kern
 from ._utils import _CheckInputs
 from .base import IndependenceTest
-from .dcorr import _dcov
+from .dcorr import Dcorr
 
 
 class Hsic(IndependenceTest):
@@ -31,11 +31,14 @@ class Hsic(IndependenceTest):
 
         \mathrm{Hsic}^b_n (x, y) = \frac{1}{n^2} \mathrm{tr} (D^x H D^y H)
 
-    They are exactly equivalent in the sense that every valid kernel has a corresponding
+    Hsic and Dcov are exactly equivalent in the sense that every valid kernel has a
+    corresponding
     valid semimetric to ensure their equivalence, and vice versa `[3]`_ `[4]`_. In
     other words, every Dcorr test is also an Hsic and vice versa. Nonetheless,
     implementations of Dcorr and Hsic use different metrics by default:
     Dcorr uses a euclidean distance while Hsic uses a Gaussian median kernel.
+    We consider the normalized version (see :class:`hyppo.independence`) for the
+    transformation.
 
     The p-value returned is calculated using a permutation test using
     :meth:`hyppo.tools.perm_test`. The fast version of the test uses
@@ -108,7 +111,8 @@ class Hsic(IndependenceTest):
             distx = 1 - kernx / np.max(kernx)
             disty = 1 - kerny / np.max(kerny)
 
-        stat = _dcov(distx, disty, self.bias)
+        # Hsic and Dcorr are equivalent, cannot use dcov otherwise fast is invalid
+        stat = Dcorr(bias=self.bias, compute_distance=None).statistic(distx, disty)
         self.stat = stat
 
         return stat
