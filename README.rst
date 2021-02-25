@@ -5,10 +5,10 @@ hyppo
 
 |CircleCI|_ |Codecov|_ |Netlify|_ |PythonVersion|_ |PyPi|_ |arXivshield|_
 
-.. |CircleCI| image:: https://circleci.com/gh/neurodata/hyppo/tree/master.svg?style=shield&circle-token=:circle-token
+.. |CircleCI| image:: https://circleci.com/gh/neurodata/hyppo/tree/main.svg?style=shield&circle-token=:circle-token
 .. _CircleCI: https://circleci.com/gh/neurodata/hyppo
 
-.. |Codecov| image:: https://codecov.io/gh/neurodata/hyppo/branch/master/graph/badge.svg?token=a2TXyRVW0a
+.. |Codecov| image:: https://codecov.io/gh/neurodata/hyppo/branch/main/graph/badge.svg?token=a2TXyRVW0a
 .. _Codecov: https://codecov.io/gh/neurodata/hyppo
 
 .. |Netlify| image:: https://img.shields.io/netlify/e5242ebd-631e-4330-b43e-85e428dac66a
