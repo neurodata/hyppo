@@ -24,7 +24,7 @@ class TestMaxMarginStat:
         x, y = linear(100, 1)
         stat, pvalue = MaxMargin("Hsic").test(x, y, auto=False)
 
-        assert_almost_equal(stat, 0.1072, decimal=2)
+        assert_almost_equal(stat, 1.0, decimal=2)
         assert_almost_equal(pvalue, 1 / 1000, decimal=2)
 
 

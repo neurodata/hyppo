@@ -159,7 +159,7 @@ class Hsic(IndependenceTest):
         >>> y = x
         >>> stat, pvalue = Hsic().test(x, y)
         >>> '%.1f, %.2f' % (stat, pvalue)
-        '0.1, 0.00'
+        '1.0, 0.00'
         """
         check_input = _CheckInputs(
             x,
