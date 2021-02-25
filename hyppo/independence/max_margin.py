@@ -11,6 +11,16 @@ from .kmerf import KMERF
 from .mgc import MGC
 from .rv import RV
 
+INDEP_NOT_MAXMARGIN = {
+    "rv": RV,
+    "cca": CCA,
+    "hhg": HHG,
+    "hsic": Hsic,
+    "dcorr": Dcorr,
+    "mgc": MGC,
+    "kmerf": KMERF,
+}
+
 
 class MaxMargin(IndependenceTest):
     r"""
@@ -48,15 +58,6 @@ class MaxMargin(IndependenceTest):
               ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
               details on these metrics.
 
-        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
-        or similarity
-        matrices. To call a custom function, either create the distance or similarity
-        matrix
-        before-hand or create a function of the form ``metric(x, **kwargs)``
-        where ``x`` is the data matrix for which pairwise distances or similarities are
-        calculated and ``**kwargs`` are extra arguements to send to your custom
-        function.
-
         Alternatively, this function computes the kernel similarity among the
         samples within each data matrix.
         Valid strings for ``compute_kernel`` are, as defined in
@@ -76,44 +77,25 @@ class MaxMargin(IndependenceTest):
 
     def __init__(self, indep_test, compute_distkern="euclidean", bias=False, **kwargs):
         indep_test = indep_test.lower()
-        test_names = {
-            "rv": RV,
-            "cca": CCA,
-            "hhg": HHG,
-            "hsic": Hsic,
-            "dcorr": Dcorr,
-            "mgc": MGC,
-            "kmerf": KMERF,
-        }
-        if indep_test not in test_names.keys():
+        if indep_test not in INDEP_NOT_MAXMARGIN.keys():
             raise ValueError("Test is not a valid independence test")
         if indep_test == "hsic" and compute_distkern == "euclidean":
             compute_distkern = "gaussian"
         self.indep_test_name = indep_test
-        indep_test = test_names[indep_test]
 
-        if self.indep_test_name in ["dcorr", "hhg", "hsic", "mgc"]:
-            if self.indep_test_name == "hsic":
-                self.indep_test = indep_test(
-                    compute_kernel=compute_distkern, bias=bias, **kwargs
-                )
-            elif self.indep_test_name == "dcorr":
-                self.indep_test = indep_test(
-                    compute_distance=compute_distkern, bias=bias, **kwargs
-                )
-            else:
-                self.indep_test = indep_test(
-                    compute_distance=compute_distkern, **kwargs
-                )
-        elif self.indep_test_name == "kmerf":
-            self.indep_test = indep_test(forest_type="classifier", **kwargs)
-        else:
-            self.indep_test = indep_test()
+        indep_kwargs = {
+            "dcorr": {"bias": bias, "compute_distance": compute_distkern},
+            "hsic": {"bias": bias, "compute_kernel": compute_distkern},
+            "hhg": {"compute_distance": compute_distkern},
+            "mgc": {"compute_distance": compute_distkern},
+            "kmerf": {"forest_type": "classifier"},
+            "rv": {},
+            "cca": {},
+        }
 
-        # set is_distance to true if compute_distance is None
-        self.is_distance = False
-        if not compute_distkern:
-            self.is_distance = True
+        self.indep_test = INDEP_NOT_MAXMARGIN[indep_test](
+            **indep_kwargs[indep_test], **kwargs
+        )
 
         IndependenceTest.__init__(self, compute_distance=compute_distkern, **kwargs)
 
@@ -127,8 +109,7 @@ class MaxMargin(IndependenceTest):
             Input data matrices. ``x`` and ``y`` must have the same number of
             samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
-            where the shapes must both be ``(n, n)``.
+            dimensions.
 
         Returns
         -------
@@ -158,8 +139,7 @@ class MaxMargin(IndependenceTest):
             Input data matrices. ``x`` and ``y`` must have the same number of
             samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
-            where the shapes must both be ``(n, n)``.
+            dimensions.
         reps : int, default: 1000
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.

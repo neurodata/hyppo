@@ -26,6 +26,7 @@ hyppo
    tutorials/ksample.rst
    tutorials/time_series.rst
    tutorials/discrim.rst
+   benchmarks/index.rst
 
 .. toctree::
    :maxdepth: 2

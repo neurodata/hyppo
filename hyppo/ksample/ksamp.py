@@ -1,4 +1,4 @@
-from ..independence import CCA, HHG, KMERF, MGC, RV, Dcorr, Hsic, MaxMargin
+from ..independence import INDEP_TESTS
 from ._utils import _CheckInputs, k_sample_transform
 from .base import KSampleTest
 
@@ -119,9 +119,12 @@ class KSample(KSampleTest):
 
     Parameters
     ----------
-    indep_test : "CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC", "KMERF"
+    indep_test : "CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC", "KMERF", "MaxMargin" or 
+    list
         A string corresponding to the desired independence test from
-        :mod:`hyppo.independence`. This is not case sensitive.
+        :mod:`hyppo.independence`. This is not case sensitive. If using ``"MaxMargin"``
+        then this must be a list containing ``"MaxMargin"`` in the first index and
+        another ``indep_test`` in the second index.
     compute_distkern : str, callable, or None, default: "euclidean" or "gaussian"
         A function that computes the distance among the samples within each
         data matrix.
@@ -139,15 +142,6 @@ class KSample(KSampleTest):
               ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
               ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
               details on these metrics.
-
-        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
-        or similarity
-        matrices. To call a custom function, either create the distance or similarity
-        matrix
-        before-hand or create a function of the form ``metric(x, **kwargs)``
-        where ``x`` is the data matrix for which pairwise distances or similarities are
-        calculated and ``**kwargs`` are extra arguements to send to your custom
-        function.
 
         Alternatively, this function computes the kernel similarity among the
         samples within each data matrix.
@@ -167,53 +161,46 @@ class KSample(KSampleTest):
     """
 
     def __init__(self, indep_test, compute_distkern="euclidean", bias=False, **kwargs):
-        indep_test = indep_test.lower()
-        test_names = {
-            "rv": RV,
-            "cca": CCA,
-            "hhg": HHG,
-            "hsic": Hsic,
-            "dcorr": Dcorr,
-            "mgc": MGC,
-            "kmerf": KMERF,
-            "maxmargin": MaxMargin,
-        }
-        if indep_test not in test_names.keys():
-            raise ValueError("Test is not a valid independence test")
-        if indep_test == "hsic" and compute_distkern == "euclidean":
-            compute_distkern = "gaussian"
-        self.indep_test_name = indep_test
-        indep_test = test_names[indep_test]
-
-        if self.indep_test_name in ["dcorr", "hhg", "hsic", "mgc"]:
-            if self.indep_test_name == "hsic":
-                self.indep_test = indep_test(
-                    compute_kernel=compute_distkern, bias=bias, **kwargs
-                )
-            elif self.indep_test_name == "dcorr":
-                self.indep_test = indep_test(
-                    compute_distance=compute_distkern, bias=bias, **kwargs
-                )
-            else:
-                self.indep_test = indep_test(
-                    compute_distance=compute_distkern, **kwargs
-                )
-        elif self.indep_test_name == "kmerf":
-            self.indep_test = indep_test(forest_type="classifier", **kwargs)
-        elif self.indep_test_name == "maxmargin":
-            self.indep_test = indep_test(
-                indep_test=self.indep_test_name,
-                compute_distkern=compute_distkern,
-                bias=bias,
-                **kwargs
-            )
+        if type(indep_test) is list:
+            indep_test = [test.lower() for test in indep_test]
+            self.indep_test_name = indep_test[1]
         else:
-            self.indep_test = indep_test()
+            indep_test = indep_test.lower()
+            if indep_test not in INDEP_TESTS.keys():
+                raise ValueError(
+                    "Test {} is not in {}".format(indep_test, INDEP_TESTS.keys())
+                )
+            if indep_test == "hsic" and compute_distkern == "euclidean":
+                compute_distkern = "gaussian"
+            self.indep_test_name = indep_test
 
-        # set is_distance to true if compute_distance is None
-        self.is_distance = False
-        if not compute_distkern:
-            self.is_distance = True
+        indep_kwargs = {
+            "dcorr": {"bias": bias, "compute_distance": compute_distkern},
+            "hsic": {"bias": bias, "compute_kernel": compute_distkern},
+            "hhg": {"compute_distance": compute_distkern},
+            "mgc": {"compute_distance": compute_distkern},
+            "kmerf": {"forest": "classifier"},
+            "rv": {},
+            "cca": {},
+        }
+
+        if type(indep_test) is list:
+            if indep_test[0] == "maxmargin" and indep_test[1] in INDEP_TESTS.keys():
+                if indep_test[1] == "hsic" and compute_distkern == "euclidean":
+                    compute_distkern = "gaussian"
+                indep_kwargs["maxmargin"] = {
+                    "indep_test": indep_test[1],
+                    "compute_distkern": compute_distkern,
+                    "bias": bias,
+                }
+                indep_test = "maxmargin"
+            else:
+                raise ValueError(
+                    "Test 1 must be Maximal Margin, currently {}; Test 2 must be an "
+                    "independence test, currently {}".format(*indep_test)
+                )
+
+        self.indep_test = INDEP_TESTS[indep_test](**indep_kwargs[indep_test], **kwargs)
 
         KSampleTest.__init__(
             self, compute_distance=compute_distkern, bias=bias, **kwargs
@@ -234,7 +221,7 @@ class KSample(KSampleTest):
         Returns
         -------
         stat : float
-            The computed *k*-Sample statistic.
+            The computed *k*-sample statistic.
         """
         inputs = list(args)
         if self.indep_test_name == "kmerf":
@@ -273,9 +260,9 @@ class KSample(KSampleTest):
         Returns
         -------
         stat : float
-            The computed *k*-Sample statistic.
+            The computed *k*-sample statistic.
         pvalue : float
-            The computed *k*-Sample p-value.
+            The computed *k*-sample p-value.
         dict
             A dictionary containing optional parameters for tests that return them.
             See the relevant test in :mod:`hyppo.independence`.
@@ -289,7 +276,7 @@ class KSample(KSampleTest):
         >>> z = np.arange(10)
         >>> stat, pvalue = KSample("Dcorr").test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
-        '0.000, 1.0'
+        '-0.136, 1.0'
         """
         inputs = list(args)
         check_input = _CheckInputs(

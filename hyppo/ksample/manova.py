@@ -167,15 +167,6 @@ class MANOVA(KSampleTest):
         return stat, pvalue
 
 
-# p-value computation
-def _perm_stat(calc_stat, *args):
-    """Permute the test statistic"""
-    inputs = [np.random.permutation(i) for i in list(args)[1:]]
-    perm_stat = calc_stat(*inputs)
-
-    return perm_stat
-
-
 @jit(nopython=True, cache=True)
 def _compute_w(inputs, cmean):  # pragma: no cover
     """Calculate the W matrix"""

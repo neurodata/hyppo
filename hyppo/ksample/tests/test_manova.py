@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from numpy.testing import assert_almost_equal, assert_raises
 
-from ...tools import linear, rot_ksamp
+from ...tools import power, rot_ksamp
 from .. import MANOVA
 
 
@@ -11,9 +11,9 @@ class TestManova:
         "n, obs_stat, obs_pvalue",
         [(1000, 0.005062841807278008, 1.0), (100, 8.24e-5, 0.9762956529114515)],
     )
-    def test_energy_linear_oned(self, n, obs_stat, obs_pvalue):
+    def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
-        x, y = rot_ksamp(linear, n, 1, k=2, noise=False)
+        x, y = rot_ksamp("linear", n, 1, k=2, noise=False)
         stat, pvalue = MANOVA().test(x, y)
 
         assert_almost_equal(stat, obs_stat, decimal=1)
@@ -21,33 +21,25 @@ class TestManova:
 
 
 class TestManovaErrorWarn:
-    """Tests errors and warnings derived from MANOVA."""
+    """Tests errors and warnings derived from MGC."""
 
-    def test_error_notndarray(self):
-        # raises error if x or y is not a ndarray
-        x = np.arange(20)
-        y = [5] * 20
-        z = np.arange(5)
-        assert_raises(ValueError, MANOVA().test, x, y, z)
-
-    def test_error_shape(self):
-        # raises error if number of samples different (n)
-        x = np.arange(100).reshape(25, 4)
-        y = x.reshape(10, 10)
-        z = x
-        assert_raises(ValueError, MANOVA().test, x, y, z)
-
-    def test_error_lowsamples(self):
-        # raises error if samples are low (< 3)
-        x = np.arange(3)
-        y = np.arange(3)
+    def test_no_indeptest(self):
+        # raises error if not indep test
+        x = np.arange(100).reshape(5, 20)
+        y = np.arange(50, 150).reshape(5, 20)
         assert_raises(ValueError, MANOVA().test, x, y)
 
-    def test_error_nans(self):
-        # raises error if inputs contain NaNs
-        x = np.arange(20, dtype=float)
-        x[0] = np.nan
-        assert_raises(ValueError, MANOVA().test, x, x)
 
-        y = np.arange(20)
-        assert_raises(ValueError, MANOVA().test, x, y)
+class TestManovaTypeIError:
+    def test_oned(self):
+        np.random.seed(123456789)
+        est_power = power(
+            "MANOVA",
+            sim_type="gauss",
+            sim="multimodal_independence",
+            case=1,
+            n=100,
+            alpha=0.05,
+        )
+
+        assert est_power <= 0.05

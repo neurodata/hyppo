@@ -10,7 +10,27 @@ You will need to install all the dependencies as defined in `requirements.txt` f
 
     pip3 install -r requirements.txt
 
-in the `docs/` directory. This is of course in addition to the package requirements.
+in the `docs/` directory. This is of course in addition to the package requirements. Here are the documentation requirements:
+
+    sphinxcontrib-rawfiles==0.1.1
+    nbsphinx==0.8.0
+    ipython==7.19.0
+    ipykernel==5.4.3
+    sphinx==3.3
+    sphinx_rtd_theme==0.4.3
+    sphinx-gallery==0.8.2
+    numpydoc==0.7.0
+    recommonmark
+    matplotlib
+    seaborn
+
+and make sure that you install the package dependencies as well:
+
+    numpy>=1.17
+    scipy>=1.4.0
+    numba>=0.46
+    scikit-learn>=0.22
+    joblib>=0.17.0
 
 ## Pandoc dependency
 
