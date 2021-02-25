@@ -148,3 +148,16 @@ Miscellaneous
    tools.perm_test
    tools.chi2_approx
    tools.power
+
+
+
+Base Classes
+-------------
+
+.. autosummary::
+   :toctree: generated/
+
+   independence.base.IndependenceTest
+   ksample.base.KSampleTest
+   time_series.base.TimeSeriesTest
+   discrim.base.DiscriminabilityTest

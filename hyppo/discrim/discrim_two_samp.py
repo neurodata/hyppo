@@ -10,18 +10,8 @@ class DiscrimTwoSample(DiscriminabilityTest):
     r"""
     A class that compares the discriminability of two datasets.
     Two sample test measures whether the discriminability is different for
-    one dataset compared to another. More details can be described in [#1Dscr]_.
-    Parameters
-    ----------
-    is_dist : bool, optional (default: False)
-        Whether `x1` and `x2` are distance matrices or not.
-    remove_isolates : bool, optional (default: True)
-        Whether to remove the measurements with a single instance or not.
-    See Also
-    --------
-    DiscrimOneSample : One sample test for discriminability of a single measurement
-    Notes
-    -----
+    one dataset compared to another. More details can be described in `[1]`_.
+
     Let :math:`\hat D_{x_1}` denote the sample discriminability of one approach,
     and :math:`\hat D_{x_2}` denote the sample discriminability of another approach.
     Then,
@@ -30,6 +20,15 @@ class DiscrimTwoSample(DiscriminabilityTest):
         H_A: D_{x_1} &> D_{x_2}
     Alternatively, tests can be done for :math:`D_{x_1} < D_{x_2}` and
     :math:`D_{x_1} \neq D_{x_2}`.
+
+    .. _[1]: https://www.biorxiv.org/content/10.1101/802629v1
+
+    Parameters
+    ----------
+    is_dist : bool, default: False
+        Whether `x1` and `x2` are distance matrices or not.
+    remove_isolates : bool, default: True
+        Whether to remove the measurements with a single instance or not.
     """
 
     def __init__(self, is_dist=False, remove_isolates=True):
@@ -40,6 +39,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
     def statistic(self, x, y):
         """
         Helper function that calculates the discriminability test statistic.
+
         Parameters
         ----------
         x, y : ndarray
@@ -48,6 +48,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
             `n` is the number of samples and `p` and `q` are the number of
             dimensions. Alternatively, `x` and `y` can be distance matrices,
             where the shapes must both be `(n, n)`.
+
         Returns
         -------
         stat : float
@@ -61,6 +62,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
         r"""
         Calculates the test statistic and p-value for a two sample test for
         discriminability.
+
         Parameters
         ----------
         x1, x2 : ndarray
@@ -84,6 +86,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
         workers : int, optional (default: -1)
             The number of cores to parallelize the p-value computation over.
             Supply -1 to use all cores available to the Process.
+
         Returns
         -------
         d1 : float
@@ -92,6 +95,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
             The computed discriminability score for ``x2``.
         pvalue : float
             The computed two sample test p-value.
+
         Examples
         --------
         >>> import numpy as np
@@ -157,10 +161,12 @@ class DiscrimTwoSample(DiscriminabilityTest):
         r"""
         Helper function that is used to calculate parallel permuted test
         statistics.
+
         Parameters
         ----------
         index : int
             Iterator used for parallel statistic calculation
+
         Returns
         -------
         perm_stat1, perm_stat2 : float

@@ -8,41 +8,38 @@ from ..tools import compute_dist
 
 class TimeSeriesTest(ABC):
     """
-    Base class for time series in hyppo.
+    A base class for a time-series test.
 
     Parameters
     ----------
-    compute_distance : callable, optional (default: None)
+    compute_distance : str, callable, or None, default: "euclidean"
         A function that computes the distance among the samples within each
         data matrix.
-        Valid strings for ``metric`` are, as defined in
-        ``sklearn.metrics.pairwise_distances``,
+        Valid strings for ``compute_distance`` are, as defined in
+        :func:`sklearn.metrics.pairwise_distances`,
 
-            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
-              ‘manhattan’] See the documentation for scipy.spatial.distance for details
+            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
+              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
+              :mod:`scipy.spatial.distance` for details
               on these metrics.
-            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
-              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
-              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
-              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
-              documentation for scipy.spatial.distance for details on these metrics.
+            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
+              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
+              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
+              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
+              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
+              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
+              details on these metrics.
 
-        Set to `None` or `precomputed` if `x` and `y` are already distance
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
         matrices. To call a custom function, either create the distance matrix
         before-hand or create a function of the form ``metric(x, **kwargs)``
-        where `x` is the data matrix for which pairwise distances are
-        calculated and kwargs are extra arguements to send to your custom function.
-
-    Attributes
-    ----------
-    stat : float
-        The computed independence test statistic.
-    pvalue : float
-        The computed independence test p-value.
-    compute_distance : callable, optional
-        Function indicating distance metric (or alternatively the kernel) to
-        use. Calculates the pairwise distance for each input, by default
-        euclidean.
+        where ``x`` is the data matrix for which pairwise distances are
+        calculated and ``**kwargs`` are extra arguements to send to your custom
+        function.
+    max_lag : float, default: 0
+        The maximium lag to consider when computing the test statistics and p-values.
+    **kwargs
+        Arbitrary keyword arguments for ``compute_distance``.
     """
 
     def __init__(self, compute_distance=None, max_lag=0, **kwargs):
@@ -60,39 +57,44 @@ class TimeSeriesTest(ABC):
     @abstractmethod
     def statistic(self, x, y):
         """
-        Calulates the independence test statistic.
+        Calulates the time-series test statistic.
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices that have shapes depending on the particular
-            independence tests (check desired test class for specifics).
+        x,y : ndarray
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
+            `n` is the number of samples and `p` and `q` are the number of
+            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
+            where the shapes must both be ``(n, n)``.
         """
 
     @abstractmethod
     def test(self, x, y, reps=1000, workers=1):
         """
-        Calulates the independece test p-value.
+        Calulates the time-series test test statistic and p-value.
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices that have shapes depending on the particular
-            independence tests (check desired test class for specifics).
-        reps : int, optional
-            The number of replications used in permutation, by default 1000.
-        workers : int, optional
-            Evaluates method using `multiprocessing.Pool <multiprocessing>`).
-            Supply `-1` to use all cores available to the Process.
-        random_state : int or np.random.RandomState instance, optional
-            If already a RandomState instance, use it.
-            If seed is an int, return a new RandomState instance seeded with seed.
-            If None, use np.random.RandomState. Default is None.
+        x,y : ndarray
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
+            `n` is the number of samples and `p` and `q` are the number of
+            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
+            where the shapes must both be ``(n, n)``.
+        reps : int, default: 1000
+            The number of replications used to estimate the null distribution
+            when using the permutation test used to calculate the p-value.
+        workers : int, default: 1
+            The number of cores to parallelize the p-value computation over.
+            Supply ``-1`` to use all cores available to the Process.
 
         Returns
         -------
+        stat : float
+            The discriminability test statistic.
         pvalue : float
-            The pvalue obtained via permutation.
+            The discriminability p-value.
         null_dist : list
             The null distribution of the permuted test statistics.
         """
@@ -119,6 +121,7 @@ class TimeSeriesTest(ABC):
 
 
 def _perm_stat(calc_stat, distx, disty):
+    """Permutes the test statistics."""
     n = distx.shape[0]
     block_size = int(np.ceil(np.sqrt(n)))
     perm_index = np.r_[
