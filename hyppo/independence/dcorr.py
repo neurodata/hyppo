@@ -136,7 +136,7 @@ class Dcorr(IndependenceTest):
         distx = x
         disty = y
 
-        if not self.is_distance and not self.is_fast:
+        if not (self.is_distance or self.is_fast):
             distx, disty = compute_dist(
                 x, y, metric=self.compute_distance, **self.kwargs
             )
@@ -235,13 +235,16 @@ class Dcorr(IndependenceTest):
             self.pvalue = pvalue
             self.null_dist = None
         else:
-            is_distsim = False
             if not self.is_fast:
                 x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
                 self.is_distance = True
-                is_distsim = True
             stat, pvalue = super(Dcorr, self).test(
-                x, y, reps, workers, perm_blocks=perm_blocks, is_distsim=is_distsim
+                x,
+                y,
+                reps,
+                workers,
+                perm_blocks=perm_blocks,
+                is_distsim=self.is_distance,
             )
 
         return stat, pvalue
@@ -273,10 +276,9 @@ def _center_distmat(distx, bias):  # pragma: no cover
 @jit(nopython=True, cache=True)
 def _cpu_cumsum(data):  # pragma: no cover
     """Create cumulative sum since numba doesn't sum over axes."""
-    cumsum = data
-    if data.shape[0] != 1 and data.shape[1] != 1:
-        for i in range(1, data.shape[0]):
-            cumsum[i, :] = data[i, :] + cumsum[i - 1, :]
+    cumsum = data.copy()
+    for i in range(1, data.shape[0]):
+        cumsum[i, :] = data[i, :] + cumsum[i - 1, :]
     return cumsum
 
 
@@ -289,72 +291,81 @@ def _fast_1d_dcov(x, y, bias=False):  # pragma: no cover
     n = x.shape[0]
 
     # sort inputs
-    x = np.sort(x.ravel())
-    y = y[np.argsort(x)]
+    x_orig = x.ravel()
+    x = np.sort(x_orig)
+    y = y[np.argsort(x_orig)]
     x = x.reshape(-1, 1)  # for numba
 
     # cumulative sum
     si = _cpu_cumsum(x)
-    ax = np.arange(-(n - 2), n + 1, 2).reshape(-1, 1) * x + (
-        si[-1] - 2 * si.copy().reshape(-1, 1)
-    )
+    ax = (np.arange(-(n - 2), n + 1, 2) * x.ravel()).reshape(-1, 1) + (si[-1] - 2 * si)
 
     v = np.hstack((x, y, x * y))
     nw = v.shape[1]
 
     idx = np.vstack((np.arange(n), np.zeros(n))).astype(np.int64).T
-    ivs = [np.zeros(n)] * 4
+    iv1 = np.zeros((n, 1))
+    iv2 = np.zeros((n, 1))
+    iv3 = np.zeros((n, 1))
+    iv4 = np.zeros((n, 1))
 
-    i = 0
+    i = 1
     r = 0
     s = 1
     while i < n:
-        gap = 2 * (i + 1)
+        gap = 2 * i
         k = 0
         idx_r = idx[:, r]
-        csumv = np.vstack((np.zeros(nw).reshape(1, -1), _cpu_cumsum(v[idx_r, :])))
-        for j in range(0, n, gap):
-            sts = [j, j + i]
-            es = [min(sts[0] + i, n), min(sts[1] + i, n)]
+        csumv = np.vstack((np.zeros((1, nw)), _cpu_cumsum(v[idx_r, :])))
 
-            while (sts[0] < es[0]) and (sts[1] < es[1]):
-                indexes = [idx_r[sts[0]], idx_r[sts[1]]]
+        for j in range(1, n + 1, gap):
+            st1 = j - 1
+            e1 = min(st1 + i - 1, n - 1)
+            st2 = j + i - 1
+            e2 = min(st2 + i - 1, n - 1)
 
-                if y[indexes[0]] >= y[indexes[1]]:
-                    idx[k, s] = indexes[0]
-                    sts[0] += 1
+            while (st1 <= e1) and (st2 <= e2):
+                idx1 = idx_r[st1]
+                idx2 = idx_r[st2]
+
+                if y[idx1] >= y[idx2]:
+                    idx[k, s] = idx1
+                    st1 += 1
                 else:
-                    idx[k, s] = indexes[1]
-                    sts[1] += 1
-                    ivs[0][indexes[1]] += es[0] - sts[0] + 1
-                    ivs[1][indexes[1]] += csumv[es[0], 0] - csumv[sts[0], 0]
-                    ivs[2][indexes[1]] += csumv[es[0], 1] - csumv[sts[0], 1]
-                    ivs[3][indexes[1]] += csumv[es[0], 2] - csumv[sts[0], 2]
+                    idx[k, s] = idx2
+                    st2 += 1
+                    iv1[idx2] += e1 - st1 + 1
+                    iv2[idx2] += csumv[e1 + 1, 0] - csumv[st1, 0]
+                    iv3[idx2] += csumv[e1 + 1, 1] - csumv[st1, 1]
+                    iv4[idx2] += csumv[e1 + 1, 2] - csumv[st1, 2]
                 k += 1
 
-            if sts[0] < es[0]:
-                kf = k + es[0] - sts[0]
-                idx[k:kf, s] = idx_r[sts[0] : es[0]]
+            if st1 <= e1:
+                kf = k + e1 - st1 + 1
+                idx[k:kf, s] = idx_r[st1 : e1 + 1]
                 k = kf
-            elif sts[1] < es[1]:
-                kf = k + es[1] - sts[1]
-                idx[k:kf, s] = idx_r[sts[1] : es[1]]
+            elif st2 <= e2:
+                kf = k + e2 - st2 + 1
+                idx[k:kf, s] = idx_r[st2 : e2 + 1]
                 k = kf
 
         i = gap
         r = 1 - r
         s = 1 - s
 
-    covterm = n * (x - np.mean(x)).T @ (y - np.mean(y))
-    cs = [ivs[0].T @ v[:, 2].copy(), np.sum(ivs[3]), ivs[1].T @ y, ivs[2].T @ x]
-    d = 4 * ((cs[0] + cs[1]) - (cs[2] + cs[3])) - 2 * covterm
+    covterm = np.sum(n * (x - np.mean(x)).T @ (y - np.mean(y)))
+    c1 = np.sum(iv1.T @ v[:, 2].copy())
+    c2 = np.sum(iv4)
+    c3 = np.sum(iv2.T @ y)
+    c4 = np.sum(iv3.T @ x)
+    d = 4 * ((c1 + c2) - (c3 + c4)) - 2 * covterm
 
-    y = y[np.flip(idx[:, r])]
-    si = _cpu_cumsum(y)
+    y_sorted = y[idx[n::-1, r], :]
+    si = _cpu_cumsum(y_sorted)
     by = np.zeros((n, 1))
-    by[np.flip(idx[:, r])] = np.arange(-(n - 2), n + 1, 2).reshape(-1, 1) * y + (
-        si[-1] - 2 * si.copy().reshape(-1, 1)
-    )
+    by[idx[::-1, r]] = (np.arange(-(n - 2), n + 1, 2) * y_sorted.ravel()).reshape(
+        -1, 1
+    ) + (si[-1] - 2 * si)
 
     if bias:
         denom = [n ** 2, n ** 3, n ** 4]
@@ -393,8 +404,7 @@ def _dcov(distx, disty, bias=False, only_dcov=True):  # pragma: no cover
 @jit(nopython=True, cache=True)
 def _dcorr(distx, disty, bias=False, is_fast=False):  # pragma: no cover
     """
-    Calculate the Dcorr test statistic. Note that though Dcov is calculated
-    and stored in covar, but not called due to a slower implementation.
+    Calculate the Dcorr test statistic.
     """
     if is_fast:
         # calculate covariances and variances

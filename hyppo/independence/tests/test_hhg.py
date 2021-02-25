@@ -3,7 +3,7 @@ import pytest
 from numpy.testing import assert_almost_equal
 from sklearn.metrics import pairwise_distances
 
-from ...tools import linear
+from ...tools import linear, power
 from .. import HHG
 
 
@@ -28,3 +28,18 @@ class TestHHGStat:
         stat = HHG().statistic(distx, disty)
 
         assert_almost_equal(stat, 950600.0, decimal=2)
+
+
+class TestHHGTypeIError:
+    def test_oned(self):
+        np.random.seed(123456789)
+        est_power = power(
+            "HHG",
+            sim_type="indep",
+            sim="multimodal_independence",
+            n=50,
+            p=1,
+            alpha=0.05,
+        )
+
+        assert_almost_equal(est_power, 0.05, decimal=2)

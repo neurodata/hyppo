@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
-from numpy.testing import assert_approx_equal, assert_raises
+from numpy.testing import assert_almost_equal, assert_approx_equal, assert_raises
 
-from ...tools import linear, multimodal_independence, spiral
+from ...tools import linear, multimodal_independence, power, spiral
 from .. import KMERF
 
 
@@ -38,3 +38,20 @@ class TestKmerfErrorWarn:
     def test_no_indeptest(self):
         # raises error if not indep test
         assert_raises(ValueError, KMERF, "abcd")
+
+
+# code too slow to run, check benchmarks in docs for verification
+@pytest.mark.skip
+class TestKmerfTypeIError:
+    def test_oned(self):
+        np.random.seed(123456789)
+        est_power = power(
+            "KMERF",
+            sim_type="indep",
+            sim="multimodal_independence",
+            n=5,
+            p=1,
+            alpha=0.05,
+        )
+
+        assert_almost_equal(est_power, 0.05, decimal=2)

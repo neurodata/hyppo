@@ -3,7 +3,7 @@ from math import ceil
 import numpy as np
 
 from ..independence import INDEP_TESTS
-from ..ksample import KSAMP_TESTS, k_sample_transform
+from ..ksample import KSAMP_TESTS, KSample, k_sample_transform
 from .indep_sim import indep_sim
 from .ksample_sim import gaussian_3samp, rot_ksamp
 
@@ -14,34 +14,37 @@ _ALL_SIMS = {
 }
 
 _NONPERM_TESTS = {
-    "Dcorr": "fast",
-    "Hsic": "fast",
-    "Energy": "fast",
-    "MMD": "fast",
-    "DISCO": "fast",
-    "MANOVA": "analytical",
-    "Hotelling": "analytical",
+    "dcorr": "fast",
+    "hsic": "fast",
+    "energy": "fast",
+    "mmd": "fast",
+    "disco": "fast",
+    "manova": "analytical",
+    "hotelling": "analytical",
 }
 
 
-def _sim_gen(pow_type, **kwargs):
+def _sim_gen(sim_type, **kwargs):
     """
     Generate ``sims`` for the desired simulations.
     """
-    if pow_type in ["indep", "ksamp"]:
-        if kwargs["sim"] in ["multiplicative_noise", "multimodal_independence"]:
+    if sim_type in ["indep", "ksamp"]:
+        if (
+            kwargs["sim"] in ["multiplicative_noise", "multimodal_independence"]
+            and "noise" in kwargs.keys()
+        ):
             kwargs = kwargs.copy().pop("noise")
 
-    sims = _ALL_SIMS[pow_type](**kwargs)
+    sims = _ALL_SIMS[sim_type](**kwargs)
 
     return sims
 
 
-def _indep_perm_stat(test, pow_type, **kwargs):
+def _indep_perm_stat(test, sim_type, **kwargs):
     """
     Generates null and alternate distributions for the independence test.
     """
-    x, y = _sim_gen(pow_type=pow_type, **kwargs)
+    x, y = _sim_gen(sim_type=sim_type, **kwargs)
     obs_stat = test.statistic(x, y)
     permy = np.random.permutation(y)
     perm_stat = test.statistic(x, permy)
@@ -49,11 +52,11 @@ def _indep_perm_stat(test, pow_type, **kwargs):
     return obs_stat, perm_stat
 
 
-def _ksamp_perm_stat(test, pow_type, **kwargs):
+def _ksamp_perm_stat(test, sim_type, **kwargs):
     """
     Generates null and alternate distributions for the k-sample test.
     """
-    sims = _sim_gen(pow_type=pow_type, **kwargs)
+    sims = _sim_gen(sim_type=sim_type, **kwargs)
     u, v = k_sample_transform(sims)
     obs_stat = test.statistic(u, v)
     permv = np.random.permutation(v)
@@ -68,17 +71,17 @@ _PERM_STATS = {
 }
 
 
-def _nonperm_pval(test, **kwargs):
+def _nonperm_pval(test, sim_type, **kwargs):
     """
     Generates fast  permutation pvalues
     """
-    x, y = _sim_gen(pow_type="indep", **kwargs)
-    pvalue = test.test(x, y, auto=True)[1]
+    sims = _sim_gen(sim_type=sim_type, **kwargs)
+    pvalue = test.test(*sims)[1]
 
     return pvalue
 
 
-def power(test, pow_type, sim=None, n=100, alpha=0.05, reps=1000, auto=False, **kwargs):
+def power(test, sim_type, sim=None, n=100, alpha=0.05, reps=1000, auto=False, **kwargs):
     """
     Computes empircal power for k-sample tests
 
@@ -88,12 +91,14 @@ def power(test, pow_type, sim=None, n=100, alpha=0.05, reps=1000, auto=False, **
         The name of the independence test (from the :mod:`hyppo.independence` module)
         that is to be tested. If MaxMargin, accepts list with first entry "MaxMargin"
         and second entry the name of another independence test.
-    pow_type : "indep", "ksamp", "gauss"
+        For :class:`hyppo.ksample.KSample` put the name of the independence test.
+        For other tests in :mod:`hyppo.ksample` just use the name of the class.
+    sim_type : "indep", "ksamp", "gauss"
         Type of power method to calculate. Depends on the type of ``sim``.
     sim : str, default: None
         The name of the independence simulation (from the :mod:`hyppo.tools` module).
         that is to be used. Set to ``None`` if using gaussian simulation curve.
-    n : int, default: None
+    n : int, default: 100
         The number of samples desired by the simulation (>= 5).
     alpha : float, default: 0.05
         The alpha level of the test.
@@ -115,58 +120,66 @@ def power(test, pow_type, sim=None, n=100, alpha=0.05, reps=1000, auto=False, **
     empirical_power : ndarray
         Estimated empirical power for the test.
     """
-    if pow_type not in _ALL_SIMS.keys():
+    if sim_type not in _ALL_SIMS.keys():
         raise ValueError(
-            "pow_type {}, must be in {}".format(pow_type, list(_ALL_SIMS.keys()))
+            "sim_type {}, must be in {}".format(sim_type, list(_ALL_SIMS.keys()))
         )
+
     if type(test) is list:
-        test = [t.lower() for t in test]
-        if test[0] != "maxmargin" or test[1] not in INDEP_TESTS.keys():
+        test_name = [t.lower() for t in test]
+        if test_name[0] != "maxmargin" or test_name[1] not in INDEP_TESTS.keys():
             raise ValueError(
                 "Test 1 must be Maximal Margin, currently {}; Test 2 must be an "
                 "independence test, currently {}".format(*test)
             )
-        test = INDEP_TESTS[test[0]](indep_test=test[1])
+        test = INDEP_TESTS[test_name[0]](indep_test=test_name[1])
+        test_name = test_name[1]
     else:
-        test = test.lower()
-        if test in INDEP_TESTS.keys():
-            test = INDEP_TESTS[test]()
-        elif test in KSAMP_TESTS.keys():
-            test = KSAMP_TESTS[test]()
+        test_name = test.lower()
+        if test_name in INDEP_TESTS.keys():
+            test = INDEP_TESTS[test_name]()
+        elif test_name in KSAMP_TESTS.keys():
+            test = KSAMP_TESTS[test_name]()
         else:
             raise ValueError(
                 "Test {} not in {}".format(
-                    test, list(INDEP_TESTS.keys()) + list(KSAMP_TESTS.keys())
+                    test_name, list(INDEP_TESTS.keys()) + list(KSAMP_TESTS.keys())
                 )
             )
 
     kwargs["n"] = n
     perm_type = "indep"
-    if pow_type in ["ksamp", "gauss"]:
+    if sim_type in ["ksamp", "gauss"]:
         perm_type = "ksamp"
-    if pow_type != "gauss":
+    if sim_type != "gauss":
         kwargs["sim"] = sim
 
-    if test in _NONPERM_TESTS.keys() and auto:
-        if n < 20 and _NONPERM_TESTS[test] == "fast":
+    if test_name in _NONPERM_TESTS.keys() and (
+        auto or _NONPERM_TESTS[test_name] == "analytical"
+    ):
+        if test_name in INDEP_TESTS.keys() and perm_type == "ksamp":
+            test = KSample(test_name)
+        if n < 20 and _NONPERM_TESTS[test_name] == "fast":
             empirical_power = np.nan
         else:
-            pvals = np.array([_nonperm_pval(test=test, **kwargs) for _ in range(reps)])
-            empirical_power = (pvals <= alpha).sum() / reps
+            pvals = np.array(
+                [
+                    _nonperm_pval(test=test, sim_type=sim_type, **kwargs)
+                    for _ in range(reps)
+                ]
+            )
+            empirical_power = (1 + (pvals <= alpha).sum()) / (1 + reps)
     else:
         alt_dist, null_dist = map(
             np.float64,
             zip(
                 *[
-                    _PERM_STATS[perm_type](test=test, pow_type=pow_type, **kwargs)
+                    _PERM_STATS[perm_type](test=test, sim_type=sim_type, **kwargs)
                     for _ in range(reps)
                 ]
             ),
         )
         cutoff = np.sort(null_dist)[ceil(reps * (1 - alpha))]
-        empirical_power = (alt_dist >= cutoff).sum() / reps
-
-    if empirical_power == 0:
-        empirical_power = 1 / reps
+        empirical_power = (1 + (alt_dist >= cutoff).sum()) / (1 + reps)
 
     return empirical_power

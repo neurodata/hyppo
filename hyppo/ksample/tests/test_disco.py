@@ -3,7 +3,7 @@ import pytest
 from numpy.testing import assert_almost_equal, assert_raises
 from sklearn.metrics import pairwise_distances
 
-from ...tools import rot_ksamp
+from ...tools import power, rot_ksamp
 from .. import DISCO
 
 
@@ -30,3 +30,20 @@ class TestDISCOErrorWarn:
         y = np.arange(10)
         assert_raises(ValueError, DISCO().statistic, x, y)
         assert_raises(ValueError, DISCO().test, x, y)
+
+
+class TestDISCOTypeIError:
+    def test_oned(self):
+        np.random.seed(123456789)
+        est_power = power(
+            "DISCO",
+            sim_type="ksamp",
+            sim="multimodal_independence",
+            k=2,
+            n=100,
+            p=1,
+            alpha=0.05,
+            auto=True,
+        )
+
+        assert_almost_equal(est_power, 0.05, decimal=2)

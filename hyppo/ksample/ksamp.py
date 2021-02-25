@@ -143,15 +143,6 @@ class KSample(KSampleTest):
               ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
               details on these metrics.
 
-        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
-        or similarity
-        matrices. To call a custom function, either create the distance or similarity
-        matrix
-        before-hand or create a function of the form ``metric(x, **kwargs)``
-        where ``x`` is the data matrix for which pairwise distances or similarities are
-        calculated and ``**kwargs`` are extra arguements to send to your custom
-        function.
-
         Alternatively, this function computes the kernel similarity among the
         samples within each data matrix.
         Valid strings for ``compute_kernel`` are, as defined in
@@ -230,7 +221,7 @@ class KSample(KSampleTest):
         Returns
         -------
         stat : float
-            The computed *k*-Sample statistic.
+            The computed *k*-sample statistic.
         """
         inputs = list(args)
         if self.indep_test_name == "kmerf":
@@ -269,9 +260,9 @@ class KSample(KSampleTest):
         Returns
         -------
         stat : float
-            The computed *k*-Sample statistic.
+            The computed *k*-sample statistic.
         pvalue : float
-            The computed *k*-Sample p-value.
+            The computed *k*-sample p-value.
         dict
             A dictionary containing optional parameters for tests that return them.
             See the relevant test in :mod:`hyppo.independence`.
@@ -285,7 +276,7 @@ class KSample(KSampleTest):
         >>> z = np.arange(10)
         >>> stat, pvalue = KSample("Dcorr").test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
-        '0.000, 1.0'
+        '-0.136, 1.0'
         """
         inputs = list(args)
         check_input = _CheckInputs(

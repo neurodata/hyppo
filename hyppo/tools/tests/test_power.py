@@ -18,7 +18,7 @@ class TestPower:
     def test_power_fast_nless20(self):
         np.random.seed(123456789)
         est_power = power("Dcorr", "indep", sim="linear", n=19, p=1, auto=True)
-        assert_almost_equal(est_power, 1.0, decimal=1)
+        assert_almost_equal(est_power, np.nan, decimal=1)
 
     def test_ksamp(self):
         np.random.seed(123456789)
@@ -27,7 +27,7 @@ class TestPower:
 
     def test_gaussian(self):
         np.random.seed(123456789)
-        est_power = power(test="Dcorr", pow_type="gauss", auto=True, case=2)
+        est_power = power("Dcorr", "gauss", auto=True, case=2)
         assert_almost_equal(est_power, 1.0, decimal=1)
 
 

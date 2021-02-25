@@ -118,7 +118,7 @@ def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
                 )
 
     if sim == "multimodal_independence":
-        sims = [np.hstack(SIMULATIONS[sim](n, p)) for _ in range(k)]
+        sims = [np.hstack(SIMULATIONS[sim](n, p, **kwargs)) for _ in range(k)]
     else:
         if sim != "multiplicative_noise":
             kwargs["noise"] = noise

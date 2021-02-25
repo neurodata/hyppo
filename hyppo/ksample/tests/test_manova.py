@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from numpy.testing import assert_almost_equal, assert_raises
 
-from ...tools import rot_ksamp
+from ...tools import power, rot_ksamp
 from .. import MANOVA
 
 
@@ -28,3 +28,18 @@ class TestManovaErrorWarn:
         x = np.arange(100).reshape(5, 20)
         y = np.arange(50, 150).reshape(5, 20)
         assert_raises(ValueError, MANOVA().test, x, y)
+
+
+class TestManovaTypeIError:
+    def test_oned(self):
+        np.random.seed(123456789)
+        est_power = power(
+            "MANOVA",
+            sim_type="gauss",
+            sim="multimodal_independence",
+            case=1,
+            n=100,
+            alpha=0.05,
+        )
+
+        assert est_power <= 0.05

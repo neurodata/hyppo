@@ -1,10 +1,8 @@
 import numpy as np
 import pytest
 from numpy.testing import assert_almost_equal, assert_raises
-from sklearn.metrics import pairwise_distances
-from sklearn.metrics.pairwise import pairwise_kernels
 
-from ...tools import linear
+from ...tools import linear, power
 from .. import MaxMargin
 
 
@@ -26,7 +24,7 @@ class TestMaxMarginStat:
         x, y = linear(100, 1)
         stat, pvalue = MaxMargin("Hsic").test(x, y, auto=False)
 
-        assert_almost_equal(stat, 0.1072, decimal=2)
+        assert_almost_equal(stat, 1.0, decimal=2)
         assert_almost_equal(pvalue, 1 / 1000, decimal=2)
 
 
@@ -36,3 +34,19 @@ class TestMaxMarginErrorWarn:
     def test_no_indeptest(self):
         # raises error if not indep test
         assert_raises(ValueError, MaxMargin, "abcd")
+
+
+class TestMaxMarginTypeIError:
+    def test_oned(self):
+        np.random.seed(123456789)
+        est_power = power(
+            ["MaxMargin", "Dcorr"],
+            sim_type="indep",
+            sim="multimodal_independence",
+            n=100,
+            p=1,
+            alpha=0.05,
+            auto=True,
+        )
+
+        assert_almost_equal(est_power, 0.05, decimal=2)

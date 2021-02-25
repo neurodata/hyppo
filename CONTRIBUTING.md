@@ -120,6 +120,8 @@ We recommended that your contribution complies with the following rules before y
   pip install pytest pytest-cov
   pytest
   ```
+- If you are proposing adding a new module, make sure you are inheriting from the appropriate base class. See
+  [the documentation](https://hyppo.neurodata.io/api/index.html#base-classes) for the appropriate class.
 
 # Guidelines
 

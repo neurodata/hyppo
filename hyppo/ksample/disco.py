@@ -119,7 +119,7 @@ class DISCO(KSampleTest):
 
         distu, distv = compute_dist(u, v, metric=self.compute_distance, **self.kwargs)
 
-        # exact equivalence transformation Dcorr and DISCO
+        # exact equivalence transformation Dcov and DISCO
         stat = _dcov(distu, distv, self.bias) * np.sum(N) * len(N) / 2
         self.stat = stat
 
