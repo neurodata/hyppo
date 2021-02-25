@@ -5,6 +5,34 @@ Changelog
 
 *Note: People with a "+" by their names contributed a patch for the first time.*
 
+v0.2.1
+------
+| **Release date:** 25 February 2021
+| **Supports:** Python 3.6+.
+
+**Bug Fixes:**
+
+* :class:`hyppo.independence.Dcorr` and :class:`hyppo.independence.Hsic` when ``auto=True`` had low finite power, fixed.
+* Fast exact statistic for :class:`hyppo.independence.Dcorr` was incorrect, fixed
+
+**Documentation:**
+
+* Fix PyPi description rendering issues
+* Add more descriptive contirubting guidelines
+* Add ``ROLES.md`` for specification about maintainers
+* Added power computation for independence increasing sample size and dimension
+* Add benchmark section and move relevant examples there
+* Add base classes
+
+**Maintenance:**
+
+* Fix gaussian kernel to prevent division by 0
+* Add checks for Type I error
+
+**Authors:**
+
++ Sambit Panda
+
 v0.2.0
 ------
 | **Release date:** 08 February 2021
