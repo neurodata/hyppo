@@ -1,10 +1,11 @@
 import numpy as np
+from numba import jit
 
 from ..tools import chi2_approx
 from ._utils import _CheckInputs
 from .base import IndependenceTest
 from .cca import CCA
-from .dcorr import Dcorr
+from .dcorr import Dcorr, _dcorr
 from .hhg import HHG
 from .hsic import Hsic
 from .kmerf import KMERF
@@ -92,10 +93,11 @@ class MaxMargin(IndependenceTest):
             "rv": {},
             "cca": {},
         }
-
         self.indep_test = INDEP_NOT_MAXMARGIN[indep_test](
             **indep_kwargs[indep_test], **kwargs
         )
+        self.is_fast = False
+        self.bias = bias
 
         IndependenceTest.__init__(self, compute_distance=compute_distkern, **kwargs)
 
@@ -116,15 +118,18 @@ class MaxMargin(IndependenceTest):
         stat : float
             The computed Maximal Margin statistic.
         """
-        stat = np.max(
-            [
-                self.indep_test.statistic(
-                    x[:, i].reshape(-1, 1), y[:, j].reshape(-1, 1)
-                )
-                for i in range(x.shape[1])
-                for j in range(y.shape[1])
-            ]
-        )
+        if self.indep_test_name == "dcorr" and self.is_fast:
+            stat = _maxmargin_numba(x, y, self.bias)
+        else:
+            stat = np.max(
+                [
+                    self.indep_test.statistic(
+                        x[:, i].reshape(-1, 1), y[:, j].reshape(-1, 1)
+                    )
+                    for i in range(x.shape[1])
+                    for j in range(y.shape[1])
+                ]
+            )
         self.stat = stat
 
         return stat
@@ -182,6 +187,15 @@ class MaxMargin(IndependenceTest):
         )
         x, y = check_input()
 
+        if (
+            auto
+            and x.shape[1] == 1
+            and y.shape[1] == 1
+            and self.compute_distance == "euclidean"
+            and self.indep_test_name == "dcorr"
+        ):
+            self.is_fast = True
+
         if auto and x.shape[0] > 20 and self.indep_test_name in ["dcorr", "hsic"]:
             stat, pvalue = chi2_approx(self.statistic, x, y)
             self.stat = stat
@@ -193,3 +207,23 @@ class MaxMargin(IndependenceTest):
             )
 
         return stat, pvalue
+
+
+@jit(nopython=True, cache=True)
+def _maxmargin_numba(x, y, bias=False):  # pragma: no cover
+    """
+    Calculate the Dcorr test statistic.
+    """
+    p = x.shape[1]
+    q = y.shape[1]
+    stats = np.zeros(p * q)
+    for i in range(p):
+        for j in range(q):
+            stats[i + j] = _dcorr(
+                x[:, i].copy().reshape(-1, 1),
+                y[:, j].copy().reshape(-1, 1),
+                bias,
+                is_fast=True,
+            )
+
+    return np.max(stats)
