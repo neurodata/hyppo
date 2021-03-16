@@ -11,7 +11,7 @@ class HHG(IndependenceTest):
     Heller Heller Gorfine (HHG) test statistic and p-value.
 
     This is a powerful test for independence based on calculating pairwise
-    euclidean distances and associations between these distance matrices. The
+    Euclidean distances and associations between these distance matrices. The
     test statistic is a function of ranks of these distances, and is
     consistent against similar tests `[1]`_. It can also operate on multiple
     dimensions `[1]`_.

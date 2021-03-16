@@ -119,8 +119,7 @@ class KSample(KSampleTest):
 
     Parameters
     ----------
-    indep_test : "CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC", "KMERF", "MaxMargin" or 
-    list
+    indep_test : "CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC", "KMERF", or list
         A string corresponding to the desired independence test from
         :mod:`hyppo.independence`. This is not case sensitive. If using ``"MaxMargin"``
         then this must be a list containing ``"MaxMargin"`` in the first index and

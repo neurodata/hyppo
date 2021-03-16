@@ -113,12 +113,13 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
         Valid strings for ``metric`` are, as defined in
         :func:`sklearn.metrics.pairwise.pairwise_kernels`,
 
-            ['additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'rbf',
-            'laplacian', 'sigmoid', 'cosine']
+            [``"additive_chi2"``, ``"chi2"``, ``"linear"``, ``"poly"``,
+            ``"polynomial"``, ``"rbf"``,
+            ``"laplacian"``, ``"sigmoid"``, ``"cosine"``]
 
-        Note ``'rbf'`` and ``'gaussian'`` are the same metric.
-        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already similarity
-        matrices. To call a custom function, either create the distance matrix
+        Note ``"rbf"`` and ``"gaussian"`` are the same metric.
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already similarity
+        matrices. To call a custom function, either create the similarity matrix
         before-hand or create a function of the form :func:`metric(x, **kwargs)`
         where ``x`` is the data matrix for which pairwise kernel similarity matrices are
         calculated and kwargs are extra arguements to send to your custom function.
@@ -180,16 +181,19 @@ def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
         Valid strings for ``metric`` are, as defined in
         :func:`sklearn.metrics.pairwise_distances`,
 
-            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
-              ‘manhattan’] See the documentation for scipy.spatial.distance for details
+            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
+              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
+              :mod:`scipy.spatial.distance` for details
               on these metrics.
-            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
-              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
-              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
-              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
-              documentation for scipy.spatial.distance for details on these metrics.
+            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
+              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
+              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
+              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
+              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
+              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
+              details on these metrics.
 
-        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already distance
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
         matrices. To call a custom function, either create the distance matrix
         before-hand or create a function of the form ``metric(x, **kwargs)``
         where ``x`` is the data matrix for which pairwise distances are

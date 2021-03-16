@@ -6,7 +6,7 @@ hyppo
 |CircleCI|_ |Codecov|_ |Netlify|_ |PythonVersion|_ |PyPi|_ |arXivshield|_
 
 .. |CircleCI| image:: https://circleci.com/gh/neurodata/hyppo/tree/main.svg?style=shield&circle-token=:circle-token
-.. _CircleCI: https://circleci.com/gh/neurodata/hyppo
+.. _CircleCI: https://app.circleci.com/pipelines/github/neurodata/hyppo?branch=main
 
 .. |Codecov| image:: https://codecov.io/gh/neurodata/hyppo/branch/main/graph/badge.svg?token=a2TXyRVW0a
 .. _Codecov: https://codecov.io/gh/neurodata/hyppo
