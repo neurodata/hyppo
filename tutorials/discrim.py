@@ -42,7 +42,7 @@ The p-value returned is calculated using a permutation test.
 # :class:`hyppo.discrim.DiscrimTwoSample`.
 #
 # Each class has a ``is_dist`` parameter that indicates whether or not inputs are
-# distance matrices. These distances must be euclidean distance.
+# distance matrices. These distances must be Euclidean distance.
 # Also, ``remove_isolates`` indicates whether or not to remove measurements with a single
 # instance.
 # Otherwise, these tests runs like :ref:`any other test<general indep>`.

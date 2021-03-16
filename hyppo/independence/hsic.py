@@ -36,7 +36,7 @@ class Hsic(IndependenceTest):
     valid semimetric to ensure their equivalence, and vice versa `[3]`_ `[4]`_. In
     other words, every Dcorr test is also an Hsic and vice versa. Nonetheless,
     implementations of Dcorr and Hsic use different metrics by default:
-    Dcorr uses a euclidean distance while Hsic uses a Gaussian median kernel.
+    Dcorr uses a Euclidean distance while Hsic uses a Gaussian median kernel.
     We consider the normalized version (see :class:`hyppo.independence`) for the
     transformation.
 

@@ -33,9 +33,7 @@ The p-value returned is calculated using a permutation test using
 Specifics about how the test statistics are calculated for each in
 :class:`hyppo.independence` can be found the docstring of the respective test. Here,
 we overview subsets of the types of independence tests we offer in hyppo, and special
-parameters unique to those tests. But first, we present the general testing workflow
-present for all our tests using one of the tests, :class:`hyppo.independence.MGC`, as
-an example.
+parameters unique to those tests.
 
 Now, let's look at unique properties of some of the tests in :mod:`hyppo.independence`:
 """
@@ -86,7 +84,7 @@ Now, let's look at unique properties of some of the tests in :mod:`hyppo.indepen
 # **Distance Correlation (Dcorr)** is a powerful multivariate independence test based on
 # energy distance.
 # **Hilbert Schmidt Independence Criterion (Hsic)** is a kernel-based analogue to Dcorr
-# that uses the a gaussian median kernel by default `[1]`_.
+# that uses the a Gaussian median kernel by default `[1]`_.
 # More details can be found in :class:`hyppo.independence.Dcorr` and
 # :class:`hyppo.independence.Hsic`.
 # The following applies to both:
@@ -138,7 +136,7 @@ print(u"Fast time (fast statistic chi-square): {0:.3g}s".format(fast_chisq_time)
 # and so is far faster than the permutation method.
 # To call it, simply set ``auto`` to ``True``, which is the default, and if your data
 # has a sample size greater than 20, then the test will run.
-# In the case where the data is 1 dimensional and euclidean, an even faster version is
+# In the case where the data is 1 dimensional and Euclidean, an even faster version is
 # run.
 #
 # ------------

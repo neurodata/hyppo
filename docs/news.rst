@@ -26,7 +26,7 @@ v0.2.1
 
 **Maintenance:**
 
-* Fix gaussian kernel to prevent division by 0
+* Fix Gaussian kernel to prevent division by 0
 * Add checks for Type I error
 
 **Authors:**
@@ -106,7 +106,7 @@ v0.1.3
 
 **Bug Fixes:**
 
-* Prevent division by zero when calculating using default gaussian median kernel
+* Prevent division by zero when calculating using default Gaussian median kernel
 
 **Maintenance:**
 

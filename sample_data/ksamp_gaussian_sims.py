@@ -4,7 +4,7 @@ Guassian Sims
 
 Gaussian `k`-sample simulations are found in :mod:`hyppo.tools`. Here, we visualize
 what these
-simulations look like. We use these gaussian simulations when comparing our
+simulations look like. We use these Gaussian simulations when comparing our
 algorithms against multivariate analysis of variance (MANOVA).
 """
 

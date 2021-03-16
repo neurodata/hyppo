@@ -66,7 +66,7 @@ class Dcorr(IndependenceTest):
     :meth:`hyppo.tools.perm_test`. The fast version of the test uses
     :meth:`hyppo.tools.chi2_approx`.
 
-    When the data is 1 dimension and the distance metric is euclidean,
+    When the data is 1 dimension and the distance metric is Euclidean,
     and even faster version of the algorithm is run (computational
     complexity is :math:`\mathcal{O}(n \log n)`) `[3]`_.
 

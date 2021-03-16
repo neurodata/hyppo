@@ -26,7 +26,7 @@ class Energy(KSampleTest):
     :math:`\{ u_i \stackrel{iid}{\sim} F_U,\ i = 1, ..., n \}` and
     :math:`\{ v_j \stackrel{iid}{\sim} F_V,\ j = 1, ..., m \}` as two groups
     of samples deriving from different distributions with the same
-    dimensionality. If :math:`d(\cdot, \cdot)` is a distance metric (i.e. euclidean)
+    dimensionality. If :math:`d(\cdot, \cdot)` is a distance metric (i.e. Euclidean)
     then,
 
     .. math::

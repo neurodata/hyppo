@@ -28,7 +28,7 @@ class DISCO(KSampleTest):
     :math:`\{ u^i_1 \stackrel{iid}{\sim} F_{U_1},\ i = 1, ..., n_1 \}` up to
     :math:`\{ u^j_k \stackrel{iid}{\sim} F_{V_1},\ j = 1, ..., n_k \}` as `k` groups
     of samples deriving from different distributions with the same
-    dimensionality. If :math:`d(\cdot, \cdot)` is a distance metric (i.e. euclidean),
+    dimensionality. If :math:`d(\cdot, \cdot)` is a distance metric (i.e. Euclidean),
     :math:`N = \sum_{i = 1}^k n_k`,
     and :math:`\mathrm{Energy}` is the Energy test statistic from
     :class:`hyppo.ksample.Energy`
