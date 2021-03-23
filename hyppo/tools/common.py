@@ -140,11 +140,12 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
         metric = "precomputed"
     if metric == "gaussian":
         if "gamma" not in kwargs:
-            l1 = pairwise_distances(x, metric="l1", n_jobs=workers)
-            n = l1.shape[0]
+            l2 = pairwise_distances(x, metric="l2", n_jobs=workers)
+            n = l2.shape[0]
+            # compute median of off diagonal elements
             med = np.median(
                 np.lib.stride_tricks.as_strided(
-                    l1, (n - 1, n + 1), (l1.itemsize * (n + 1), l1.itemsize)
+                    l2, (n - 1, n + 1), (l2.itemsize * (n + 1), l2.itemsize)
                 )[:, 1:]
             )
             # prevents division by zero when used on label vectors
