@@ -287,6 +287,8 @@ def _fast_1d_dcov(x, y, bias=False):  # pragma: no cover
     """
     Calculate the Dcorr test statistic. Note that though Dcov is calculated
     and stored in covar, but not called due to a slower implementation.
+    
+    See: https://www.sciencedirect.com/science/article/abs/pii/S0167947319300313
     """
     n = x.shape[0]
 
