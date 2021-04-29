@@ -2,7 +2,7 @@ import numpy as np
 
 
 class _CheckInputs:
-    """ Check if additional arguments are correct """
+    """Check if additional arguments are correct"""
 
     def __init__(self, n):
         self.n = n
