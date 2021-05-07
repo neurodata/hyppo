@@ -138,7 +138,7 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
     """
     if not metric:
         metric = "precomputed"
-    if metric == "gaussian":
+    if metric in ["gaussian", "rbf"]:
         if "gamma" not in kwargs:
             l2 = pairwise_distances(x, metric="l2", n_jobs=workers)
             n = l2.shape[0]
