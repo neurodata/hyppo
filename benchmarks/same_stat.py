@@ -78,7 +78,7 @@ TESTS = {
 
 
 def plot_stats():
-    _ = plt.figure(figsize=(5, 10))
+    _ = plt.figure(figsize=(7, 10))
     ax = plt.subplot(111)
 
     test_names = list(TESTS.keys())
@@ -114,15 +114,12 @@ def plot_stats():
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     ax.spines["bottom"].set_visible(False)
-    ax.set_ylabel("Test Statistic\nDifference")
+    ax.set_ylabel("Test Statistic Difference")
     ax.set_ylim(-5e-4, 5e-4)
     ax.set_yticks([-5e-4, 0, 5e-4])
-    f = mticker.ScalarFormatter(useOffset=False)
-    ax.yaxis.set_major_formatter(
-        mticker.FuncFormatter(
-            lambda x, pos: "{}".format(f._formatSciNotation("%1.1e" % x))
-        )
-    )
+    f = mticker.ScalarFormatter(useOffset=False, useMathText=True)
+    f.set_powerlimits((-2, 2))
+    ax.yaxis.set_major_formatter(f)
 
 
 # plot the statistic differences
@@ -130,7 +127,8 @@ plot_stats()
 
 ########################################################################################
 # The following shows the code that was used to compute the R test statistics.
-# Certain lines were commented out depending on whether or not they were useful.
+# Certain lines were commented out depending on whether or not they were useful to
+# calculate a given test statistic.
 #
 # .. code-block::
 #
