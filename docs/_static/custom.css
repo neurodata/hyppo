@@ -1,12 +1,9 @@
-/* Adapted from https://github.com/fatiando/verde */
-
 /* To stick the footer to the bottom of the page */
 html {
 }
 
 body {
     font-family: 'Open Sans', sans-serif;
-    color: #242424;
 }
 
 h1, h2, h3, h4 {
@@ -61,13 +58,20 @@ h1 {
     max-width: 1000px;
 }
 
-.wy-side-nav-search > a img.logo {
-    width: 50%;
-    color: #ffffff;
+.wy-nav-top {
+    background-color: #555555;
 }
 
-.wy-side-nav-search .wy-dropdown>a {
-    color: #ffffff;
+.wy-side-nav-search {
+    background-color: #555555;
+}
+
+.wy-side-nav-search > a img.logo {
+    width: 50%;
+}
+
+.wy-side-nav-search input[type="text"] {
+    border-color: #555555;
 }
 
 /* Remove the padding from the Parameters table */
