@@ -1,8 +1,6 @@
 # Building Docs
 
-We currently use Sphinx
-
-If you only want to get the documentation, this can be found at [https://hyppo.neurodata.io](https://hyppo.neurodata.io).
+We currently use Sphinx. If you only want to get the documentation, this can be found at [https://hyppo.neurodata.io](https://hyppo.neurodata.io).
 
 ## Python Dependencies
 
