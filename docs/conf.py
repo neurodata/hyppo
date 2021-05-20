@@ -205,7 +205,7 @@ html_context = {
 
 
 html_css_files = [
-    "custom.css",
+    # "custom.css",
 ]
 
 # Custom sidebar templates, must be a dictionary that maps document names
