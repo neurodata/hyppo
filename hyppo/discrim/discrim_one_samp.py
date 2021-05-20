@@ -8,7 +8,7 @@ from .base import DiscriminabilityTest
 class DiscrimOneSample(DiscriminabilityTest):
     r"""
 
-    1 Sample Discriminability test statistic and p-value.
+    One Sample Discriminability test statistic and p-value.
 
     Discriminability index is a measure of whether a data acquisition and
     preprocessing pipeline is more discriminable among different subjects.
