@@ -2,7 +2,7 @@ import numpy as np
 
 from ..tools import chi2_approx, compute_kern
 from ._utils import _CheckInputs
-from .base import IndependenceTest
+from .base import IndependenceTest, IndependenceTestOutput
 from .dcorr import Dcorr
 
 
@@ -178,4 +178,4 @@ class Hsic(IndependenceTest):
             self.is_kernel = True
             stat, pvalue = super(Hsic, self).test(x, y, reps, workers)
 
-        return stat, pvalue
+        return IndependenceTestOutput(stat, pvalue)

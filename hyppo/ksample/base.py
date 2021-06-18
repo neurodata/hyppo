@@ -1,4 +1,10 @@
 from abc import ABC, abstractmethod
+from typing import NamedTuple
+
+
+class KSampleTestOutput(NamedTuple):
+    stat: float
+    pvalue: float
 
 
 class KSampleTest(ABC):

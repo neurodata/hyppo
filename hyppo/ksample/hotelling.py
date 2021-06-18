@@ -1,6 +1,6 @@
 import numpy as np
 from hyppo.ksample._utils import _CheckInputs
-from hyppo.ksample.base import KSampleTest
+from hyppo.ksample.base import KSampleTest, KSampleTestOutput
 from scipy.stats import f
 
 
@@ -127,4 +127,4 @@ class Hotelling(KSampleTest):
         self.pvalue = pvalue
         self.null_dist = None
 
-        return stat, pvalue
+        return KSampleTestOutput(stat, pvalue)

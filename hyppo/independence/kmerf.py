@@ -3,13 +3,17 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import pairwise_distances
 
 from ._utils import _CheckInputs, sim_matrix
-from .base import IndependenceTest
+from .base import IndependenceTest, IndependenceTestOutput
 from .dcorr import _dcorr
 
 FOREST_TYPES = {
     "classifier": RandomForestClassifier,
     "regressor": RandomForestRegressor,
 }
+
+
+class KMERFTestOutput(IndependenceTestOutput):
+    kmerf_dict: dict
 
 
 class KMERF(IndependenceTest):
@@ -169,4 +173,4 @@ class KMERF(IndependenceTest):
         stat, pvalue = super(KMERF, self).test(x, y, reps, workers, is_distsim=False)
         kmerf_dict = {"feat_importance": self.importances}
 
-        return stat, pvalue, kmerf_dict
+        return KMERFTestOutput(stat, pvalue, kmerf_dict)

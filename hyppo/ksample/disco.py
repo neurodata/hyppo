@@ -3,7 +3,7 @@ import numpy as np
 from ..independence.dcorr import _dcov
 from ..tools import compute_dist
 from ._utils import _CheckInputs, k_sample_transform
-from .base import KSampleTest
+from .base import KSampleTest, KSampleTestOutput
 from .ksamp import KSample
 
 
@@ -193,4 +193,4 @@ class DISCO(KSampleTest):
             **self.kwargs
         ).test(*inputs, reps=reps, workers=workers, auto=auto)
 
-        return stat, pvalue
+        return KSampleTestOutput(stat, pvalue)

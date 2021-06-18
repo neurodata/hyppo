@@ -1,8 +1,15 @@
+from typing import NamedTuple
+
 import numpy as np
 from scipy._lib._util import MapWrapper
 
 from ._utils import _CheckInputs
 from .base import DiscriminabilityTest
+
+
+class DiscrimOneSampleTestOutput(NamedTuple):
+    stat: float
+    pvalue: float
 
 
 class DiscrimOneSample(DiscriminabilityTest):
@@ -128,7 +135,7 @@ class DiscrimOneSample(DiscriminabilityTest):
 
         self.pvalue_ = pvalue
 
-        return stat, pvalue
+        return DiscrimOneSampleTestOutput(stat, pvalue)
 
     def _perm_stat(self, index):  # pragma: no cover
         r"""
