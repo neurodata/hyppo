@@ -1,9 +1,11 @@
+from typing import NamedTuple
+
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import pairwise_distances
 
 from ._utils import _CheckInputs, sim_matrix
-from .base import IndependenceTest, IndependenceTestOutput
+from .base import IndependenceTest
 from .dcorr import _dcorr
 
 FOREST_TYPES = {
@@ -12,7 +14,9 @@ FOREST_TYPES = {
 }
 
 
-class KMERFTestOutput(IndependenceTestOutput):
+class KMERFTestOutput(NamedTuple):
+    stat: float
+    pvalue: float
     kmerf_dict: dict
 
 

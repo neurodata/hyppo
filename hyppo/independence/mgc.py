@@ -1,13 +1,16 @@
 import warnings
+from typing import NamedTuple
 
 from scipy.stats import multiscale_graphcorr
 
 from ..tools import compute_dist
 from ._utils import _CheckInputs
-from .base import IndependenceTest, IndependenceTestOutput
+from .base import IndependenceTest
 
 
-class MGCestOutput(IndependenceTestOutput):
+class MGCestOutput(NamedTuple):
+    stat: float
+    pvalue: float
     mgc_dict: dict
 
 

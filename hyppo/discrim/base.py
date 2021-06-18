@@ -45,7 +45,7 @@ class DiscriminabilityTest(ABC):
         """
 
     @abstractmethod
-    def test(self):
+    def test(self, *args, **kwargs):
         r"""
         Calculates the Discriminability test statistic and p-value.
         """
