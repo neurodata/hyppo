@@ -3,7 +3,7 @@ from numba import jit
 
 from ..tools import check_perm_blocks_dim, chi2_approx, compute_dist
 from ._utils import _CheckInputs
-from .base import IndependenceTest
+from .base import IndependenceTest, IndependenceTestOutput
 
 
 class Dcorr(IndependenceTest):
@@ -247,7 +247,7 @@ class Dcorr(IndependenceTest):
                 is_distsim=self.is_distance,
             )
 
-        return stat, pvalue
+        return IndependenceTestOutput(stat, pvalue)
 
 
 @jit(nopython=True, cache=True)

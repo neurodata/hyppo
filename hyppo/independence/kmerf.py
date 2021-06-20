@@ -1,3 +1,5 @@
+from typing import NamedTuple
+
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import pairwise_distances
@@ -10,6 +12,12 @@ FOREST_TYPES = {
     "classifier": RandomForestClassifier,
     "regressor": RandomForestRegressor,
 }
+
+
+class KMERFTestOutput(NamedTuple):
+    stat: float
+    pvalue: float
+    kmerf_dict: dict
 
 
 class KMERF(IndependenceTest):
@@ -169,4 +177,4 @@ class KMERF(IndependenceTest):
         stat, pvalue = super(KMERF, self).test(x, y, reps, workers, is_distsim=False)
         kmerf_dict = {"feat_importance": self.importances}
 
-        return stat, pvalue, kmerf_dict
+        return KMERFTestOutput(stat, pvalue, kmerf_dict)

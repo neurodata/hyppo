@@ -1,7 +1,7 @@
 from ..independence.dcorr import _dcov
 from ..tools import compute_dist
 from ._utils import _CheckInputs
-from .base import KSampleTest
+from .base import KSampleTest, KSampleTestOutput
 from .ksamp import KSample
 
 
@@ -177,4 +177,4 @@ class Energy(KSampleTest):
             **self.kwargs
         ).test(x, y, reps=reps, workers=workers, auto=auto)
 
-        return stat, pvalue
+        return KSampleTestOutput(stat, pvalue)

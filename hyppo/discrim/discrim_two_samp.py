@@ -1,9 +1,17 @@
+from typing import NamedTuple
+
 import numpy as np
 from numba import jit
 from scipy._lib._util import MapWrapper
 
 from ._utils import _CheckInputs
 from .base import DiscriminabilityTest
+
+
+class DiscrimTwoSampleTestOutput(NamedTuple):
+    d1: float
+    d2: float
+    pvalue: float
 
 
 class DiscrimTwoSample(DiscriminabilityTest):
@@ -145,7 +153,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
         self.pvalue = pvalue
 
-        return self.d1, self.d2, self.pvalue
+        return DiscrimTwoSampleTestOutput(self.d1, self.d2, self.pvalue)
 
     def _get_convex_comb(self, x):  # pragma: no cover
         """Get random convex combination of input x."""
