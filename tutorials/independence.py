@@ -312,4 +312,4 @@ plt.show()
 # information.
 # These tests runs like :ref:`any other test<general indep>`.
 #
-# .. _[1]: https://arxiv.org/abs/1806.05514
+# .. _[1]: https://link.springer.com/article/10.1007/s10182-020-00378-1

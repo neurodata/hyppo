@@ -46,7 +46,7 @@ class Hsic(IndependenceTest):
 
     .. _[1]: https://papers.nips.cc/paper/2007/file/d5cfead94f5350c12c322b5b664544c1-Paper.pdf
     .. _[2]: https://www.jmlr.org/papers/volume11/gretton10a/gretton10a.pdf
-    .. _[3]: https://arxiv.org/abs/1806.05514
+    .. _[3]: https://link.springer.com/article/10.1007/s10182-020-00378-1
     .. _[4]: https://projecteuclid.org/euclid.aos/1383661264
 
     Parameters

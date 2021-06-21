@@ -45,7 +45,7 @@ class Energy(KSampleTest):
     The fast version of the test uses :meth:`hyppo.tools.chi2_approx`.
 
     .. _[1]: https://arxiv.org/abs/1910.08883
-    .. _[2]: https://arxiv.org/abs/1806.05514
+    .. _[2]: https://link.springer.com/article/10.1007/s10182-020-00378-1
     .. _[3]: https://www.semanticscholar.org/paper/TESTING-FOR-EQUAL-DISTRIBUTIONS-IN-HIGH-DIMENSION-Sz%C3%A9kely-Rizzo/ad5e91905a85d6f671c04a67779fd1377e86d199
 
     Parameters

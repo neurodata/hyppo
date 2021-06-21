@@ -45,7 +45,7 @@ class MMD(KSampleTest):
     The fast version of the test uses :meth:`hyppo.tools.chi2_approx`.
 
     .. _[1]: https://arxiv.org/abs/1910.08883
-    .. _[2]: https://arxiv.org/abs/1806.05514
+    .. _[2]: https://link.springer.com/article/10.1007/s10182-020-00378-1
     .. _[3]: https://www.jmlr.org/papers/volume13/gretton12a/gretton12a.pdf
 
     Parameters
