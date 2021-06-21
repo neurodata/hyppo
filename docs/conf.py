@@ -51,6 +51,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx_gallery.gen_gallery",
     "recommonmark",
+    "sphinx_rtd_theme_ext_color_contrast",
 ]
 
 

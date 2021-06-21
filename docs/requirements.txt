@@ -2,10 +2,11 @@ sphinxcontrib-rawfiles==0.1.1
 nbsphinx==0.8.0
 ipython==7.19.0
 ipykernel==5.4.3
-sphinx==3.3
-sphinx_rtd_theme==0.4.3
+sphinx==3.3.0
+sphinx_rtd_theme==0.5.2
 sphinx-gallery==0.8.2
 numpydoc==0.7.0
 recommonmark
 matplotlib
 seaborn
+sphinx-rtd-theme-ext-color-contrast

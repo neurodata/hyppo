@@ -16,16 +16,20 @@ class DiscrimTwoSampleTestOutput(NamedTuple):
 
 class DiscrimTwoSample(DiscriminabilityTest):
     r"""
-    A class that compares the discriminability of two datasets.
+    Two Sample Discriminability test statistic and p-value.
+
     Two sample test measures whether the discriminability is different for
     one dataset compared to another. More details can be described in `[1]`_.
 
     Let :math:`\hat D_{x_1}` denote the sample discriminability of one approach,
     and :math:`\hat D_{x_2}` denote the sample discriminability of another approach.
     Then,
+
     .. math::
+
         H_0: D_{x_1} &= D_{x_2} \\
         H_A: D_{x_1} &> D_{x_2}
+
     Alternatively, tests can be done for :math:`D_{x_1} < D_{x_2}` and
     :math:`D_{x_1} \neq D_{x_2}`.
 
