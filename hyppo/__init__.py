@@ -1,3 +1,4 @@
+import hyppo.conditional
 import hyppo.discrim
 import hyppo.independence
 import hyppo.ksample
