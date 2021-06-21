@@ -3,7 +3,7 @@ from numba import jit
 from scipy.stats import f
 
 from ._utils import _CheckInputs
-from .base import KSampleTest
+from .base import KSampleTest, KSampleTestOutput
 
 
 class MANOVA(KSampleTest):
@@ -164,7 +164,7 @@ class MANOVA(KSampleTest):
         self.pvalue = pvalue
         self.null_dist = None
 
-        return stat, pvalue
+        return KSampleTestOutput(stat, pvalue)
 
 
 @jit(nopython=True, cache=True)

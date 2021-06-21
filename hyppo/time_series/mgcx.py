@@ -1,6 +1,14 @@
+from typing import NamedTuple
+
 from ..independence import MGC
 from ._utils import _CheckInputs, compute_scale_at_lag, compute_stat
 from .base import TimeSeriesTest
+
+
+class MGCXTestOutput(NamedTuple):
+    stat: float
+    pvalue: float
+    mgcx_dict: dict
 
 
 class MGCX(TimeSeriesTest):
@@ -178,4 +186,4 @@ class MGCX(TimeSeriesTest):
         stat, pvalue, stat_list = super(MGCX, self).test(x, y, reps, workers)
         mgcx_dict = {"opt_lag": stat_list[1], "opt_scale": stat_list[2]}
 
-        return stat, pvalue, mgcx_dict
+        return MGCXTestOutput(stat, pvalue, mgcx_dict)
