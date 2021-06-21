@@ -6,7 +6,7 @@ sphinx==3.3.0
 sphinx_rtd_theme==0.5.2
 sphinx-gallery==0.8.2
 numpydoc==0.7.0
-myst-parser==0.15.1
+recommonmark
 matplotlib
 seaborn
 sphinx-rtd-theme-ext-color-contrast
