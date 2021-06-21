@@ -1,5 +1,5 @@
 from ._utils import _CheckInputs
-from .base import KSampleTest
+from .base import KSampleTest, KSampleTestOutput
 from .ksamp import KSample
 
 
@@ -175,4 +175,4 @@ class MMD(KSampleTest):
             **self.kwargs
         ).test(x, y, reps=reps, workers=workers, auto=auto)
 
-        return stat, pvalue
+        return KSampleTestOutput(stat, pvalue)

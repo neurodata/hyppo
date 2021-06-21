@@ -1,6 +1,12 @@
 from abc import ABC, abstractmethod
+from typing import NamedTuple
 
 from ..tools import perm_test
+
+
+class IndependenceTestOutput(NamedTuple):
+    stat: float
+    pvalue: float
 
 
 class IndependenceTest(ABC):
@@ -126,4 +132,4 @@ class IndependenceTest(ABC):
         self.pvalue = pvalue
         self.null_dist = null_dist
 
-        return stat, pvalue
+        return IndependenceTestOutput(stat, pvalue)

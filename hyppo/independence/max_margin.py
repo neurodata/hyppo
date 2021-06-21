@@ -2,7 +2,7 @@ import numpy as np
 
 from ..tools import chi2_approx
 from ._utils import _CheckInputs
-from .base import IndependenceTest
+from .base import IndependenceTest, IndependenceTestOutput
 from .cca import CCA
 from .dcorr import Dcorr
 from .hhg import HHG
@@ -202,4 +202,4 @@ class MaxMargin(IndependenceTest):
                 x, y, reps, workers, is_distsim=False
             )
 
-        return stat, pvalue
+        return IndependenceTestOutput(stat, pvalue)
