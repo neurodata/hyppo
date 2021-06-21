@@ -453,8 +453,8 @@ def chi2_approx(calc_stat, x, y):
     This approximation is also applicable for the nonparametric MANOVA via
     independence testing method in our package `[3]`_.
 
-    .. _[1]: https://arxiv.org/abs/1912.12150
-    .. _[2]: https://arxiv.org/abs/1806.05514
+    .. _[1]: https://www.tandfonline.com/doi/abs/10.1080/10618600.2021.1938585?journalCode=ucgs20
+    .. _[2]: https://link.springer.com/article/10.1007/s10182-020-00378-1
     .. _[3]: https://arxiv.org/abs/1910.08883
 
     Parameters
