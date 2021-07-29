@@ -1,0 +1,52 @@
+# YAML 1.2
+---
+abstract: "We introduce hyppo, a unified library for performing multivariate hypothesis testing, including independence, two-sample, and k-sample testing. While many multivariate independence tests have R packages available, the interfaces are inconsistent and most are not available in Python. hyppo includes many state-of-the-art multivariate testing procedures. The package is easy to use and is flexible enough to enable future extensions. The documentation and all releases are available at https://hyppo.neurodata.io."
+authors:
+  -
+    affiliation: "Johns Hopkins University, Baltimore, MD"
+    family-names: Panda
+    given-names: Sambit
+    orcid: "https://orcid.org/0000-0001-8455-4243"
+  -
+    affiliation: "Johns Hopkins University, Baltimore, MD"
+    family-names: Palaniappan
+    given-names: Satish
+  -
+    affiliation: "Johns Hopkins University, Baltimore, MD"
+    family-names: Xiong
+    given-names: Junhao
+  -
+    affiliation: "Johns Hopkins School of Public Health, Baltimore, MD"
+    family-names: Bridgeford
+    given-names: Eric
+  -
+    affiliation: "Johns Hopkins University, Baltimore, MD"
+    family-names: Mehta
+    given-names: Ronak
+  -
+    affiliation: "University of Delaware, Newark, DE"
+    family-names: Shen
+    given-names: Cencheng
+  -
+    affiliation: "Johns Hopkins University, Baltimore, MD"
+    family-names: Vogelstein
+    given-names: Joshua
+    orcid: "https://orcid.org/0000-0003-2487-6237"
+cff-version: "1.1.0"
+date-released: 2021-02-05
+identifiers:
+  -
+    type: url
+    value: "https://arxiv.org/pdf/1907.02088.pdf"
+keywords:
+  - Python
+  - multivariate
+  - independence
+  - "k-sample"
+  - hypothesis
+license: MIT
+message: "If you use this software, please cite it using this metadata."
+repository-code: "https://github.com/neurodata/hyppo"
+title: "hyppo: A Multivariate Hypothesis Testing Python Package"
+version: "0.2.0"
+...
