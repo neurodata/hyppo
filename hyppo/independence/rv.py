@@ -9,11 +9,18 @@ class RV(IndependenceTest):
     Rank Value (RV) test statistic and p-value.
 
     RV is the multivariate generalization of the squared Pearson correlation
-    coefficient `[1]`_. The RV coefficient can be thought to be closely
+    coefficient
+    :footcite:p:`robertUnifyingToolLinear1976`.
+    The RV coefficient can be thought to be closely
     related to principal component analysis (PCA), canonical correlation
     analysis (CCA), multivariate regression, and statistical classification
-    `[1]`_.
-    The statistic can be derived as follows `[1]`_ `[2]`_:
+    :footcite:p:`robertUnifyingToolLinear1976`.
+
+    Notes
+    -----
+    The statistic can be derived as follows
+    :footcite:p:`robertUnifyingToolLinear1976`
+    :footcite:p:`escoufierTraitementVariablesVectorielles1973`:
 
     Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
     :math:`X` and :math:`Y`. We can center :math:`x` and :math:`y` and then
@@ -34,8 +41,9 @@ class RV(IndependenceTest):
     The p-value returned is calculated using a permutation test using
     :meth:`hyppo.tools.perm_test`.
 
-    .. _[1]: https://www.jstor.org/stable/2347233?seq=1
-    .. _[2]: https://www.jstor.org/stable/2529140?seq=1
+    References
+    ----------
+    .. footbibliography::
     """
 
     def __init__(self):

@@ -72,7 +72,7 @@ def sim_matrix(model, x):
 
     The model used must follow the scikit-learn API. That is, the model is a random
     forest class and is already trained (use :func:`fit`) before running this function.
-    Also, func:`apply` must be used to push input data down the trained forest. See
+    Also, :func:`apply` must be used to push input data down the trained forest. See
     :class:`sklearn.ensemble.RandomForestClassifier` and
     :class:`sklearn.ensemble.RandomForestRegressor` for similar classes.
 

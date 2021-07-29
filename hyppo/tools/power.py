@@ -83,7 +83,7 @@ def _nonperm_pval(test, sim_type, **kwargs):
 
 def power(test, sim_type, sim=None, n=100, alpha=0.05, reps=1000, auto=False, **kwargs):
     """
-    Computes empircal power for k-sample tests
+    Computes empircal power for hypothesis tests
 
     Parameters
     ----------

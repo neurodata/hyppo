@@ -16,37 +16,9 @@ class MMD(KSampleTest):
     :class:`hyppo.independence.Dcorr`,
     :class:`hyppo.ksample.DISCO`,
     :class:`hyppo.independence.Hsic`, and
-    :class:`hyppo.ksample.Energy` `[1]`_ `[2]`_.
-
-    Traditionally, the formulation for the 2-sample MMD statistic
-    is as follows `[3]`_:
-
-    Define
-    :math:`\{ u_i \stackrel{iid}{\sim} F_U,\ i = 1, ..., n \}` and
-    :math:`\{ v_j \stackrel{iid}{\sim} F_V,\ j = 1, ..., m \}` as two groups
-    of samples deriving from different distributions with the same
-    dimensionality. If :math:`k(\cdot, \cdot)` is a kernel metric (i.e. Gaussian)
-    then,
-
-    .. math::
-
-        \mathrm{MMD}_{n, m}(\mathbf{u}, \mathbf{v}) =
-        \frac{1}{m(m - 1)} \sum_{i = 1}^m \sum_{j \neq i}^m k(u_i, u_j)
-        + \frac{1}{n(n - 1)} \sum_{i = 1}^n \sum_{j \neq i}^n k(v_i, v_j)
-        - \frac{2}{mn} \sum_{i = 1}^n \sum_{j \neq i}^n k(v_i, v_j)
-
-    The implementation in the :class:`hyppo.ksample.KSample` class (using
-    :class:`hyppo.independence.Hsic` using 2 samples) is in
-    fact equivalent to this implementation (for p-values) and statistics are
-    equivalent up to a scaling factor `[1]`_.
-
-    The p-value returned is calculated using a permutation test uses
-    :meth:`hyppo.tools.perm_test`.
-    The fast version of the test uses :meth:`hyppo.tools.chi2_approx`.
-
-    .. _[1]: https://arxiv.org/abs/1910.08883
-    .. _[2]: https://link.springer.com/article/10.1007/s10182-020-00378-1
-    .. _[3]: https://www.jmlr.org/papers/volume13/gretton12a/gretton12a.pdf
+    :class:`hyppo.ksample.Energy`
+    :footcite:p:`pandaNonparMANOVAIndependence2021`
+    :footcite:p:`shenExactEquivalenceDistance2020`.
 
     Parameters
     ----------
@@ -70,6 +42,38 @@ class MMD(KSampleTest):
         Whether or not to use the biased or unbiased test statistics.
     **kwargs
         Arbitrary keyword arguments for ``compute_kernel``.
+
+    Notes
+    -----
+    Traditionally, the formulation for the 2-sample MMD statistic
+    is as follows :footcite:p:`grettonKernelTwoSampleTest2012`:
+
+    Define
+    :math:`\{ u_i \stackrel{iid}{\sim} F_U,\ i = 1, ..., n \}` and
+    :math:`\{ v_j \stackrel{iid}{\sim} F_V,\ j = 1, ..., m \}` as two groups
+    of samples deriving from different distributions with the same
+    dimensionality. If :math:`k(\cdot, \cdot)` is a kernel metric (i.e. Gaussian)
+    then,
+
+    .. math::
+
+        \mathrm{MMD}_{n, m}(\mathbf{u}, \mathbf{v}) =
+        \frac{1}{m(m - 1)} \sum_{i = 1}^m \sum_{j \neq i}^m k(u_i, u_j)
+        + \frac{1}{n(n - 1)} \sum_{i = 1}^n \sum_{j \neq i}^n k(v_i, v_j)
+        - \frac{2}{mn} \sum_{i = 1}^n \sum_{j \neq i}^n k(v_i, v_j)
+
+    The implementation in the :class:`hyppo.ksample.KSample` class (using
+    :class:`hyppo.independence.Hsic` using 2 samples) is in
+    fact equivalent to this implementation (for p-values) and statistics are
+    equivalent up to a scaling factor :footcite:p:`shenExactEquivalenceDistance2020`.
+
+    The p-value returned is calculated using a permutation test uses
+    :meth:`hyppo.tools.perm_test`.
+    The fast version of the test uses :meth:`hyppo.tools.chi2_approx`.
+
+    References
+    ----------
+    .. footbibliography::
     """
 
     def __init__(self, compute_kernel="gaussian", bias=False, **kwargs):

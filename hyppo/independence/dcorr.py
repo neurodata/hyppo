@@ -14,66 +14,6 @@ class Dcorr(IndependenceTest):
     not necessarily equal dimensions. The coefficient is 0 if and only if the
     matrices are independent. It is an example of an energy distance.
 
-    The statistic can be derived as follows:
-
-    Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
-    :math:`X` and :math:`Y`. Let :math:`D^x` be the :math:`n \times n`
-    distance matrix of :math:`x` and :math:`D^y` be the :math:`n \times n` be
-    the distance matrix of :math:`y`. The distance covariance is,
-
-    .. math::
-
-        \mathrm{Dcov}^b_n (x, y) = \frac{1}{n^2} \mathrm{tr} (D^x H D^y H)
-
-    where :math:`\mathrm{tr} (\cdot)` is the trace operator and :math:`H` is
-    defined as :math:`H = I - (1/n) J` where :math:`I` is the identity matrix
-    and :math:`J` is a matrix of ones. The normalized version of this
-    covariance is distance correlation `[1]`_ and is
-
-    .. math::
-
-        \mathrm{Dcorr}^b_n (x, y) = \frac{\mathrm{Dcov}^b_n (x, y)}
-                                       {\sqrt{\mathrm{Dcov}^b_n (x, x)
-                                              \mathrm{Dcov}^b_n (y, y)}}
-
-    This is a biased test statistic. An unbiased alternative also exists, and is
-    defined using the following: Consider the
-    centering process where :math:`\mathbb{1}(\cdot)` is the indicator
-    function:
-
-    .. math::
-
-        C^x_{ij} = \left[ D^x_{ij} - \frac{1}{n-2} \sum_{t=1}^n D^x_{it}
-            - \frac{1}{n-2} \sum_{s=1}^n D^x_{sj}
-            + \frac{1}{(n-1) (n-2)} \sum_{s,t=1}^n D^x_{st} \right]
-            \mathbb{1}_{i \neq j}
-
-    and similarly for :math:`C^y`. Then, this unbiased Dcorr is,
-
-    .. math::
-
-        \mathrm{Dcov}_n (x, y) = \frac{1}{n (n-3)} \mathrm{tr} (C^x C^y)
-
-    The normalized version of this covariance `[2]`_ is
-
-    .. math::
-
-        \mathrm{Dcorr}_n (x, y) = \frac{\mathrm{Dcov}_n (x, y)}
-                                        {\sqrt{\mathrm{Dcov}_n (x, x)
-                                               \mathrm{Dcov}_n (y, y)}}
-
-    The p-value returned is calculated using a permutation test using
-    :meth:`hyppo.tools.perm_test`. The fast version of the test uses
-    :meth:`hyppo.tools.chi2_approx`.
-
-    When the data is 1 dimension and the distance metric is Euclidean,
-    and even faster version of the algorithm is run (computational
-    complexity is :math:`\mathcal{O}(n \log n)`) `[3]`_.
-
-    .. _[1]: https://projecteuclid.org/euclid.aos/1201012979
-    .. _[2]: https://projecteuclid.org/euclid.aos/1413810731
-    .. _[3]: https://www.sciencedirect.com/science/article/pii/S0167947319300313
-
     Parameters
     ----------
     compute_distance : str, callable, or None, default: "euclidean"
@@ -104,6 +44,71 @@ class Dcorr(IndependenceTest):
         Whether or not to use the biased or unbiased test statistics.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
+
+    Notes
+    -----
+    The statistic can be derived as follows:
+
+    Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
+    :math:`X` and :math:`Y`. Let :math:`D^x` be the :math:`n \times n`
+    distance matrix of :math:`x` and :math:`D^y` be the :math:`n \times n` be
+    the distance matrix of :math:`y`. The distance covariance is,
+
+    .. math::
+
+        \mathrm{Dcov}^b_n (x, y) = \frac{1}{n^2} \mathrm{tr} (D^x H D^y H)
+
+    where :math:`\mathrm{tr} (\cdot)` is the trace operator and :math:`H` is
+    defined as :math:`H = I - (1/n) J` where :math:`I` is the identity matrix
+    and :math:`J` is a matrix of ones. The normalized version of this
+    covariance is distance correlation
+    :footcite:p:`szekelyMeasuringTestingDependence2007` and is
+
+    .. math::
+
+        \mathrm{Dcorr}^b_n (x, y) = \frac{\mathrm{Dcov}^b_n (x, y)}
+                                       {\sqrt{\mathrm{Dcov}^b_n (x, x)
+                                              \mathrm{Dcov}^b_n (y, y)}}
+
+    This is a biased test statistic. An unbiased alternative also exists, and is
+    defined using the following: Consider the
+    centering process where :math:`\mathbb{1}(\cdot)` is the indicator
+    function:
+
+    .. math::
+
+        C^x_{ij} = \left[ D^x_{ij} - \frac{1}{n-2} \sum_{t=1}^n D^x_{it}
+            - \frac{1}{n-2} \sum_{s=1}^n D^x_{sj}
+            + \frac{1}{(n-1) (n-2)} \sum_{s,t=1}^n D^x_{st} \right]
+            \mathbb{1}_{i \neq j}
+
+    and similarly for :math:`C^y`. Then, this unbiased Dcorr is,
+
+    .. math::
+
+        \mathrm{Dcov}_n (x, y) = \frac{1}{n (n-3)} \mathrm{tr} (C^x C^y)
+
+    The normalized version of this covariance
+    :footcite:p:`szekelyPartialDistanceCorrelation2014a` is
+
+    .. math::
+
+        \mathrm{Dcorr}_n (x, y) = \frac{\mathrm{Dcov}_n (x, y)}
+                                        {\sqrt{\mathrm{Dcov}_n (x, x)
+                                               \mathrm{Dcov}_n (y, y)}}
+
+    The p-value returned is calculated using a permutation test using
+    :meth:`hyppo.tools.perm_test`. The fast version of the test uses
+    :meth:`hyppo.tools.chi2_approx`.
+
+    When the data is 1 dimension and the distance metric is Euclidean,
+    and even faster version of the algorithm is run (computational
+    complexity is :math:`\mathcal{O}(n \log n)`)
+    :footcite:p:`chaudhuriFastAlgorithmComputing2019`.
+
+    References
+    ----------
+    .. footbibliography::
     """
 
     def __init__(self, compute_distance="euclidean", bias=False, **kwargs):

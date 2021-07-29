@@ -20,7 +20,9 @@ class MGC(IndependenceTest):
 
     Specifically, for each point, MGC finds the :math:`k`-nearest neighbors for
     one property (e.g. cloud density), and the :math:`l`-nearest neighbors for
-    the other property (e.g. grass wetness) `[1]`_. This pair :math:`(k, l)` is
+    the other property (e.g. grass wetness)
+    :footcite:p:`vogelsteinDiscoveringDecipheringRelationships2019`.
+    This pair :math:`(k, l)` is
     called the "scale". A priori, however, it is not know which scales will be
     most informative. So, MGC computes all distance pairs, and then efficiently
     computes the distance correlations for all scales. The local correlations
@@ -33,53 +35,8 @@ class MGC(IndependenceTest):
     determination was made. This is especially important in high-dimensional
     data, where simple visualizations do not reveal relationships to the
     unaided human eye. Characterizations of this implementation in particular
-    have been derived from and benchmarked within in `[2]`_.
-    A description of the process of MGC and applications on neuroscience data
-    can be found in `[1]`_. It is performed using the following steps:
-
-    Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
-    :math:`X` and :math:`Y`. Let :math:`D^x` be the :math:`n \times n`
-    distance matrix of :math:`x` and :math:`D^y` be the :math:`n \times n` be
-    the distance matrix of :math:`y`. :math:`D^x` and :math:`D^y` are
-    modified to be mean zero columnwise. This results in two
-    :math:`n \times n` distance matrices :math:`A` and :math:`B` (the
-    centering and unbiased modification) `[3]`_.
-
-    + For all values :math:`k` and :math:`l` from :math:`1, ..., n`,
-
-       * The :math:`k`-nearest neighbor and :math:`l`-nearest neighbor graphs
-         are calculated for each property. Here, :math:`G_k (i, j)` indicates
-         the :math:`k`-smallest values of the :math:`i`-th row of :math:`A`
-         and :math:`H_l (i, j)` indicates the :math:`l` smallested values of
-         the :math:`i`-th row of :math:`B`
-
-       * The local
-         correlations are summed and normalized using the following statistic:
-
-         .. math::
-
-            c^{kl} = \frac{\sum_{ij} A G_k B H_l}
-                            {\sqrt{\sum_{ij} A^2 G_k \times \sum_{ij} B^2 H_l}}
-
-    + The MGC test statistic is the smoothed optimal local correlation of
-      :math:`\{ c^{kl} \}`. Denote the smoothing operation as :math:`R(\cdot)`
-      (which essentially set all isolated large correlations) as 0 and
-      connected large correlations the same as before, see `[3]`_.) MGC is,
-
-      .. math::
-
-         \mathrm{MGC}_n (x, y) = \max_{(k, l)} R \left(c^{kl} \left( x_n, y_n \right)
-                                                    \right)
-
-    The test statistic returns a value between :math:`(-1, 1)` since it is
-    normalized.
-
-    The p-value returned is calculated using a permutation test using
-    :meth:`hyppo.tools.perm_test`.
-
-    .. _[1]: https://elifesciences.org/articles/41690
-    .. _[2]: https://arxiv.org/abs/1907.02088
-    .. _[3]: https://www.tandfonline.com/doi/abs/10.1080/01621459.2018.1543125
+    have been derived from and benchmarked within
+    :footcite:t:`pandaHyppoMultivariateHypothesis2021`.
 
     Parameters
     ----------
@@ -109,6 +66,60 @@ class MGC(IndependenceTest):
         function.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
+
+    Notes
+    -----
+    A description of the process of MGC and applications on neuroscience data
+    can be found in
+    :footcite:t:`vogelsteinDiscoveringDecipheringRelationships2019`.
+    It is performed using the following steps:
+
+    Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
+    :math:`X` and :math:`Y`. Let :math:`D^x` be the :math:`n \times n`
+    distance matrix of :math:`x` and :math:`D^y` be the :math:`n \times n` be
+    the distance matrix of :math:`y`. :math:`D^x` and :math:`D^y` are
+    modified to be mean zero columnwise. This results in two
+    :math:`n \times n` distance matrices :math:`A` and :math:`B` (the
+    centering and unbiased modification)
+    :footcite:p:`shenDistanceCorrelationMultiscale2020`.
+
+    + For all values :math:`k` and :math:`l` from :math:`1, ..., n`,
+
+       * The :math:`k`-nearest neighbor and :math:`l`-nearest neighbor graphs
+         are calculated for each property. Here, :math:`G_k (i, j)` indicates
+         the :math:`k`-smallest values of the :math:`i`-th row of :math:`A`
+         and :math:`H_l (i, j)` indicates the :math:`l` smallested values of
+         the :math:`i`-th row of :math:`B`
+
+       * The local
+         correlations are summed and normalized using the following statistic:
+
+         .. math::
+
+            c^{kl} = \frac{\sum_{ij} A G_k B H_l}
+                            {\sqrt{\sum_{ij} A^2 G_k \times \sum_{ij} B^2 H_l}}
+
+    + The MGC test statistic is the smoothed optimal local correlation of
+      :math:`\{ c^{kl} \}`. Denote the smoothing operation as :math:`R(\cdot)`
+      (which essentially set all isolated large correlations) as 0 and
+      connected large correlations the same as before, see
+      :footcite:t:`shenDistanceCorrelationMultiscale2020`.)
+      MGC is,
+
+      .. math::
+
+         \mathrm{MGC}_n (x, y) = \max_{(k, l)} R \left(c^{kl} \left( x_n, y_n \right)
+                                                    \right)
+
+    The test statistic returns a value between :math:`(-1, 1)` since it is
+    normalized.
+
+    The p-value returned is calculated using a permutation test using
+    :meth:`hyppo.tools.perm_test`.
+
+    References
+    ----------
+    .. footbibliography::
     """
 
     def __init__(self, compute_distance="euclidean", **kwargs):

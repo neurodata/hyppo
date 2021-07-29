@@ -11,7 +11,11 @@ class MANOVA(KSampleTest):
     Multivariate analysis of variance (MANOVA) test statistic and p-value.
 
     MANOVA is the current standard for multivariate `k`-sample testing.
-    The test statistic is formulated as below `[1]`_:
+
+    Notes
+    -----
+    The test statistic is formulated as below
+    :footcite:p:`pandaNonparMANOVAIndependence2021`:
 
     In MANOVA, we are testing if the mean vectors of each of the `k`-samples are the
     same. Define
@@ -47,13 +51,19 @@ class MANOVA(KSampleTest):
 
     Some of the most common statistics used when performing MANOVA include the Wilks'
     Lambda, the Lawley-Hotelling trace, Roy's greatest root, and
-    Pillai-Bartlett trace (PBT) `[3]`_ `[4]`_ (PBT was chosen to be the best of these
-    as it is the most conservative `[5]`_ `[6]`_) and `[7]`_ has shown that there are
+    Pillai-Bartlett trace (PBT)
+    :footcite:p:`bartlettNoteTestsSignificance1939`
+    :footcite:p:`raoTestsSignificanceMultivariate1948`
+    (PBT was chosen to be the best of these
+    as it is the most conservative
+    :footcite:p:`warnePrimerMultivariateAnalysis2019`) and
+    :footcite:p:`everittMonteCarloInvestigation1979`
+    has shown that there are
     minimal differences in statistical power among these statistics.
     Let :math:`\lambda_1, \lambda_2, \ldots, \lambda_s` refer to the eigenvalues of
     :math:`W^{-1} B`. Here :math:`s = \min(\nu_{B}, p)` is the minimum between the
     degrees of freedom of :math:`B`, :math:`\nu_{B}` and :math:`p`. So, the PBT
-    MANOVA test statistic can be written as `[8]`_,
+    MANOVA test statistic can be written as,
 
     .. math::
 
@@ -61,8 +71,7 @@ class MANOVA(KSampleTest):
        \frac{\lambda_i}{1 + \lambda_i} = \mathrm{tr} (B (B + W)^{-1})
 
     The p-value analytically by using the F statitic. In the case of PBT, given
-    :math:`m = (|p - \nu_{B}| - 1) / 2` and :math:`r = (\nu_{W} - p - 1) / 2`, this is
-    `[2]`_:
+    :math:`m = (|p - \nu_{B}| - 1) / 2` and :math:`r = (\nu_{W} - p - 1) / 2`, this is:
 
     .. math::
 
@@ -70,14 +79,9 @@ class MANOVA(KSampleTest):
        \mathrm{MANOVA}_{n_1, n_2} (x, y)}{(2m + s + 1) (s -
        \mathrm{MANOVA}_{n_1, n_2} (x, y))}
 
-    .. _[1]: https://arxiv.org/pdf/1910.08883.pdf
-    .. _[2]: https://ncss-wpengine.netdna-ssl.com/wp-content/themes/ncss/pdf/Procedures/NCSS/Multivariate_Analysis_of_Variance-MANOVA.pdf
-    .. _[3]: https://www.cambridge.org/core/journals/mathematical-proceedings-of-the-cambridge-philosophical-society/article/abs/note-on-tests-of-significance-in-multivariate-analysis/068B27CA9134D07C695539F56817871D
-    .. _[4]: https://www.jstor.org/stable/2332629?seq=1
-    .. _[5]: https://search.proquest.com/openview/3cb813edb2a65685d54f300dd12682a2/1.pdf?pq-origsite=gscholar&cbl=60977
-    .. _[6]: https://scholarworks.umass.edu/pare/vol19/iss1/17/
-    .. _[7]: https://www.jstor.org/stable/2286719?seq=1
-    .. _[8]: http://ibgwww.colorado.edu/~carey/p7291dir/handouts/manova1.pdf
+    References
+    ----------
+    .. footbibliography::
     """
 
     def __init__(self):

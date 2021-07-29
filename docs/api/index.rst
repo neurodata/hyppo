@@ -141,7 +141,6 @@ Miscellaneous
    :toctree: generated/
 
    independence.sim_matrix
-   independence.INDEP_TESTS
    ksample.k_sample_transform
    tools.compute_kern
    tools.compute_dist
