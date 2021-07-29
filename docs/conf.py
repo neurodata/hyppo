@@ -52,8 +52,12 @@ extensions = [
     "sphinx_gallery.gen_gallery",
     "recommonmark",
     "sphinx_rtd_theme_ext_color_contrast",
+    "sphinxcontrib.bibtex",
 ]
 
+bibtex_bibfiles = ["refs.bib"]
+bibtex_reference_style = "super"
+bibtex_default_style = "unsrt"
 
 autodoc_typehints = "none"
 

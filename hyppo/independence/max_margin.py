@@ -28,12 +28,10 @@ class MaxMargin(IndependenceTest):
 
     This test loops over each of the dimensions of the inputs :math:`x` and :math:`y`
     and computes the desired independence test statistic. Then, the maximial test
-    statistic is chosen `[1]`_.
+    statistic is chosen :footcite:p:`shenHighDimensionalIndependenceTesting2020`.
 
     The p-value returned is calculated using a permutation test using
     :meth:`hyppo.tools.perm_test`.
-
-    .. _[1]: https://arxiv.org/abs/2001.01095
 
     Parameters
     ----------
@@ -73,6 +71,10 @@ class MaxMargin(IndependenceTest):
         ``indep_test="Dcorr"`` and ``indep_test="Hsic"``).
     **kwargs
         Arbitrary keyword arguments for ``compute_distkern``.
+
+    References
+    ----------
+    .. footbibliography::
     """
 
     def __init__(self, indep_test, compute_distkern="euclidean", bias=False, **kwargs):

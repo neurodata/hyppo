@@ -10,3 +10,4 @@ recommonmark
 matplotlib
 seaborn
 sphinx-rtd-theme-ext-color-contrast
+sphinxcontrib-bibtex>=2.2.0

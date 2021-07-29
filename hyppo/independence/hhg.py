@@ -13,10 +13,43 @@ class HHG(IndependenceTest):
     This is a powerful test for independence based on calculating pairwise
     Euclidean distances and associations between these distance matrices. The
     test statistic is a function of ranks of these distances, and is
-    consistent against similar tests `[1]`_. It can also operate on multiple
-    dimensions `[1]`_.
+    consistent against similar tests
+    :footcite:p:`hellerConsistentMultivariateTest2013`. It can also operate on multiple
+    dimensions :footcite:p:`hellerConsistentMultivariateTest2013`.
 
-    The statistic can be derived as follows `[1]`_:
+    Parameters
+    ----------
+    compute_distance : str, callable, or None, default: "euclidean"
+        A function that computes the distance among the samples within each
+        data matrix.
+        Valid strings for ``compute_distance`` are, as defined in
+        :func:`sklearn.metrics.pairwise_distances`,
+
+            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
+              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
+              :mod:`scipy.spatial.distance` for details
+              on these metrics.
+            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
+              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
+              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
+              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
+              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
+              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
+              details on these metrics.
+
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
+        matrices. To call a custom function, either create the distance matrix
+        before-hand or create a function of the form ``metric(x, **kwargs)``
+        where ``x`` is the data matrix for which pairwise distances are
+        calculated and ``**kwargs`` are extra arguements to send to your custom
+        function.
+    **kwargs
+        Arbitrary keyword arguments for ``compute_distance``.
+
+    Notes
+    -----
+    The statistic can be derived as follows
+    :footcite:p:`hellerConsistentMultivariateTest2013`:
 
     Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
     :math:`X` and :math:`Y`. For every sample :math:`j \neq i`, calculate the
@@ -63,36 +96,9 @@ class HHG(IndependenceTest):
     The p-value returned is calculated using a permutation test using
     :meth:`hyppo.tools.perm_test`.
 
-    .. _[1]: https://arxiv.org/abs/1201.3522
-
-    Parameters
+    References
     ----------
-    compute_distance : str, callable, or None, default: "euclidean"
-        A function that computes the distance among the samples within each
-        data matrix.
-        Valid strings for ``compute_distance`` are, as defined in
-        :func:`sklearn.metrics.pairwise_distances`,
-
-            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
-              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
-              :mod:`scipy.spatial.distance` for details
-              on these metrics.
-            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
-              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
-              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
-              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
-              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
-              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
-              details on these metrics.
-
-        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
-        matrices. To call a custom function, either create the distance matrix
-        before-hand or create a function of the form ``metric(x, **kwargs)``
-        where ``x`` is the data matrix for which pairwise distances are
-        calculated and ``**kwargs`` are extra arguements to send to your custom
-        function.
-    **kwargs
-        Arbitrary keyword arguments for ``compute_distance``.
+    .. footbibliography::
     """
 
     def __init__(self, compute_distance="euclidean", **kwargs):

@@ -409,7 +409,7 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
         Whether or not ``x`` and ``y`` are distance or similarity matrices.
     perm_blocks : ndarray, default: None
         Defines blocks of exchangeable samples during the permutation test.
-        If None, all samples can be permuted with one another. Requires `n`
+        If ``None``, all samples can be permuted with one another. Requires `n`
         rows. Constructs a tree graph with all samples initially at
         the root node. Each column partitions samples from the same leaf with
         shared column label into a child of that leaf. During the permutation
@@ -449,13 +449,12 @@ def chi2_approx(calc_stat, x, y):
     Fast chi-squared approximation for the p-value.
 
     In the case of distance and kernel methods, Dcorr (and by extension Hsic
-    `[2]`_) can be approximated via a chi-squared distribution `[1]`_.
+    :footcite:p:`shenExactEquivalenceDistance2020`)
+    can be approximated via a chi-squared distribution
+    :footcite:p:`shenChiSquareTestDistance2021`.
     This approximation is also applicable for the nonparametric MANOVA via
-    independence testing method in our package `[3]`_.
-
-    .. _[1]: https://www.tandfonline.com/doi/abs/10.1080/10618600.2021.1938585?journalCode=ucgs20
-    .. _[2]: https://link.springer.com/article/10.1007/s10182-020-00378-1
-    .. _[3]: https://arxiv.org/abs/1910.08883
+    independence testing method in our package
+    :footcite:p:`pandaNonparMANOVAIndependence2021`.
 
     Parameters
     ----------
@@ -475,6 +474,10 @@ def chi2_approx(calc_stat, x, y):
         The computed test statistic.
     pvalue : float
         The computed p-value.
+
+    References
+    ----------
+    .. footbibliography::
     """
     n = x.shape[0]
     stat = calc_stat(x, y)

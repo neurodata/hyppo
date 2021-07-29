@@ -11,43 +11,13 @@ class Hsic(IndependenceTest):
     Hilbert Schmidt Independence Criterion (Hsic) test statistic and p-value.
 
     Hsic is a kernel based independence test and is a way to measure
-    multivariate nonlinear associations given a specified kernel `[1]`_.
+    multivariate nonlinear associations given a specified kernel
+    :footcite:p:`grettonKernelStatisticalTest2007`.
     The default choice is the Gaussian kernel, which uses the median distance
     as the bandwidth, which is a characteristic kernel that guarantees that
-    Hsic is a consistent test `[1]`_ `[2]`_.
-
-    The statistic can be derived as follows `[1]`_:
-
-    Hsic is closely related distance correlation (Dcorr), implemented in
-    :class:`hyppo.independence.Dcorr`, and exchanges distance matrices
-    :math:`D^x` and :math:`D^y` for kernel similarity matrices :math:`K^x` and
-    :math:`K^y`. That is, let :math:`x` and :math:`y` be :math:`(n, p)` samples
-    of random variables
-    :math:`X` and :math:`Y`. Let :math:`K^x` be the :math:`n \times n`
-    kernel similarity matrix of :math:`x` and :math:`K^y` be the :math:`n \times n` be
-    the kernel similarity matrix of :math:`y`. The Hsic statistic is,
-
-    .. math::
-
-        \mathrm{Hsic}^b_n (x, y) = \frac{1}{n^2} \mathrm{tr} (D^x H D^y H)
-
-    Hsic and Dcov are exactly equivalent in the sense that every valid kernel has a
-    corresponding
-    valid semimetric to ensure their equivalence, and vice versa `[3]`_ `[4]`_. In
-    other words, every Dcorr test is also an Hsic and vice versa. Nonetheless,
-    implementations of Dcorr and Hsic use different metrics by default:
-    Dcorr uses a Euclidean distance while Hsic uses a Gaussian median kernel.
-    We consider the normalized version (see :class:`hyppo.independence`) for the
-    transformation.
-
-    The p-value returned is calculated using a permutation test using
-    :meth:`hyppo.tools.perm_test`. The fast version of the test uses
-    :meth:`hyppo.tools.chi2_approx`.
-
-    .. _[1]: https://papers.nips.cc/paper/2007/file/d5cfead94f5350c12c322b5b664544c1-Paper.pdf
-    .. _[2]: https://www.jmlr.org/papers/volume11/gretton10a/gretton10a.pdf
-    .. _[3]: https://link.springer.com/article/10.1007/s10182-020-00378-1
-    .. _[4]: https://projecteuclid.org/euclid.aos/1383661264
+    Hsic is a consistent test
+    :footcite:p:`grettonKernelStatisticalTest2007`
+    :footcite:p:`grettonConsistentNonparametricTests2010`.
 
     Parameters
     ----------
@@ -71,6 +41,43 @@ class Hsic(IndependenceTest):
         Whether or not to use the biased or unbiased test statistics.
     **kwargs
         Arbitrary keyword arguments for ``compute_kernel``.
+
+    Notes
+    -----
+    The statistic can be derived as follows
+    :footcite:p:`grettonKernelStatisticalTest2007`:
+
+    Hsic is closely related distance correlation (Dcorr), implemented in
+    :class:`hyppo.independence.Dcorr`, and exchanges distance matrices
+    :math:`D^x` and :math:`D^y` for kernel similarity matrices :math:`K^x` and
+    :math:`K^y`. That is, let :math:`x` and :math:`y` be :math:`(n, p)` samples
+    of random variables
+    :math:`X` and :math:`Y`. Let :math:`K^x` be the :math:`n \times n`
+    kernel similarity matrix of :math:`x` and :math:`K^y` be the :math:`n \times n` be
+    the kernel similarity matrix of :math:`y`. The Hsic statistic is,
+
+    .. math::
+
+        \mathrm{Hsic}^b_n (x, y) = \frac{1}{n^2} \mathrm{tr} (D^x H D^y H)
+
+    Hsic and Dcov are exactly equivalent in the sense that every valid kernel has a
+    corresponding
+    valid semimetric to ensure their equivalence, and vice versa
+    :footcite:p:`shenExactEquivalenceDistance2020`
+    :footcite:p:`sejdinovicEquivalenceDistancebasedRKHSbased2013`.
+    In other words, every Dcorr test is also an Hsic and vice versa. Nonetheless,
+    implementations of Dcorr and Hsic use different metrics by default:
+    Dcorr uses a Euclidean distance while Hsic uses a Gaussian median kernel.
+    We consider the normalized version (see :class:`hyppo.independence`) for the
+    transformation.
+
+    The p-value returned is calculated using a permutation test using
+    :meth:`hyppo.tools.perm_test`. The fast version of the test uses
+    :meth:`hyppo.tools.chi2_approx`.
+
+    References
+    ----------
+    .. footbibliography::
     """
 
     def __init__(self, compute_kernel="gaussian", bias=False, **kwargs):

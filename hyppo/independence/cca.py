@@ -9,11 +9,16 @@ class CCA(IndependenceTest):
     Cannonical Correlation Analysis (CCA) test statistic and p-value.
 
     This test can be thought of inferring information from cross-covariance
-    matrices `[1]`_. It has been thought that virtually all parametric tests
-    of significance can be treated as a special case of CCA `[2]`_. The
-    method was first introduced by Harold Hotelling in 1936 `[3]`_.
+    matrices :footcite:p:`hardleCanonicalCorrelationAnalysis2015`.
+    It has been thought that virtually all parametric tests
+    of significance can be treated as a special case of CCA
+    :footcite:p:`knappCanonicalCorrelationAnalysis1978`. The
+    method was first introduced by :footcite:t:`hotellingRelationsTwoSets1992`.
 
-    The statistic can be derived as follows `[4]`_:
+    Notes
+    -----
+    The statistic can be derived as follows
+    :footcite:p:`hardoonCanonicalCorrelationAnalysis2004`:
 
     Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
     :math:`X` and :math:`Y`. We can center :math:`x` and :math:`y` and then
@@ -33,10 +38,9 @@ class CCA(IndependenceTest):
     The p-value returned is calculated using a permutation test using
     :meth:`hyppo.tools.perm_test`.
 
-    .. _[1]: https://link.springer.com/book/10.1007/978-3-662-45171-7
-    .. _[2]: https://psycnet.apa.org/record/1979-00149-001
-    .. _[3]: https://link.springer.com/chapter/10.1007/978-1-4612-4380-9_14
-    .. _[4]: https://ieeexplore.ieee.org/document/6788402
+    References
+    ----------
+    .. footbibliography::
     """
 
     def __init__(self):
