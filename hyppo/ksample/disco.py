@@ -3,7 +3,7 @@ import numpy as np
 from ..independence.dcorr import _dcov
 from ..tools import compute_dist
 from ._utils import _CheckInputs, k_sample_transform
-from .base import KSampleTest, KSampleTestOutput
+from .base import KSampleTest
 from .ksamp import KSample
 
 
@@ -19,9 +19,39 @@ class DISCO(KSampleTest):
     :class:`hyppo.independence.Dcorr`,
     :class:`hyppo.ksample.Energy`,
     :class:`hyppo.independence.Hsic`, and
-    :class:`hyppo.ksample.MMD`
-    :footcite:p:`pandaNonparMANOVAIndependence2021`
-    :footcite:p:`shenExactEquivalenceDistance2020`.
+    :class:`hyppo.ksample.MMD` `[1]`_ `[2]`_.
+
+    Traditionally, the formulation for the DISCO statistic
+    is as follows `[3]`_:
+
+    Define
+    :math:`\{ u^i_1 \stackrel{iid}{\sim} F_{U_1},\ i = 1, ..., n_1 \}` up to
+    :math:`\{ u^j_k \stackrel{iid}{\sim} F_{V_1},\ j = 1, ..., n_k \}` as `k` groups
+    of samples deriving from different distributions with the same
+    dimensionality. If :math:`d(\cdot, \cdot)` is a distance metric (i.e. euclidean),
+    :math:`N = \sum_{i = 1}^k n_k`,
+    and :math:`\mathrm{Energy}` is the Energy test statistic from
+    :class:`hyppo.ksample.Energy`
+    then,
+
+    .. math::
+
+        \mathrm{DISCO}_N(\mathbf{u}_1, \ldots, \mathbf{u}_k) =
+        \sum_{1 \leq k < l \leq K} \frac{n_k n_l}{2N}
+        \mathrm{Energy}_{n_k + n_l} (\mathbf{u}_k, \mathbf{u}_l)
+
+    The implementation in the :class:`hyppo.ksample.KSample` class (using
+    :class:`hyppo.independence.Dcorr`) is in
+    fact equivalent to this implementation (for p-values) and statistics are
+    equivalent up to a scaling factor `[1]`_.
+
+    The p-value returned is calculated using a permutation test uses
+    :meth:`hyppo.tools.perm_test`.
+    The fast version of the test uses :meth:`hyppo.tools.chi2_approx`.
+
+    .. _[1]: https://arxiv.org/abs/1910.08883
+    .. _[2]: https://arxiv.org/abs/1806.05514
+    .. _[3]: https://www.semanticscholar.org/paper/TESTING-FOR-EQUAL-DISTRIBUTIONS-IN-HIGH-DIMENSION-Sz%C3%A9kely-Rizzo/ad5e91905a85d6f671c04a67779fd1377e86d199
 
     Parameters
     ----------
@@ -53,40 +83,6 @@ class DISCO(KSampleTest):
         Whether or not to use the biased or unbiased test statistics.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
-
-    Notes
-    -----
-    Traditionally, the formulation for the DISCO statistic
-    is as follows :footcite:p:`szekelyTestingEqualDistributions`:
-
-    Define
-    :math:`\{ u^i_1 \stackrel{iid}{\sim} F_{U_1},\ i = 1, ..., n_1 \}` up to
-    :math:`\{ u^j_k \stackrel{iid}{\sim} F_{V_1},\ j = 1, ..., n_k \}` as `k` groups
-    of samples deriving from different distributions with the same
-    dimensionality. If :math:`d(\cdot, \cdot)` is a distance metric (i.e. Euclidean),
-    :math:`N = \sum_{i = 1}^k n_k`,
-    and :math:`\mathrm{Energy}` is the Energy test statistic from
-    :class:`hyppo.ksample.Energy`
-    then,
-
-    .. math::
-
-        \mathrm{DISCO}_N(\mathbf{u}_1, \ldots, \mathbf{u}_k) =
-        \sum_{1 \leq k < l \leq K} \frac{n_k n_l}{2N}
-        \mathrm{Energy}_{n_k + n_l} (\mathbf{u}_k, \mathbf{u}_l)
-
-    The implementation in the :class:`hyppo.ksample.KSample` class (using
-    :class:`hyppo.independence.Dcorr`) is in
-    fact equivalent to this implementation (for p-values) and statistics are
-    equivalent up to a scaling factor :footcite:p:`pandaNonparMANOVAIndependence2021`.
-
-    The p-value returned is calculated using a permutation test uses
-    :meth:`hyppo.tools.perm_test`.
-    The fast version of the test uses :meth:`hyppo.tools.chi2_approx`.
-
-    References
-    ----------
-    .. footbibliography::
     """
 
     def __init__(self, compute_distance="euclidean", bias=False, **kwargs):
@@ -197,4 +193,4 @@ class DISCO(KSampleTest):
             **self.kwargs
         ).test(*inputs, reps=reps, workers=workers, auto=auto)
 
-        return KSampleTestOutput(stat, pvalue)
+        return stat, pvalue

@@ -2,7 +2,7 @@ import numpy as np
 
 
 class _CheckInputs:
-    """Check if additional arguments are correct"""
+    """ Check if additional arguments are correct """
 
     def __init__(self, n):
         self.n = n
@@ -196,7 +196,7 @@ def ts_sim(sim, n, **kwargs):
     Parameters
     ----------
     sim : str
-        The name of the simulation (from the :mod:`hyppo.tools` module) that is to be
+        The name of the simulation (from the :mod:`hyppo.tools module) that is to be
         rotated.
     n : int
         The number of samples desired by the simulation (>= 3).

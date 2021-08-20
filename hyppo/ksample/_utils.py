@@ -70,15 +70,13 @@ def k_sample_transform(inputs, test_type="normal"):
     """
     Computes a `k`-sample transform of the inputs.
 
-    For :math:`k` groups, this creates two matrices, the first vertically stacks the
-    inputs.
+    For `k` groups, this creates two matrices, the first vertically stacks the inputs.
     In order to use this function, the inputs must have the same number of dimensions
-    :math:`p` and can have varying number of samples :math:`n`. The second output is a
-    label
+    `p` and can have varying number of samples `n`. The second output is a label
     matrix the one-hoc encodes the groups. The outputs are thus ``(N, p)`` and
     ``(N, k)`` where `N` is the total number of samples. In the case where the test
     a random forest based tests, it creates a ``(N, 1)`` where the entries are
-    varlues from 1 to :math:`k` based on the number of samples.
+    varlues from 1 to `k` based on the number of samples.
 
     Parameters
     ----------

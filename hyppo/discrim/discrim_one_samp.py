@@ -1,5 +1,3 @@
-from typing import NamedTuple
-
 import numpy as np
 from scipy._lib._util import MapWrapper
 
@@ -7,15 +5,10 @@ from ._utils import _CheckInputs
 from .base import DiscriminabilityTest
 
 
-class DiscrimOneSampleTestOutput(NamedTuple):
-    stat: float
-    pvalue: float
-
-
 class DiscrimOneSample(DiscriminabilityTest):
     r"""
 
-    One Sample Discriminability test statistic and p-value.
+    1 Sample Discriminability test statistic and p-value.
 
     Discriminability index is a measure of whether a data acquisition and
     preprocessing pipeline is more discriminable among different subjects.
@@ -135,7 +128,7 @@ class DiscrimOneSample(DiscriminabilityTest):
 
         self.pvalue_ = pvalue
 
-        return DiscrimOneSampleTestOutput(stat, pvalue)
+        return stat, pvalue
 
     def _perm_stat(self, index):  # pragma: no cover
         r"""

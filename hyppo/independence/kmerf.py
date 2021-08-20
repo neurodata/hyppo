@@ -1,5 +1,3 @@
-from typing import NamedTuple
-
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import pairwise_distances
@@ -14,12 +12,6 @@ FOREST_TYPES = {
 }
 
 
-class KMERFTestOutput(NamedTuple):
-    stat: float
-    pvalue: float
-    kmerf_dict: dict
-
-
 class KMERF(IndependenceTest):
     r"""
     Kernel Mean Embedding Random Forest (KMERF) test statistic and p-value.
@@ -27,24 +19,9 @@ class KMERF(IndependenceTest):
     The KMERF test statistic is a kernel method for calculating independence by using
     a random forest induced similarity matrix as an input, and has been shown to have
     especially high gains in finite sample testing power in high dimensional settings
-    :footcite:p:`shenLearningInterpretableCharacteristic2020`.
+    `[1]`_.
 
-    Parameters
-    ----------
-    forest : "regressor", "classifier", default: "regressor"
-        Type of forest used when running the independence test. If the `y` input in
-        ``test`` is categorial, use the "classifier" keyword.
-    ntrees : int, default: 500
-        The number of trees used in the random forest.
-    **kwargs
-        Additional arguments used for the forest (see
-        :class:`sklearn.ensemble.RandomForestClassifier` or
-        :class:`sklearn.ensemble.RandomForestRegressor`)
-
-    Notes
-    -----
-    A description of KMERF in greater detail can be found in
-    :footcite:p:`shenLearningInterpretableCharacteristic2020`. It is computed
+    A description of KMERF in greater detail can be found in `[1]`_. It is computed
     using the following steps:
 
     Let :math:`x` and :math:`y` be :math:`(n, p)` and :math:`(n, 1)` samples of random
@@ -93,9 +70,19 @@ class KMERF(IndependenceTest):
     The p-value returned is calculated using a permutation test using
     :meth:`hyppo.tools.perm_test`.
 
-    References
+    .. _[1]: https://arxiv.org/abs/1812.00029
+
+    Parameters
     ----------
-    .. footbibliography::
+    forest : "regressor", "classifier", default: "regressor"
+        Type of forest used when running the independence test. If the `y` input in
+        ``test`` is categorial, use the "classifier" keyword.
+    ntrees : int, default: 500
+        The number of trees used in the random forest.
+    **kwargs
+        Additional arguments used for the forest (see
+        :class:`sklearn.ensemble.RandomForestClassifier` or
+        :class:`sklearn.ensemble.RandomForestRegressor`)
     """
 
     def __init__(self, forest="regressor", ntrees=500, **kwargs):
@@ -182,4 +169,4 @@ class KMERF(IndependenceTest):
         stat, pvalue = super(KMERF, self).test(x, y, reps, workers, is_distsim=False)
         kmerf_dict = {"feat_importance": self.importances}
 
-        return KMERFTestOutput(stat, pvalue, kmerf_dict)
+        return stat, pvalue, kmerf_dict

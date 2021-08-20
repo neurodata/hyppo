@@ -179,20 +179,17 @@ class TestHelper:
         gamma = 1.0 / (2 * (med ** 2))
 
         kernx = pairwise_kernels(x, x, metric="rbf", gamma=gamma)
-        kerny = pairwise_kernels(y, y, metric="rbf", gamma=gamma)
+        kerny = pairwise_kernels(x, x, metric="rbf", gamma=gamma)
 
         distx, disty = compute_dist(distx, disty, metric=None)
         kernx, kerny = compute_kern(kernx, kerny, metric=None)
         distx_comp, disty_comp = compute_dist(x, y)
         kernx_comp, kerny_comp = compute_kern(x, y)
-        kernx_comp1, kerny_comp1 = compute_kern(x, y, metric="rbf")
 
         assert_array_equal(distx, distx_comp)
         assert_array_equal(disty, disty_comp)
         assert_array_equal(kernx, kernx_comp)
         assert_array_equal(kerny, kerny_comp)
-        assert_array_equal(kernx, kerny_comp1)
-        assert_array_equal(kerny, kerny_comp1)
 
         def gaussian(x, **kwargs):
             return pairwise_kernels(x, x, metric="rbf", **kwargs)

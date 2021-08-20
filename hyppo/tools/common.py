@@ -113,13 +113,12 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
         Valid strings for ``metric`` are, as defined in
         :func:`sklearn.metrics.pairwise.pairwise_kernels`,
 
-            [``"additive_chi2"``, ``"chi2"``, ``"linear"``, ``"poly"``,
-            ``"polynomial"``, ``"rbf"``,
-            ``"laplacian"``, ``"sigmoid"``, ``"cosine"``]
+            ['additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'rbf',
+            'laplacian', 'sigmoid', 'cosine']
 
-        Note ``"rbf"`` and ``"gaussian"`` are the same metric.
-        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already similarity
-        matrices. To call a custom function, either create the similarity matrix
+        Note ``'rbf'`` and ``'gaussian'`` are the same metric.
+        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already similarity
+        matrices. To call a custom function, either create the distance matrix
         before-hand or create a function of the form :func:`metric(x, **kwargs)`
         where ``x`` is the data matrix for which pairwise kernel similarity matrices are
         calculated and kwargs are extra arguements to send to your custom function.
@@ -138,14 +137,13 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
     """
     if not metric:
         metric = "precomputed"
-    if metric in ["gaussian", "rbf"]:
+    if metric == "gaussian":
         if "gamma" not in kwargs:
-            l2 = pairwise_distances(x, metric="l2", n_jobs=workers)
-            n = l2.shape[0]
-            # compute median of off diagonal elements
+            l1 = pairwise_distances(x, metric="l1", n_jobs=workers)
+            n = l1.shape[0]
             med = np.median(
                 np.lib.stride_tricks.as_strided(
-                    l2, (n - 1, n + 1), (l2.itemsize * (n + 1), l2.itemsize)
+                    l1, (n - 1, n + 1), (l1.itemsize * (n + 1), l1.itemsize)
                 )[:, 1:]
             )
             # prevents division by zero when used on label vectors
@@ -182,19 +180,16 @@ def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
         Valid strings for ``metric`` are, as defined in
         :func:`sklearn.metrics.pairwise_distances`,
 
-            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
-              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
-              :mod:`scipy.spatial.distance` for details
+            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
+              ‘manhattan’] See the documentation for scipy.spatial.distance for details
               on these metrics.
-            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
-              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
-              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
-              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
-              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
-              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
-              details on these metrics.
+            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
+              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
+              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
+              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
+              documentation for scipy.spatial.distance for details on these metrics.
 
-        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
+        Set to ``None`` or ``'precomputed'`` if ``x`` and ``y`` are already distance
         matrices. To call a custom function, either create the distance matrix
         before-hand or create a function of the form ``metric(x, **kwargs)``
         where ``x`` is the data matrix for which pairwise distances are
@@ -409,7 +404,7 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
         Whether or not ``x`` and ``y`` are distance or similarity matrices.
     perm_blocks : ndarray, default: None
         Defines blocks of exchangeable samples during the permutation test.
-        If ``None``, all samples can be permuted with one another. Requires `n`
+        If None, all samples can be permuted with one another. Requires `n`
         rows. Constructs a tree graph with all samples initially at
         the root node. Each column partitions samples from the same leaf with
         shared column label into a child of that leaf. During the permutation
@@ -449,12 +444,13 @@ def chi2_approx(calc_stat, x, y):
     Fast chi-squared approximation for the p-value.
 
     In the case of distance and kernel methods, Dcorr (and by extension Hsic
-    :footcite:p:`shenExactEquivalenceDistance2020`)
-    can be approximated via a chi-squared distribution
-    :footcite:p:`shenChiSquareTestDistance2021`.
+    `[2]`_) can be approximated via a chi-squared distribution `[1]`_.
     This approximation is also applicable for the nonparametric MANOVA via
-    independence testing method in our package
-    :footcite:p:`pandaNonparMANOVAIndependence2021`.
+    independence testing method in our package `[3]`_.
+
+    .. _[1]: https://arxiv.org/abs/1912.12150
+    .. _[2]: https://arxiv.org/abs/1806.05514
+    .. _[3]: https://arxiv.org/abs/1910.08883
 
     Parameters
     ----------
@@ -474,10 +470,6 @@ def chi2_approx(calc_stat, x, y):
         The computed test statistic.
     pvalue : float
         The computed p-value.
-
-    References
-    ----------
-    .. footbibliography::
     """
     n = x.shape[0]
     stat = calc_stat(x, y)

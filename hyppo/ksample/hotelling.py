@@ -1,6 +1,6 @@
 import numpy as np
 from hyppo.ksample._utils import _CheckInputs
-from hyppo.ksample.base import KSampleTest, KSampleTestOutput
+from hyppo.ksample.base import KSampleTest
 from scipy.stats import f
 
 
@@ -9,22 +9,10 @@ class Hotelling(KSampleTest):
     Hotelling :math:`T^2` test statistic and p-value.
 
     Hotelling :math:`T^2` is 2-sample multivariate analysis of variance (MANOVA)
-    and generalization of Student's t-test in arbitary dimension
-    :footcite:p:`hotellingGeneralizationStudentRatio1931`.
+    and generalization of Student's t-test in arbitary dimension `[2]`_.
+    The test statistic is formulated as below `[1]`_:
 
-    Notes
-    -----
-    The test statistic is formulated as below
-    :footcite:p:`pandaNonparMANOVAIndependence2021`:
-
-    Consider input samples :math:`u_i \stackrel{iid}{\sim} F_U` for
-    :math:`i \in \{ 1, \ldots, n \}` and :math:`v_i \stackrel{iid}{\sim} F_V` for
-    :math:`i \in \{ 1, \ldots, m \}`. Let :math:`\bar{u}` refer to the columnwise means
-    of :math:`u`; that is, :math:`\bar{u} = (1/n) \sum_{i=1}^{n} u_i` and let
-    :math:`\bar{v}` be the same for :math:`v`. Calculate sample covariance matrices
-    :math:`\hat{\Sigma}_{uv} = u^T v` and sample variance matrices
-    :math:`\hat{\Sigma}_{uu} = u^T u` and :math:`\hat{\Sigma}_{vv} = v^T v`.
-    Denote pooled covariance matrix :math:`\hat{\Sigma}` as
+    Consider input samples :math:`u_i \stackrel{iid}{\sim} F_U` for :math:`i \in \{ 1, \ldots, n \}` and :math:`v_i \stackrel{iid}{\sim} F_V` for :math:`i \in \{ 1, \ldots, m \}`. Let :math:`\bar{u}` refer to the columnwise means of :math:`u`; that is, :math:`$\bar{u} = (1/n) \sum_{i=1}^{n} u_i` and let :math:`\bar{v}` be the same for :math:`v`. Calculate sample covariance matrices :math:`\hat{\Sigma}_{uv} = u^T v` and sample variance matrices :math:`\hat{\Sigma}_{uu} = u^T u` and :math:`\hat{\Sigma}_{vv} = v^T v`. Denote pooled covariance matrix :math:`\hat{\Sigma}` as
 
     .. math::
 
@@ -35,22 +23,21 @@ class Hotelling(KSampleTest):
 
     .. math::
 
-       \text{Hotelling}_{n, m} (u, v) = \frac{n m}{n + m}
+       \text{\Hotelling}_{n, m} (u, v) = \frac{n m}{n + m}
        (\bar{u} - \bar{v})^T \hat{\Sigma}^{-1} (\bar{u} - \bar{v})
 
     Since it is a multivariate generalization of Student's t-tests, it suffers from
     some of the same assumptions as Student's t-tests. That is, the validity of MANOVA
     depends on the assumption that random variables are normally distributed within
     each group and each with the same covariance matrix. Distributions of input data
-    are generally not known and cannot always be reasonably modeled as Gaussian
-    :footcite:p:`micceriUnicornNormalCurve1989`
-    :footcite:p:`stiglerRobustEstimatorsWork1977`
-    and having the same covariance across groups is also generally not true of
+    are generally not known and cannot always be reasonably modeled as Gaussian `[3]`_
+    `[4]`_ and having the same covariance across groups is also generally not true of
     real data.
 
-    References
-    ----------
-    .. footbibliography::
+    .. _[1]: https://arxiv.org/pdf/1910.08883.pdf
+    .. _[2]: https://projecteuclid.org/euclid.aoms/1177732979
+    .. _[3]: https://psycnet.apa.org/record/1989-14214-001
+    .. _[4]: https://projecteuclid.org/euclid.aos/1176343997
     """
 
     def __init__(self):
@@ -140,4 +127,4 @@ class Hotelling(KSampleTest):
         self.pvalue = pvalue
         self.null_dist = None
 
-        return KSampleTestOutput(stat, pvalue)
+        return stat, pvalue

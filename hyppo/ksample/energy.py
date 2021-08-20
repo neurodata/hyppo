@@ -1,7 +1,7 @@
 from ..independence.dcorr import _dcov
 from ..tools import compute_dist
 from ._utils import _CheckInputs
-from .base import KSampleTest, KSampleTestOutput
+from .base import KSampleTest
 from .ksamp import KSample
 
 
@@ -17,9 +17,36 @@ class Energy(KSampleTest):
     :class:`hyppo.independence.Dcorr`,
     :class:`hyppo.ksample.DISCO`,
     :class:`hyppo.independence.Hsic`, and
-    :class:`hyppo.ksample.MMD`
-    :footcite:p:`pandaNonparMANOVAIndependence2021`
-    :footcite:p:`shenExactEquivalenceDistance2020`.
+    :class:`hyppo.ksample.MMD` `[1]`_ `[2]`_.
+
+    Traditionally, the formulation for the 2-sample Energy statistic
+    is as follows `[3]`_:
+
+    Define
+    :math:`\{ u_i \stackrel{iid}{\sim} F_U,\ i = 1, ..., n \}` and
+    :math:`\{ v_j \stackrel{iid}{\sim} F_V,\ j = 1, ..., m \}` as two groups
+    of samples deriving from different distributions with the same
+    dimensionality. If :math:`d(\cdot, \cdot)` is a distance metric (i.e. euclidean)
+    then,
+
+    .. math::
+
+        \mathrm{Energy}_{n, m}(\mathbf{u}, \mathbf{v}) = \frac{1}{n^2 m^2}
+        \left( 2nm \sum_{i = 1}^n \sum_{j = 1}^m d(u_i, v_j) - m^2
+        \sum_{i,j=1}^n d(u_i, u_j) - n^2 \sum_{i, j=1}^m d(v_i, v_j) \right)
+
+    The implementation in the :class:`hyppo.ksample.KSample` class (using
+    :class:`hyppo.independence.Dcorr` using 2 samples) is in
+    fact equivalent to this implementation (for p-values) and statistics are
+    equivalent up to a scaling factor `[1]`_.
+
+    The p-value returned is calculated using a permutation test uses
+    :meth:`hyppo.tools.perm_test`.
+    The fast version of the test uses :meth:`hyppo.tools.chi2_approx`.
+
+    .. _[1]: https://arxiv.org/abs/1910.08883
+    .. _[2]: https://arxiv.org/abs/1806.05514
+    .. _[3]: https://www.semanticscholar.org/paper/TESTING-FOR-EQUAL-DISTRIBUTIONS-IN-HIGH-DIMENSION-Sz%C3%A9kely-Rizzo/ad5e91905a85d6f671c04a67779fd1377e86d199
 
     Parameters
     ----------
@@ -51,37 +78,6 @@ class Energy(KSampleTest):
         Whether or not to use the biased or unbiased test statistics.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
-
-    Notes
-    -----
-    Traditionally, the formulation for the 2-sample Energy statistic
-    is as follows :footcite:p:`szekelyTestingEqualDistributions`:
-
-    Define
-    :math:`\{ u_i \stackrel{iid}{\sim} F_U,\ i = 1, ..., n \}` and
-    :math:`\{ v_j \stackrel{iid}{\sim} F_V,\ j = 1, ..., m \}` as two groups
-    of samples deriving from different distributions with the same
-    dimensionality. If :math:`d(\cdot, \cdot)` is a distance metric (i.e. Euclidean)
-    then,
-
-    .. math::
-
-        \mathrm{Energy}_{n, m}(\mathbf{u}, \mathbf{v}) = \frac{1}{n^2 m^2}
-        \left( 2nm \sum_{i = 1}^n \sum_{j = 1}^m d(u_i, v_j) - m^2
-        \sum_{i,j=1}^n d(u_i, u_j) - n^2 \sum_{i, j=1}^m d(v_i, v_j) \right)
-
-    The implementation in the :class:`hyppo.ksample.KSample` class (using
-    :class:`hyppo.independence.Dcorr` using 2 samples) is in
-    fact equivalent to this implementation (for p-values) and statistics are
-    equivalent up to a scaling factor :footcite:p:`pandaNonparMANOVAIndependence2021`.
-
-    The p-value returned is calculated using a permutation test uses
-    :meth:`hyppo.tools.perm_test`.
-    The fast version of the test uses :meth:`hyppo.tools.chi2_approx`.
-
-    References
-    ----------
-    .. footbibliography::
     """
 
     def __init__(self, compute_distance="euclidean", bias=False, **kwargs):
@@ -181,4 +177,4 @@ class Energy(KSampleTest):
             **self.kwargs
         ).test(x, y, reps=reps, workers=workers, auto=auto)
 
-        return KSampleTestOutput(stat, pvalue)
+        return stat, pvalue

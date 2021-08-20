@@ -12,52 +12,7 @@ class KSample(KSampleTest):
     There are not many non-parametric *k*-sample tests, but this version
     cleverly leverages the power of some of the implemented independence
     tests to test this equality of distribution.
-
-    Parameters
-    ----------
-    indep_test : "CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC", "KMERF", or list
-        A string corresponding to the desired independence test from
-        :mod:`hyppo.independence`. This is not case sensitive. If using ``"MaxMargin"``
-        then this must be a list containing ``"MaxMargin"`` in the first index and
-        another ``indep_test`` in the second index.
-    compute_distkern : str, callable, or None, default: "euclidean" or "gaussian"
-        A function that computes the distance among the samples within each
-        data matrix.
-        Valid strings for ``compute_distance`` are, as defined in
-        :func:`sklearn.metrics.pairwise_distances`,
-
-            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
-              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
-              :mod:`scipy.spatial.distance` for details
-              on these metrics.
-            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
-              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
-              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
-              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
-              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
-              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
-              details on these metrics.
-
-        Alternatively, this function computes the kernel similarity among the
-        samples within each data matrix.
-        Valid strings for ``compute_kernel`` are, as defined in
-        :func:`sklearn.metrics.pairwise.pairwise_kernels`,
-
-            [``"additive_chi2"``, ``"chi2"``, ``"linear"``, ``"poly"``,
-            ``"polynomial"``, ``"rbf"``,
-            ``"laplacian"``, ``"sigmoid"``, ``"cosine"``]
-
-        Note ``"rbf"`` and ``"gaussian"`` are the same metric.
-    bias : bool, default: False
-        Whether or not to use the biased or unbiased test statistics (for
-        ``indep_test="Dcorr"`` and ``indep_test="Hsic"``).
-    **kwargs
-        Arbitrary keyword arguments for ``compute_distkern``.
-
-    Notes
-    -----
-    The formulation for this implementation is as follows
-    :footcite:p:`pandaNonparMANOVAIndependence2021`:
+    The formulation for this implementation is as follows `[1]`_:
 
     The *k*-sample testing problem can be thought of as a generalization of
     the two sample testing problem. Define
@@ -149,20 +104,60 @@ class KSample(KSampleTest):
     between samples thought to be true if the null hypothesis is rejected.
 
     Performing a multilevel test involves constructing :math:`x` and :math:`y` using
-    either of the methods above and then performing a block permutation
-    :footcite:p:`winklerMultilevelBlockPermutation2015`.
+    either of the methods above and then performing a block permutation `[2]`_.
     Essentially, the permutation is striated, where permutation is limited to be within
     a block of samples or between blocks of samples, but not both. This is done because
     the data is not freely exchangeable, so it is necessary to block the permutation to
-    preserve the joint distribution :footcite:p:`winklerMultilevelBlockPermutation2015`.
+    preserve the joint distribution `[2]`_.
 
     The p-value returned is calculated using a permutation test uses
     :meth:`hyppo.tools.perm_test`.
     The fast version of the test uses :meth:`hyppo.tools.chi2_approx`.
 
-    References
+    .. _[1]: https://arxiv.org/abs/1910.08883
+    .. _[2]: https://www.sciencedirect.com/science/article/pii/S105381191500508X
+
+    Parameters
     ----------
-    .. footbibliography::
+    indep_test : "CCA", "Dcorr", "HHG", "RV", "Hsic", "MGC", "KMERF", "MaxMargin" or 
+    list
+        A string corresponding to the desired independence test from
+        :mod:`hyppo.independence`. This is not case sensitive. If using ``"MaxMargin"``
+        then this must be a list containing ``"MaxMargin"`` in the first index and
+        another ``indep_test`` in the second index.
+    compute_distkern : str, callable, or None, default: "euclidean" or "gaussian"
+        A function that computes the distance among the samples within each
+        data matrix.
+        Valid strings for ``compute_distance`` are, as defined in
+        :func:`sklearn.metrics.pairwise_distances`,
+
+            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
+              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
+              :mod:`scipy.spatial.distance` for details
+              on these metrics.
+            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
+              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
+              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
+              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
+              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
+              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
+              details on these metrics.
+
+        Alternatively, this function computes the kernel similarity among the
+        samples within each data matrix.
+        Valid strings for ``compute_kernel`` are, as defined in
+        :func:`sklearn.metrics.pairwise.pairwise_kernels`,
+
+            [``"additive_chi2"``, ``"chi2"``, ``"linear"``, ``"poly"``,
+            ``"polynomial"``, ``"rbf"``,
+            ``"laplacian"``, ``"sigmoid"``, ``"cosine"``]
+
+        Note ``"rbf"`` and ``"gaussian"`` are the same metric.
+    bias : bool, default: False
+        Whether or not to use the biased or unbiased test statistics (for
+        ``indep_test="Dcorr"`` and ``indep_test="Hsic"``).
+    **kwargs
+        Arbitrary keyword arguments for ``compute_distkern``.
     """
 
     def __init__(self, indep_test, compute_distkern="euclidean", bias=False, **kwargs):

@@ -33,7 +33,7 @@ def _sim_gen(sim_type, **kwargs):
             kwargs["sim"] in ["multiplicative_noise", "multimodal_independence"]
             and "noise" in kwargs.keys()
         ):
-            kwargs.pop("noise")
+            kwargs = kwargs.copy().pop("noise")
 
     sims = _ALL_SIMS[sim_type](**kwargs)
 
@@ -83,7 +83,7 @@ def _nonperm_pval(test, sim_type, **kwargs):
 
 def power(test, sim_type, sim=None, n=100, alpha=0.05, reps=1000, auto=False, **kwargs):
     """
-    Computes empircal power for hypothesis tests
+    Computes empircal power for k-sample tests
 
     Parameters
     ----------
@@ -97,7 +97,7 @@ def power(test, sim_type, sim=None, n=100, alpha=0.05, reps=1000, auto=False, **
         Type of power method to calculate. Depends on the type of ``sim``.
     sim : str, default: None
         The name of the independence simulation (from the :mod:`hyppo.tools` module).
-        that is to be used. Set to ``None`` if using Gaussian simulation curve.
+        that is to be used. Set to ``None`` if using gaussian simulation curve.
     n : int, default: 100
         The number of samples desired by the simulation (>= 5).
     alpha : float, default: 0.05

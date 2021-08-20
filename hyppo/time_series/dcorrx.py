@@ -1,14 +1,6 @@
-from typing import NamedTuple
-
 from ..independence import Dcorr
 from ._utils import _CheckInputs, compute_stat
 from .base import TimeSeriesTest
-
-
-class DcorrXTestOutput(NamedTuple):
-    stat: float
-    pvalue: float
-    dcorrx_dict: dict
 
 
 class DcorrX(TimeSeriesTest):
@@ -18,6 +10,22 @@ class DcorrX(TimeSeriesTest):
     DcorrX is an independence test between two (paired) time series of
     not necessarily equal dimensions. The population parameter is 0 if and only if the
     time series are independent. It is based upon energy distance between distributions.
+
+    The statistic can be derived as follows `[1]`_:
+
+    Let :math:`x` and :math:`y` be :math:`(n, p)` and :math:`(n, q)` series
+    respectively, which each contain :math:`y` observations of the series
+    :math:`(X_t)` and :math:`(Y_t)`. Similarly, let :math:`x[j:n]` be the
+    :math:`(n-j, p)` last :math:`n-j` observations of :math:`x`. Let :math:`y[0:(n-j)]`
+    be the :math:`(n-j, p)` first :math:`n-j` observations of :math:`y`. Let :math:`M`
+    be the maximum lag hyperparameter. The cross distance correlation is,
+
+    .. math::
+
+        \mathrm{DcorrX}_n (x, y) =  \sum_{j=0}^M \frac{n-j}{n}
+                                    Dcorr_n (x[j:n], y[0:(n-j)])
+
+    The p-value returned is calculated using a permutation test.
 
     .. _[1]: https://arxiv.org/abs/1908.06486
 
@@ -52,29 +60,6 @@ class DcorrX(TimeSeriesTest):
         shifted ``y``. Also the ``M`` hyperparmeter below.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
-
-    Notes
-    -----
-    The statistic can be derived as follows
-    :footcite:p:`mehtaIndependenceTestingMultivariate2020`:
-
-    Let :math:`x` and :math:`y` be :math:`(n, p)` and :math:`(n, q)` series
-    respectively, which each contain :math:`y` observations of the series
-    :math:`(X_t)` and :math:`(Y_t)`. Similarly, let :math:`x[j:n]` be the
-    :math:`(n-j, p)` last :math:`n-j` observations of :math:`x`. Let :math:`y[0:(n-j)]`
-    be the :math:`(n-j, p)` first :math:`n-j` observations of :math:`y`. Let :math:`M`
-    be the maximum lag hyperparameter. The cross distance correlation is,
-
-    .. math::
-
-        \mathrm{DcorrX}_n (x, y) =  \sum_{j=0}^M \frac{n-j}{n}
-                                    Dcorr_n (x[j:n], y[0:(n-j)])
-
-    The p-value returned is calculated using a permutation test.
-
-    References
-    ----------
-    .. footbibliography::
     """
 
     def __init__(self, compute_distance="euclidean", max_lag=0, **kwargs):
@@ -161,4 +146,4 @@ class DcorrX(TimeSeriesTest):
 
         stat, pvalue, stat_list = super(DcorrX, self).test(x, y, reps, workers)
         dcorrx_dict = {"opt_lag": stat_list[1]}
-        return DcorrXTestOutput(stat, pvalue, dcorrx_dict)
+        return stat, pvalue, dcorrx_dict

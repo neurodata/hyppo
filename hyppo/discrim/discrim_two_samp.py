@@ -1,5 +1,3 @@
-from typing import NamedTuple
-
 import numpy as np
 from numba import jit
 from scipy._lib._util import MapWrapper
@@ -8,28 +6,18 @@ from ._utils import _CheckInputs
 from .base import DiscriminabilityTest
 
 
-class DiscrimTwoSampleTestOutput(NamedTuple):
-    d1: float
-    d2: float
-    pvalue: float
-
-
 class DiscrimTwoSample(DiscriminabilityTest):
     r"""
-    Two Sample Discriminability test statistic and p-value.
-
+    A class that compares the discriminability of two datasets.
     Two sample test measures whether the discriminability is different for
     one dataset compared to another. More details can be described in `[1]`_.
 
     Let :math:`\hat D_{x_1}` denote the sample discriminability of one approach,
     and :math:`\hat D_{x_2}` denote the sample discriminability of another approach.
     Then,
-
     .. math::
-
         H_0: D_{x_1} &= D_{x_2} \\
         H_A: D_{x_1} &> D_{x_2}
-
     Alternatively, tests can be done for :math:`D_{x_1} < D_{x_2}` and
     :math:`D_{x_1} \neq D_{x_2}`.
 
@@ -157,7 +145,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
         self.pvalue = pvalue
 
-        return DiscrimTwoSampleTestOutput(self.d1, self.d2, self.pvalue)
+        return self.d1, self.d2, self.pvalue
 
     def _get_convex_comb(self, x):  # pragma: no cover
         """Get random convex combination of input x."""

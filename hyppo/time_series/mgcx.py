@@ -1,14 +1,6 @@
-from typing import NamedTuple
-
 from ..independence import MGC
 from ._utils import _CheckInputs, compute_scale_at_lag, compute_stat
 from .base import TimeSeriesTest
-
-
-class MGCXTestOutput(NamedTuple):
-    stat: float
-    pvalue: float
-    mgcx_dict: dict
 
 
 class MGCX(TimeSeriesTest):
@@ -18,6 +10,20 @@ class MGCX(TimeSeriesTest):
     MGCX is an independence test between two (paired) time series of
     not necessarily equal dimensions. The population parameter is 0 if and only if the
     time series are independent. It is based upon energy distance between distributions.
+
+    The statistic can be derived as follows `[1]`_:
+
+    Let :math:`x` and :math:`y` be :math:`(n, p)` and :math:`(n, q)` series
+    respectively, which each contain :math:`y` observations of the series :math:`(X_t)`
+    and :math:`(Y_t)`. Similarly, let :math:`x[j:n]` be the :math:`(n-j, p)` last
+    :math:`n-j` observations of :math:`x`. Let :math:`y[0:(n-j)]` be the
+    :math:`(n-j, p)` first :math:`n-j` observations of :math:`y`. Let :math:`M` be the
+    maximum lag hyperparameter. The cross distance correlation is,
+
+    .. math::
+
+        \mathrm{MGCX}_n (x, y) =  \sum_{j=0}^M \frac{n-j}{n}
+                                  MGC_n (x[j:n], y[0:(n-j)])
 
     .. _[1]: https://arxiv.org/abs/1908.06486
 
@@ -52,27 +58,6 @@ class MGCX(TimeSeriesTest):
         shifted ``y``. Also the ``M`` hyperparmeter below.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
-
-    Notes
-    -----
-    The statistic can be derived as follows
-    :footcite:p:`mehtaIndependenceTestingMultivariate2020`:
-
-    Let :math:`x` and :math:`y` be :math:`(n, p)` and :math:`(n, q)` series
-    respectively, which each contain :math:`y` observations of the series :math:`(X_t)`
-    and :math:`(Y_t)`. Similarly, let :math:`x[j:n]` be the :math:`(n-j, p)` last
-    :math:`n-j` observations of :math:`x`. Let :math:`y[0:(n-j)]` be the
-    :math:`(n-j, p)` first :math:`n-j` observations of :math:`y`. Let :math:`M` be the
-    maximum lag hyperparameter. The cross distance correlation is,
-
-    .. math::
-
-        \mathrm{MGCX}_n (x, y) =  \sum_{j=0}^M \frac{n-j}{n}
-                                  MGC_n (x[j:n], y[0:(n-j)])
-
-    References
-    ----------
-    .. footbibliography::
     """
 
     def __init__(self, compute_distance="euclidean", max_lag=0, **kwargs):
@@ -193,4 +178,4 @@ class MGCX(TimeSeriesTest):
         stat, pvalue, stat_list = super(MGCX, self).test(x, y, reps, workers)
         mgcx_dict = {"opt_lag": stat_list[1], "opt_scale": stat_list[2]}
 
-        return MGCXTestOutput(stat, pvalue, mgcx_dict)
+        return stat, pvalue, mgcx_dict

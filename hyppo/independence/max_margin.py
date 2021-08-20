@@ -2,7 +2,7 @@ import numpy as np
 
 from ..tools import chi2_approx
 from ._utils import _CheckInputs
-from .base import IndependenceTest, IndependenceTestOutput
+from .base import IndependenceTest
 from .cca import CCA
 from .dcorr import Dcorr
 from .hhg import HHG
@@ -28,10 +28,12 @@ class MaxMargin(IndependenceTest):
 
     This test loops over each of the dimensions of the inputs :math:`x` and :math:`y`
     and computes the desired independence test statistic. Then, the maximial test
-    statistic is chosen :footcite:p:`shenHighDimensionalIndependenceTesting2020`.
+    statistic is chosen `[1]`_.
 
     The p-value returned is calculated using a permutation test using
     :meth:`hyppo.tools.perm_test`.
+
+    .. _[1]: https://arxiv.org/abs/2001.01095
 
     Parameters
     ----------
@@ -71,10 +73,6 @@ class MaxMargin(IndependenceTest):
         ``indep_test="Dcorr"`` and ``indep_test="Hsic"``).
     **kwargs
         Arbitrary keyword arguments for ``compute_distkern``.
-
-    References
-    ----------
-    .. footbibliography::
     """
 
     def __init__(self, indep_test, compute_distkern="euclidean", bias=False, **kwargs):
@@ -94,11 +92,10 @@ class MaxMargin(IndependenceTest):
             "rv": {},
             "cca": {},
         }
+
         self.indep_test = INDEP_NOT_MAXMARGIN[indep_test](
             **indep_kwargs[indep_test], **kwargs
         )
-        self.is_fast = False
-        self.bias = bias
 
         IndependenceTest.__init__(self, compute_distance=compute_distkern, **kwargs)
 
@@ -185,15 +182,6 @@ class MaxMargin(IndependenceTest):
         )
         x, y = check_input()
 
-        if (
-            auto
-            and x.shape[1] == 1
-            and y.shape[1] == 1
-            and self.compute_distance == "euclidean"
-            and self.indep_test_name == "dcorr"
-        ):
-            self.is_fast = True
-
         if auto and x.shape[0] > 20 and self.indep_test_name in ["dcorr", "hsic"]:
             stat, pvalue = chi2_approx(self.statistic, x, y)
             self.stat = stat
@@ -204,4 +192,4 @@ class MaxMargin(IndependenceTest):
                 x, y, reps, workers, is_distsim=False
             )
 
-        return IndependenceTestOutput(stat, pvalue)
+        return stat, pvalue
