@@ -7,8 +7,8 @@ __author__ = 'wittawat'
 import kgof.glo as glo
 import matplotlib
 import matplotlib.pyplot as plt
-import autograd.numpy as np
-
+#import autograd.numpy as np
+import numpy as np
 
 def get_func_tuples():
     """

@@ -12,8 +12,9 @@ from future.utils import with_metaclass
 __author__ = 'wittawat'
 
 from abc import ABCMeta, abstractmethod
-import autograd
-import autograd.numpy as np
+#import autograd
+import numpy as np
+#import autograd.numpy as np
 #import kgof.data as data
 #import kgof.util as util
 #import kgof.kernel as kernel
@@ -621,7 +622,8 @@ class GaussFSSD(FSSD):
 
         # optimize. Time the optimization as well.
         # https://docs.scipy.org/doc/scipy/reference/optimize.minimize-lbfgsb.html
-        grad_obj = autograd.elementwise_grad(flat_obj)
+        #grad_obj = autograd.elementwise_grad(flat_obj)
+        grad_obj = np.gradient(flat_obj)
         with util.ContextTimer() as timer:
             opt_result = scipy.optimize.minimize(
               flat_obj, x0, method='L-BFGS-B', 
@@ -780,7 +782,8 @@ class IMQFSSD(FSSD):
 
         # optimize. Time the optimization as well.
         # https://docs.scipy.org/doc/scipy/reference/optimize.minimize-lbfgsb.html
-        grad_obj = autograd.elementwise_grad(flat_obj)
+        #grad_obj = autograd.elementwise_grad(flat_obj)
+        grad_obj = np.gradient(flat_obj)
         with util.ContextTimer() as timer:
             opt_result = scipy.optimize.minimize(
               flat_obj, x0, method='L-BFGS-B', 
@@ -890,7 +893,8 @@ class IMQFSSD(FSSD):
 
         # optimize. Time the optimization as well.
         # https://docs.scipy.org/doc/scipy/reference/optimize.minimize-lbfgsb.html
-        grad_obj = autograd.elementwise_grad(flat_obj)
+        #grad_obj = autograd.elementwise_grad(flat_obj)
+        grad_obj = np.gradient(flat_obj)
         with util.ContextTimer() as timer:
             opt_result = scipy.optimize.minimize(
               flat_obj, x0, method='L-BFGS-B', 

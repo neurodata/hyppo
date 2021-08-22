@@ -9,8 +9,9 @@ from future.utils import with_metaclass
 __author__ = 'wittawat'
 
 from abc import ABCMeta, abstractmethod
-import autograd
-import autograd.numpy as np
+#import autograd
+import numpy as np
+#import autograd.numpy as np
 #import numpy as np
 #import kgof.config as config
 #import kgof.util as util
@@ -140,7 +141,7 @@ class DifferentiableKernel(with_metaclass(ABCMeta, Kernel)):
     def gradX_y(self, X, y):
         """
         Compute the gradient with respect to X (the first argument of the
-        kernel). Base class provides a default autograd implementation for convenience.
+        kernel). Base class provides a default autograd\numpy implementation for convenience.
         Subclasses should override if this does not work.
 
         X: nx x d numpy array.
@@ -151,7 +152,8 @@ class DifferentiableKernel(with_metaclass(ABCMeta, Kernel)):
         """
         yrow = np.reshape(y, (1, -1))
         f = lambda X: self.eval(X, yrow)
-        g = autograd.elementwise_grad(f)
+        #g = autograd.elementwise_grad(f)
+        g = np.gradient(f)
         G = g(X)
         assert G.shape[0] == X.shape[0]
         assert G.shape[1] == X.shape[1]
@@ -744,7 +746,7 @@ class KMixture(KSTKernel, LinearKSTKernel, DifferentiableKernel):
     def gradX_y(self, X, y):
         """
         Compute the gradient with respect to X (the first argument of the
-        kernel). Base class provides a default autograd implementation for convenience.
+        kernel). Base class provides a default autograd\numpy implementation for convenience.
         Subclasses should override if this does not work.
 
         X: nx x d numpy array.

@@ -11,8 +11,9 @@ from builtins import str
 __author__ = 'wittawat'
 
 from abc import ABCMeta, abstractmethod
-import autograd
-import autograd.numpy as np
+#import autograd
+#import autograd.numpy as np
+import numpy as np
 # Require freqopttest https://github.com/wittawatj/interpretable-test
 import freqopttest.tst as tst
 import freqopttest.data as fdata

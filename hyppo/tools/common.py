@@ -399,6 +399,7 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
         when using the permutation test used to calculate the p-value.
     workers : int, default: 1
         The number of cores to parallelize the p-value computation over.
+<<<<<<< HEAD
         Supply ``-1`` to use all cores available to the Process.
     is_distsim : bool, default: True
         Whether or not ``x`` and ``y`` are distance or similarity matrices.
@@ -407,6 +408,17 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
         If None, all samples can be permuted with one another. Requires `n`
         rows. Constructs a tree graph with all samples initially at
         the root node. Each column partitions samples from the same leaf with
+=======
+        Supply -1 to use all cores available to the Process.
+    is_distsim : bool, optional (default: True)
+        Whether or not `x` and `y` are distance or similarity matrices. Changes the
+        permutation style of `y`.
+    perm_blocks : ndarray, optional (default None)
+        Defines blocks of exchangeable samples during the permutation test.
+        If None, all samples can be permuted with one another. Requires `n`
+        rows. Constructs a tree graph with all samples initially at
+        the root node. Each column partitions samples from the same leaf with 
+>>>>>>> 6bc9bc1942e9d58a20d8ee2e499bc98914156b4e
         shared column label into a child of that leaf. During the permutation
         test, samples within the same final leaf node are exchangeable
         and blocks of samples with a common parent node are exchangeable. If a

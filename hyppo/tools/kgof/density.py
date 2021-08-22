@@ -11,8 +11,9 @@ from future.utils import with_metaclass
 __author__ = 'wittawat'
 
 from abc import ABCMeta, abstractmethod
-import autograd
-import autograd.numpy as np
+#import autograd
+import numpy as np
+#import autograd.numpy as np
 #import kgof.data as data
 from . import data
 import scipy.stats as stats
@@ -87,7 +88,8 @@ class UnnormalizedDensity(with_metaclass(ABCMeta, object)):
 
         Return an n x d numpy array of gradients.
         """
-        g = autograd.elementwise_grad(self.log_den)
+        #g = autograd.elementwise_grad(self.log_den)
+        g = np.gradient(self.log_den)
         G = g(X)
         return G
 
@@ -109,7 +111,7 @@ class UDFromCallable(UnnormalizedDensity):
         """
         Only one of log_den and grad_log are required.
         If log_den is specified, the gradient is automatically computed with
-        autograd.
+        autograd or numpy.
 
         d: the dimension of the domain of the density
         log_den: a callable object (function) implementing the log of an unnormalized density. See UnnormalizedDensity.log_den.
@@ -130,8 +132,8 @@ class UDFromCallable(UnnormalizedDensity):
     def grad_log(self, X):
         fgrad_log = self.fgrad_log
         if fgrad_log is None:
-            # autograd
-            g = autograd.elementwise_grad(self.flog_den)
+            #g = autograd.elementwise_grad(self.flog_den)
+            g = np.gradient(self.flog_den)
             G = g(X)
         else:
             G = fgrad_log(X)

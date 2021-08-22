@@ -16,8 +16,7 @@ REQUIRED_PACKAGES = [
     "numpy>=1.17",
     "scipy>=1.4.0",
     "numba>=0.46",
-    "scikit-learn>=0.19.1",
-    "autograd>=1.1.7"
+    "scikit-learn>=0.19.1"
 ]
 
 # Find mgc version.

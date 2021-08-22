@@ -11,7 +11,8 @@ from future.utils import with_metaclass
 __author__ = 'wittawat'
 
 from abc import ABCMeta, abstractmethod
-import autograd.numpy as np
+import numpy as np
+#import autograd.numpy as np
 #import kgof.util as util
 from . import util
 import scipy.stats as stats

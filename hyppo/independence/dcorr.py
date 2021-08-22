@@ -163,6 +163,7 @@ class Dcorr(IndependenceTest):
             when using the permutation test used to calculate the p-value.
         workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
+<<<<<<< HEAD
             Supply ``-1`` to use all cores available to the Process.
         auto : bool, default: True
             Automatically uses fast approximation when `n` and size of array
@@ -174,6 +175,15 @@ class Dcorr(IndependenceTest):
             If ``x`` and ``y`` have `p` equal to 1 and ``compute_distance`` set to
             ``'euclidean'``, then and :math:`\mathcal{O}(n \log n)` version is run.
         perm_blocks : None or ndarray, default: None
+=======
+            Supply -1 to use all cores available to the Process.
+        auto : bool (default: True)
+            Automatically uses fast approximation when sample size and size of array
+            is greater than 20. If True, and sample size is greater than 20, a fast
+            chi2 approximation will be run. Parameters ``reps`` and ``workers`` are
+            irrelevant in this case.
+        perm_blocks : ndarray, optional (default None)
+>>>>>>> 6bc9bc1942e9d58a20d8ee2e499bc98914156b4e
             Defines blocks of exchangeable samples during the permutation test.
             If None, all samples can be permuted with one another. Requires `n`
             rows. At each column, samples with matching column value are

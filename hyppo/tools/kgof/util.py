@@ -13,7 +13,8 @@ from past.utils import old_div
 from builtins import object
 __author__ = 'wittawat'
 
-import autograd.numpy as np
+#import autograd.numpy as np
+import numpy as np
 import time 
 
 class ContextTimer(object):
