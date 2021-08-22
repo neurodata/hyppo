@@ -4,31 +4,38 @@ increases.
 """
 __author__ = 'wittawat'
 
-import kgof
+'''import kgof
 import kgof.data as data
 import kgof.glo as glo
 import kgof.density as density
 import kgof.goftest as gof
 import kgof.util as util 
-import kgof.kernel as kernel 
+import kgof.kernel as kernel'''
+
+from .. import data
+from .. import glo
+from .. import density
+from .. import goftest as gof
+from .. import util
+from .. import kernel
 
 # need independent_jobs package 
 # https://github.com/karlnapf/independent-jobs
 # The independent_jobs and kgof have to be in the global search path (.bashrc)
-import independent_jobs as inj
-from independent_jobs.jobs.IndependentJob import IndependentJob
-from independent_jobs.results.SingleResult import SingleResult
-from independent_jobs.aggregators.SingleResultAggregator import SingleResultAggregator
-from independent_jobs.engines.BatchClusterParameters import BatchClusterParameters
-from independent_jobs.engines.SerialComputationEngine import SerialComputationEngine
-from independent_jobs.engines.SlurmComputationEngine import SlurmComputationEngine
-from independent_jobs.tools.Log import logger
+#import independent_jobs as inj
+from .independent_jobs.jobs.IndependentJob import IndependentJob
+from .independent_jobs.results.SingleResult import SingleResult
+from .independent_jobs.aggregators.SingleResultAggregator import SingleResultAggregator
+from .independent_jobs.engines.BatchClusterParameters import BatchClusterParameters
+from .independent_jobs.engines.SerialComputationEngine import SerialComputationEngine
+from .independent_jobs.engines.SlurmComputationEngine import SlurmComputationEngine
+from .independent_jobs.tools.Log import logger
 import logging
 import math
-#import numpy as np
-import autograd.numpy as np
+import numpy as np
+#import autograd.numpy as np
 import os
-import sys 
+import sys
 import time
 
 """
@@ -175,10 +182,10 @@ class Ex3Job(IndependentJob):
 
 # This import is needed so that pickle knows about the class Ex3Job.
 # pickle is used when collecting the results from the submitted jobs.
-from kgof.ex.ex3_vary_nlocs import Ex3Job
-from kgof.ex.ex3_vary_nlocs import job_fssdq_med
-from kgof.ex.ex3_vary_nlocs import job_fssdq_opt
-from kgof.ex.ex3_vary_nlocs import job_fssdp_opt
+from .ex3_vary_nlocs import Ex3Job
+from .ex3_vary_nlocs import job_fssdq_med
+from .ex3_vary_nlocs import job_fssdq_opt
+from .ex3_vary_nlocs import job_fssdp_opt
 
 #--- experimental setting -----
 ex = 3
@@ -319,7 +326,8 @@ def run_problem(prob_label):
     # ///////  submit jobs //////////
     # create folder name string
     #result_folder = glo.result_folder()
-    from kgof.config import expr_configs
+    #from kgof.config import expr_configs
+    from ..config import expr_configs
     tmp_dir = expr_configs['scratch_path']
     foldername = os.path.join(tmp_dir, 'kgof_slurm', 'e%d'%ex)
     logger.info("Setting engine folder to %s" % foldername)
