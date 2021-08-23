@@ -197,7 +197,7 @@ html_context = {
     "github_user": "neurodata",
     "github_repo": "hyppo",
     "github_version": "main",
-    "conf_py_path": "docs/",
+    "doc_path": "docs",
     "galleries": sphinx_gallery_conf["gallery_dirs"],
     "gallery_dir": dict(
         zip(
