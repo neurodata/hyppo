@@ -173,7 +173,7 @@ html_context = {
         ),
         (
             '<i class="fa fa-users fa-fw"></i> Contributing',
-            "https://github.com/neurodata/hyppo/blob/master/CONTRIBUTING.md",
+            "https://github.com/neurodata/hyppo/blob/main/CONTRIBUTING.md",
         ),
         (
             '<i class="fa fa-gavel fa-fw"></i> Code of Conduct',
@@ -196,8 +196,8 @@ html_context = {
     # {{ suffix }}
     "github_user": "neurodata",
     "github_repo": "hyppo",
-    "github_version": "master",
-    "conf_py_path": "docs/",
+    "github_version": "main",
+    "doc_path": "docs",
     "galleries": sphinx_gallery_conf["gallery_dirs"],
     "gallery_dir": dict(
         zip(
