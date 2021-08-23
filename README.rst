@@ -78,7 +78,7 @@ community goals are to be helpful, welcoming, and effective. The
 `contributor guide <https://hyppo.neurodata.io/contributing.html>`_
 has detailed information about contributing code, documentation and tests.
 
-- Official source code: https://github.com/neurodata/hyppo/tree/master/hyppo
+- Official source code: https://github.com/neurodata/hyppo/tree/main/hyppo
 - Download releases: https://pypi.org/project/hyppo/
 - Issue tracker: https://github.com/neurodata/hyppo/issues
 

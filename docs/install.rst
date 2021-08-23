@@ -36,7 +36,7 @@ into your user directory using the ``--user`` flag::
 
 Install from Github
 -------------------
-You can manually download hyppo by cloning the git repo master version and
+You can manually download hyppo by cloning the git repo ``main`` version and
 running the ``setup.py`` file. That is, unzip the compressed package folder
 and run the following from the top-level source directory using the Terminal::
 
