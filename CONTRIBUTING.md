@@ -8,7 +8,7 @@ This project welcomes contributions and suggestions and has adopted the [Neuroda
 
 We use GitHub issues to track all bugs and feature requests; feel free to open an issue if you have found a bug or wish
 to see a feature implemented. Please also feel free to tag one of the core
-contributors (see our [Roles page](https://github.com/neurodata/hyppo/blob/master/ROLES.md)).
+contributors (see our [Roles page](https://github.com/neurodata/hyppo/blob/main/ROLES.md)).
 
 In case you experience issues using this package, do not hesitate to submit a ticket to our
 [Issue Tracker](https://github.com/neurodata/hyppo/issues).  You are also welcome to post feature requests or pull
