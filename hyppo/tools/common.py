@@ -6,6 +6,7 @@ from scipy.stats.distributions import chi2
 from scipy.stats.stats import _contains_nan
 from sklearn.metrics import pairwise_distances
 from sklearn.metrics.pairwise import pairwise_kernels
+from sklearn.utils import check_random_state
 
 
 def contains_nan(a):  # from scipy
@@ -362,10 +363,11 @@ class _PermGroups(object):
 
 
 # p-value computation
-def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None):
+def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None, random_state=None):
     """Permute the test statistic"""
+    rng = np.random.RandomState(random_state)
     if not permuter:
-        order = np.random.permutation(y.shape[0])
+        order = rng.permutation(y.shape[0])
     else:
         order = permuter()
 
@@ -379,7 +381,15 @@ def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None):
     return perm_stat
 
 
-def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_blocks=None):
+def perm_test(
+    calc_stat,
+    x,
+    y,
+    reps=1000,
+    workers=1,
+    is_distsim=True,
+    perm_blocks=None,
+):
     """
     Permutation test for the p-value of a nonparametric test.
 
@@ -428,14 +438,14 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
     """
     # calculate observed test statistic
     stat = calc_stat(x, y)
-
+    random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
     # calculate null distribution
     permuter = _PermGroups(y, perm_blocks)
     null_dist = np.array(
         Parallel(n_jobs=workers)(
             [
-                delayed(_perm_stat)(calc_stat, x, y, is_distsim, permuter)
-                for _ in range(reps)
+                delayed(_perm_stat)(calc_stat, x, y, is_distsim, permuter, rng)
+                for rng in random_state
             ]
         )
     )
