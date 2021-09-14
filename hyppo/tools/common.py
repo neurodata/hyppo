@@ -6,7 +6,6 @@ from scipy.stats.distributions import chi2
 from scipy.stats.stats import _contains_nan
 from sklearn.metrics import pairwise_distances
 from sklearn.metrics.pairwise import pairwise_kernels
-from sklearn.utils import check_random_state
 
 
 def contains_nan(a):  # from scipy
