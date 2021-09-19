@@ -388,6 +388,7 @@ def perm_test(
     workers=1,
     is_distsim=True,
     perm_blocks=None,
+    random_state=None,
 ):
     """
     Permutation test for the p-value of a nonparametric test.
@@ -437,7 +438,8 @@ def perm_test(
     """
     # calculate observed test statistic
     stat = calc_stat(x, y)
-    random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
+    if random_state is not None:
+        random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
     # calculate null distribution
     permuter = _PermGroups(y, perm_blocks)
     null_dist = np.array(

@@ -85,7 +85,7 @@ class CCA(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the CCA test statistic and p-value.
 
@@ -123,4 +123,6 @@ class CCA(IndependenceTest):
         x, y = check_input()
 
         # use default permutation test
-        return super(CCA, self).test(x, y, reps, workers, is_distsim=False)
+        return super(CCA, self).test(
+            x, y, reps, workers, is_distsim=False, random_state=random_state
+        )
