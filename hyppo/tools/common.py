@@ -366,7 +366,6 @@ class _PermGroups(object):
 def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None, random_state=None):
     """Permute the test statistic"""
     rng = check_random_state(random_state)
-    # rng = np.random.RandomState(random_state)
     if not permuter:
         order = rng.permutation(y.shape[0])
     else:
@@ -428,7 +427,6 @@ def perm_test(
         test, samples within the same final leaf node are exchangeable
         and blocks of samples with a common parent node are exchangeable. If a
         column value is negative, the resulting block is unexchangeable.
-
     Returns
     -------
     stat : float
