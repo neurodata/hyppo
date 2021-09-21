@@ -6,6 +6,7 @@ from scipy.stats.distributions import chi2
 from scipy.stats.stats import _contains_nan
 from sklearn.metrics import pairwise_distances
 from sklearn.metrics.pairwise import pairwise_kernels
+from sklearn.utils import check_random_state
 
 
 def contains_nan(a):  # from scipy
@@ -364,7 +365,8 @@ class _PermGroups(object):
 # p-value computation
 def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None, random_state=None):
     """Permute the test statistic"""
-    rng = np.random.RandomState(random_state)
+    rng = check_random_state(random_state)
+    # rng = np.random.RandomState(random_state)
     if not permuter:
         order = rng.permutation(y.shape[0])
     else:
@@ -438,8 +440,7 @@ def perm_test(
     """
     # calculate observed test statistic
     stat = calc_stat(x, y)
-    if random_state is not None:
-        random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
+    random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
     # calculate null distribution
     permuter = _PermGroups(y, perm_blocks)
     null_dist = np.array(
