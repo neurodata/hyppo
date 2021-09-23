@@ -57,7 +57,7 @@ class IndependenceTest(ABC):
         super().__init__()
 
     @abstractmethod
-    def statistic(self, x, y):
+    def statistic(self, x=None, y=None, *data_matrices):
         r"""
         Calulates the independence test statistic.
 
@@ -69,10 +69,16 @@ class IndependenceTest(ABC):
             `n` is the number of samples and `p` and `q` are the number of
             dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
             where the shapes must both be ``(n, n)``.
+        *data_matrices: Tuple[np.ndarray,...]
+            Input data matrices. All elements of the tuple must have the same
+            number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
+            etc., where `n` is the number of samples and `p` and `q` are the
+            number of dimensions. Alternatively, the elements can be distance
+            matrices, where the shapes must both be ``(n, n)``.
         """
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=1, is_distsim=True, perm_blocks=None):
+    def test(self, x=None, y=None, reps=1000, workers=1, is_distsim=True, perm_blocks=None, *data_matrices):
         r"""
         Calulates the independence test statistic and p-value.
 
@@ -107,6 +113,12 @@ class IndependenceTest(ABC):
             block, samples are exchangeable. Blocks of samples from the same
             partition are also exchangeable between one another. If a column
             value is negative, that block is fixed and cannot be exchanged.
+        *data_matrices: Tuple[np.ndarray,...]
+            Input data matrices. All elements of the tuple must have the same
+            number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
+            etc., where `n` is the number of samples and `p` and `q` are the
+            number of dimensions. Alternatively, the elements can be distance
+            matrices, where the shapes must both be ``(n, n)``.
 
         Returns
         -------
@@ -115,8 +127,16 @@ class IndependenceTest(ABC):
         pvalue : float
             The computed independence p-value.
         """
-        self.x = x
-        self.y = y
+
+        # Something like this?
+        if (x is not None) and (y is not None):
+            self.x = x
+            self.y = y
+        elif (x is None) and (y is None):
+            self.data_matrices = data_matrices
+        else:
+            msg = "Either input x,y or *data_matrices. Cannot have both."  # TODO: word it better
+            raise ValueError(msg)
 
         # calculate p-value
         stat, pvalue, null_dist = perm_test(
@@ -127,6 +147,7 @@ class IndependenceTest(ABC):
             workers=workers,
             is_distsim=is_distsim,
             perm_blocks=perm_blocks,
+            *data_matrices,  # TODO: modify in tools/common.py
         )
         self.stat = stat
         self.pvalue = pvalue
