@@ -2,19 +2,20 @@
 import numpy as np
 
 from .base import IndependenceTest, IndependenceTestOutput
+from ..tools import compute_kern
 
 
 class dHsic(IndependenceTest):
     def __init__(self, compute_kernel="Gaussian", bandwidth=1, bias=True, **kwargs):
         pass
 
-    def statistic(self, x, y):
+    def statistic(self, *data_matrices):
         """
         Helper function that calculates the dHsic test statistic.
 
         Parameters
         ----------
-        x,y: np.ndarray
+        *data_matrices: Tuple[np.ndarray]
             Input data matrices.
 
         Returns
@@ -24,13 +25,13 @@ class dHsic(IndependenceTest):
         """
         pass
 
-    def test(self, x, y, reps=1000, workers=1, auto=True):
+    def test(self, *data_matrices, reps=1000, workers=1, auto=True):
         """
         Calculates the dHsic test statistic and p-value.
 
         Parameters
         ----------
-        x,y : np.ndarray
+        *data_matrices: Tuple[np.ndarray]
             Input data matrices.
         reps : int, default=1000
             Number of replications used for permutation test.
@@ -48,13 +49,8 @@ class dHsic(IndependenceTest):
         pass
 
 
-def _compute_gram(x, kernel="Gaussian", bandwidth=1) -> np.ndarray:
-    "Computes gram matrix using kernel given a data matrix x"
-    pass
-
-
-def _dhsic(x, k) -> float:
-    "Computes dHsic test statistic given a data matrix x and a gram matrix k"
+def _dhsic(*data_matrices, kernel="Gaussian", bandwidth=1) -> float:
+    "Computes dHsic test statistic"
     pass
 
 
