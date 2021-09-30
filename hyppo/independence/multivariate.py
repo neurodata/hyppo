@@ -34,3 +34,25 @@ def multi_perm_test(calc_stat, *data_matrices, reps=1000, workers=1):
     # calculate observed test statistic
     # calculate null distribution ''reps'' number of times using _perm_stat
     # calculate p-value
+
+
+def compute_kern(*data_matrices, metric="gaussian", workers=1, **kwargs):
+    """
+    Kernel similarity matrices for the inputs.
+
+    Parameters
+    ----------
+    *data_matrices: Tuple[np.ndarray]
+    metric: str, callable, or None, default="gaussian"
+    workers: int, default=1
+    **kwargs
+        Arbitrary keyword arguments provided to
+        :func:`sklearn.metrics.pairwise.pairwise_kernels`
+        or a custom kernel function.
+
+    Returns
+    -------
+    sim_matrices: Tuple[np.ndaaray]
+        Similarity matrices based on the metric provided by the user.
+        Must be same shape as ''data_matrices''.
+    """
