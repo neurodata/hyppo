@@ -438,7 +438,17 @@ def perm_test(
     """
     # calculate observed test statistic
     stat = calc_stat(x, y)
-    random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
+
+    # make RandomState seeded array
+    if random_state is not None:
+        rng = check_random_state(random_state)
+        random_state = rng.randint(np.iinfo(np.int32).max, size=reps)
+
+    # make random array
+    else:
+        random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
+
+    # random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
     # calculate null distribution
     permuter = _PermGroups(y, perm_blocks)
     null_dist = np.array(
