@@ -69,7 +69,7 @@ class _CheckInputs:
         redundant_x = len(u[c > 1]) > 0
         u, c = np.unique(self.y, return_counts=True)
         redundant_y = len(u[c > 1]) > 0
-        
+
         if redundant_x:
             warnings.warn("Redundancies exist in x")
 
