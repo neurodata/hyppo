@@ -1,5 +1,6 @@
 import numpy as np
-
+import warnings
+from collections import Counter
 from ..tools import check_ndarray_xy, check_reps, contains_nan, convert_xy_float64
 
 
@@ -19,6 +20,7 @@ class _CheckInputs:
         self.x, self.y = convert_xy_float64(self.x, self.y)
         self._check_min_samples()
         self._check_variance()
+        self._check_redundancy()
 
         if self.reps:
             check_reps(self.reps)
@@ -60,6 +62,22 @@ class _CheckInputs:
 
         if nx <= 3 or ny <= 3:
             raise ValueError("Number of samples is too low")
+
+    def _check_redundancy(self):
+        """Check if there are redundancies in either x or y"""
+        u, c = np.unique(self.x, return_counts=True)
+        redundant_x = len(u[c > 1]) > 0
+        u, c = np.unique(self.y, return_counts=True)
+        redundant_y = len(u[c > 1]) > 0
+        
+        if redundant_x:
+            warnings.warn("Redundancies exist in x")
+
+        if redundant_y:
+            warnings.warn("Redundancies exist in y")
+
+        if redundant_x and redundant_y:
+            warnings.warn("Redundancies exist in x and y")
 
     def _check_variance(self):
         if np.var(self.x) == 0 or np.var(self.y) == 0:
