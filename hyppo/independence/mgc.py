@@ -9,6 +9,7 @@ from .base import IndependenceTest
 
 import numpy as np
 
+
 class MGCestOutput(NamedTuple):
     stat: float
     pvalue: float
