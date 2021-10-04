@@ -18,7 +18,7 @@ class TestRVStat:
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(pvalue, obs_pvalue, decimal=2)
 
-    @pytest.mark.parametrize("n", [10, 100, 1000])
+    @pytest.mark.parametrize("n", [100, 1000])
     def test_rep(self, n):
         x, y = linear(n, 1)
         stat1, pvalue1 = RV().test(x, y)

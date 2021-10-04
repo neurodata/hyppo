@@ -28,7 +28,7 @@ class TestHsicStat:
         assert_almost_equal(stat, 1.0, decimal=2)
         assert_almost_equal(pvalue, 1 / 1000, decimal=2)
 
-    @pytest.mark.parametrize("n, obs_stat", [(100, 1.0), (200, 1.0)])
+    @pytest.mark.parametrize("n", [100, 200])
     def test_rep(self, n):
         x, y = linear(n, 1)
         stat, pvalue = Hsic().test(x, y, random_state=2)
