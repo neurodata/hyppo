@@ -29,6 +29,17 @@ class TestHHGStat:
 
         assert_almost_equal(stat, 950600.0, decimal=2)
 
+    @pytest.mark.parametrize(
+        "n, obs_stat", [(10, 560.0), (50, 112800.0), (100, 950600.0)]
+    )
+    def test_rep(self, n):
+        x, y = linear(n, 1)
+        stat, pvalue = HHG().test(x, y, random_state=2)
+        stat2, pvalue2 = HHG().test(x, y, random_state=2)
+
+        assert stat == stat2
+        assert pvalue == pvalue2
+
 
 class TestHHGTypeIError:
     def test_oned(self):

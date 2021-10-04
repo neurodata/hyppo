@@ -31,6 +31,15 @@ class TestKMERFStat(object):
         assert_approx_equal(stat2, obs_stat, significant=1)
         assert_approx_equal(pvalue, obs_pvalue, significant=1)
 
+    @pytest.mark.parametrize("sim", [(linear, 0.253, 1.0)])
+    def test_rep(self, sim):
+        x, y = sim(n=100, p=1)
+        stat1, pvalue1 = KMERF().test(x, y, random_state=2)
+        stat2, pvalue2 = KMERF().test(x, y, random_state=2)
+
+        assert stat1 == stat2
+        assert pvalue1 == pvalue2
+
 
 class TestKmerfErrorWarn:
     """Tests errors and warnings derived from MGC."""
