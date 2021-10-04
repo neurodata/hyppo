@@ -7,6 +7,7 @@ from ..tools import compute_dist
 from ._utils import _CheckInputs
 from .base import IndependenceTest
 
+import numpy as np
 
 class MGCestOutput(NamedTuple):
     stat: float
@@ -164,6 +165,21 @@ class MGC(IndependenceTest):
 
         return stat
 
+    def _check_redundancy(self, x, y):
+        """Check if there are redundancies in either x or y"""
+        u, c = np.unique(x, return_counts=True)
+        redundant_x = len(u[c > 1]) > 0
+        u, c = np.unique(y, return_counts=True)
+        redundant_y = len(u[c > 1]) > 0
+        if redundant_x and not redundant_y:
+            warnings.warn("Redundancies exist in x")
+
+        elif redundant_y and not redundant_x:
+            warnings.warn("Redundancies exist in y")
+
+        elif redundant_x and redundant_y:
+            warnings.warn("Redundancies exist in x and y")
+
     def test(self, x, y, reps=1000, workers=1):
         r"""
         Calculates the MGC test statistic and p-value.
@@ -220,6 +236,7 @@ class MGC(IndependenceTest):
         >>> '%.1f, %.2f' % (stat, pvalue)
         '0.0, 1.00'
         """
+        self._check_redundancy(x, y)
         check_input = _CheckInputs(
             x,
             y,
