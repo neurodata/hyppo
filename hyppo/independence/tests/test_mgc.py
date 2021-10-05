@@ -49,11 +49,16 @@ class TestMGCStat(object):
         assert_approx_equal(stat2, obs_stat, significant=1)
         assert_approx_equal(pvalue, obs_pvalue, significant=1)
 
-    @pytest.mark.parametrize("sim", [(linear, 0.463, 1 / 1000)])
-    def test_rep(self, sim):
+    @pytest.mark.parametrize(
+        "sim, obs_stat, obs_pvalue",
+        [
+            (linear, 0.97, 1 / 1000),  # test linear simulation
+        ],
+    )
+    def test_rep(self, sim, obs_stat, obs_pvalue):
         x, y = sim(n=100, p=5)
-        stat1, pvalue1 = MGC().test(x, y)
-        stat2, pvalue2 = MGC().test(x, y)
+        stat1, pvalue1, _ = MGC().test(x, y, random_state=2)
+        stat2, pvalue2, _ = MGC().test(x, y, random_state=2)
 
         assert stat1 == stat2
         assert pvalue1 == pvalue2
