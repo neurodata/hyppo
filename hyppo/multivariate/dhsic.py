@@ -1,11 +1,8 @@
-
-import numpy as np
-
-from .base import IndependenceTest, IndependenceTestOutput
+from .base import MultivariateTest, MultivariateTestOutput
 from ..tools import compute_kern
 
 
-class dHsic(IndependenceTest):
+class dHsic(MultivariateTest):
     def __init__(self, compute_kernel="Gaussian", bandwidth=1, bias=True, **kwargs):
         pass
 
@@ -52,9 +49,3 @@ class dHsic(IndependenceTest):
 def _dhsic(*data_matrices, kernel="Gaussian", bandwidth=1) -> float:
     "Computes dHsic test statistic"
     pass
-
-
-
-
-
-

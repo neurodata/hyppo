@@ -1,17 +1,17 @@
 from abc import ABC, abstractmethod
 from typing import NamedTuple
 
-from ..tools import perm_test
+from ..tools import multi_perm_test
 
 
-class IndependenceTestOutput(NamedTuple):
+class MultivariateTestOutput(NamedTuple):
     stat: float
     pvalue: float
 
 
-class IndependenceTest(ABC):
+class MultivariateTest(ABC):
     r"""
-    A base class for an independence test.
+    A base class for a multivariate independence test.
 
     Parameters
     ----------
@@ -57,33 +57,33 @@ class IndependenceTest(ABC):
         super().__init__()
 
     @abstractmethod
-    def statistic(self, x, y):
+    def statistic(self, *data_matrices):
         r"""
-        Calculates the independence test statistic.
+        Calculates the multivariate independence test statistic.
 
         Parameters
         ----------
-        x,y : ndarray
-            Input data matrices. ``x`` and ``y`` must have the same number of
-            samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
-            `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
-            where the shapes must both be ``(n, n)``.
+        *data_matrices: Tuple[np.ndarray]
+            Input data matrices. All elements of the tuple must have the same
+            number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
+            etc., where `n` is the number of samples and `p` and `q` are the
+            number of dimensions. Alternatively, the elements can be distance
+            matrices, where the shapes must both be ``(n, n)``.
         """
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=1, is_distsim=True, perm_blocks=None):
+    def test(self, *data_matrices, reps=1000, workers=1):
         r"""
-        Calculates the independence test statistic and p-value.
+        Calculates the multivariate independence test statistic and p-value.
 
         Parameters
         ----------
-        x,y : ndarray
-            Input data matrices. ``x`` and ``y`` must have the same number of
-            samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
-            `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
-            where the shapes must both be ``(n, n)``.
+        *data_matrices : Tuple[np.ndarray]
+            Input data matrices. All elements of the tuple must have the same
+            number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
+            etc., where `n` is the number of samples and `p` and `q` are the
+            number of dimensions. Alternatively, the elements can be distance
+            matrices, where the shapes must both be ``(n, n)``.
         reps : int, default: 1000
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
@@ -93,42 +93,27 @@ class IndependenceTest(ABC):
         auto : bool, default: True
             Automatically uses fast approximation when `n` and size of array
             is greater than 20. If ``True``, and sample size is greater than 20, then
-            :class:`hyppo.tools.chi2_approx` will be run. Parameters ``reps`` and
-            ``workers`` are
-            irrelevant in this case. Otherwise, :class:`hyppo.tools.perm_test` will be
-            run.
-        is_distsim : bool, default: True
-            Whether or not ``x`` and ``y`` are input matrices.
-        perm_blocks : None or ndarray, default: None
-            Defines blocks of exchangeable samples during the permutation test.
-            If None, all samples can be permuted with one another. Requires `n`
-            rows. At each column, samples with matching column value are
-            recursively partitioned into blocks of samples. Within each final
-            block, samples are exchangeable. Blocks of samples from the same
-            partition are also exchangeable between one another. If a column
-            value is negative, that block is fixed and cannot be exchanged.
+            :class:`hyppo.tools.multi_chi2_approx` will be run. Parameters ``reps`` and
+            ``workers`` are irrelevant in this case. Otherwise,
+            :class:`hyppo.tools.multi_perm_test` will be run.
 
         Returns
         -------
         stat : float
-            The computed independence test statistic.
+            The computed multivariate independence test statistic.
         pvalue : float
-            The computed independence p-value.
+            The computed multivariate independence p-value.
         """
-        self.x = x
-        self.y = y
+        self.data_matrices = data_matrices
 
-        stat, pvalue, null_dist = perm_test(
+        stat, pvalue, null_dist = multi_perm_test(
             self.statistic,
-            x,
-            y,
+            data_matrices,
             reps=reps,
             workers=workers,
-            is_distsim=is_distsim,
-            perm_blocks=perm_blocks,
         )
         self.stat = stat
         self.pvalue = pvalue
         self.null_dist = null_dist
 
-        return IndependenceTestOutput(stat, pvalue)
+        return MultivariateTestOutput(stat, pvalue)
