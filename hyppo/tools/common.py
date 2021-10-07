@@ -164,6 +164,28 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
     return simx, simy
 
 
+def multi_compute_kern(*data_matrices, metric="gaussian", workers=1, **kwargs):
+    """
+    Kernel similarity matrices for the inputs.
+
+    Parameters
+    ----------
+    *data_matrices: Tuple[np.ndarray]
+    metric: str, callable, or None, default="gaussian"
+    workers: int, default=1
+    **kwargs
+        Arbitrary keyword arguments provided to
+        :func:`sklearn.metrics.pairwise.pairwise_kernels`
+        or a custom kernel function.
+
+    Returns
+    -------
+    sim_matrices: Tuple[np.ndaaray]
+        Similarity matrices based on the metric provided by the user.
+        Must be same shape as ''data_matrices''.
+    """
+
+
 def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
     """
     Distance matrices for the inputs.
@@ -435,6 +457,69 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
         Parallel(n_jobs=workers)(
             [
                 delayed(_perm_stat)(calc_stat, x, y, is_distsim, permuter)
+                for _ in range(reps)
+            ]
+        )
+    )
+    pvalue = (1 + (null_dist >= stat).sum()) / (1 + reps)
+
+    return stat, pvalue, null_dist
+
+
+def _multi_perm_stat(calc_stat, *data_matrices):
+    """Permute every entry and calculate test statistic"""
+    # permute each row
+    comb_matrix = np.concatenate(data_matrices, axis=1)
+    perm_matrix = np.zeros(np.shape(comb_matrix))
+    for n in range(comb_matrix.shape[0]):
+        order = np.random.permutation(comb_matrix.shape[1])
+        perm_matrix[n] = comb_matrix[n, order]
+    perm_data_matrices = tuple(np.split(perm_matrix, len(data_matrices), axis=1))
+
+    # calculate test statistic using permuted matrices
+    perm_stat = calc_stat(perm_data_matrices)
+
+    return perm_stat
+
+
+def multi_perm_test(calc_stat, *data_matrices, reps=1000, workers=1):
+    """
+    Permutation test for the p-value of a nonparametric test with multiple variables.
+
+    Parameters
+    ----------
+    calc_stat : callable
+        The method used to calculate the test statistic (must use hyppo API).
+    *data_matrices : Tuple[ndarray]
+        Input data matrices. All elements of the tuple must have the same
+        number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
+        etc., where `n` is the number of samples and `p` and `q` are the
+        number of dimensions. Alternatively, the elements can be distance
+        matrices, where the shapes must both be ``(n, n)``.
+    reps : int, default: 1000
+        The number of replications used to estimate the null distribution
+        when using the permutation test used to calculate the p-value.
+    workers : int, default: 1
+        The number of cores to parallelize the p-value computation over.
+        Supply ``-1`` to use all cores available to the Process.
+
+    Returns
+    -------
+    stat : float
+        The computed test statistic.
+    pvalue : float
+        The computed p-value.
+    null_dist : list of float
+        The approximated null distribution of shape ``(reps,)``.
+    """
+    # calculate observed test statistic
+    stat = calc_stat(data_matrices)
+
+    # calculate null distribution
+    null_dist = np.array(
+        Parallel(n_jobs=workers)(
+            [
+                delayed(_multi_perm_stat)(calc_stat, data_matrices)
                 for _ in range(reps)
             ]
         )
