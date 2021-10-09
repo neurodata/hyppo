@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from numpy.testing import assert_almost_equal, assert_approx_equal
+from numpy.testing import assert_almost_equal, assert_approx_equal, assert_equal
 
 from ...tools import linear, multimodal_independence, power, spiral
 from .. import MGC
@@ -63,3 +63,13 @@ class TestMGCTypeIError:
         )
 
         assert_almost_equal(est_power, 0.05, decimal=2)
+
+
+class TestMGCRedundancyWarning:
+    def test_redundancy_warning(self):
+        x = np.hstack((np.arange(0, 6), 5, 5, 5, 5))
+        y = np.hstack((np.arange(0, 6), 5, 5, 5, 5))
+        with pytest.warns(UserWarning) as record:
+            MGC().test(x, y)
+        assert_equal(len(record), 1)
+        assert_equal("Redundancies exist in" in record[0].message.args[0], True)
