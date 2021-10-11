@@ -4,6 +4,10 @@ from numpy.testing import assert_almost_equal, assert_array_less
 from ...tools import nonlinear_process
 from .. import MGCX
 
+import warnings
+
+warnings.filterwarnings("ignore", category=UserWarning)
+
 
 class TestMGCXStat:
     def test_multiple_lags(self):
