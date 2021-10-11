@@ -170,15 +170,10 @@ class MGC(IndependenceTest):
         """Check if there are redundant rows in input arrays x and y"""
         if x.shape[0] == 1:
             return
-        redundancy_check_dict = dict()
-        redundancy_flag = False
-        for i in zip(x, y):
-            if str(i) in redundancy_check_dict:
-                redundancy_flag = True
-                break
-            else:
-                redundancy_check_dict[str(i)] = 1
 
+        combined = np.vstack([x, y]).T
+        unique_rows = np.unique(combined, axis=0)
+        redundancy_flag = combined.shape[0] == unique_rows.shape[0]
         if redundancy_flag:
             warnings.warn("Redundant rows exist")
 
