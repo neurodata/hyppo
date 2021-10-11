@@ -72,4 +72,4 @@ class TestMGCRedundancyWarning:
         with pytest.warns(UserWarning) as record:
             MGC().test(x, y)
         assert_equal(len(record), 1)
-        assert_equal("Redundancies exist in" in record[0].message.args[0], True)
+        assert_equal("Redundant rows exist" in record[0].message.args[0], True)
