@@ -166,15 +166,12 @@ class MGC(IndependenceTest):
 
         return stat
 
-    def _check_redundancy(self, x, y):
+    def _check_redundancy(self, x, y, mgc_dict):
         """Check if there are redundant rows in input arrays x and y"""
         if x.shape[0] == 1:
             return
 
-        combined = [(x[i], y[i]) for i in range(x.shape[0])]
-        unique_rows = set(combined)
-        redundancy_flag = len(combined) == len(unique_rows)
-        if redundancy_flag:
+        if [len(x), len(y)] > mgc_dict["opt_scale"]:
             warnings.warn("Redundant rows exist")
 
     def test(self, x, y, reps=1000, workers=1):
@@ -240,7 +237,6 @@ class MGC(IndependenceTest):
             reps=reps,
         )
         x, y = check_input()
-        self._check_redundancy(x, y)
 
         x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
         self.is_distance = True
@@ -251,7 +247,7 @@ class MGC(IndependenceTest):
             warnings.filterwarnings("ignore")
             _, _, mgc_dict = multiscale_graphcorr(x, y, compute_distance=None, reps=0)
         mgc_dict.pop("null_dist")
-
+        self._check_redundancy(x, y, mgc_dict)
         stat, pvalue = super(MGC, self).test(x, y, reps, workers)
         self.mgc_dict = mgc_dict
 
