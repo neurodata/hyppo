@@ -171,9 +171,9 @@ class MGC(IndependenceTest):
         if x.shape[0] == 1:
             return
 
-        combined = np.vstack([x, y]).T
-        unique_rows = np.unique(combined, axis=0)
-        redundancy_flag = combined.shape[0] == unique_rows.shape[0]
+        combined = [(x[i], y[i]) for i in range(x.shape[0])]
+        unique_rows = set(combined)
+        redundancy_flag = len(combined) == len(unique_rows)
         if redundancy_flag:
             warnings.warn("Redundant rows exist")
 
