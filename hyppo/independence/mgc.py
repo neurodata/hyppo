@@ -171,12 +171,12 @@ class MGC(IndependenceTest):
 
         redundancy_check_dict = dict()
         redundancy_flag = False
-        for i, j in zip(x, y):
-            if (i, j) in redundancy_check_dict:
+        for i in zip(x, y):
+            if i in redundancy_check_dict:
                 redundancy_flag = True
                 break
             else:
-                redundancy_check_dict[(i, j)] = 1
+                redundancy_check_dict[i] = 1
 
         if redundancy_flag:
             warnings.warn("Redundant rows exist")
