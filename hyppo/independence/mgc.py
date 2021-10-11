@@ -168,16 +168,16 @@ class MGC(IndependenceTest):
 
     def _check_redundancy(self, x, y):
         """Check if there are redundant rows in input arrays x and y"""
-        if X.shape[0] == 1:
-          return
+        if x.shape[0] == 1:
+            return
         redundancy_check_dict = dict()
         redundancy_flag = False
         for i in zip(x, y):
-            if i in redundancy_check_dict:
+            if str(i) in redundancy_check_dict:
                 redundancy_flag = True
                 break
             else:
-                redundancy_check_dict[i] = 1
+                redundancy_check_dict[str(i)] = 1
 
         if redundancy_flag:
             warnings.warn("Redundant rows exist")
@@ -238,7 +238,7 @@ class MGC(IndependenceTest):
         >>> '%.1f, %.2f' % (stat, pvalue)
         '0.0, 1.00'
         """
-        
+
         check_input = _CheckInputs(
             x,
             y,
@@ -246,7 +246,7 @@ class MGC(IndependenceTest):
         )
         x, y = check_input()
         self._check_redundancy(x, y)
-        
+
         x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
         self.is_distance = True
 
