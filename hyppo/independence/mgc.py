@@ -167,19 +167,19 @@ class MGC(IndependenceTest):
         return stat
 
     def _check_redundancy(self, x, y):
-        """Check if there are redundancies in either x or y"""
-        u, c = np.unique(x, return_counts=True)
-        redundant_x = len(u[c > 1]) > 0
-        u, c = np.unique(y, return_counts=True)
-        redundant_y = len(u[c > 1]) > 0
-        if redundant_x and not redundant_y:
-            warnings.warn("Redundancies exist in x")
+        """Check if there are redundant rows in input arrays x and y"""
 
-        elif redundant_y and not redundant_x:
-            warnings.warn("Redundancies exist in y")
+        redundancy_check_dict = dict()
+        redundancy_flag = False
+        for i, j in zip(x, y):
+            if (i, j) in redundancy_check_dict:
+                redundancy_flag = True
+                break
+            else:
+                redundancy_check_dict[(i, j)] = 1
 
-        elif redundant_x and redundant_y:
-            warnings.warn("Redundancies exist in x and y")
+        if redundancy_flag:
+            warnings.warn("Redundant rows exist")
 
     def test(self, x, y, reps=1000, workers=1):
         r"""
