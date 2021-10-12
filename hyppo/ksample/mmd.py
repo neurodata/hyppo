@@ -119,7 +119,7 @@ class MMD(KSampleTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1, auto=True):
+    def test(self, x, y, reps=1000, workers=1, auto=True, random_state=None):
         r"""
         Calculates the MMD test statistic and p-value.
 
@@ -177,6 +177,6 @@ class MMD(KSampleTest):
             compute_distkern=self.compute_kernel,
             bias=self.bias,
             **self.kwargs
-        ).test(x, y, reps=reps, workers=workers, auto=auto)
+        ).test(x, y, reps=reps, workers=workers, auto=auto, random_state=random_state)
 
         return KSampleTestOutput(stat, pvalue)

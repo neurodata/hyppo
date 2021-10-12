@@ -33,6 +33,18 @@ class TestKSample:
 
         assert_almost_equal(stat, 0.0317, decimal=1)
 
+    @pytest.mark.parametrize(
+        "n, obs_stat, obs_pvalue, indep_test",
+        [(100, 8.24e-5, 0.001, "Dcorr")],
+    )
+    def test_rep(self, n, obs_stat, obs_pvalue, indep_test):
+        x, y = rot_ksamp("linear", n, 1, k=2)
+        stat, pvalue = KSample(indep_test).test(x, y)
+        stat2, pvalue2 = KSample(indep_test).test(x, y)
+
+        assert stat == stat2
+        assert pvalue == pvalue2
+
 
 class TestKSampleErrorWarn:
     """Tests errors and warnings derived from MGC."""
