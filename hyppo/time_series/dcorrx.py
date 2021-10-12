@@ -150,7 +150,7 @@ class DcorrX(TimeSeriesTest):
         >>> y = x
         >>> stat, pvalue, dcorrx_dict = DcorrX().test(x, y, reps = 100)
         >>> '%.1f, %.2f, %d' % (stat, pvalue, dcorrx_dict['opt_lag'])
-        '1.0, 0.01, 0'
+        '1.0, 0.04, 0'
         """
         check_input = _CheckInputs(
             x,
