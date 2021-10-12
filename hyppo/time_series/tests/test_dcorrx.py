@@ -33,6 +33,20 @@ class TestDcorrXStat:
         assert_almost_equal(pvalue, obs_pvalue, decimal=2)
         assert_almost_equal(opt_lag, obs_opt_lag, decimal=0)
 
+    @pytest.mark.parametrize("n", [100, 200])
+    @pytest.mark.parametrize("obs_pvalue", [1 / 1000])
+    @pytest.mark.parametrize("obs_opt_lag", [1])
+    def test_rep(self, n, obs_pvalue, obs_opt_lag):
+        x, y = cross_corr_ar(n, lag=1, phi=0.9, sigma=0.1)
+        _, pvalue, dcorrx_dict = DcorrX(max_lag=1).test(x, y, random_state=2)
+        opt_lag = dcorrx_dict["opt_lag"]
+
+        _, pvalue2, dcorr_dict2 = DcorrX(max_lag=1).test(x, y, random_state=2)
+        opt_lag2 = dcorrx_dict["opt_lag"]
+
+        assert pvalue == pvalue2
+        assert opt_lag == opt_lag2
+
     def test_lag0(self):
         # Dependent
         x, y = nonlinear_process(100, lag=1)

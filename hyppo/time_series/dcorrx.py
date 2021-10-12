@@ -110,7 +110,7 @@ class DcorrX(TimeSeriesTest):
 
         return stat, opt_lag
 
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the DcorrX test statistic and p-value.
 
@@ -159,6 +159,8 @@ class DcorrX(TimeSeriesTest):
         )
         x, y = check_input()
 
-        stat, pvalue, stat_list = super(DcorrX, self).test(x, y, reps, workers)
+        stat, pvalue, stat_list = super(DcorrX, self).test(
+            x, y, reps, workers, random_state
+        )
         dcorrx_dict = {"opt_lag": stat_list[1]}
         return DcorrXTestOutput(stat, pvalue, dcorrx_dict)

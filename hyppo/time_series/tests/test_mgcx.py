@@ -49,3 +49,25 @@ class TestMGCXStat:
         opt_scale = mgcx_dict["opt_scale"]
         assert_array_less(opt_scale[0], n)
         assert_array_less(opt_scale[1], n)
+
+    def test_rep_linear(self):
+        n = 10
+        x = np.arange(n)
+        y = x
+        mgcx_dict = MGCX().test(x, y, reps=100, random_state=2)[2]
+        opt_scale = mgcx_dict["opt_scale"]
+        mgcx_dict2 = MGCX().test(x, y, reps=100, random_state=2)[2]
+        opt_scale2 = mgcx_dict2["opt_scale"]
+
+        assert opt_scale == opt_scale2
+
+    def test_rep_nonlinear(self):
+        n = 7
+        x = np.arange(n)
+        y = x ** 2
+        mgcx_dict = MGCX().test(x, y, reps=100, random_state=2)[2]
+        opt_scale = mgcx_dict["opt_scale"]
+        mgcx_dict2 = MGCX().test(x, y, reps=100, random_state=2)[2]
+        opt_scale2 = mgcx_dict2["opt_scale"]
+
+        assert opt_scale == opt_scale2
