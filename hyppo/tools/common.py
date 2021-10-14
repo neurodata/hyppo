@@ -164,15 +164,57 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
     return simx, simy
 
 
+def _multi_check_kernmat(x):
+    """Check if x is a similarity matrix."""
+    if (
+        not np.allclose(x, x.T)
+        or not np.all((x.diagonal() == 1))
+    ):
+        raise ValueError(
+            "x must be a kernel similarity matrix, "
+            "{is_sym} symmetric and {one_diag} "
+            "ones along the diagonal".format(
+                is_sym="is not"
+                if not np.array_equal(x, x.T)
+                else "is",
+                one_diag="doesn't have"
+                if not np.all((x.diagonal() == 1))
+                else "has",
+            )
+        )
+
+
 def multi_compute_kern(*data_matrices, metric="gaussian", workers=1, **kwargs):
     """
-    Kernel similarity matrices for the inputs.
+    Kernel similarity matrices for the input matrices.
 
     Parameters
     ----------
     *data_matrices: Tuple[np.ndarray]
+        Input data matrices. All elements of the tuple must have the same
+        number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
+        etc., where `n` is the number of samples and `p` and `q` are the
+        number of dimensions. Alternatively, the elements can be distance
+        matrices, where the shapes must both be ``(n, n)``.
     metric: str, callable, or None, default="gaussian"
+        A function that computes the kernel similarity among the samples within each
+        data matrix.
+        Valid strings for ``metric`` are, as defined in
+        :func:`sklearn.metrics.pairwise.pairwise_kernels`,
+
+            [``"additive_chi2"``, ``"chi2"``, ``"linear"``, ``"poly"``,
+            ``"polynomial"``, ``"rbf"``,
+            ``"laplacian"``, ``"sigmoid"``, ``"cosine"``]
+
+        Note ``"rbf"`` and ``"gaussian"`` are the same metric.
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already similarity
+        matrices. To call a custom function, either create the similarity matrix
+        before-hand or create a function of the form :func:`metric(x, **kwargs)`
+        where ``x`` is the data matrix for which pairwise kernel similarity matrices are
+        calculated and kwargs are extra arguements to send to your custom function.
     workers: int, default=1
+        The number of cores to parallelize the p-value computation over.
+        Supply ``-1`` to use all cores available to the Process.
     **kwargs
         Arbitrary keyword arguments provided to
         :func:`sklearn.metrics.pairwise.pairwise_kernels`
@@ -184,6 +226,36 @@ def multi_compute_kern(*data_matrices, metric="gaussian", workers=1, **kwargs):
         Similarity matrices based on the metric provided by the user.
         Must be same shape as ''data_matrices''.
     """
+    if not metric:
+        metric = "precomputed"
+    if metric in ["gaussian", "rbf"]:
+        if "gamma" not in kwargs:
+            l2 = pairwise_distances(data_matrices[0], metric="l2", n_jobs=workers)
+            n = l2.shape[0]
+            # compute median of off diagonal elements
+            med = np.median(
+                np.lib.stride_tricks.as_strided(
+                    l2, (n - 1, n + 1), (l2.itemsize * (n + 1), l2.itemsize)
+                )[:, 1:]
+            )
+            # prevents division by zero when used on label vectors
+            med = med if med else 1
+            kwargs["gamma"] = 1.0 / (2 * (med ** 2))
+        metric = "rbf"
+    if callable(metric):
+        sim_mats = []
+        for mat in data_matrices:
+            sim_mat = metric(mat, **kwargs)
+            _multi_check_kernmat(sim_mat)
+            sim_mats.append(sim_mat)
+        sim_matrices = tuple(sim_mats)
+    else:
+        sim_mats = []
+        for mat in data_matrices:
+            sim_mat = pairwise_kernels(mat, metric=metric, n_jobs=workers, **kwargs)
+            sim_mats.append(sim_mat)
+        sim_matrices = tuple(sim_mats)
+    return sim_matrices
 
 
 def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
@@ -469,12 +541,12 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
 def _multi_perm_stat(calc_stat, *data_matrices):
     """Permute every entry and calculate test statistic"""
     # permute each row
-    comb_matrix = np.concatenate(data_matrices, axis=1)
+    comb_matrix = np.concatenate(data_matrices, axis=0)
     perm_matrix = np.zeros(np.shape(comb_matrix))
-    for n in range(comb_matrix.shape[0]):
-        order = np.random.permutation(comb_matrix.shape[1])
-        perm_matrix[n] = comb_matrix[n, order]
-    perm_data_matrices = tuple(np.split(perm_matrix, len(data_matrices), axis=1))
+    for j in range(comb_matrix.shape[1]):
+        order = np.random.permutation(comb_matrix.shape[0])
+        perm_matrix[:, j] = comb_matrix[order, j]
+    perm_data_matrices = tuple(np.split(perm_matrix, len(data_matrices), axis=0))
 
     # calculate test statistic using permuted matrices
     perm_stat = calc_stat(perm_data_matrices)
@@ -513,7 +585,7 @@ def multi_perm_test(calc_stat, *data_matrices, reps=1000, workers=1):
         The approximated null distribution of shape ``(reps,)``.
     """
     # calculate observed test statistic
-    stat = calc_stat(data_matrices)
+    stat = calc_stat(*data_matrices)
 
     # calculate null distribution
     null_dist = np.array(
