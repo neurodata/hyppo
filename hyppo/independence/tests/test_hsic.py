@@ -28,6 +28,15 @@ class TestHsicStat:
         assert_almost_equal(stat, 1.0, decimal=2)
         assert_almost_equal(pvalue, 1 / 1000, decimal=2)
 
+    @pytest.mark.parametrize("n", [100, 200])
+    def test_rep(self, n):
+        x, y = linear(n, 1)
+        stat, pvalue = Hsic().test(x, y, random_state=2)
+        stat2, pvalue2 = Hsic().test(x, y, random_state=2)
+
+        assert stat == stat2
+        assert pvalue == pvalue2
+
 
 class TestHsicTypeIError:
     def test_oned(self):

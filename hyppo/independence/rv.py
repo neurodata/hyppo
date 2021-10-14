@@ -81,7 +81,7 @@ class RV(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the RV test statistic and p-value.
 
@@ -118,4 +118,6 @@ class RV(IndependenceTest):
         check_input = _CheckInputs(x, y, reps=reps)
         x, y = check_input()
 
-        return super(RV, self).test(x, y, reps, workers, is_distsim=False)
+        return super(RV, self).test(
+            x, y, reps, workers, is_distsim=False, random_state=random_state
+        )

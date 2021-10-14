@@ -164,7 +164,7 @@ class MGC(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the MGC test statistic and p-value.
 
@@ -237,7 +237,9 @@ class MGC(IndependenceTest):
             _, _, mgc_dict = multiscale_graphcorr(x, y, compute_distance=None, reps=0)
         mgc_dict.pop("null_dist")
 
-        stat, pvalue = super(MGC, self).test(x, y, reps, workers)
+        stat, pvalue = super(MGC, self).test(
+            x, y, reps, workers, random_state=random_state
+        )
         self.mgc_dict = mgc_dict
 
         return MGCestOutput(stat, pvalue, mgc_dict)

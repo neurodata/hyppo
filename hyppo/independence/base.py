@@ -72,7 +72,16 @@ class IndependenceTest(ABC):
         """
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=1, is_distsim=True, perm_blocks=None):
+    def test(
+        self,
+        x,
+        y,
+        reps=1000,
+        workers=1,
+        is_distsim=True,
+        perm_blocks=None,
+        random_state=None,
+    ):
         r"""
         Calulates the independence test statistic and p-value.
 
@@ -127,6 +136,7 @@ class IndependenceTest(ABC):
             workers=workers,
             is_distsim=is_distsim,
             perm_blocks=perm_blocks,
+            random_state=random_state,
         )
         self.stat = stat
         self.pvalue = pvalue

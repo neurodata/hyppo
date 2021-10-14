@@ -6,6 +6,7 @@ from scipy.stats.distributions import chi2
 from scipy.stats.stats import _contains_nan
 from sklearn.metrics import pairwise_distances
 from sklearn.metrics.pairwise import pairwise_kernels
+from sklearn.utils import check_random_state
 
 
 def contains_nan(a):  # from scipy
@@ -362,10 +363,11 @@ class _PermGroups(object):
 
 
 # p-value computation
-def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None):
+def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None, random_state=None):
     """Permute the test statistic"""
+    rng = check_random_state(random_state)
     if not permuter:
-        order = np.random.permutation(y.shape[0])
+        order = rng.permutation(y.shape[0])
     else:
         order = permuter()
 
@@ -379,7 +381,16 @@ def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None):
     return perm_stat
 
 
-def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_blocks=None):
+def perm_test(
+    calc_stat,
+    x,
+    y,
+    reps=1000,
+    workers=1,
+    is_distsim=True,
+    perm_blocks=None,
+    random_state=None,
+):
     """
     Permutation test for the p-value of a nonparametric test.
 
@@ -416,7 +427,6 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
         test, samples within the same final leaf node are exchangeable
         and blocks of samples with a common parent node are exchangeable. If a
         column value is negative, the resulting block is unexchangeable.
-
     Returns
     -------
     stat : float
@@ -429,13 +439,22 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
     # calculate observed test statistic
     stat = calc_stat(x, y)
 
+    # make RandomState seeded array
+    if random_state is not None:
+        rng = check_random_state(random_state)
+        random_state = rng.randint(np.iinfo(np.int32).max, size=reps)
+
+    # make random array
+    else:
+        random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
+
     # calculate null distribution
     permuter = _PermGroups(y, perm_blocks)
     null_dist = np.array(
         Parallel(n_jobs=workers)(
             [
-                delayed(_perm_stat)(calc_stat, x, y, is_distsim, permuter)
-                for _ in range(reps)
+                delayed(_perm_stat)(calc_stat, x, y, is_distsim, permuter, rng)
+                for rng in random_state
             ]
         )
     )

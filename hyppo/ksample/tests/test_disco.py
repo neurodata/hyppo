@@ -20,6 +20,18 @@ class TestDISCO:
         assert_almost_equal(stat, obs_stat, decimal=1)
         assert_almost_equal(pvalue, obs_pvalue, decimal=1)
 
+    @pytest.mark.parametrize(
+        "n, obs_stat, obs_pvalue",
+        [(100, 2.675357570989666, 0.001)],
+    )
+    def test_rep(self, n, obs_stat, obs_pvalue):
+        x, y = rot_ksamp("linear", n, 1, k=2)
+        stat, pvalue = DISCO().test(x, y, auto=False, random_state=99)
+        stat2, pvalue2 = DISCO().test(x, y, auto=False, random_state=99)
+
+        assert stat == stat2
+        assert pvalue == pvalue2
+
 
 class TestDISCOErrorWarn:
     """Tests errors and warnings derived from MGC."""

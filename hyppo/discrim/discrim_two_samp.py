@@ -6,6 +6,7 @@ from scipy._lib._util import MapWrapper
 
 from ._utils import _CheckInputs
 from .base import DiscriminabilityTest
+from sklearn.utils import check_random_state
 
 
 class DiscrimTwoSampleTestOutput(NamedTuple):
@@ -70,7 +71,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
         return stat
 
-    def test(self, x1, x2, y, reps=1000, alt="neq", workers=-1):
+    def test(self, x1, x2, y, reps=1000, alt="neq", workers=-1, random_state=None):
         r"""
         Calculates the test statistic and p-value for a two sample test for
         discriminability.
@@ -137,8 +138,9 @@ class DiscrimTwoSample(DiscriminabilityTest):
         self.da = self.d1 - self.d2
 
         # use all cores to create function that parallelizes over number of reps
+        random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
         mapwrapper = MapWrapper(workers)
-        null_dist = np.array(list(mapwrapper(self._perm_stat, range(reps))))
+        null_dist = np.array(list(mapwrapper(self._perm_stat, random_state)))
 
         self.diff_null = np.asarray(calculate_diff_null(null_dist, reps))
 
@@ -159,17 +161,18 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
         return DiscrimTwoSampleTestOutput(self.d1, self.d2, self.pvalue)
 
-    def _get_convex_comb(self, x):  # pragma: no cover
+    def _get_convex_comb(self, x, random_state=None):  # pragma: no cover
         """Get random convex combination of input x."""
         n, _ = x.shape
 
-        q1 = np.random.choice(n, n)
-        q2 = np.random.choice(n, n)
-        lamda = np.random.uniform(size=n)
+        rng = check_random_state(random_state)
+        q1 = rng.choice(n, n)
+        q2 = rng.choice(n, n)
+        lamda = rng.uniform(size=n)
 
         return (lamda * (x[q1]).T + (1 - lamda) * (x[q2]).T).T
 
-    def _perm_stat(self, index):  # pragma: no cover
+    def _perm_stat(self, index, random_state=None):  # pragma: no cover
         r"""
         Helper function that is used to calculate parallel permuted test
         statistics.
@@ -184,8 +187,8 @@ class DiscrimTwoSample(DiscriminabilityTest):
         perm_stat1, perm_stat2 : float
             Test statistic for each value in the null distribution.
         """
-        permx1 = self._get_convex_comb(self.x1)
-        permx2 = self._get_convex_comb(self.x2)
+        permx1 = self._get_convex_comb(self.x1, random_state)
+        permx2 = self._get_convex_comb(self.x2, random_state)
 
         perm_stat1 = self.statistic(permx1, self.y)
         perm_stat2 = self.statistic(permx2, self.y)
