@@ -1,10 +1,19 @@
 from .base import MultivariateTest, MultivariateTestOutput
-from ..tools import compute_kern
+from ..tools import multi_compute_kern, multi_perm_test
+
+import numpy as np
 
 
 class dHsic(MultivariateTest):
-    def __init__(self, compute_kernel="Gaussian", bandwidth=1, bias=True, **kwargs):
-        pass
+    def __init__(self, compute_kernel="gaussian", bias=True, **kwargs):
+        self.compute_kernel = compute_kernel
+
+        self.is_kernel = False
+        if not compute_kernel:
+            self.is_kernel = True
+        self.bias = bias
+
+        MultivariateTest.__init__(self, compute_distance=None, **kwargs)
 
     def statistic(self, *data_matrices):
         """
@@ -20,7 +29,18 @@ class dHsic(MultivariateTest):
         stat : float
             The computed dHsic statistic.
         """
-        pass
+        kerns = multi_compute_kern(*data_matrices)
+        n = data_matrices[0].shape[0]
+        term1 = np.ones((n, n))
+        term2 = 1
+        term3 = 2 / n * np.ones((n, 1))
+        for j in range(len(kerns)):
+            term1 = np.multiply(term1, kerns[j])
+            term2 = 1 / (n * n) * term2 * np.sum(kerns[j])
+            term3 = 1 / n * np.multiply(term3, np.sum(kerns[j], axis=1))
+        stat = 1 / (n * n) * np.sum(term1) + term2 - np.sum(term3)
+
+        return stat
 
     def test(self, *data_matrices, reps=1000, workers=1, auto=True):
         """
@@ -44,8 +64,3 @@ class dHsic(MultivariateTest):
             The computed dHsic p-value.
         """
         pass
-
-
-def _dhsic(*data_matrices, kernel="Gaussian", bandwidth=1) -> float:
-    "Computes dHsic test statistic"
-    pass
