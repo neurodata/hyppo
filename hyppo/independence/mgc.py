@@ -7,11 +7,20 @@ from ..tools import compute_dist
 from ._utils import _CheckInputs
 from .base import IndependenceTest
 
+import numpy as np
+
 
 class MGCestOutput(NamedTuple):
     stat: float
     pvalue: float
     mgc_dict: dict
+
+
+def _check_redundancy(x, y):
+    """Check if there are redundant rows in input arrays x and y"""
+
+    if np.unique(x, axis=0).shape != x.shape or np.unique(y, axis=0).shape != y.shape:
+        warnings.warn("Redundant rows exist", RuntimeWarning)
 
 
 class MGC(IndependenceTest):
@@ -226,7 +235,7 @@ class MGC(IndependenceTest):
             reps=reps,
         )
         x, y = check_input()
-
+        _check_redundancy(x, y)
         x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
         self.is_distance = True
 
