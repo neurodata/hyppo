@@ -7,6 +7,8 @@ from ..tools import compute_dist
 from ._utils import _CheckInputs
 from .base import IndependenceTest
 
+import numpy as np
+
 
 class MGCestOutput(NamedTuple):
     stat: float
@@ -164,6 +166,15 @@ class MGC(IndependenceTest):
 
         return stat
 
+    def check_redundancy(self, x, y):
+        """Check if there are redundant rows in input arrays x and y"""
+
+        combined = np.vstack([np.hstack(x), np.hstack(y)]).T
+        unique_rows = np.unique(combined, axis=0)
+        redundancy_flag = combined.shape != unique_rows.shape
+        if redundancy_flag:
+            warnings.warn("Redundant rows exist")
+
     def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the MGC test statistic and p-value.
@@ -226,6 +237,8 @@ class MGC(IndependenceTest):
             reps=reps,
         )
         x, y = check_input()
+
+        self.check_redundancy(x, y)
 
         x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
         self.is_distance = True
