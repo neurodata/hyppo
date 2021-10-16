@@ -121,27 +121,27 @@ workflows:
           version: "3.8"
       - test-module:
           name: "independence"
-          module: "independence"
+          module: "independence/tests"
           requires:
             - "v3.8"
       - test-module:
           name: "ksample"
-          module: "ksample"
+          module: "ksample/tests"
           requires:
             - "v3.8"
       - test-module:
           name: "time_series"
-          module: "time_series"
+          module: "time_series/tests"
           requires:
             - "v3.8"
       - test-module:
           name: "discrim"
-          module: "discrim"
+          module: "discrim/tests"
           requires:
             - "v3.8"
       - test-module:
           name: "tools"
-          module: "tools"
+          module: "tools/tests"
           requires:
             - "v3.8"
       - deploy:
