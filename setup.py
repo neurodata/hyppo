@@ -61,7 +61,7 @@ setup(
     author_email=AUTHOR_EMAIL,
     install_requires=REQUIRED_PACKAGES,
     url=URL,
-    license="Apache 2.0",
+    license="MIT",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Science/Research",
