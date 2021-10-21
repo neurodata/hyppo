@@ -1,5 +1,6 @@
 from .base import MultivariateTest, MultivariateTestOutput
 from ..tools import multi_compute_kern, multi_perm_test
+from ._utils import _CheckInputs
 
 import numpy as np
 
@@ -63,4 +64,16 @@ class dHsic(MultivariateTest):
         pvalue : float
             The computed dHsic p-value.
         """
-        pass
+        check_input = _CheckInputs(
+            *data_matrices,
+            reps=reps,
+        )
+        data_matrices = check_input()
+
+        data_matrices = multi_compute_kern(*data_matrices, metric=self.compute_kernel, **self.kwargs)
+        self.is_kernel = True
+        stat, pvalue = multi_perm_test(dHsic().statistic, *data_matrices, reps, workers)
+        #stat, pvalue = super(dHsic, self).test(*data_matrices, reps, workers)
+
+        return MultivariateTestOutput(stat, pvalue)
+
