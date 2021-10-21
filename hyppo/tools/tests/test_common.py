@@ -27,6 +27,7 @@ from ..common import (
     contains_nan,
     convert_xy_float64,
     perm_test,
+    multi_compute_kern,
 )
 from ..indep_sim import linear
 
@@ -202,6 +203,51 @@ class TestHelper:
 
         distx, disty = compute_dist(x, y, metric=euclidean)
         kernx, kerny = compute_kern(x, y, metric=gaussian, gamma=gamma)
+
+        assert_array_equal(distx, distx_comp)
+        assert_array_equal(disty, disty_comp)
+        assert_array_equal(kernx, kernx_comp)
+        assert_array_equal(kerny, kerny_comp)
+
+    def test_multidiskern(self):
+        np.random.seed(123456789)
+        x, y = linear(100, 1)
+        distx = pairwise_distances(x, x)
+        disty = pairwise_distances(y, y)
+
+        l1 = pairwise_distances(x, metric="l1")
+        n = l1.shape[0]
+        med = np.median(
+            np.lib.stride_tricks.as_strided(
+                l1, (n - 1, n + 1), (l1.itemsize * (n + 1), l1.itemsize)
+            )[:, 1:]
+        )
+        gamma = 1.0 / (2 * (med ** 2))
+
+        kernx = pairwise_kernels(x, x, metric="rbf", gamma=gamma)
+        kerny = pairwise_kernels(y, y, metric="rbf", gamma=gamma)
+
+        distx, disty = compute_dist(distx, disty, metric=None)
+        kernx, kerny = multi_compute_kern(*(kernx, kerny), metric=None)
+        distx_comp, disty_comp = compute_dist(x, y)
+        kernx_comp, kerny_comp = multi_compute_kern(*(x, y))
+        kernx_comp1, kerny_comp1 = multi_compute_kern(*(x, y), metric="rbf")
+
+        assert_array_equal(distx, distx_comp)
+        assert_array_equal(disty, disty_comp)
+        assert_array_equal(kernx, kernx_comp)
+        assert_array_equal(kerny, kerny_comp)
+        assert_array_equal(kernx, kerny_comp1)
+        assert_array_equal(kerny, kerny_comp1)
+
+        def gaussian(x, **kwargs):
+            return pairwise_kernels(x, x, metric="rbf", **kwargs)
+
+        def euclidean(x, **kwargs):
+            return pairwise_distances(x, x, metric="euclidean", **kwargs)
+
+        distx, disty = compute_dist(x, y, metric=euclidean)
+        kernx, kerny = multi_compute_kern(*(x, y), metric=gaussian, gamma=gamma)
 
         assert_array_equal(distx, distx_comp)
         assert_array_equal(disty, disty_comp)
