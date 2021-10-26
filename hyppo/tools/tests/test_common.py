@@ -13,6 +13,7 @@ from sklearn.metrics import pairwise_distances
 from sklearn.metrics.pairwise import pairwise_kernels
 
 from ...independence import Dcorr
+from ...multivariate.dhsic import dHsic
 from ..common import (
     _check_distmat,
     _check_kernmat,
@@ -28,6 +29,7 @@ from ..common import (
     convert_xy_float64,
     perm_test,
     multi_compute_kern,
+    multi_perm_test,
 )
 from ..indep_sim import linear
 
@@ -264,6 +266,13 @@ class TestHelper:
         x = pairwise_distances(x, x)
         y = pairwise_distances(y, y)
         stat, pvalue, _ = perm_test(Dcorr().statistic, x, y, is_distsim=True)
+        assert_almost_equal(stat, 1.0, decimal=1)
+        assert_almost_equal(pvalue, 1 / 1000, decimal=1)
+
+    def test_multipermtest(self):
+        x, y = linear(100, 1)
+
+        stat, pvalue, _ = multi_perm_test(Dcorr().statistic, *(x, y))
         assert_almost_equal(stat, 1.0, decimal=1)
         assert_almost_equal(pvalue, 1 / 1000, decimal=1)
 

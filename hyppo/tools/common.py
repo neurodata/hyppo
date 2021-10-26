@@ -549,7 +549,7 @@ def _multi_perm_stat(calc_stat, *data_matrices):
     perm_data_matrices = tuple(np.split(perm_matrix, len(data_matrices), axis=0))
 
     # calculate test statistic using permuted matrices
-    perm_stat = calc_stat(perm_data_matrices)
+    perm_stat = calc_stat(*perm_data_matrices)
 
     return perm_stat
 
@@ -591,7 +591,7 @@ def multi_perm_test(calc_stat, *data_matrices, reps=1000, workers=1):
     null_dist = np.array(
         Parallel(n_jobs=workers)(
             [
-                delayed(_multi_perm_stat)(calc_stat, data_matrices)
+                delayed(_multi_perm_stat)(calc_stat, *data_matrices)
                 for _ in range(reps)
             ]
         )
