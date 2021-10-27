@@ -1,26 +1,18 @@
 import warnings
 from typing import NamedTuple
 
+import numpy as np
 from scipy.stats import multiscale_graphcorr
 
 from ..tools import compute_dist
 from ._utils import _CheckInputs
 from .base import IndependenceTest
 
-import numpy as np
-
 
 class MGCestOutput(NamedTuple):
     stat: float
     pvalue: float
     mgc_dict: dict
-
-
-def _check_redundancy(x, y):
-    """Check if there are redundant rows in input arrays x and y"""
-
-    if np.unique(x, axis=0).shape != x.shape or np.unique(y, axis=0).shape != y.shape:
-        warnings.warn("Redundant rows exist", RuntimeWarning)
 
 
 class MGC(IndependenceTest):
@@ -235,7 +227,23 @@ class MGC(IndependenceTest):
             reps=reps,
         )
         x, y = check_input()
-        _check_redundancy(x, y)
+
+        # add test for redundant rows
+        if (
+            np.unique(x, axis=0).shape[0] != x.shape[0]
+            or np.unique(y, axis=0).shape[0] != y.shape[0]
+        ):
+            warnings.warn(
+                "Input x has {} redundant rows, and input y has {} redundant "
+                "rows. MGC Map will be of shape ({}, {}).".format(
+                    x.shape[0] - np.unique(x, axis=0).shape[0],
+                    y.shape[0] - np.unique(y, axis=0).shape[0],
+                    np.unique(x, axis=0).shape[0],
+                    np.unique(y, axis=0).shape[0],
+                ),
+                RuntimeWarning,
+            )
+
         x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
         self.is_distance = True
 
