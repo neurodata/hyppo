@@ -84,7 +84,7 @@ class TestMGCTypeIError:
         assert_almost_equal(est_power, 0.05, decimal=2)
 
 
-class MGCErrorWarnings:
+class TestMGCErrorWarnings:
     def test_redundancy_warning(self):
         x = np.hstack((np.arange(0, 6), 5, 5, 5, 5, 5))
         y = np.hstack((np.arange(0, 6), 5, 5, 5, 5, 5))
