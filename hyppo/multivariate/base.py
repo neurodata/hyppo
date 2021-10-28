@@ -90,12 +90,6 @@ class MultivariateTest(ABC):
         workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
             Supply ``-1`` to use all cores available to the Process.
-        auto : bool, default: True
-            Automatically uses fast approximation when `n` and size of array
-            is greater than 20. If ``True``, and sample size is greater than 20, then
-            :class:`hyppo.tools.multi_chi2_approx` will be run. Parameters ``reps`` and
-            ``workers`` are irrelevant in this case. Otherwise,
-            :class:`hyppo.tools.multi_perm_test` will be run.
 
         Returns
         -------
@@ -108,7 +102,7 @@ class MultivariateTest(ABC):
 
         stat, pvalue, null_dist = multi_perm_test(
             self.statistic,
-            data_matrices,
+            *data_matrices,
             reps=reps,
             workers=workers,
         )

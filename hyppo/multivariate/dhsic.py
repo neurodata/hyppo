@@ -34,12 +34,12 @@ class dHsic(MultivariateTest):
         n = data_matrices[0].shape[0]
         term1 = np.ones((n, n))
         term2 = 1
-        term3 = 2 / n * np.ones((n, 1))
+        term3 = (2 / n) * np.ones((n, 1))
         for j in range(len(kerns)):
-            term1 = np.multiply(term1, kerns[j])
-            term2 = 1 / (n * n) * term2 * np.sum(kerns[j])
-            term3 = 1 / n * np.multiply(term3, np.sum(kerns[j], axis=1))
-        stat = 1 / (n * n) * np.sum(term1) + term2 - np.sum(term3)
+            term1 = term1 * kerns[j]
+            term2 = (1 / n ** 2) * term2 * np.sum(kerns[j])
+            term3 = (1 / n) * (term3 * np.sum(kerns[j], axis=1))
+        stat = (1 / n ** 2) * np.sum(term1) + term2 - np.sum(term3)
 
         return stat
 
@@ -72,8 +72,7 @@ class dHsic(MultivariateTest):
 
         data_matrices = multi_compute_kern(*data_matrices, metric=self.compute_kernel, **self.kwargs)
         self.is_kernel = True
-        stat, pvalue = multi_perm_test(dHsic().statistic, *data_matrices, reps, workers)
-        #stat, pvalue = super(dHsic, self).test(*data_matrices, reps, workers)
+        stat, pvalue = super(dHsic, self).test(*data_matrices, reps, workers)
 
         return MultivariateTestOutput(stat, pvalue)
 
