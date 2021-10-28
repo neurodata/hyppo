@@ -4,7 +4,8 @@ from numba import jit
 from ..tools import compute_dist
 from ._utils import _CheckInputs
 from .base import IndependenceTest
-
+from scipy.spatial.distance import cdist
+from scipy.stats import ks_2samp, cramervonmises_2samp
 
 class HHG(IndependenceTest):
     r"""
@@ -142,7 +143,7 @@ class HHG(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1, **kwargs):
+    def test(self, x, y, reps=1000, workers=1, pointer=None, unitest=None, **kwargs):
         r"""
         Calculates the HHG test statistic and p-value.
 
@@ -202,10 +203,20 @@ class HHG(IndependenceTest):
 
         #Fast HHG Test
         if self.is_fast:
-            zx, zy = point
+            if pointer == None:
+                #print('Fast HHG: No point specified. Assuming center of mass as target point.')
+                pointer = (np.mean(x, axis=0), np.mean(y, axis=0))
+                #print(pointer)
+            zx, zy = pointer
+            zx = np.array(zx).reshape(1, -1)
+            zy = np.array(zy).reshape(1, -1)
 
             if not (self.is_distance):
-                distx, disty = self._point_distance(x, y, zx, zy)
+                distx, disty = _point_distance(self, x, y, zx, zy)
+
+                #flatten distance collection for univariate tests
+                distx = distx.flatten()
+                disty = disty.flatten()
 
             if unitest == 'KS':
                 stat, pvalue = ks_2samp(distx, disty)
@@ -218,7 +229,7 @@ class HHG(IndependenceTest):
 
             stat, pvalue = super(HHG, self).test(x, y, reps, workers)
 
-        return IndependenceTestOutput(stat, pvalue)
+        return stat, pvalue
 
 @jit(nopython=True, cache=True)
 def _pearson_stat(distx, disty):  # pragma: no cover
@@ -245,11 +256,11 @@ def _pearson_stat(distx, disty):  # pragma: no cover
 
     return S
 
-def _point_distance(x, y, zx, zy, workers=1, **kwargs):
+def _point_distance(self, x, y, zx, zy, **kwargs):
         """
         Returns a collection of distances between sample points and chosen centre point
         """
-        distx = pairwise_distances(x, zx, metric=self.compute_distance, n_jobs=workers, **kwargs)
-        disty = pairwise_distances(y, zy, metric=self.compute_distance, n_jobs=workers, **kwargs)
+        distx = cdist(zx, x, metric=self.compute_distance, **kwargs)
+        disty = cdist(zy, y, metric=self.compute_distance, **kwargs)
         
         return distx, disty
