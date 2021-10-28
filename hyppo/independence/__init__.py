@@ -7,6 +7,7 @@ from .kmerf import KMERF
 from .max_margin import MaxMargin
 from .mgc import MGC
 from .rv import RV
+from .mean_embedding import MeanEmbeddingTest
 
 __all__ = [s for s in dir()]  # add imported tests to __all__
 
@@ -20,4 +21,5 @@ INDEP_TESTS = {
     "mgc": MGC,
     "kmerf": KMERF,
     "maxmargin": MaxMargin,
+    "mean_embedding": MeanEmbeddingTest
 }
