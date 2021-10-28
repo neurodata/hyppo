@@ -43,7 +43,7 @@ class dHsic(MultivariateTest):
 
         return stat
 
-    def test(self, *data_matrices, reps=1000, workers=1, auto=True):
+    def test(self, *data_matrices, reps=1000, workers=1):
         """
         Calculates the dHsic test statistic and p-value.
 
@@ -55,7 +55,6 @@ class dHsic(MultivariateTest):
             Number of replications used for permutation test.
         workers : int, default=1
             Number of cores.
-        auto : boolean, default=True
 
         Returns
         -------
