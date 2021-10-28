@@ -101,10 +101,11 @@ class HHG(IndependenceTest):
     .. footbibliography::
     """
 
-    def __init__(self, compute_distance="euclidean", **kwargs):
+    def __init__(self, compute_distance="euclidean", is_fast = "False", **kwargs):
         self.is_distance = False
         if not compute_distance:
             self.is_distance = True
+        self.is_fast = is_fast
         IndependenceTest.__init__(self, compute_distance=compute_distance, **kwargs)
 
     def statistic(self, x, y):
@@ -141,7 +142,7 @@ class HHG(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, **kwargs):
         r"""
         Calculates the HHG test statistic and p-value.
 
@@ -159,6 +160,12 @@ class HHG(IndependenceTest):
         workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
             Supply ``-1`` to use all cores available to the Process.
+        
+        *For Fast HHG*
+        point: ndarray or string
+            Single center point used for distance calculations from sample
+            points. If ndarray, must be in the form of [zx, zy], where zx
+            is a point in the space of x and zy is a point in the space of y.
 
         Returns
         -------
@@ -193,11 +200,25 @@ class HHG(IndependenceTest):
         check_input = _CheckInputs(x, y, reps=reps)
         x, y = check_input()
 
-        x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
-        self.is_distance = True
+        #Fast HHG Test
+        if self.is_fast:
+            zx, zy = point
 
-        return super(HHG, self).test(x, y, reps, workers)
+            if not (self.is_distance):
+                distx, disty = self._point_distance(x, y, zx, zy)
 
+            if unitest == 'KS':
+                stat, pvalue = ks_2samp(distx, disty)
+            elif unitest == 'CM':
+                stat, pvalue = cramervonmises_2samp(distx, disty)
+
+        else:
+            x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
+            self.is_distance = True
+
+            stat, pvalue = super(HHG, self).test(x, y, reps, workers)
+
+        return IndependenceTestOutput(stat, pvalue)
 
 @jit(nopython=True, cache=True)
 def _pearson_stat(distx, disty):  # pragma: no cover
@@ -223,3 +244,12 @@ def _pearson_stat(distx, disty):  # pragma: no cover
                     S[i, j] = ((n - 2) * (t12 * t21 - t11 * t22) ** 2) / denom
 
     return S
+
+def _point_distance(x, y, zx, zy, workers=1, **kwargs):
+        """
+        Returns a collection of distances between sample points and chosen centre point
+        """
+        distx = pairwise_distances(x, zx, metric=self.compute_distance, n_jobs=workers, **kwargs)
+        disty = pairwise_distances(y, zy, metric=self.compute_distance, n_jobs=workers, **kwargs)
+        
+        return distx, disty
