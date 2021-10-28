@@ -168,6 +168,12 @@ class HHG(IndependenceTest):
             points. If ndarray, must be in the form of [zx, zy], where zx
             is a point in the space of x and zy is a point in the space of y.
 
+        unitest: string
+            Dictates the specific univariate test used on the fast HHG test.
+            Options are:
+            'KS' = Kolmogorov-Smirnov
+            'CM' = Cramer von Mises
+
         Returns
         -------
         stat : float
