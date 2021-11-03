@@ -1,6 +1,6 @@
 import numpy as np
 from numba import jit
-
+from scipy.stats import chi2
 from warnings import warn
 from numpy import mean, transpose, cov, shape
 from numpy.linalg import linalg, LinAlgError, solve
@@ -17,10 +17,8 @@ class MeanEmbeddingTest(IndependenceTest):
         IndependenceTest.__init__(self, **kwargs)
 
     def statistic(self, x, y):
-        data_x = x
-        data_y = y
-        _, dimension = np.shape(data_x)
-        obs = vector_of_differences(dimension, data_x, data_y, self.number_of_frequencies, self.scale)
+        _, dimension = np.shape(x)
+        obs = vector_of_differences(dimension, x, y, self.number_of_frequencies, self.scale)
         return _mahalanobis_distance(obs, self.number_of_frequencies)
 
     def test(
@@ -34,14 +32,15 @@ class MeanEmbeddingTest(IndependenceTest):
         )
         x, y = check_input()
 
-        stat, pvalue = chi2_approx(self.statistic, x, y)
+        stat = self.statistic(x,y)
+        pvalue = chi2.sf(stat, self.number_of_frequencies)
         self.stat = stat
         self.pvalue = pvalue
 
         return IndependenceTestOutput(stat, pvalue)
 
 
-@jit(nopython=True, cache=True)
+#@jit(nopython=True, cache=True)
 def _mahalanobis_distance(difference, num_random_features):
     """
 
@@ -69,7 +68,7 @@ def _mahalanobis_distance(difference, num_random_features):
     #return chi2.sf(stat, num_random_features)
 
 
-@jit(nopython=True, cache=True)
+#@jit(nopython=True, cache=True)
 def get_estimate(data, point, scale):
     '''
 
@@ -82,7 +81,7 @@ def get_estimate(data, point, scale):
     return np.exp(-z2/2.0)
 
 
-@jit(nopython=True, cache=True)
+#@jit(nopython=True, cache=True)
 def get_difference(point, x, y, scale):
     '''
 
@@ -92,13 +91,14 @@ def get_difference(point, x, y, scale):
     return get_estimate(x, point, scale) - get_estimate(y, point, scale)
 
 
-@jit(nopython=True, cache=True)
+#@jit(nopython=True, cache=True)
 def vector_of_differences(dim, x, y, number_of_frequencies, scale):
     '''
 
     :param dim:
     :return: vector of difference b/w mean embeddings
     '''
+    np.random.seed(120)
     points = np.random.randn(number_of_frequencies, dim)
     a = [get_difference(point, x, y, scale) for point in points]
     return np.array(a).T

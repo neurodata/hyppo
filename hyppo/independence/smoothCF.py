@@ -1,8 +1,8 @@
-import numpy
+import numpy as np
 from numba import jit
 from warnings import warn
 from numpy import mean, transpose, cov, shape, concatenate, newaxis, exp, sin, cos
-
+from scipy.stats import chi2
 from numpy import mean, transpose, cov, shape
 from numpy.linalg import linalg, LinAlgError, solve
 from ..tools import check_perm_blocks_dim, chi2_approx, compute_dist
@@ -16,17 +16,15 @@ class SmoothCFTest(IndependenceTest):
 
         self.scale = scale
         self.num_random_features = num_random_features
-        _, dimension_x = numpy.shape(self.data_x)
-        _, dimension_y = numpy.shape(self.data_y)
-        assert dimension_x == dimension_y
-        self.random_frequencies = _gen_random(dimension_x, num_random_features)
         IndependenceTest.__init__(self, **kwargs)
 
     def statistic(self, x, y):
         """
         :return: test statistic for smoothCF
         """
-        difference = smooth_difference(self.random_frequencies, x, y)
+        _, dim_x = np.shape(x)
+        random_frequencies = _gen_random(dim_x, self.num_random_features)
+        difference = smooth_difference(random_frequencies, x, y)
         return mahalanobis_distance(difference, 2 * self.num_random_features)
 
     def test(
@@ -39,23 +37,24 @@ class SmoothCFTest(IndependenceTest):
         )
         x, y = check_input()
 
-        stat, pvalue = chi2_approx(self.statistic, x, y)
+        stat = self.statistic(x,y)
+        pvalue = chi2.sf(stat, 2*self.num_random_features)
         self.stat = stat
         self.pvalue = pvalue
 
         return IndependenceTestOutput(stat, pvalue)
 
 
-@jit(nopython=True, cache=True)
+#@jit(nopython=True, cache=True)
 def _gen_random(dimension, num_random_features):
     '''
     :param dimension: number of
     :return: normally distributed array
     '''
-    return numpy.random.randn(dimension, num_random_features)
+    return np.random.randn(dimension, num_random_features)
 
 
-@jit(nopython=True, cache=True)
+#@jit(nopython=True, cache=True)
 def smooth(data):
     '''
     :param data: X or Y
@@ -66,7 +65,7 @@ def smooth(data):
     return w[:, newaxis]
 
 
-@jit(nopython=True, cache=True)
+#@jit(nopython=True, cache=True)
 def smooth_cf(data, w, random_frequencies):
     """
     :param data: X or Y
@@ -83,7 +82,7 @@ def smooth_cf(data, w, random_frequencies):
     return arr
 
 
-@jit(nopython=True, cache=True)
+#@jit(nopython=True, cache=True)
 def smooth_difference(random_frequencies, X, Y):
     """
     :param random_frequencies: distributed normally
@@ -96,7 +95,7 @@ def smooth_difference(random_frequencies, X, Y):
     return smooth_cf(X, x_smooth, random_frequencies) - smooth_cf(Y, y_smooth, random_frequencies)
 
 
-@jit(nopython=True, cache=True)
+#@jit(nopython=True, cache=True)
 def mahalanobis_distance(difference, num_random_features):
     """
 
