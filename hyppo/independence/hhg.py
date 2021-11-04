@@ -223,15 +223,14 @@ class HHG(IndependenceTest):
             elif pointer == 'center':
                 pointer = (np.mean(x, axis=0), np.mean(y, axis=0))
             zx, zy = pointer
+
             zx = np.array(zx).reshape(1, -1)
             zy = np.array(zy).reshape(1, -1)
+            distx, disty = _point_distance(self, x, y, zx, zy)
 
-            if not (self.is_distance):
-                distx, disty = _point_distance(self, x, y, zx, zy)
-
-                #flatten distance collection for univariate tests
-                distx = distx.flatten()
-                disty = disty.flatten()
+            #flatten distance collection for univariate tests
+            distx = distx.flatten()
+            disty = disty.flatten()
 
             if unitest == 'KS':
                 stat, pvalue = ks_2samp(distx, disty)
