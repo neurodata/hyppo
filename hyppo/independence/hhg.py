@@ -129,21 +129,29 @@ class HHG(IndependenceTest):
         """
         distx = x
         disty = y
+        if not is_fast:
+            if not self.is_distance:
+                distx, disty = compute_dist(
+                    x, y, metric=self.compute_distance, **self.kwargs
+                )
 
-        if not self.is_distance:
-            distx, disty = compute_dist(
-                x, y, metric=self.compute_distance, **self.kwargs
-            )
+            S = _pearson_stat(distx, disty)
+            mask = np.ones(S.shape, dtype=bool)
+            np.fill_diagonal(mask, 0)
+            stat = np.sum(S[mask])
+            self.stat = stat
 
-        S = _pearson_stat(distx, disty)
-        mask = np.ones(S.shape, dtype=bool)
-        np.fill_diagonal(mask, 0)
-        stat = np.sum(S[mask])
-        self.stat = stat
+        else:
+            #Fast HHG
+            if not self.is_distance:
+                zx, zy = (x[np.random.choice(x.shape[0], 1, replace=False)],y[np.random.choice(y.shape[0], 1, replace=False)])
+                zx = np.array(zx).reshape(1, -1)
+                zy = np.array(zy).reshape(1, -1)
 
+            stat, pvalue = ks_2samp(distx, disty)
         return stat
 
-    def test(self, x, y, reps=1000, workers=1, pointer=None, unitest=None, **kwargs):
+    def test(self, x, y, reps=1000, workers=1, pointer='sample', unitest=None, **kwargs):
         r"""
         Calculates the HHG test statistic and p-value.
 
@@ -167,6 +175,7 @@ class HHG(IndependenceTest):
             Single center point used for distance calculations from sample
             points. If ndarray, must be in the form of [zx, zy], where zx
             is a point in the space of x and zy is a point in the space of y.
+            If string, then must be 'sample' or 'center'.
 
         unitest: string
             Dictates the specific univariate test used on the fast HHG test.
@@ -209,10 +218,10 @@ class HHG(IndependenceTest):
 
         #Fast HHG Test
         if self.is_fast:
-            if pointer == None:
-                #print('Fast HHG: No point specified. Assuming center of mass as target point.')
+            if pointer == 'sample':
+                pointer = (x[np.random.choice(x.shape[0], 1, replace=False)],y[np.random.choice(y.shape[0], 1, replace=False)])
+            elif pointer == 'center':
                 pointer = (np.mean(x, axis=0), np.mean(y, axis=0))
-                #print(pointer)
             zx, zy = pointer
             zx = np.array(zx).reshape(1, -1)
             zy = np.array(zy).reshape(1, -1)
