@@ -317,7 +317,9 @@ class _PermTree(object):
                 root.add_child(child_node)
                 self._add_levels(child_node, perm_blocks[idxs, 1:], indices[idxs])
 
-    def _permute_level(self, node, rng):
+    def _permute_level(self, node, rng=None):
+        if rng is None:
+            rng = np.random
         if len(node.get_children()) == 0:
             return [node.index]
         else:
@@ -333,7 +335,7 @@ class _PermTree(object):
                 indices[shuffle_children] = indices[rng.permutation(shuffle_children)]
             return np.concatenate(indices)
 
-    def permute_indices(self, rng):
+    def permute_indices(self, rng=None):
         return self._permute_level(self.root, rng)[self._index_order]
 
     def original_indices(self):
@@ -351,7 +353,9 @@ class _PermGroups(object):
         else:
             self.perm_tree = _PermTree(perm_blocks)
 
-    def __call__(self, rng):
+    def __call__(self, rng=None):
+        if rng is None:
+            rng = np.random
         if self.perm_tree is None:
             order = rng.permutation(self.n)
         else:
@@ -367,7 +371,7 @@ def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None, random_state=Non
     if permuter is None:
         order = rng.permutation(y.shape[0])
     else:
-        order = permuter()
+        order = permuter(rng)
 
     if is_distsim:
         permy = y[order][:, order]
