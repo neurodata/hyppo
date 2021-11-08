@@ -330,9 +330,7 @@ class _PermTree(object):
             shuffle_children = [i for i, label in enumerate(labels) if label >= 0]
             indices = np.asarray(indices)
             if len(shuffle_children) > 1:
-                indices[shuffle_children] = indices[
-                    rng.permutation(shuffle_children)
-                ]
+                indices[shuffle_children] = indices[rng.permutation(shuffle_children)]
             return np.concatenate(indices)
 
     def permute_indices(self, rng):
