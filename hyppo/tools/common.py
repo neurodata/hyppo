@@ -317,7 +317,7 @@ class _PermTree(object):
                 root.add_child(child_node)
                 self._add_levels(child_node, perm_blocks[idxs, 1:], indices[idxs])
 
-    def _permute_level(self, node):
+    def _permute_level(self, node, rng):
         if len(node.get_children()) == 0:
             return [node.index]
         else:
@@ -331,12 +331,12 @@ class _PermTree(object):
             indices = np.asarray(indices)
             if len(shuffle_children) > 1:
                 indices[shuffle_children] = indices[
-                    np.random.permutation(shuffle_children)
+                    rng.permutation(shuffle_children)
                 ]
             return np.concatenate(indices)
 
-    def permute_indices(self):
-        return self._permute_level(self.root)[self._index_order]
+    def permute_indices(self, rng):
+        return self._permute_level(self.root, rng)[self._index_order]
 
     def original_indices(self):
         return np.arange(len(self._index_order))
@@ -353,11 +353,11 @@ class _PermGroups(object):
         else:
             self.perm_tree = _PermTree(perm_blocks)
 
-    def __call__(self):
+    def __call__(self, rng):
         if self.perm_tree is None:
-            order = np.random.permutation(self.n)
+            order = rng.permutation(self.n)
         else:
-            order = self.perm_tree.permute_indices()
+            order = self.perm_tree.permute_indices(rng)
 
         return order
 
@@ -366,7 +366,7 @@ class _PermGroups(object):
 def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None, random_state=None):
     """Permute the test statistic"""
     rng = check_random_state(random_state)
-    if not permuter:
+    if permuter is None:
         order = rng.permutation(y.shape[0])
     else:
         order = permuter()
@@ -449,7 +449,10 @@ def perm_test(
         random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
 
     # calculate null distribution
-    permuter = _PermGroups(y, perm_blocks)
+    if perm_blocks is not None:
+        permuter = _PermGroups(y, perm_blocks)
+    else:
+        permuter = None
     null_dist = np.array(
         Parallel(n_jobs=workers)(
             [
