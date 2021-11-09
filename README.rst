@@ -14,8 +14,8 @@ hyppo
 .. |Netlify| image:: https://img.shields.io/netlify/e5242ebd-631e-4330-b43e-85e428dac66a
 .. _`Netlify`: https://app.netlify.com/sites/hyppo/deploys
 
-.. |PythonVersion| image:: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9%20%7C%203.10-blue
-.. _PythonVersion: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9%20%7C%203.10-blue
+.. |PythonVersion| image:: https://img.shields.io/pypi/pyversions/hyppo
+.. _PythonVersion: https://pypi.org/project/hyppo/
 
 .. |PyPi| image:: https://badge.fury.io/py/hyppo.svg
 .. _PyPi: https://pypi.org/project/hyppo/
