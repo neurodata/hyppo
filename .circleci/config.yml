@@ -13,7 +13,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v2-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v3-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
@@ -22,7 +22,7 @@ jobs:
             pip install --upgrade pip
             pip install -r dev-requirements.txt
       - save_cache:
-          key: v2-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v3-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
           paths:
             - "venv"
       - run:
