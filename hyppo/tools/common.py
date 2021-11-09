@@ -451,10 +451,8 @@ def perm_test(
         random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
 
     # calculate null distribution
-    if perm_blocks is not None:
-        permuter = _PermGroups(y, perm_blocks)
-    else:
-        permuter = None
+    permuter = _PermGroups(y, perm_blocks)
+
     null_dist = np.array(
         Parallel(n_jobs=workers)(
             [
