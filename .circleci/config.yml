@@ -122,9 +122,6 @@ workflows:
       - build:
           name: "v3.9"
           version: "3.9"
-      - build:
-          name: "v3.10"
-          version: "3.10"
       - test-module:
           name: "independence"
           module: "independence"
