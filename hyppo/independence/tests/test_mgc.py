@@ -16,11 +16,11 @@ class TestMGCStat(object):
     """Test validity of MGC test statistic"""
 
     @pytest.mark.parametrize(
-        "sim, obs_stat, obs_pvalue",
-        [
+        "sim",
+        (
             linear,  # test linear simulation
             spiral,  # test spiral simulation
-        ],
+        ),
     )
     def test_oned(self, sim):
         np.random.seed(12345678)
@@ -35,13 +35,13 @@ class TestMGCStat(object):
         assert_approx_equal(pvalue_hyppo, pvalue_scipy, significant=3)
 
     @pytest.mark.parametrize(
-        "sim, obs_stat, obs_pvalue",
+        "sim",
         [
             linear,  # test linear simulation
             spiral,  # test spiral simulation
         ],
     )
-    def test_fived(self, sim, obs_stat, obs_pvalue):
+    def test_fived(self, sim):
         np.random.seed(12345678)
 
         # generate x and y
@@ -54,12 +54,13 @@ class TestMGCStat(object):
         assert_approx_equal(pvalue_hyppo, pvalue_scipy, significant=3)
 
     @pytest.mark.parametrize(
-        "sim, obs_stat, obs_pvalue",
+        "sim",
         [
-            (linear, 0.97, 1 / 1000),  # test linear simulation
+            linear,  # test linear simulation
+            spiral,  # test spiral simulation
         ],
     )
-    def test_rep(self, sim, obs_stat, obs_pvalue):
+    def test_rep(self, sim):
         x, y = sim(n=100, p=5)
         stat1, pvalue1, _ = MGC().test(x, y, random_state=2)
         stat2, pvalue2, _ = MGC().test(x, y, random_state=2)
