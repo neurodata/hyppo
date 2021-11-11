@@ -64,8 +64,8 @@ class _CheckInputs:
         for mat in self.data_matrices:
             n = mat.shape[0]
             samples.append(n)
-        result = all(sample <= 3 for sample in samples)
-        if result is False:
+        result = any(sample <= 2 for sample in samples)
+        if result is True:
             raise ValueError(
                 "Number of samples is too low. Must be at least 3."
             )

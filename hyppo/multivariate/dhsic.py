@@ -39,11 +39,11 @@ class Dhsic(MultivariateTest):
         matrices. To call a custom function, either create the similarity matrix
         before-hand or create a function of the form :func:`metric(x, **kwargs)`
         where ``x`` is the data matrix for which pairwise kernel similarity matrices are
-        calculated and kwargs are extra arguements to send to your custom function.
+        calculated and kwargs are extra arguments to send to your custom function.
     bias : bool, default: False
         Whether or not to use the biased or unbiased test statistics.
     **kwargs
-        Arbitrary keyword arguments for ``compute_kernel``.
+        Arbitrary keyword arguments for ``multi_compute_kern``.
 
     Notes
     -----
@@ -62,10 +62,6 @@ class Dhsic(MultivariateTest):
     """
     def __init__(self, compute_kernel="gaussian", bias=True, **kwargs):
         self.compute_kernel = compute_kernel
-
-        self.is_kernel = False
-        if not compute_kernel:
-            self.is_kernel = True
         self.bias = bias
 
         MultivariateTest.__init__(self, compute_distance=None, **kwargs)
@@ -88,17 +84,19 @@ class Dhsic(MultivariateTest):
         stat : float
             The computed Dhsic statistic.
         """
-        kerns = multi_compute_kern(*data_matrices)
-        n = data_matrices[0].shape[0]
-        print(n)
+        kerns = multi_compute_kern(*data_matrices, metric=self.compute_kernel, **self.kwargs)
+
+        n = kerns[0].shape[0]
         term1 = np.ones((n, n))
         term2 = 1
-        term3 = (2 / n) * np.ones((n, 1))
+        term3 = (2 / n) * np.ones((n, ))
         for j in range(len(kerns)):
             term1 = np.multiply(term1, kerns[j])
             term2 = (1 / n ** 2) * term2 * np.sum(kerns[j])
-            term3 = (1 / n) * np.multiply(term3, kerns[j].sum(axis=0))
-        stat = (1 / n ** 2) * np.sum(term1) + term2 #- np.sum(term3)
+            term3 = (1 / n) * np.multiply(term3, np.sum(kerns[j], axis=1))
+
+        stat = (1 / n ** 2) * np.sum(term1) + term2 - np.sum(term3)
+        self.stat = stat
 
         return stat
 
@@ -134,9 +132,7 @@ class Dhsic(MultivariateTest):
         )
         data_matrices = check_input()
 
-        data_matrices = multi_compute_kern(*data_matrices, metric=self.compute_kernel, **self.kwargs)
-        self.is_kernel = True
-        stat, pvalue = super(Dhsic, self).test(*data_matrices, reps, workers)
+        stat, pvalue = super(Dhsic, self).test(*data_matrices, reps=reps, workers=workers)
 
         return MultivariateTestOutput(stat, pvalue)
 

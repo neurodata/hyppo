@@ -44,7 +44,7 @@ class MultivariateTest(ABC):
 
         Note ``"rbf"`` and ``"gaussian"`` are the same metric.
     **kwargs
-        Arbitrary keyword arguments for ``compute_distkern``.
+        Arbitrary keyword arguments for ``multi_compute_kern``.
     """
 
     def __init__(self, compute_distance=None, **kwargs):
