@@ -164,6 +164,28 @@ print(stat, pvalue)
 # Any addition, if the bias variant of the test statistic is required, then the ``bias``
 # parameter can be set to ``True``. In general, we do not recommend doing this.
 # Otherwise, these tests runs like :ref:`any other test<general indep>`.
+########################################################################################
+# Smooth Characteristic Function Test
+#
+# The Smooth Characteristic Function Test, or Smooth CF, is a form of non-parametric two-sample
+# tests. The Smooth CF test utilizes smoothed empirical characteristic functions to represent
+# two data distributions.
+#
+#
+#
+#
+#
+#
+#
+#
+#
+########################################################################################
+# Mean Embedding Test
+#
+# The mean embedding 
+#
+#
+#
 #
 # .. _[1]: https://link.springer.com/article/10.1007/s10182-020-00378-1
 # .. _[2]: https://arxiv.org/abs/1910.08883

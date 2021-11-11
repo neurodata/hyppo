@@ -1,22 +1,22 @@
 import numpy as np
 from numba import jit
 from warnings import warn
-from numpy import mean, transpose, cov, shape, concatenate, newaxis, exp, sin, cos
+from numpy import concatenate, newaxis, exp, sin, cos
 from scipy.stats import chi2
 from numpy import mean, transpose, cov, shape
 from numpy.linalg import linalg, LinAlgError, solve
-from ..tools import check_perm_blocks_dim, chi2_approx, compute_dist
 from ._utils import _CheckInputs
-from .base import IndependenceTest, IndependenceTestOutput
-from .base import IndependenceTest
+from hyppo.ksample.base import KSampleTest, KSampleTestOutput
 
 
-class SmoothCFTest(IndependenceTest):
-    def __init__(self, scale=2.0, num_random_features=5, **kwargs):
+class SmoothCFTest(KSampleTest):
+    def __init__(self, compute_distance=False, bias=False, scale=2.0, num_random_features=5, **kwargs):
 
         self.scale = scale
         self.num_random_features = num_random_features
-        IndependenceTest.__init__(self, **kwargs)
+        KSampleTest.__init__(
+            self, compute_distance=compute_distance, bias=bias, **kwargs
+        )
 
     def statistic(self, x, y):
         """
@@ -27,13 +27,10 @@ class SmoothCFTest(IndependenceTest):
         difference = smooth_difference(random_frequencies, x, y)
         return mahalanobis_distance(difference, 2 * self.num_random_features)
 
-    def test(
-            self, x, y, reps=1000, workers=1, auto=True, perm_blocks=None, random_state=None
-    ):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         check_input = _CheckInputs(
-            x,
-            y,
-            reps=reps,
+            inputs=[x,y],
+            indep_test=None
         )
         x, y = check_input()
 
@@ -42,7 +39,7 @@ class SmoothCFTest(IndependenceTest):
         self.stat = stat
         self.pvalue = pvalue
 
-        return IndependenceTestOutput(stat, pvalue)
+        return KSampleTestOutput(stat, pvalue)
 
 
 #@jit(nopython=True, cache=True)

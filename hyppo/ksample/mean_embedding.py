@@ -4,31 +4,26 @@ from scipy.stats import chi2
 from warnings import warn
 from numpy import mean, transpose, cov, shape
 from numpy.linalg import linalg, LinAlgError, solve
-from ..tools import check_perm_blocks_dim, chi2_approx, compute_dist
 from ._utils import _CheckInputs
-from .base import IndependenceTest, IndependenceTestOutput
-from .base import IndependenceTest
+from .base import KSampleTestOutput, KSampleTest
 
 
-class MeanEmbeddingTest(IndependenceTest):
-    def __init__(self, scale=1, number_of_random_frequencies=5, **kwargs):
+class MeanEmbeddingTest(KSampleTest):
+    def __init__(self, scale=1, compute_distance=False, bias=False, number_of_random_frequencies=5, **kwargs):
         self.number_of_frequencies = number_of_random_frequencies
         self.scale = scale
-        IndependenceTest.__init__(self, **kwargs)
-
+        KSampleTest.__init__(
+            self, compute_distance=compute_distance, bias=bias, **kwargs
+        )
     def statistic(self, x, y):
         _, dimension = np.shape(x)
         obs = vector_of_differences(dimension, x, y, self.number_of_frequencies, self.scale)
         return _mahalanobis_distance(obs, self.number_of_frequencies)
 
-    def test(
-            self, x, y, reps=1000, workers=1, auto=True, perm_blocks=None, random_state=None
-    ):
-
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         check_input = _CheckInputs(
-            x,
-            y,
-            reps=reps,
+            inputs=[x,y],
+            indep_test=None
         )
         x, y = check_input()
 
@@ -37,7 +32,7 @@ class MeanEmbeddingTest(IndependenceTest):
         self.stat = stat
         self.pvalue = pvalue
 
-        return IndependenceTestOutput(stat, pvalue)
+        return KSampleTestOutput(stat, pvalue)
 
 
 #@jit(nopython=True, cache=True)
