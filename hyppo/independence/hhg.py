@@ -102,7 +102,7 @@ class HHG(IndependenceTest):
     .. footbibliography::
     """
 
-    def __init__(self, compute_distance="euclidean", is_fast = "False", **kwargs):
+    def __init__(self, compute_distance="euclidean", is_fast = False, **kwargs):
         self.is_distance = False
         if not compute_distance:
             self.is_distance = True
@@ -129,12 +129,11 @@ class HHG(IndependenceTest):
         """
         distx = x
         disty = y
-        if not is_fast:
+        if not self.is_fast:
             if not self.is_distance:
                 distx, disty = compute_dist(
                     x, y, metric=self.compute_distance, **self.kwargs
                 )
-
             S = _pearson_stat(distx, disty)
             mask = np.ones(S.shape, dtype=bool)
             np.fill_diagonal(mask, 0)
@@ -142,13 +141,18 @@ class HHG(IndependenceTest):
             self.stat = stat
 
         else:
-            #Fast HHG
+            #Fast HHG - assumes center point is random sample
             if not self.is_distance:
-                zx, zy = (x[np.random.choice(x.shape[0], 1, replace=False)],y[np.random.choice(y.shape[0], 1, replace=False)])
+                zx, zy = (np.mean(x, axis=0), np.mean(y, axis=0))
+                #zx, zy = (x[np.random.choice(x.shape[0], 1, replace=False)],y[np.random.choice(y.shape[0], 1, replace=False)])
                 zx = np.array(zx).reshape(1, -1)
                 zy = np.array(zy).reshape(1, -1)
-
+                distx, disty = _point_distance(self, x, y, zx, zy)
+                distx = distx.flatten()
+                disty = disty.flatten()
             stat, pvalue = ks_2samp(distx, disty)
+            self.stat = stat
+
         return stat
 
     def test(self, x, y, reps=1000, workers=1, pointer='sample', unitest=None, **kwargs):
