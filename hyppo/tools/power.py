@@ -4,11 +4,13 @@ import numpy as np
 
 from ..independence import INDEP_TESTS
 from ..ksample import KSAMP_TESTS, KSample, k_sample_transform
+from ..multivariate import MULTI_TESTS
 from .indep_sim import indep_sim
 from .ksample_sim import gaussian_3samp, rot_ksamp
 
 _ALL_SIMS = {
     "indep": indep_sim,
+    "multi": indep_sim,
     "ksamp": rot_ksamp,
     "gauss": gaussian_3samp,
 }
@@ -16,6 +18,7 @@ _ALL_SIMS = {
 _NONPERM_TESTS = {
     "dcorr": "fast",
     "hsic": "fast",
+    "dhsic": "fast",
     "energy": "fast",
     "mmd": "fast",
     "disco": "fast",
@@ -65,9 +68,24 @@ def _ksamp_perm_stat(test, sim_type, **kwargs):
     return obs_stat, perm_stat
 
 
+def _multi_perm_stat(test, sim_type, **kwargs):
+    """
+    Generates null and alternate distributions for the multivariate independence test.
+    """
+    x, y = _sim_gen(sim_type=sim_type, **kwargs)
+    obs_stat = test.statistic(*(x, y))
+    [permx, permy] = np.split(np.random.permutation(np.append(x, y)), 2)
+    permx = permx.reshape(permx.shape[0], 1)
+    permy = permy.reshape(permy.shape[0], 1)
+    perm_stat = test.statistic(*(permx, permy))
+
+    return obs_stat, perm_stat
+
+
 _PERM_STATS = {
     "indep": _indep_perm_stat,
     "ksamp": _ksamp_perm_stat,
+    "multi": _multi_perm_stat,
 }
 
 
@@ -140,10 +158,12 @@ def power(test, sim_type, sim=None, n=100, alpha=0.05, reps=1000, auto=False, **
             test = INDEP_TESTS[test_name]()
         elif test_name in KSAMP_TESTS.keys():
             test = KSAMP_TESTS[test_name]()
+        elif test_name in MULTI_TESTS.keys():
+            test = MULTI_TESTS[test_name]()
         else:
             raise ValueError(
                 "Test {} not in {}".format(
-                    test_name, list(INDEP_TESTS.keys()) + list(KSAMP_TESTS.keys())
+                    test_name, list(INDEP_TESTS.keys()) + list(KSAMP_TESTS.keys()) + list(MULTI_TESTS.keys())
                 )
             )
 
@@ -151,6 +171,8 @@ def power(test, sim_type, sim=None, n=100, alpha=0.05, reps=1000, auto=False, **
     perm_type = "indep"
     if sim_type in ["ksamp", "gauss"]:
         perm_type = "ksamp"
+    if sim_type == "multi":
+        perm_type = "multi"
     if sim_type != "gauss":
         kwargs["sim"] = sim
 
