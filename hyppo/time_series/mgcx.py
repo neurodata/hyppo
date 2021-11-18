@@ -116,7 +116,7 @@ class MGCX(TimeSeriesTest):
 
         return stat, opt_lag, opt_scale
 
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the MGCX test statistic and p-value.
 
@@ -170,7 +170,7 @@ class MGCX(TimeSeriesTest):
         >>> stat, pvalue, mgcx_dict = MGCX().test(x, y, reps = 100)
         >>> '%.1f, %.2f, [%d, %d]' % (stat, pvalue, mgcx_dict['opt_scale'][0],
         ... mgcx_dict['opt_scale'][1])
-        '1.0, 0.03, [7, 7]'
+        '1.0, 0.05, [7, 7]'
 
         The increasing the max_lag can increase the ability to identify dependence.
 
@@ -190,7 +190,9 @@ class MGCX(TimeSeriesTest):
         )
         x, y = check_input()
 
-        stat, pvalue, stat_list = super(MGCX, self).test(x, y, reps, workers)
+        stat, pvalue, stat_list = super(MGCX, self).test(
+            x, y, reps, workers, random_state
+        )
         mgcx_dict = {"opt_lag": stat_list[1], "opt_scale": stat_list[2]}
 
         return MGCXTestOutput(stat, pvalue, mgcx_dict)

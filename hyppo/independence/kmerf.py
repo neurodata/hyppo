@@ -137,7 +137,7 @@ class KMERF(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the KMERF test statistic and p-value.
 
@@ -179,7 +179,9 @@ class KMERF(IndependenceTest):
         check_input = _CheckInputs(x, y, reps=reps)
         x, y = check_input()
 
-        stat, pvalue = super(KMERF, self).test(x, y, reps, workers, is_distsim=False)
+        stat, pvalue = super(KMERF, self).test(
+            x, y, reps, workers, is_distsim=False, random_state=random_state
+        )
         kmerf_dict = {"feat_importance": self.importances}
 
         return KMERFTestOutput(stat, pvalue, kmerf_dict)

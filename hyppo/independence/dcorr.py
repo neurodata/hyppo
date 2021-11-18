@@ -151,7 +151,9 @@ class Dcorr(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1, auto=True, perm_blocks=None):
+    def test(
+        self, x, y, reps=1000, workers=1, auto=True, perm_blocks=None, random_state=None
+    ):
         r"""
         Calculates the Dcorr test statistic and p-value.
 
@@ -250,6 +252,7 @@ class Dcorr(IndependenceTest):
                 workers,
                 perm_blocks=perm_blocks,
                 is_distsim=self.is_distance,
+                random_state=random_state,
             )
 
         return IndependenceTestOutput(stat, pvalue)

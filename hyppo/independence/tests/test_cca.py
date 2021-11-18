@@ -29,6 +29,15 @@ class TestCCAStat:
         assert_almost_equal(stat, obs_stat, decimal=1)
         assert_almost_equal(pvalue, obs_pvalue, decimal=1)
 
+    @pytest.mark.parametrize("n", [1000, 10000])
+    def test_rep(self, n):
+        x, y = joint_normal(n, 3)
+        stat, pvalue = CCA().test(x, y, random_state=2)
+        stat2, pvalue2 = CCA().test(x, y, random_state=2)
+
+        assert stat == stat2
+        assert pvalue == pvalue2
+
 
 class TestCCATypeIError:
     def test_oned(self):

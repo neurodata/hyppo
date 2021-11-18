@@ -129,7 +129,7 @@ class DISCO(KSampleTest):
 
         return stat
 
-    def test(self, *args, reps=1000, workers=1, auto=True):
+    def test(self, *args, reps=1000, workers=1, auto=True, random_state=None):
         r"""
         Calculates the DISCO test statistic and p-value.
 
@@ -195,6 +195,8 @@ class DISCO(KSampleTest):
             compute_distkern=self.compute_distance,
             bias=self.bias,
             **self.kwargs
-        ).test(*inputs, reps=reps, workers=workers, auto=auto)
+        ).test(
+            *inputs, reps=reps, workers=workers, auto=auto, random_state=random_state
+        )
 
         return KSampleTestOutput(stat, pvalue)

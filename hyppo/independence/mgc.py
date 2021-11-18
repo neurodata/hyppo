@@ -1,6 +1,7 @@
 import warnings
 from typing import NamedTuple
 
+import numpy as np
 from scipy.stats import multiscale_graphcorr
 
 from ..tools import compute_dist
@@ -164,7 +165,7 @@ class MGC(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the MGC test statistic and p-value.
 
@@ -227,6 +228,22 @@ class MGC(IndependenceTest):
         )
         x, y = check_input()
 
+        # add test for redundant rows
+        if (
+            np.unique(x, axis=0).shape[0] != x.shape[0]
+            or np.unique(y, axis=0).shape[0] != y.shape[0]
+        ):
+            warnings.warn(
+                "Input x has {} redundant rows, and input y has {} redundant "
+                "rows. MGC Map will be of shape ({}, {}).".format(
+                    x.shape[0] - np.unique(x, axis=0).shape[0],
+                    y.shape[0] - np.unique(y, axis=0).shape[0],
+                    np.unique(x, axis=0).shape[0],
+                    np.unique(y, axis=0).shape[0],
+                ),
+                RuntimeWarning,
+            )
+
         x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
         self.is_distance = True
 
@@ -237,7 +254,9 @@ class MGC(IndependenceTest):
             _, _, mgc_dict = multiscale_graphcorr(x, y, compute_distance=None, reps=0)
         mgc_dict.pop("null_dist")
 
-        stat, pvalue = super(MGC, self).test(x, y, reps, workers)
+        stat, pvalue = super(MGC, self).test(
+            x, y, reps, workers, random_state=random_state
+        )
         self.mgc_dict = mgc_dict
 
         return MGCestOutput(stat, pvalue, mgc_dict)
