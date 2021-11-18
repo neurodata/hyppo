@@ -169,20 +169,69 @@ print(stat, pvalue)
 #
 # The Smooth Characteristic Function Test, or Smooth CF, is a form of non-parametric two-sample
 # tests. The Smooth CF test utilizes smoothed empirical characteristic functions to represent
-# two data distributions.
+# two data distributions. Characteristic functions completely define the probability distribution
+# of a random variable. In hypothesis testing, it is useful to estimate characteristic functions
+# for given data. However, empirical characteristic functions can be very complex and therefore
+# expensive to compute. The smooth characteristic function can serve as a heuristic in place of
+# the empirical function which is much faster w.r.t. computation times.
 #
+# .. note::
 #
+#   The Smooth Characteristic Function Test can only be used in two-sample testing cases.
 #
+# .. note::
 #
+#   :Pros: - Very fast computation time
+#          - Faster than current, state-of-the-art quadratic-time kernel-based tests
+#   :Cons: - Only supports two-sample testing
 #
-#
+import numpy as np
+from hyppo.ksample import SmoothCFTest
+
+
+num_samples = 500
+dimensions = 10
+X = np.random.randn(num_samples, dimensions)
+Y = np.random.randn(num_samples, dimensions)
+print(X.shape, Y.shape)
+
+smoothCF = SmoothCFTest()
+p_val = smoothCF.test(X, Y)
 #
 #
 #
 ########################################################################################
 # Mean Embedding Test
+# --------------------------------------------
+# The mean embedding test is another non-parametric two-sample statistical test. This test
+# is based on analytic mean embeddings of data distributions in a reproducing kernel hilbert
+# space (RKHS). Hilbert spaces allow the representation of functions as points; thus, if
+# mean embeddings can be determined for two data distributions then the distance between
+# these two distributions in the hilbert space can be determined. In other words, the RKHS
+# allows the mapping of probability measures into a finite dimensional Euclidean space.
 #
-# The mean embedding 
+# .. note::
+#
+#   The Smooth Characteristic Function Test can only be used in two-sample testing cases.
+#
+# .. note::
+#
+#   :Pros: - Very fast computation time
+#          - Faster than current, state-of-the-art quadratic-time kernel-based tests
+#   :Cons: - Only supports two-sample testing
+#
+from hyppo.ksample import MeanEmbeddingTest
+import numpy as np
+
+
+num_samples = 500
+dimensions = 10
+X = np.random.randn(num_samples, dimensions)
+Y = np.random.randn(num_samples, dimensions)
+print(X.shape, Y.shape)
+
+MEtest = MeanEmbeddingTest()
+pval = MEtest.test(X,Y)
 #
 #
 #
