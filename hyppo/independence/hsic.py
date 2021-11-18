@@ -124,7 +124,7 @@ class Hsic(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1, auto=True):
+    def test(self, x, y, reps=1000, workers=1, auto=True, random_state=None):
         r"""
         Calculates the Hsic test statistic and p-value.
 
@@ -183,6 +183,8 @@ class Hsic(IndependenceTest):
         else:
             x, y = compute_kern(x, y, metric=self.compute_kernel, **self.kwargs)
             self.is_kernel = True
-            stat, pvalue = super(Hsic, self).test(x, y, reps, workers)
+            stat, pvalue = super(Hsic, self).test(
+                x, y, reps, workers, random_state=None
+            )
 
         return IndependenceTestOutput(stat, pvalue)

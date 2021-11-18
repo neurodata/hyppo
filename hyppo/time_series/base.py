@@ -4,6 +4,7 @@ import numpy as np
 from joblib import Parallel, delayed
 
 from ..tools import compute_dist
+from sklearn.utils import check_random_state
 
 
 class TimeSeriesTest(ABC):
@@ -70,7 +71,7 @@ class TimeSeriesTest(ABC):
         """
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         """
         Calulates the time-series test test statistic and p-value.
 
@@ -104,12 +105,21 @@ class TimeSeriesTest(ABC):
         stat_list = self.statistic(x, y)
         stat = stat_list[0]
 
+        # make RandomState seeded array
+        if random_state is not None:
+            rng = check_random_state(random_state)
+            random_state = rng.randint(np.iinfo(np.int32).max, size=reps)
+
+        # make random array
+        else:
+            random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
+
         # calculate null distribution
         null_dist = np.array(
             Parallel(n_jobs=workers)(
                 [
-                    delayed(_perm_stat)(self.statistic, distx, disty)
-                    for rep in range(reps)
+                    delayed(_perm_stat)(self.statistic, distx, disty, rng)
+                    for rng in random_state
                 ]
             )
         )
@@ -120,12 +130,13 @@ class TimeSeriesTest(ABC):
         return stat, pvalue, stat_list
 
 
-def _perm_stat(calc_stat, distx, disty):
+def _perm_stat(calc_stat, distx, disty, random_state=None):
     """Permutes the test statistics."""
     n = distx.shape[0]
     block_size = int(np.ceil(np.sqrt(n)))
+    rng = check_random_state(random_state)
     perm_index = np.r_[
-        [np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]
+        [np.arange(t, t + block_size) for t in rng.choice(n, n // block_size + 1)]
     ].flatten()[:n]
     perm_index = np.mod(perm_index, n)
     permy = disty[np.ix_(perm_index, perm_index)]

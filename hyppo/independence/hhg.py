@@ -1,5 +1,6 @@
 import numpy as np
 from numba import jit
+from scipy.sparse.construct import random
 
 from ..tools import compute_dist
 from ._utils import _CheckInputs
@@ -141,7 +142,7 @@ class HHG(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the HHG test statistic and p-value.
 
@@ -196,7 +197,7 @@ class HHG(IndependenceTest):
         x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
         self.is_distance = True
 
-        return super(HHG, self).test(x, y, reps, workers)
+        return super(HHG, self).test(x, y, reps, workers, random_state=random_state)
 
 
 @jit(nopython=True, cache=True)

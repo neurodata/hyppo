@@ -78,7 +78,7 @@ class KSampleTest(ABC):
         """
 
     @abstractmethod
-    def test(self, *args, reps=1000, workers=1):
+    def test(self, *args, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the *k*-sample test statistic and p-value.
 
