@@ -92,21 +92,6 @@ class MeanEmbeddingTest(KSampleTest):
         return KSampleTestOutput(stat, pvalue)
 
 
-#@jit(nopython=True, cache=True)
-def _distance(difference, num_random_features):
-    num_samples, _ = np.shape(difference)
-    sigma = np.cov(np.transpose(difference))
-
-    mu = np.mean(difference, 0)
-
-    if num_random_features == 1:
-        stat = float(num_samples * mu ** 2) / float(sigma)
-    else:
-        stat = num_samples * mu.dot(np.linalg.solve(sigma, np.transpose(mu)))
-
-    return stat
-
-
 @jit(nopython=True, cache=True)
 def get_estimate(data, point, scale):
     z = data - scale * point
@@ -132,4 +117,18 @@ def vector_of_differences(dim, x, y, number_of_frequencies, scale):
         ra[idx] = _get_difference(point, x, y, scale)
 
     return ra.T
+
+
+def _distance(difference, num_random_features):
+    num_samples, _ = np.shape(difference)
+    sigma = np.cov(np.transpose(difference))
+
+    mu = np.mean(difference, 0)
+
+    if num_random_features == 1:
+        stat = float(num_samples * mu ** 2) / float(sigma)
+    else:
+        stat = num_samples * mu.dot(np.linalg.solve(sigma, np.transpose(mu)))
+
+    return stat
 
