@@ -53,7 +53,7 @@ import data
 import density
 from gaussfssd import GaussFSSD
 import kernel 
-import util
+import _utils
 import matplotlib
 import matplotlib.pyplot as plt
 import autograd.numpy as np
