@@ -196,7 +196,7 @@ Y = np.random.randn(num_samples, dimensions)
 print(X.shape, Y.shape)
 
 smoothCF = SmoothCFTest()
-p_val = smoothCF.test(X, Y)
+stat, p_val = smoothCF.test(X, Y)
 #
 #
 #
@@ -231,7 +231,7 @@ Y = np.random.randn(num_samples, dimensions)
 print(X.shape, Y.shape)
 
 MEtest = MeanEmbeddingTest()
-pval = MEtest.test(X,Y)
+statistic, pval = MEtest.test(X,Y)
 #
 #
 #
