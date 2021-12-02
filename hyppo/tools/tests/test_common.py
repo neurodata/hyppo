@@ -13,7 +13,6 @@ from sklearn.metrics import pairwise_distances
 from sklearn.metrics.pairwise import pairwise_kernels
 
 from ...independence import Dcorr
-from ...multivariate.dhsic import dHsic
 from ..common import (
     _check_distmat,
     _check_kernmat,

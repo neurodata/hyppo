@@ -563,12 +563,12 @@ def perm_test(
 def _multi_perm_stat(calc_stat, *data_matrices):
     """Permute every entry and calculate test statistic"""
     # permute each row
-    comb_matrix = np.concatenate(data_matrices, axis=0)
+    comb_matrix = np.concatenate(data_matrices, axis=1)
     perm_matrix = np.zeros(np.shape(comb_matrix))
     for j in range(comb_matrix.shape[1]):
         order = np.random.permutation(comb_matrix.shape[0])
         perm_matrix[:, j] = comb_matrix[order, j]
-    perm_data_matrices = tuple(np.split(perm_matrix, len(data_matrices), axis=0))
+    perm_data_matrices = tuple(np.split(perm_matrix, len(data_matrices), axis=1))
 
     # calculate test statistic using permuted matrices
     perm_stat = calc_stat(*perm_data_matrices)
@@ -618,6 +618,7 @@ def multi_perm_test(calc_stat, *data_matrices, reps=1000, workers=1):
             ]
         )
     )
+    print(null_dist)
     pvalue = (1 + (null_dist >= stat).sum()) / (1 + reps)
 
     return stat, pvalue, null_dist

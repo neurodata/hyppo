@@ -143,7 +143,7 @@ print(u"Fast time (fast statistic chi-square): {0:.3g}s".format(fast_chisq_time)
 #
 # **D-variable Hilbert Schmidt Independence Criterion (Dhsic)** is an extension of Hsic,
 # and it tests for the joint independence of d-random variables. More details can be
-# found in :class:`hyppo.multivariate.dhsic`.Note that unlike Hsic or Dcorr, there is no
+# found in :class:`hyppo.multivariate.dhsic`. Note that unlike Hsic or Dcorr, there is no
 # fast version of the test. It always uses the permutation method to compute its p-value.
 #
 # .. note::
@@ -152,7 +152,20 @@ print(u"Fast time (fast statistic chi-square): {0:.3g}s".format(fast_chisq_time)
 #           - Much faster than constructing a joint independence test from multiple
 #             pairwise independence tests
 #    :Cons: - Not guaranteed to be consistent
-#
+
+setup_code = """
+from hyppo.independence import Dhsic
+from hyppo.tools import w_shaped
+x1, y1 = w_shaped(n=100, p=3, noise=True)
+x2, y2 = w_shaped(n=100, p=3, noise=True
+"""
+
+t_perm = timeit.Timer(stmt="Dhsic().test(*(x1, y1, x2, y2))", setup=setup_code)
+perm_time = np.array(t_perm.timeit(number=1))  # permutation Dhsic
+
+print(u"Permutation time: {0:.3g}s".format(perm_time))
+
+########################################################################################
 # ------------
 #
 # **Multiscale graph correlation (MGC)** is a powerful independence test the uses the
