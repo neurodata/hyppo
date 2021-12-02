@@ -163,7 +163,10 @@ def power(test, sim_type, sim=None, n=100, alpha=0.05, reps=1000, auto=False, **
         else:
             raise ValueError(
                 "Test {} not in {}".format(
-                    test_name, list(INDEP_TESTS.keys()) + list(KSAMP_TESTS.keys()) + list(MULTI_TESTS.keys())
+                    test_name,
+                    list(INDEP_TESTS.keys())
+                    + list(KSAMP_TESTS.keys())
+                    + list(MULTI_TESTS.keys()),
                 )
             )
 

@@ -60,6 +60,7 @@ class Dhsic(MultivariateTest):
     ----------
     .. footbibliography::
     """
+
     def __init__(self, compute_kernel="gaussian", bias=True, **kwargs):
         self.compute_kernel = compute_kernel
         self.bias = bias
@@ -84,12 +85,14 @@ class Dhsic(MultivariateTest):
         stat : float
             The computed Dhsic statistic.
         """
-        kerns = multi_compute_kern(*data_matrices, metric=self.compute_kernel, **self.kwargs)
+        kerns = multi_compute_kern(
+            *data_matrices, metric=self.compute_kernel, **self.kwargs
+        )
 
         n = kerns[0].shape[0]
         term1 = np.ones((n, n))
         term2 = 1
-        term3 = (2 / n) * np.ones((n, ))
+        term3 = (2 / n) * np.ones((n,))
         for j in range(len(kerns)):
             term1 = np.multiply(term1, kerns[j])
             term2 = (1 / n ** 2) * term2 * np.sum(kerns[j])
@@ -132,7 +135,8 @@ class Dhsic(MultivariateTest):
         )
         data_matrices = check_input()
 
-        stat, pvalue = super(Dhsic, self).test(*data_matrices, reps=reps, workers=workers)
+        stat, pvalue = super(Dhsic, self).test(
+            *data_matrices, reps=reps, workers=workers
+        )
 
         return MultivariateTestOutput(stat, pvalue)
-

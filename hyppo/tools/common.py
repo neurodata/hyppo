@@ -167,20 +167,13 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
 
 def _multi_check_kernmat(x):
     """Check if x is a similarity matrix."""
-    if (
-        not np.allclose(x, x.T)
-        or not np.all((x.diagonal() == 1))
-    ):
+    if not np.allclose(x, x.T) or not np.all((x.diagonal() == 1)):
         raise ValueError(
             "x must be a kernel similarity matrix, "
             "{is_sym} symmetric and {one_diag} "
             "ones along the diagonal".format(
-                is_sym="is not"
-                if not np.array_equal(x, x.T)
-                else "is",
-                one_diag="doesn't have"
-                if not np.all((x.diagonal() == 1))
-                else "has",
+                is_sym="is not" if not np.array_equal(x, x.T) else "is",
+                one_diag="doesn't have" if not np.all((x.diagonal() == 1)) else "has",
             )
         )
 
@@ -612,10 +605,7 @@ def multi_perm_test(calc_stat, *data_matrices, reps=1000, workers=1):
     # calculate null distribution
     null_dist = np.array(
         Parallel(n_jobs=workers)(
-            [
-                delayed(_multi_perm_stat)(calc_stat, *data_matrices)
-                for _ in range(reps)
-            ]
+            [delayed(_multi_perm_stat)(calc_stat, *data_matrices) for _ in range(reps)]
         )
     )
     print(null_dist)
