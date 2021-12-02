@@ -123,7 +123,7 @@ class HHG(IndependenceTest):
     sample group.
 
     From these distances, we can calculate the Hoeffding's dependence score between
-    the two groups using,
+    the two groups - denoted as D - using,
 
     .. math::
 
