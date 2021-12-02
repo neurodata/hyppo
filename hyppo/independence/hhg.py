@@ -5,7 +5,8 @@ from ..tools import compute_dist
 from ._utils import _CheckInputs
 from .base import IndependenceTest
 from scipy.spatial.distance import cdist
-from scipy.stats import ks_2samp, cramervonmises_2samp
+from scipy.stats import rankdata
+from sklearn.preprocessing import KBinsDiscretizer
 
 class HHG(IndependenceTest):
     r"""
@@ -17,6 +18,12 @@ class HHG(IndependenceTest):
     consistent against similar tests
     :footcite:p:`hellerConsistentMultivariateTest2013`. It can also operate on multiple
     dimensions :footcite:p:`hellerConsistentMultivariateTest2013`.
+
+    When the data is 1 dimension, the fast version of this test is run, based on 
+    Heller 2016 paper on multivariate tests based on univariate tests. 
+    The test statistic is the Hoeffding's dependence statistic from the distances of
+    sample points from a single center point. Center point is either random sample
+    point or center of mass of the samples.
 
     Parameters
     ----------
@@ -44,6 +51,14 @@ class HHG(IndependenceTest):
         where ``x`` is the data matrix for which pairwise distances are
         calculated and ``**kwargs`` are extra arguements to send to your custom
         function.
+
+    fast : boolean, default: False
+        Used to force fast version of test if desired.
+
+    pointer: string, default: "sample"
+        For fast test. Single center point used for distance calculations from sample
+        points. Choice must be 'sample' or 'center'.
+
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
 
@@ -95,18 +110,54 @@ class HHG(IndependenceTest):
         \mathrm{HHG}_n (x, y) = \sum_{i=1}^n \sum_{j=1, j \neq i}^n S(i, j)
 
     The p-value returned is calculated using a permutation test using
-    :meth:`hyppo.tools.perm_test`.
+    :math:`hyppo.tools.perm_test`.
+
+    For the fast version of the test, the test statistic is derived as follows:
+
+    Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
+    :math:`X` and :math:`Y`. A center point - either a randomly selected pair of 
+    points or the center of mass of points in 'X' and 'Y' - is chosen. 
+    For every sample :math:`i`, calculate the distances from the center point
+    in :math:`x` and :math:`y` and denote this as :math:`d_x(x_i)` 
+    and :math:`d_y(y_i)`. This will create a 1D collection of distances for each
+    sample group.
+
+    From these distances, we can calculate the Hoeffding's dependence score between
+    the two groups using,
+
+    .. math::
+
+        D = \frac{(n-2) (n-3) D_{1} + D_{2} - 2(n-2) D_{3}}
+                 {n (n-1) (n-2) (n-3) (n-4)}
+
+        D_{1} = \sum_{i} (Q_{i}-1) (Q_{i}-2)
+        
+        D_{2} = \sum_{i} (R_{i} - 1) (R_{i} - 2) (S_{i} - 1) (S_{i} - 2)
+
+        D_{3} = \sum_{i} {R_{i} - 2} (S_{i} - 2) (Q_{i}-1)
+
+    where :math:`R_{i}` is the rank of :math:`x_{i}`
+    and :math:`D_{i}` is the rank of :math:`y_{i}`
+    and :math:`Q_{i}` is the bivariate rank = 1 plus the number of points with both x and y
+    values less than the :math:`i`-th point.
+
+    D ranges between -0.5 and 1, with 1 indicating complete dependence. D is notably sensitive to ties
+    and may get smaller the more pairs of variables with identical values.
+
+    The p-value returned is calculated using a permutation test using 
+    :math:`hyppo.tools.perm_test`.
 
     References
     ----------
     .. footbibliography::
     """
 
-    def __init__(self, compute_distance="euclidean", is_fast = False, **kwargs):
+    def __init__(self, compute_distance="euclidean", fast = False, pointer="sample", **kwargs):
         self.is_distance = False
         if not compute_distance:
             self.is_distance = True
-        self.is_fast = is_fast
+        self.fast = fast
+        self.pointer = fastpointer
         IndependenceTest.__init__(self, compute_distance=compute_distance, **kwargs)
 
     def statistic(self, x, y):
@@ -119,8 +170,12 @@ class HHG(IndependenceTest):
             Input data matrices. ``x`` and ``y`` must have the same number of
             samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
+            dimensions. 
+            Alternatively, ``x`` and ``y`` can be distance matrices,
             where the shapes must both be ``(n, n)``.
+            For fast version, ``x`` and ``y`` can be 1D collections of distances
+            from a chosen center point, where the shapes must be ``(n,1)`` or ``(n-1,1)``
+            depending on choice of center point.
 
         Returns
         -------
@@ -129,7 +184,8 @@ class HHG(IndependenceTest):
         """
         distx = x
         disty = y
-        if not self.is_fast:
+
+        if not self.fast:
             if not self.is_distance:
                 distx, disty = compute_dist(
                     x, y, metric=self.compute_distance, **self.kwargs
@@ -143,19 +199,25 @@ class HHG(IndependenceTest):
         else:
             #Fast HHG - assumes center point is random sample
             if not self.is_distance:
-                zx, zy = (np.mean(x, axis=0), np.mean(y, axis=0))
-                #zx, zy = (x[np.random.choice(x.shape[0], 1, replace=False)],y[np.random.choice(y.shape[0], 1, replace=False)])
+                if self.pointer == "sample":
+                    sample = np.random.choice(x.shape[0], 1, replace=False)
+                    pointer = (x[sample],y[sample])
+                elif self.pointer == "center":
+                    pointer = (np.mean(x, axis=0), np.mean(y, axis=0))
+                zx, zy = pointer
                 zx = np.array(zx).reshape(1, -1)
                 zy = np.array(zy).reshape(1, -1)
                 distx, disty = _point_distance(self, x, y, zx, zy)
-                distx = distx.flatten()
-                disty = disty.flatten()
-            stat, pvalue = ks_2samp(distx, disty)
+                distx = distx[distx != 0]
+                disty = disty[disty != 0]
+            distx = distx.flatten()
+            disty = disty.flatten()
+            stat = hoeffdingsD(distx, disty)
             self.stat = stat
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1, pointer='sample', unitest=None, **kwargs):
+    def test(self, x, y, reps=1000, workers=1):
         r"""
         Calculates the HHG test statistic and p-value.
 
@@ -165,27 +227,18 @@ class HHG(IndependenceTest):
             Input data matrices. ``x`` and ``y`` must have the same number of
             samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
+            dimensions. 
+            Alternatively, ``x`` and ``y`` can be distance matrices,
             where the shapes must both be ``(n, n)``.
+            For fast version, ``x`` and ``y`` can be 1D collections of distances
+            from a chosen center point, where the shapes must be ``(n,1)`` or ``(n-1,1)``
+            depending on choice of center point.
         reps : int, default: 1000
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
         workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
             Supply ``-1`` to use all cores available to the Process.
-        
-        *For Fast HHG*
-        point: ndarray or string
-            Single center point used for distance calculations from sample
-            points. If ndarray, must be in the form of [zx, zy], where zx
-            is a point in the space of x and zy is a point in the space of y.
-            If string, then must be 'sample' or 'center'.
-
-        unitest: string
-            Dictates the specific univariate test used on the fast HHG test.
-            Options are:
-            'KS' = Kolmogorov-Smirnov
-            'CM' = Cramer von Mises
 
         Returns
         -------
@@ -221,30 +274,25 @@ class HHG(IndependenceTest):
         x, y = check_input()
 
         #Fast HHG Test
-        if self.is_fast:
-            if pointer == 'sample':
-                pointer = (x[np.random.choice(x.shape[0], 1, replace=False)],y[np.random.choice(y.shape[0], 1, replace=False)])
-            elif pointer == 'center':
-                pointer = (np.mean(x, axis=0), np.mean(y, axis=0))
+        if self.fast or (x.shape[1] == 1 
+            and y.shape[1] == 1):
+            if self.pointer == "sample":
+                    sample = np.random.choice(x.shape[0], 1, replace=False)
+                    pointer = (x[sample],y[sample])
+            elif self.pointer == "center":
+                    pointer = (np.mean(x, axis=0), np.mean(y, axis=0))
             zx, zy = pointer
-
             zx = np.array(zx).reshape(1, -1)
             zy = np.array(zy).reshape(1, -1)
             distx, disty = _point_distance(self, x, y, zx, zy)
-
-            #flatten distance collection for univariate tests
-            distx = distx.flatten()
-            disty = disty.flatten()
-
-            if unitest == 'KS':
-                stat, pvalue = ks_2samp(distx, disty)
-            elif unitest == 'CM':
-                stat, pvalue = cramervonmises_2samp(distx, disty)
+            x = distx[distx != 0]
+            y = disty[disty != 0]
+            self.is_distance = True
+            stat, pvalue = super(HHG, self).test(x, y, reps, workers, is_distsim =False)
 
         else:
             x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
             self.is_distance = True
-
             stat, pvalue = super(HHG, self).test(x, y, reps, workers)
 
         return stat, pvalue
@@ -276,9 +324,107 @@ def _pearson_stat(distx, disty):  # pragma: no cover
 
 def _point_distance(self, x, y, zx, zy, **kwargs):
         """
+        For fast HHG,
         Returns a collection of distances between sample points and chosen centre point
         """
         distx = cdist(zx, x, metric=self.compute_distance, **kwargs)
         disty = cdist(zy, y, metric=self.compute_distance, **kwargs)
         
         return distx, disty
+
+def hoeffdingsD(*arg):
+        """
+        For fast HHG, calculates the Hoeffding's dependence statistic
+        """
+    if type(arg[0]) is not np.ndarray:
+      if (len(arg[0].shape)>1):
+        return print("ERROR inputs : hoeffdingsD(numpy.array -1d- ,numpy.array -1d-)")
+    if type(arg[1]) is np.ndarray:
+      if (len(arg[1].shape)>1):
+        return print("ERROR inputs : hoeffdingsD(numpy.array -1d- ,numpy.array -1d-)")
+    
+    xin=arg[0]
+    yin=arg[1]
+    #crop data to the smallest array, length have to be equal
+    if len(xin)<len(yin):
+      yin=yin[:len(xin)]
+    if len(xin)>len(yin):
+      xin=xin[:len(yin)]
+
+    # dropna
+    x = xin[~(np.isnan(xin) | np.isnan(yin))]s
+    y = yin[~(np.isnan(xin) | np.isnan(yin))]
+
+    # undersampling if length too long
+    lenx=len(x)
+    if lenx>99999:
+        factor=math.ceil(lenx/100000)
+        x=x[::factor]
+        y=y[::factor]
+
+    # bining if too much "definition"
+    if len(np.unique(x))>50:
+        est = KBinsDiscretizer(n_bins=50, encode='ordinal', strategy='quantile') #faster strategy='quantile' but less accurate
+        est.fit(x.reshape(-1, 1))  
+        Rtemp = est.transform(x.reshape(-1, 1))
+        R=rankdata(Rtemp)
+    else:
+        R=rankdata(x)
+    if len(np.unique(y))>50:
+        est1 = KBinsDiscretizer(n_bins=50, encode='ordinal', strategy='quantile') #faster strategy='quantile' but less accurate
+        est1.fit(y.reshape(-1, 1))  
+        Stemp = est1.transform(y.reshape(-1, 1))
+        S=rankdata(Stemp)
+    else:
+        S=rankdata(y)      
+
+    # core processing
+    N=x.shape
+    dico={(np.nan,np.nan):np.nan}
+    dicoRin={np.nan:np.nan}
+    dicoSin={np.nan:np.nan}
+    dicoRless={np.nan:np.nan}
+    dicoSless={np.nan:np.nan}
+    Q=np.ones(N[0])
+
+    i=0;
+    for r,s in np.nditer([R,S]):
+        r=float(r)
+        s=float(s)
+        if (r,s) in dico.keys():
+            Q[i]=dico[(r,s)]
+        else:
+          if r in dicoRin.keys():
+              isinR=dicoRin[r]
+              lessR=dicoRless[r]
+          else:
+              isinR=np.isin(R,r)
+              dicoRin[r]=isinR
+              lessR=np.less(R,r)
+              dicoRless[r]=lessR
+
+          if s in dicoSin.keys():
+              isinS=dicoSin[s]
+              lessS=dicoSless[s]
+          else:
+              isinS=np.isin(S,s)
+              dicoSin[s]=isinS
+              lessS=np.less(S,s)
+              dicoSless[s]=lessS
+
+
+          Q[i] = Q[i] + np.count_nonzero(lessR & lessS) \
+                + 1/4 * (np.count_nonzero(isinR & isinS)-1) \
+                + 1/2 * (np.count_nonzero(isinR & lessS)) \
+                 + 1/2 * (np.count_nonzero(lessR & isinS)) 
+          dico[(r,s)]=Q[i]
+        i+=1
+
+    D1 = np.sum( np.multiply((Q-1),(Q-2)) );
+    D2 = np.sum( np.multiply(np.multiply((R-1),(R-2)),np.multiply((S-1),(S-2)) ) );
+    D3 = np.sum( np.multiply(np.multiply((R-2),(S-2)),(Q-1)) );
+
+    D = 30*((N[0]-2)*(N[0]-3)*D1 + D2 - 2*(N[0]-2)*D3) / (N[0]*(N[0]-1)*(N[0]-2)*(N[0]-3)*(N[0]-4));
+
+
+    return D
