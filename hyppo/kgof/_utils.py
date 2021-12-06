@@ -56,16 +56,6 @@ class NumpySeedContext(object):
 def constrain(val, min_val, max_val):
     return min(max_val, max(min_val, val))
 
-def dist2_matrix(X, Y):
-    """
-    Construct a pairwise Euclidean distance **squared** matrix of size
-    X.shape[0] x Y.shape[0]
-    """
-    sx = np.sum(X**2, 1)
-    sy = np.sum(Y**2, 1)
-    D2 =  sx[:, np.newaxis] - 2.0*np.dot(X, Y.T) + sy[np.newaxis, :] 
-    return D2
-
 def meddistance(X, subsample=None, mean_on_fail=True):
     """
     Compute the median of pairwise distances (not distance squared) of points
@@ -160,44 +150,6 @@ def fit_gaussian_draw(X, J, seed=28, reg=1e-7, eig_pow=1.0):
         V = np.random.multivariate_normal(mean_x, shrunk_cov, J)
     return V
 
-def bound_by_data(Z, Data):
-    """
-    Determine lower and upper bound for each dimension from the Data, and project 
-    Z so that all points in Z live in the bounds.
-    Z: m x d 
-    Data: n x d
-    Return a projected Z of size m x d.
-    """
-    n, d = Z.shape
-    Low = np.min(Data, 0)
-    Up = np.max(Data, 0)
-    LowMat = np.repeat(Low[np.newaxis, :], n, axis=0)
-    UpMat = np.repeat(Up[np.newaxis, :], n, axis=0)
-
-    Z = np.maximum(LowMat, Z)
-    Z = np.minimum(UpMat, Z)
-    return Z
-
-
-def one_of_K_code(arr):
-    """
-    Make a one-of-K coding out of the numpy array.
-    For example, if arr = ([0, 1, 0, 2]), then return a 2d array of the form 
-     [[1, 0, 0], 
-      [0, 1, 0],
-      [1, 0, 0],
-      [0, 0, 1]]
-    """
-    U = np.unique(arr)
-    n = len(arr)
-    nu = len(U)
-    X = np.zeros((n, nu))
-    for i, u in enumerate(U):
-        Ii = np.where( np.abs(arr - u) < 1e-8 )
-        #ni = len(Ii)
-        X[Ii[0], i] = 1
-    return X
-
 def fullprint(*args, **kwargs):
     "https://gist.github.com/ZGainsforth/3a306084013633c52881"
     from pprint import pprint
@@ -207,15 +159,6 @@ def fullprint(*args, **kwargs):
     pprint(*args, **kwargs)
     numpy.set_printoptions(**opt)
 
-
-def standardize(X):
-    mx = np.mean(X, 0)
-    stdx = np.std(X, axis=0)
-    # Assume standard deviations are not 0
-    Zx = old_div((X-mx),stdx)
-    assert np.all(np.isfinite(Zx))
-    return Zx
-
 def outer_rows(X, Y):
     """
     Compute the outer product of each row in X, and Y.
@@ -224,34 +167,3 @@ def outer_rows(X, Y):
     Return an n x dx x dy numpy array.
     """
     return np.einsum('ij,ik->ijk', X, Y)
-
-def randn(m, n, seed=3):
-    with NumpySeedContext(seed=seed):
-        return np.random.randn(m, n)
-
-def matrix_inner_prod(A, B):
-    """
-    Compute the matrix inner product <A, B> = trace(A^T * B).
-    """
-    assert A.shape[0] == B.shape[0]
-    assert A.shape[1] == B.shape[1]
-    return A.reshape(-1).dot(B.reshape(-1))
-
-def get_classpath(obj):
-    """
-    Return the full module and class path of the obj. For instance, 
-    kgof.density.IsotropicNormal
-    Return a string.
-    """
-    return obj.__class__.__module__ + '.' + obj.__class__.__name__
-
-def merge_dicts(*dict_args):
-    """
-    Given any number of dicts, shallow copy and merge into a new dict,
-    precedence goes to key value pairs in latter dicts.
-    http://stackoverflow.com/questions/38987/how-to-merge-two-python-dictionaries-in-a-single-expression
-    """
-    result = {}
-    for dictionary in dict_args:
-        result.update(dictionary)
-    return result
