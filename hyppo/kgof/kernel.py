@@ -5,12 +5,10 @@ from __future__ import division
 
 from builtins import str
 from past.utils import old_div
-from builtins import object
 
 from abc import ABC, abstractmethod
 import autograd
 import autograd.numpy as np
-import _utils
 
 class Kernel(ABC):
     """Abstract class for kernels. Inputs to all methods are numpy arrays."""
@@ -52,8 +50,6 @@ class DifferentiableKernel(ABC):
         assert G.shape[0] == X.shape[0]
         assert G.shape[1] == X.shape[1]
         return G
-
-# end class KSTKernel
 
 class LinearKSTKernel(ABC):
     """

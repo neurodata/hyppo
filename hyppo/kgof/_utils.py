@@ -1,12 +1,7 @@
 """A module containing convenient methods"""
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import absolute_import
+from __future__ import print_function, division, unicode_literals, absolute_import
 
-from builtins import zip
-from builtins import int
-from builtins import range
+from builtins import zip, int, range
 from future import standard_library
 standard_library.install_aliases()
 from past.utils import old_div
@@ -14,6 +9,7 @@ from builtins import object
 
 import autograd.numpy as np
 import time
+from sklearn.metrics.pairwise import euclidean_distances
 
 class ContextTimer(object):
     """
@@ -39,8 +35,6 @@ class ContextTimer(object):
         if self.verbose:
             print('elapsed time: %f ms' % (self.secs*1000))
 
-# end class ContextTimer
-
 class NumpySeedContext(object):
     """
     A context manager to reset the random seed by numpy.random.seed(..).
@@ -58,45 +52,9 @@ class NumpySeedContext(object):
     def __exit__(self, *args):
         np.random.set_state(self.cur_state)
 
-# end NumpySeedContext
-
-class ChunkIterable(object):
-    """
-    Construct an Iterable such that each call to its iterator returns a tuple
-    of two indices (f, t) where f is the starting index, and t is the ending
-    index of a chunk. f and t are (chunk_size) apart except for the last tuple
-    which will always cover the rest.
-    """
-    def __init__(self, start, end, chunk_size):
-        self.start = start
-        self.end = end
-        self.chunk_size = chunk_size
-    
-    def __iter__(self):
-        s = self.start
-        e = self.end
-        c = self.chunk_size
-        # Probably not a good idea to use list. Waste memory.
-        L = list(range(s, e, c))
-        L.append(e)
-        return zip(L, L[1:])
-
-# end ChunkIterable
 
 def constrain(val, min_val, max_val):
     return min(max_val, max(min_val, val))
-
-def dist_matrix(X, Y):
-    """
-    Construct a pairwise Euclidean distance matrix of size X.shape[0] x Y.shape[0]
-    """
-    sx = np.sum(X**2, 1)
-    sy = np.sum(Y**2, 1)
-    D2 =  sx[:, np.newaxis] - 2.0*X.dot(Y.T) + sy[np.newaxis, :] 
-    # to prevent numerical errors from taking sqrt of negative numbers
-    D2[D2 < 0] = 0
-    D = np.sqrt(D2)
-    return D
 
 def dist2_matrix(X, Y):
     """
@@ -123,7 +81,7 @@ def meddistance(X, subsample=None, mean_on_fail=True):
     median distance
     """
     if subsample is None:
-        D = dist_matrix(X, X)
+        D = euclidean_distances(X, X)
         Itri = np.tril_indices(D.shape[0], -1)
         Tri = D[Itri]
         med = np.median(Tri)
@@ -178,18 +136,7 @@ def subsample_ind(n, k, seed=32):
     with NumpySeedContext(seed=seed):
         ind = np.random.choice(n, k, replace=False)
     return ind
-
-def subsample_rows(X, k, seed=29):
-    """
-    Subsample k rows from the matrix X.
-    """
-    n = X.shape[0]
-    if k > n:
-        raise ValueError('k exceeds the number of rows.')
-    ind = subsample_ind(n, k, seed=seed)
-    return X[ind, :]
     
-
 def fit_gaussian_draw(X, J, seed=28, reg=1e-7, eig_pow=1.0):
     """
     Fit a multivariate normal to the data X (n x d) and draw J points 

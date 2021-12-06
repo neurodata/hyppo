@@ -1,25 +1,17 @@
 from __future__ import division
 
-from builtins import zip
-from builtins import str
-from builtins import range
+from builtins import zip, str, range, object
 from past.utils import old_div
-from builtins import object
 
-from abc import ABC
 import autograd
 import autograd.numpy as np
-import data
 import _utils
 import kernel
 from fssd import FSSD
 from h0simulator import FSSDH0SimCovObs
 import logging
-import time
-import matplotlib.pyplot as plt
 
 import scipy
-import scipy.stats as stats
 
 class GaussFSSD(FSSD):
     """
@@ -186,5 +178,3 @@ class GaussFSSD(FSSD):
         assert _utils.is_real_num(gw_opt), 'gw_opt is not real. Was %s' % str(gw_opt)
 
         return V_opt, gw_opt, opt_result
-
-# end of class GaussFSSD

@@ -1,22 +1,12 @@
 from __future__ import division
 
-from builtins import zip
-from builtins import str
-from builtins import range
 from past.utils import old_div
 from builtins import object
 from future.utils import with_metaclass
 
 from abc import ABCMeta, abstractmethod
-import autograd
 import autograd.numpy as np
-import data
-import _utils
-import kernel
 import fssd
-import logging
-import time
-import matplotlib.pyplot as plt
 
 import scipy
 import scipy.stats as stats
@@ -47,9 +37,6 @@ class H0Simulator(with_metaclass(ABCMeta, object)):
             sim_stats: a numpy array of stats.
         """
         raise NotImplementedError()
-
-# end of H0Simulator
-#-------------------
 
 class FSSDH0SimCovObs(H0Simulator):
     """
@@ -86,9 +73,6 @@ class FSSDH0SimCovObs(H0Simulator):
         arr_nfssd, eigs = fssd.FSSD.list_simulate_spectral(cov, J, n_simulate,
                 seed=self.seed)
         return {'sim_stats': arr_nfssd}
-
-# end of FSSDH0SimCovObs
-#-----------------------
 
 class FSSDH0SimCovDraw(H0Simulator):
     """
@@ -133,6 +117,3 @@ class FSSDH0SimCovDraw(H0Simulator):
         arr_nfssd, eigs = fssd.FSSD.list_simulate_spectral(cov, J, n_simulate,
                 seed=self.seed)
         return {'sim_stats': arr_nfssd}
-
-# end of FSSDH0SimCovDraw
-#-----------------------

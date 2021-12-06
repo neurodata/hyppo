@@ -4,9 +4,8 @@ functions.
 """
 from __future__ import division
 
-from builtins import range
+from builtins import range, object
 from past.utils import old_div
-from builtins import object
 
 from abc import ABC, abstractmethod
 import autograd
@@ -88,8 +87,6 @@ class UnnormalizedDensity(ABC):
         """
         raise NotImplementedError()
 
-# end UnnormalizedDensity
-
 class UDFromCallable(UnnormalizedDensity):
     """
     UnnormalizedDensity constructed from the specified implementations of 
@@ -128,8 +125,6 @@ class UDFromCallable(UnnormalizedDensity):
 
     def dim(self):
         return self.d
-
-# end UDFromCallable
 
 
 class IsotropicNormal(UnnormalizedDensity):
@@ -195,8 +190,6 @@ class Normal(UnnormalizedDensity):
     def dim(self):
         return len(self.mean)
 
-# end Normal
-
 class IsoGaussianMixture(UnnormalizedDensity):
     """
     UnnormalizedDensity of a Gaussian mixture in R^d where each component 
@@ -260,8 +253,6 @@ class IsoGaussianMixture(UnnormalizedDensity):
     def dim(self):
         k, d = self.means.shape
         return d
-
-# end class IsoGaussianMixture
 
 class GaussianMixture(UnnormalizedDensity):
     """
@@ -335,8 +326,6 @@ class GaussianMixture(UnnormalizedDensity):
         k, d = self.means.shape
         return d
 
-# end GaussianMixture
-
 class GaussBernRBM(UnnormalizedDensity):
     """
     Gaussian-Bernoulli Restricted Boltzmann Machine.
@@ -399,8 +388,6 @@ class GaussBernRBM(UnnormalizedDensity):
     def dim(self):
         return len(self.b)
 
-# end GaussBernRBM
-
 class ISIPoissonLinear(UnnormalizedDensity):
     """
     Unnormalized density of inter-arrival times from nonhomogeneous poisson process with linear intensity function.
@@ -420,8 +407,6 @@ class ISIPoissonLinear(UnnormalizedDensity):
 
     def dim(self):
         return 1
-
-# end ISIPoissonLinear
 
 class ISIPoissonSine(UnnormalizedDensity):
     """
@@ -445,8 +430,6 @@ class ISIPoissonSine(UnnormalizedDensity):
 
     def dim(self):
         return 1
-
-# end ISIPoissonSine
 
 class Gamma(UnnormalizedDensity):
     """
@@ -501,9 +484,6 @@ class LogGamma(UnnormalizedDensity):
 
     def dim(self):
         return 1
-# end LogGamma
-
-
 
 class ISILogPoissonLinear(UnnormalizedDensity):
     """
@@ -525,8 +505,6 @@ class ISILogPoissonLinear(UnnormalizedDensity):
     def dim(self):
         return 1
 
-# end ISIPoissonLinear
-
 class ISIPoisson2D(UnnormalizedDensity):
     """
     Unnormalized density of nonhomogeneous spatial poisson process
@@ -547,9 +525,6 @@ class ISIPoisson2D(UnnormalizedDensity):
 
     def dim(self):
         return 1
-
-# end class ISIPoisson2D
-
 
 class ISISigmoidPoisson2D(UnnormalizedDensity):
     """
@@ -589,8 +564,6 @@ class ISISigmoidPoisson2D(UnnormalizedDensity):
     def dim(self):
         return 1
 
-# end class ISISigmoidPoisson2D
-
 
 class Poisson2D(UnnormalizedDensity):
     """
@@ -626,8 +599,6 @@ class Resample(UnnormalizedDensity):
 
     def dim(self):
         return 1
-
-# end class SigmoidPoisson2D
 
 class GaussCosFreqs(UnnormalizedDensity):
     """

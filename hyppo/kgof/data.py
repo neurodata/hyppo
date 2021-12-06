@@ -1,15 +1,12 @@
 """
 Module containing data structures for representing datasets.
 """
-from __future__ import print_function
-from __future__ import division
+from __future__ import print_function, division
 
-from builtins import range
+from builtins import range, object
 from past.utils import old_div
-from builtins import object
 
 from abc import ABC, abstractmethod
-import autograd
 import autograd.numpy as np
 import _utils
 import scipy.stats as stats
@@ -94,10 +91,7 @@ class Data(object):
         copy = self.clone()
         copy2 = data2.clone()
         nX = np.vstack((copy.X, copy2.X))
-        return Data(nX)
-
-### end Data class        
-
+        return Data(nX)     
 
 class DataSource(ABC):
     """
@@ -119,8 +113,6 @@ class DataSource(ABC):
        """
        dat = self.sample(n=1, seed=3)
        return dat.dim()
-
-#  end DataSource
 
 class DSIsotropicNormal(DataSource):
     """
@@ -217,8 +209,6 @@ class DSIsoGaussianMixture(DataSource):
             np.random.shuffle(sample)
         return Data(sample)
 
-# end of class DSIsoGaussianMixture
-
 class DSGaussianMixture(DataSource):
     """
     A DataSource implementing a Gaussian mixture in R^d where each component 
@@ -261,8 +251,6 @@ class DSGaussianMixture(DataSource):
 
             # For each component, draw from its corresponding mixture component.            
             for i, nc in enumerate(counts):
-                # construct the component
-                # https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.multivariate_normal.html
                 cov = variances[i]
                 mnorm = stats.multivariate_normal(means[i], cov)
                 # Sample from ith component
@@ -272,8 +260,6 @@ class DSGaussianMixture(DataSource):
             assert sample.shape[0] == n
             np.random.shuffle(sample)
         return Data(sample)
-
-# end of DSGaussianMixture
 
 
 class DSLaplace(DataSource):
@@ -312,8 +298,6 @@ class DSTDistribution(DataSource):
             X = stats.t.rvs(df=self.df, size=n)
             X = X[:, np.newaxis]
             return Data(X)
-
-# end class DSTDistribution
 
 
 class DSGaussBernRBM(DataSource):
@@ -402,8 +386,6 @@ class DSGaussBernRBM(DataSource):
     def dim(self):
         return self.B.shape[0]
 
-# end class DSGaussBernRBM
-
 class DSISIPoissonLinear(DataSource):
     """
     A DataSource implementing non homogenous poisson process.
@@ -433,8 +415,6 @@ class DSISIPoissonLinear(DataSource):
                 # This can happen if d=1
                 X = X[:, np.newaxis]
             return Data(X)
-
-# end class DSISIPoissonLinear
 
 class DSISIPoissonSine(DataSource):
     """
@@ -512,9 +492,6 @@ class DSISIPoissonSine(DataSource):
                 X = X[:, np.newaxis]
             return Data(X)
 
-# end class DSISIPoissonSine
-
-
 class DSGamma(DataSource):
     """
     A DataSource implementing gamma distribution.
@@ -534,8 +511,6 @@ class DSGamma(DataSource):
                 # This can happen if d=1
                 X = X[:, np.newaxis]
             return Data(X)
-
-# end class DSGamma
 
 
 class DSLogGamma(DataSource):
@@ -557,8 +532,6 @@ class DSLogGamma(DataSource):
                 # This can happen if d=1
                 X = X[:, np.newaxis]
             return Data(X)
-
-# end class DSLogGamma
 
 class DSISILogPoissonLinear(DataSource):
     """
@@ -589,8 +562,6 @@ class DSISILogPoissonLinear(DataSource):
                 # This can happen if d=1
                 X = X[:, np.newaxis]
             return Data(X)
-
-# end class DSISILogPoissonLinear
 
 class DSISIPoisson2D(DataSource):
     """
@@ -641,8 +612,6 @@ class DSISIPoisson2D(DataSource):
                 # This can happen if d=1
                 X = X[:, np.newaxis]
             return Data(X)
-
-# end class DSISIPoisson2D
 
 class DSISISigmoidPoisson2D(DataSource):
     """
@@ -696,7 +665,6 @@ class DSISISigmoidPoisson2D(DataSource):
                 # This can happen if d=1
                 X = X[:, np.newaxis]
             return Data(X)
-# end class DSISISigmoidPoisson2D
 
 class DSPoisson2D(DataSource):
     """
@@ -752,9 +720,6 @@ class DSPoisson2D(DataSource):
                 X = X[:, np.newaxis]
             return Data(X)
 
-# end class DSPoisson2D
-
-
 class DSResample(DataSource):
     """
     A DataSource which subsamples without replacement from the specified 
@@ -777,8 +742,6 @@ class DSResample(DataSource):
 
     def dim(self):
         return self.X.shape[1]
-
-# end class DSResample
 
 class DSGaussCosFreqs(DataSource):
     """

@@ -1,23 +1,13 @@
 from __future__ import division
 
-from builtins import zip
-from builtins import str
-from builtins import range
+from builtins import zip, str, range, object
 from past.utils import old_div
-from builtins import object
 
-from abc import ABC
-import autograd
 import autograd.numpy as np
-import data
 import _utils
-import kernel
-from kernel import KGauss
 from .base import GofTest
 from h0simulator import FSSDH0SimCovObs
 import logging
-import time
-import matplotlib.pyplot as plt
 
 import scipy
 import scipy.stats as stats
@@ -275,6 +265,3 @@ class FSSD(GofTest):
 
         besti = objs.argmax()
         return besti, objs
-
-# end of FSSD
-# --------------------------------------
