@@ -6,7 +6,7 @@ from ._utils import _CheckInputs
 from .base import IndependenceTest
 from scipy.spatial.distance import cdist
 from scipy.stats import rankdata
-from sklearn.preprocessing import KBinsDiscretizer
+
 
 class HHG(IndependenceTest):
     r"""
@@ -19,8 +19,8 @@ class HHG(IndependenceTest):
     :footcite:p:`hellerConsistentMultivariateTest2013`. It can also operate on multiple
     dimensions :footcite:p:`hellerConsistentMultivariateTest2013`.
 
-    The fast version of this test can also be run, based on 
-    Heller 2016 paper on multivariate tests based on univariate tests. 
+    The fast version of this test can also be run, based on
+    Heller 2016 paper on multivariate tests based on univariate tests.
     The test statistic is the Hoeffding's dependence statistic from the distances of
     sample points from a single center point. Center point is the center of mass of the samples.
     This version has relatively low power, but performs well in scenarios where the center of
@@ -112,9 +112,9 @@ class HHG(IndependenceTest):
     For the fast version of the test, the test statistic is derived as follows:
 
     Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
-    :math:`X` and :math:`Y`. A center point - the center of mass of points in 'X' and 'Y' 
+    :math:`X` and :math:`Y`. A center point - the center of mass of points in 'X' and 'Y'
     - is chosen. For every sample :math:`i`, calculate the distances from the center point
-    in :math:`x` and :math:`y` and denote this as :math:`d_x(x_i)` 
+    in :math:`x` and :math:`y` and denote this as :math:`d_x(x_i)`
     and :math:`d_y(y_i)`. This will create a 1D collection of distances for each
     sample group.
 
@@ -127,7 +127,7 @@ class HHG(IndependenceTest):
                  {n (n-1) (n-2) (n-3) (n-4)}
 
         D_{1} = \sum_{i} (Q_{i}-1) (Q_{i}-2)
-        
+
         D_{2} = \sum_{i} (R_{i} - 1) (R_{i} - 2) (S_{i} - 1) (S_{i} - 2)
 
         D_{3} = \sum_{i} {R_{i} - 2} (S_{i} - 2) (Q_{i}-1)
@@ -137,10 +137,10 @@ class HHG(IndependenceTest):
     and :math:`Q_{i}` is the bivariate rank = 1 plus the number of points with both x and y
     values less than the :math:`i`-th point.
 
-    D ranges between -0.5 and 1, with 1 indicating complete dependence. D is notably 
+    D ranges between -0.5 and 1, with 1 indicating complete dependence. D is notably
     sensitive to ties and may get smaller the more pairs of variables with identical values.
 
-    The p-value returned is calculated using a permutation test using 
+    The p-value returned is calculated using a permutation test using
     :math:`hyppo.tools.perm_test`.
 
     References
@@ -148,7 +148,7 @@ class HHG(IndependenceTest):
     .. footbibliography::
     """
 
-    def __init__(self, compute_distance="euclidean", fast = False, **kwargs):
+    def __init__(self, compute_distance="euclidean", fast=False, **kwargs):
         self.is_distance = False
         if not compute_distance:
             self.is_distance = True
@@ -165,7 +165,7 @@ class HHG(IndependenceTest):
             Input data matrices. ``x`` and ``y`` must have the same number of
             samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. 
+            dimensions.
             Alternatively, ``x`` and ``y`` can be distance matrices,
             where the shapes must both be ``(n, n)``.
             For fast version, ``x`` and ``y`` can be 1D collections of distances
@@ -192,7 +192,7 @@ class HHG(IndependenceTest):
             self.stat = stat
 
         else:
-            #Fast HHG
+            # Fast HHG
             if not self.is_distance:
                 pointer = (np.mean(x, axis=0), np.mean(y, axis=0))
                 zx, zy = pointer
@@ -218,7 +218,7 @@ class HHG(IndependenceTest):
             Input data matrices. ``x`` and ``y`` must have the same number of
             samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. 
+            dimensions.
             Alternatively, ``x`` and ``y`` can be distance matrices,
             where the shapes must both be ``(n, n)``.
             For fast version, ``x`` and ``y`` can be 1D collections of distances
@@ -264,7 +264,7 @@ class HHG(IndependenceTest):
         check_input = _CheckInputs(x, y, reps=reps)
         x, y = check_input()
 
-        #Fast HHG Test
+        # Fast HHG Test
         if self.fast:
             pointer = (np.mean(x, axis=0), np.mean(y, axis=0))
             zx, zy = pointer
@@ -282,6 +282,7 @@ class HHG(IndependenceTest):
             stat, pvalue = super(HHG, self).test(x, y, reps, workers)
 
         return stat, pvalue
+
 
 @jit(nopython=True, cache=True)
 def _pearson_stat(distx, disty):  # pragma: no cover
@@ -308,109 +309,96 @@ def _pearson_stat(distx, disty):  # pragma: no cover
 
     return S
 
+
 def _point_distance(self, x, y, zx, zy, **kwargs):
-        """
-        For fast HHG,
-        Returns a collection of distances between sample points and chosen centre point
-        """
-        distx = cdist(zx, x, metric=self.compute_distance, **kwargs)
-        disty = cdist(zy, y, metric=self.compute_distance, **kwargs)
-        
-        return distx, disty
+    """
+    For fast HHG,
+    Returns a collection of distances between sample points and chosen centre point
+    """
+    distx = cdist(zx, x, metric=self.compute_distance, **kwargs)
+    disty = cdist(zy, y, metric=self.compute_distance, **kwargs)
 
-def hoeffdingsD(*arg):
-        """
-        For fast HHG, calculates the Hoeffding's dependence statistic
-        """
-    if type(arg[0]) is not np.ndarray:
-      if (len(arg[0].shape)>1):
-        return print("ERROR inputs : hoeffdingsD(numpy.array -1d- ,numpy.array -1d-)")
-    if type(arg[1]) is np.ndarray:
-      if (len(arg[1].shape)>1):
-        return print("ERROR inputs : hoeffdingsD(numpy.array -1d- ,numpy.array -1d-)")
-    
-    xin=arg[0]
-    yin=arg[1]
-    #crop data to the smallest array, length have to be equal
-    if len(xin)<len(yin):
-      yin=yin[:len(xin)]
-    if len(xin)>len(yin):
-      xin=xin[:len(yin)]
+    return distx, disty
 
+
+def hoeffdingsD(x, y):
+    """
+    For fast HHG, calculates the Hoeffding's dependence statistic
+    """
+    xin = x
+    yin = y
+    # crop data to the smallest array, length have to be equal
+    if len(xin) < len(yin):
+        yin = yin[: len(xin)]
+    if len(xin) > len(yin):
+        xin = xin[: len(yin)]
     # dropna
-    x = xin[~(np.isnan(xin) | np.isnan(yin))]s
+    x = xin[~(np.isnan(xin) | np.isnan(yin))]
     y = yin[~(np.isnan(xin) | np.isnan(yin))]
 
     # undersampling if length too long
-    lenx=len(x)
-    if lenx>99999:
-        factor=math.ceil(lenx/100000)
-        x=x[::factor]
-        y=y[::factor]
+    lenx = len(x)
+    if lenx > 99999:
+        factor = math.ceil(lenx / 100000)
+        x = x[::factor]
+        y = y[::factor]
 
-    # bining if too much "definition"
-    if len(np.unique(x))>50:
-        est = KBinsDiscretizer(n_bins=50, encode='ordinal', strategy='quantile') #faster strategy='quantile' but less accurate
-        est.fit(x.reshape(-1, 1))  
-        Rtemp = est.transform(x.reshape(-1, 1))
-        R=rankdata(Rtemp)
-    else:
-        R=rankdata(x)
-    if len(np.unique(y))>50:
-        est1 = KBinsDiscretizer(n_bins=50, encode='ordinal', strategy='quantile') #faster strategy='quantile' but less accurate
-        est1.fit(y.reshape(-1, 1))  
-        Stemp = est1.transform(y.reshape(-1, 1))
-        S=rankdata(Stemp)
-    else:
-        S=rankdata(y)      
+    R = rankdata(x)
+    S = rankdata(y)
 
     # core processing
-    N=x.shape
-    dico={(np.nan,np.nan):np.nan}
-    dicoRin={np.nan:np.nan}
-    dicoSin={np.nan:np.nan}
-    dicoRless={np.nan:np.nan}
-    dicoSless={np.nan:np.nan}
-    Q=np.ones(N[0])
+    N = x.shape
+    dico = {(np.nan, np.nan): np.nan}
+    dicoRin = {np.nan: np.nan}
+    dicoSin = {np.nan: np.nan}
+    dicoRless = {np.nan: np.nan}
+    dicoSless = {np.nan: np.nan}
+    Q = np.ones(N[0])
 
-    i=0;
-    for r,s in np.nditer([R,S]):
-        r=float(r)
-        s=float(s)
-        if (r,s) in dico.keys():
-            Q[i]=dico[(r,s)]
+    i = 0
+    for r, s in np.nditer([R, S]):
+        r = float(r)
+        s = float(s)
+        if (r, s) in dico.keys():
+            Q[i] = dico[(r, s)]
         else:
-          if r in dicoRin.keys():
-              isinR=dicoRin[r]
-              lessR=dicoRless[r]
-          else:
-              isinR=np.isin(R,r)
-              dicoRin[r]=isinR
-              lessR=np.less(R,r)
-              dicoRless[r]=lessR
+            if r in dicoRin.keys():
+                isinR = dicoRin[r]
+                lessR = dicoRless[r]
+            else:
+                isinR = np.isin(R, r)
+                dicoRin[r] = isinR
+                lessR = np.less(R, r)
+                dicoRless[r] = lessR
 
-          if s in dicoSin.keys():
-              isinS=dicoSin[s]
-              lessS=dicoSless[s]
-          else:
-              isinS=np.isin(S,s)
-              dicoSin[s]=isinS
-              lessS=np.less(S,s)
-              dicoSless[s]=lessS
+            if s in dicoSin.keys():
+                isinS = dicoSin[s]
+                lessS = dicoSless[s]
+            else:
+                isinS = np.isin(S, s)
+                dicoSin[s] = isinS
+                lessS = np.less(S, s)
+                dicoSless[s] = lessS
 
+            Q[i] = (
+                Q[i]
+                + np.count_nonzero(lessR & lessS)
+                + 1 / 4 * (np.count_nonzero(isinR & isinS) - 1)
+                + 1 / 2 * (np.count_nonzero(isinR & lessS))
+                + 1 / 2 * (np.count_nonzero(lessR & isinS))
+            )
+            dico[(r, s)] = Q[i]
+        i += 1
 
-          Q[i] = Q[i] + np.count_nonzero(lessR & lessS) \
-                + 1/4 * (np.count_nonzero(isinR & isinS)-1) \
-                + 1/2 * (np.count_nonzero(isinR & lessS)) \
-                 + 1/2 * (np.count_nonzero(lessR & isinS)) 
-          dico[(r,s)]=Q[i]
-        i+=1
+    D1 = np.sum(np.multiply((Q - 1), (Q - 2)))
+    D2 = np.sum(
+        np.multiply(np.multiply((R - 1), (R - 2)), np.multiply((S - 1), (S - 2)))
+    )
+    D3 = np.sum(np.multiply(np.multiply((R - 2), (S - 2)), (Q - 1)))
 
-    D1 = np.sum( np.multiply((Q-1),(Q-2)) );
-    D2 = np.sum( np.multiply(np.multiply((R-1),(R-2)),np.multiply((S-1),(S-2)) ) );
-    D3 = np.sum( np.multiply(np.multiply((R-2),(S-2)),(Q-1)) );
-
-    D = 30*((N[0]-2)*(N[0]-3)*D1 + D2 - 2*(N[0]-2)*D3) / (N[0]*(N[0]-1)*(N[0]-2)*(N[0]-3)*(N[0]-4));
-
-
+    D = (
+        30
+        * ((N[0] - 2) * (N[0] - 3) * D1 + D2 - 2 * (N[0] - 2) * D3)
+        / (N[0] * (N[0] - 1) * (N[0] - 2) * (N[0] - 3) * (N[0] - 4))
+    )
     return D
