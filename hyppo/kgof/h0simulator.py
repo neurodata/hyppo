@@ -22,6 +22,8 @@ class H0Simulator(with_metaclass(ABCMeta, object)):
         n_simulate: The number of times to simulate from the null distribution.
             Must be a positive integer.
         seed: a random seed
+
+        From: https://github.com/wittawatj/fsic-test
         """
         assert n_simulate > 0
         self.n_simulate = n_simulate
@@ -35,6 +37,8 @@ class H0Simulator(with_metaclass(ABCMeta, object)):
         Simulate from the null distribution and return a dictionary. 
         One of the item is 
             sim_stats: a numpy array of stats.
+
+        From: https://github.com/wittawatj/fsic-test
         """
         raise NotImplementedError()
 
@@ -82,6 +86,8 @@ class FSSDH0SimCovDraw(H0Simulator):
     sample drawn from p (the density to test against). 
     
     - The UnnormalizedDensity p is required to implement get_datasource() method.
+
+    From: https://github.com/wittawatj/fsic-test
     """
     def __init__(self, n_draw=2000, n_simulate=3000, seed=10):
         """
@@ -94,6 +100,8 @@ class FSSDH0SimCovDraw(H0Simulator):
         """
         fea_tensor: n x d x J feature matrix
         This method does not use dat.
+
+        From: https://github.com/wittawatj/fsic-test
         """
         dat = None
         # p = an UnnormalizedDensity

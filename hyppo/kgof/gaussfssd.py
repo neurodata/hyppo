@@ -40,6 +40,8 @@ class GaussFSSD(FSSD):
         Optimize parameters by calling optimize_locs_widths(). Automatically 
         initialize the test locations and the Gaussian width.
         Return optimized locations, Gaussian width, optimization info
+
+        From: https://github.com/wittawatj/fsic-test
         """
         assert J>0
         # Use grid search to initialize the gwidth
@@ -71,6 +73,8 @@ class GaussFSSD(FSSD):
         the test power criterion, fixing the test locations. 
         - V: a J x dx np-array for J test locations 
         return: (best width index, list of test power objectives)
+
+        From: https://github.com/wittawatj/fsic-test
         """
         list_gauss_kernel = [kernel.KGauss(gw) for gw in list_gwidth]
         besti, objs = FSSD.fssd_grid_search_kernel(p, dat, test_locs,
@@ -107,6 +111,8 @@ class GaussFSSD(FSSD):
           to automatically set the bounds.
         
         Return (V test_locs, gaussian width, optimization info log)
+
+        From: https://github.com/wittawatj/fsic-test
         """
         J = test_locs0.shape[0]
         X = dat.data()

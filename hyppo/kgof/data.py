@@ -24,8 +24,6 @@ class Data(object):
         self.X = X
 
         if not np.all(np.isfinite(X)):
-            print('X:')
-            print(_utils.fullprint(X))
             raise ValueError('Not all elements in X are finite.')
 
     def __str__(self):

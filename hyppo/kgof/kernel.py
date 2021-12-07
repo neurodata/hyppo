@@ -1,5 +1,3 @@
-
-
 """Module containing kernel related classes"""
 from __future__ import division
 

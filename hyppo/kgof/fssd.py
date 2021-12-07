@@ -93,6 +93,8 @@ class FSSD(GofTest):
         """
         Return the mean and variance under H1 of the test statistic (divided by
         n).
+
+        From: https://github.com/wittawatj/fsic-test
         """
         X = dat.data()
         Xi = self.feature_tensor(X)
@@ -106,6 +108,8 @@ class FSSD(GofTest):
         covariance matrix for simulating from the null distribution.
         X: n x d data numpy array
         return an n x d x J numpy array
+
+        From: https://github.com/wittawatj/fsic-test
         """
         k = self.k
         J = self.V.shape[0]
@@ -140,6 +144,8 @@ class FSSD(GofTest):
             compute (depends on the optimized test locations). If True, then 
             the objective will be -1/(n**0.5*sigma_H1) + n**0.5 FSSD^2/sigma_H1, 
             which ignores the test threshold in the first term.
+
+        From: https://github.com/wittawatj/fsic-test
         """
         X = dat.data()
         n = X.shape[0]
@@ -169,6 +175,8 @@ class FSSD(GofTest):
         use_unbiased: If True, use the unbiased version of the mean. Can be
             negative.
         Return the mean [and the variance]
+
+        From: https://github.com/wittawatj/fsic-test
         """
         Xi = fea_tensor
         n, d, J = Xi.shape
@@ -200,6 +208,8 @@ class FSSD(GofTest):
         matrix.  This is intended to be used to approximate the null
         distribution.
         Return (a numpy array of simulated n*FSSD values, eigenvalues of cov)
+
+        From: https://github.com/wittawatj/fsic-test
         """
         # eigen decompose 
         eigs, _ = np.linalg.eig(cov)
@@ -220,6 +230,8 @@ class FSSD(GofTest):
           matrix. eigs is of length d*J, where d is the input dimension, and 
         - J: the number of test locations.
         Return a numpy array of simulated statistics.
+
+        From: https://github.com/wittawatj/fsic-test
         """
         d = old_div(len(eigs),J)
         assert d>0
@@ -250,6 +262,8 @@ class FSSD(GofTest):
         - dat: a Data object
         - list_kernel: list of kernel candidates 
         return: (best kernel index, array of test power criteria)
+
+        From: https://github.com/wittawatj/fsic-test
         """
         V = test_locs
         X = dat.data()

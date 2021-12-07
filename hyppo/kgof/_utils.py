@@ -38,7 +38,9 @@ class ContextTimer(object):
 class NumpySeedContext(object):
     """
     A context manager to reset the random seed by numpy.random.seed(..).
-    Set the seed back at the end of the block. 
+    Set the seed back at the end of the block.
+
+    From: https://github.com/wittawatj/fsic-test 
     """
     def __init__(self, seed):
         self.seed = seed 
@@ -51,7 +53,6 @@ class NumpySeedContext(object):
 
     def __exit__(self, *args):
         np.random.set_state(self.cur_state)
-
 
 def constrain(val, min_val, max_val):
     return min(max_val, max(min_val, val))
@@ -69,6 +70,8 @@ def meddistance(X, subsample=None, mean_on_fail=True):
     Return
     ------
     median distance
+
+    From: https://github.com/wittawatj/fsic-test
     """
     if subsample is None:
         D = euclidean_distances(X, X)
@@ -107,6 +110,8 @@ def is_real_num(X):
 def tr_te_indices(n, tr_proportion, seed=9282 ):
     """Get two logical vectors for indexing train/test points.
     Return (tr_ind, te_ind)
+
+    From: https://github.com/wittawatj/fsic-test
     """
     rand_state = np.random.get_state()
     np.random.seed(seed)
@@ -122,6 +127,7 @@ def tr_te_indices(n, tr_proportion, seed=9282 ):
 def subsample_ind(n, k, seed=32):
     """
     Return a list of indices to choose k out of n without replacement
+
     """
     with NumpySeedContext(seed=seed):
         ind = np.random.choice(n, k, replace=False)
@@ -135,6 +141,8 @@ def fit_gaussian_draw(X, J, seed=28, reg=1e-7, eig_pow=1.0):
     - eig_pow: raise eigenvalues of the covariance matrix to this power to construct 
         a new covariance matrix before drawing samples. Useful to shrink the spread 
         of the variance.
+    
+    From: https://github.com/wittawatj/fsic-test
     """
     with NumpySeedContext(seed=seed):
         d = X.shape[1]
@@ -149,15 +157,6 @@ def fit_gaussian_draw(X, J, seed=28, reg=1e-7, eig_pow=1.0):
         shrunk_cov = evecs.dot(np.diag(evals**eig_pow)).dot(evecs.T) + reg*np.eye(d)
         V = np.random.multivariate_normal(mean_x, shrunk_cov, J)
     return V
-
-def fullprint(*args, **kwargs):
-    "https://gist.github.com/ZGainsforth/3a306084013633c52881"
-    from pprint import pprint
-    import numpy
-    opt = numpy.get_printoptions()
-    numpy.set_printoptions(threshold='nan')
-    pprint(*args, **kwargs)
-    numpy.set_printoptions(**opt)
 
 def outer_rows(X, Y):
     """
