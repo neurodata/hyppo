@@ -284,6 +284,7 @@ class HHG(IndependenceTest):
 
         return IndependenceTestOutput(stat, pvalue)
 
+
 @jit(nopython=True, cache=True)
 def _pearson_stat(distx, disty):  # pragma: no cover
     """Calculate the Pearson chi square stats"""
