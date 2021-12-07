@@ -4,11 +4,10 @@
 # In[35]:
 
 
-import numpy
 import random
 from numba import jit
 
-from numpy import mean, zeros, linalg.norm, std
+import numpy as np
 
 from .base import IndependenceTest, IndependenceTestOutput
 
@@ -45,7 +44,7 @@ class FriedmanRafsky(IndependenceTest):
         
         """
         
-        pvalue = (sum(perm_stat <= true_stat) + 1) / (len(perm_stat) + 1)
+        pvalue = (np.sum(perm_stat <= true_stat) + 1) / (len(perm_stat) + 1)
         
         return pvalue
     
@@ -88,7 +87,7 @@ class FriedmanRafsky(IndependenceTest):
         
         runs = permutation(perm, labels, MST_connections)
         
-        W_perm = ((runs - mean(runs)) / std(runs))
+        W_perm = ((runs - mean(runs)) / np.std(runs))
 
         stat = (runs_true - mu_runs) / sd_runs
         
@@ -202,7 +201,7 @@ def prim(weight_mat):
 
     V = len(labels)
 
-    selected = zeros(len(labels))
+    selected = np.zeros(len(labels))
 
     no_edge = 0
 
@@ -258,7 +257,7 @@ def MST(data, algorithm):
             j = i + 1
 
             while j <= (len(data[0]) - 1):
-                weight = linalg.norm(data[:,i] - data[:,j])
+                weight = np.linalg.norm(data[:,i] - data[:,j])
                 g.add_edge(i, j, weight)
                 j += 1;
 
@@ -272,7 +271,7 @@ def MST(data, algorithm):
             j = i + 1
 
         while j <= (len(data[0]) - 1):
-            weight = linalg.norm(data[:,i] - data[:,j])
+            weight = np.linalg.norm(data[:,i] - data[:,j])
             G[i][j] = weight
             G[j][i] = weight
             j += 1;
@@ -323,9 +322,9 @@ def num_runs(labels, MST_connections):
     """
 
     runs = []
-    for itr in arange(nperm):
+    for itr in np.arange(nperm):
 
-        lab_shuffle = random.sample(labels, len(labels))
+        lab_shuffle = np.random.sample(labels, len(labels))
 
         run_val = num_runs(lab_shuffle, MST_connections)
 
