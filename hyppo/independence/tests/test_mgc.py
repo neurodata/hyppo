@@ -38,7 +38,7 @@ class TestMGCStat(object):
         "sim, obs_stat, obs_pvalue",
         [
             (linear, 0.463, 1 / 1000),  # test linear simulation
-            (spiral, 0.091, 0.003),  # test spiral simulation
+            (spiral, 0.091, 1 / 1000),  # test spiral simulation
         ],
     )
     def test_fived(self, sim, obs_stat, obs_pvalue):
