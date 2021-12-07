@@ -132,7 +132,7 @@ class MaxMargin(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1, auto=True):
+    def test(self, x, y, reps=1000, workers=1, auto=True, random_state=None):
         r"""
         Calculates the Maximal Margin test statistic and p-value.
 
@@ -201,7 +201,7 @@ class MaxMargin(IndependenceTest):
             self.null_dist = None
         else:
             stat, pvalue = super(MaxMargin, self).test(
-                x, y, reps, workers, is_distsim=False
+                x, y, reps, workers, is_distsim=False, random_state=None
             )
 
         return IndependenceTestOutput(stat, pvalue)

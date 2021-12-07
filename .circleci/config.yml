@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codecov: codecov/codecov@1.0.2
+  codecov: codecov/codecov@3.1.1
 
 jobs:
   build:
@@ -119,6 +119,9 @@ workflows:
       - build:
           name: "v3.8"
           version: "3.8"
+      - build:
+          name: "v3.9"
+          version: "3.9"
       - test-module:
           name: "independence"
           module: "independence"

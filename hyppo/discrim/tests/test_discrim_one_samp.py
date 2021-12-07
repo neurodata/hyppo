@@ -32,6 +32,28 @@ class TestOneSample:
         assert_almost_equal(stat, obs_stat, decimal=3)
         assert_almost_equal(p, obs_p, decimal=3)
 
+    def test_rep_same_one(self):
+        # tests reproducibility for indiscriminable subjects
+        x = np.ones((100, 2), dtype=float)
+        y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
+
+        stat1, p1 = DiscrimOneSample().test(x, y, random_state=2)
+        stat2, p2 = DiscrimOneSample().test(x, y, random_state=2)
+
+        assert stat1 == stat2
+        assert p1 == p2
+
+    def test_rep_diff_one(self):
+        # tests reproducibility for discriminable subjects
+        x = np.concatenate((np.zeros((50, 2)), np.ones((50, 2))), axis=0)
+        y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
+
+        stat1, p1 = DiscrimOneSample().test(x, y, random_state=3)
+        stat2, p2 = DiscrimOneSample().test(x, y, random_state=3)
+
+        assert stat1 == stat2
+        assert p1 == p2
+
 
 class TestOneSampleWarn:
     """Tests errors and warnings derived from one sample test."""

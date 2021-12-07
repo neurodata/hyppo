@@ -121,7 +121,7 @@ class Energy(KSampleTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1, auto=True):
+    def test(self, x, y, reps=1000, workers=1, auto=True, random_state=None):
         r"""
         Calculates the Energy test statistic and p-value.
 
@@ -179,6 +179,6 @@ class Energy(KSampleTest):
             compute_distkern=self.compute_distance,
             bias=self.bias,
             **self.kwargs
-        ).test(x, y, reps=reps, workers=workers, auto=auto)
+        ).test(x, y, reps=reps, workers=workers, auto=auto, random_state=random_state)
 
         return KSampleTestOutput(stat, pvalue)

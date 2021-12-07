@@ -2,9 +2,9 @@ from typing import NamedTuple
 
 import numpy as np
 from scipy._lib._util import MapWrapper
-
 from ._utils import _CheckInputs
 from .base import DiscriminabilityTest
+from sklearn.utils import check_random_state
 
 
 class DiscrimOneSampleTestOutput(NamedTuple):
@@ -72,7 +72,7 @@ class DiscrimOneSample(DiscriminabilityTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the test statistic and p-value for Discriminability one sample test.
 
@@ -125,9 +125,10 @@ class DiscrimOneSample(DiscriminabilityTest):
         stat = self.statistic(self.x, self.y)
         self.stat = stat
 
+        random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
         # use all cores to create function that parallelizes over number of reps
         mapwrapper = MapWrapper(workers)
-        null_dist = np.array(list(mapwrapper(self._perm_stat, range(reps))))
+        null_dist = np.array(list(mapwrapper(self._perm_stat, random_state)))
         self.null_dist = null_dist
 
         # calculate p-value and significant permutation map through list
@@ -137,7 +138,7 @@ class DiscrimOneSample(DiscriminabilityTest):
 
         return DiscrimOneSampleTestOutput(stat, pvalue)
 
-    def _perm_stat(self, index):  # pragma: no cover
+    def _perm_stat(self, index, random_state=None):  # pragma: no cover
         r"""
         Helper function that is used to calculate parallel permuted test
         statistics.
@@ -152,7 +153,8 @@ class DiscrimOneSample(DiscriminabilityTest):
         perm_stat : float
             Test statistic for each value in the null distribution.
         """
-        permy = np.random.permutation(self.y)
+        rng = check_random_state(random_state)
+        permy = rng.permutation(self.y)
 
         perm_stat = self.statistic(self.x, permy)
 

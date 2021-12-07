@@ -6,6 +6,7 @@ from scipy.stats.distributions import chi2
 from scipy.stats.stats import _contains_nan
 from sklearn.metrics import pairwise_distances
 from sklearn.metrics.pairwise import pairwise_kernels
+from sklearn.utils import check_random_state
 
 
 def contains_nan(a):  # from scipy
@@ -316,7 +317,9 @@ class _PermTree(object):
                 root.add_child(child_node)
                 self._add_levels(child_node, perm_blocks[idxs, 1:], indices[idxs])
 
-    def _permute_level(self, node):
+    def _permute_level(self, node, rng=None):
+        if rng is None:
+            rng = np.random
         if len(node.get_children()) == 0:
             return [node.index]
         else:
@@ -329,13 +332,11 @@ class _PermTree(object):
             shuffle_children = [i for i, label in enumerate(labels) if label >= 0]
             indices = np.asarray(indices)
             if len(shuffle_children) > 1:
-                indices[shuffle_children] = indices[
-                    np.random.permutation(shuffle_children)
-                ]
+                indices[shuffle_children] = indices[rng.permutation(shuffle_children)]
             return np.concatenate(indices)
 
-    def permute_indices(self):
-        return self._permute_level(self.root)[self._index_order]
+    def permute_indices(self, rng=None):
+        return self._permute_level(self.root, rng)[self._index_order]
 
     def original_indices(self):
         return np.arange(len(self._index_order))
@@ -352,22 +353,25 @@ class _PermGroups(object):
         else:
             self.perm_tree = _PermTree(perm_blocks)
 
-    def __call__(self):
+    def __call__(self, rng=None):
+        if rng is None:
+            rng = np.random
         if self.perm_tree is None:
-            order = np.random.permutation(self.n)
+            order = rng.permutation(self.n)
         else:
-            order = self.perm_tree.permute_indices()
+            order = self.perm_tree.permute_indices(rng)
 
         return order
 
 
 # p-value computation
-def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None):
+def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None, random_state=None):
     """Permute the test statistic"""
-    if not permuter:
-        order = np.random.permutation(y.shape[0])
+    rng = check_random_state(random_state)
+    if permuter is None:
+        order = rng.permutation(y.shape[0])
     else:
-        order = permuter()
+        order = permuter(rng)
 
     if is_distsim:
         permy = y[order][:, order]
@@ -379,7 +383,16 @@ def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None):
     return perm_stat
 
 
-def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_blocks=None):
+def perm_test(
+    calc_stat,
+    x,
+    y,
+    reps=1000,
+    workers=1,
+    is_distsim=True,
+    perm_blocks=None,
+    random_state=None,
+):
     """
     Permutation test for the p-value of a nonparametric test.
 
@@ -416,7 +429,6 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
         test, samples within the same final leaf node are exchangeable
         and blocks of samples with a common parent node are exchangeable. If a
         column value is negative, the resulting block is unexchangeable.
-
     Returns
     -------
     stat : float
@@ -429,13 +441,23 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
     # calculate observed test statistic
     stat = calc_stat(x, y)
 
+    # make RandomState seeded array
+    if random_state is not None:
+        rng = check_random_state(random_state)
+        random_state = rng.randint(np.iinfo(np.int32).max, size=reps)
+
+    # make random array
+    else:
+        random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
+
     # calculate null distribution
     permuter = _PermGroups(y, perm_blocks)
+
     null_dist = np.array(
         Parallel(n_jobs=workers)(
             [
-                delayed(_perm_stat)(calc_stat, x, y, is_distsim, permuter)
-                for _ in range(reps)
+                delayed(_perm_stat)(calc_stat, x, y, is_distsim, permuter, rng)
+                for rng in random_state
             ]
         )
     )

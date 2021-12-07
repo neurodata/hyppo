@@ -20,6 +20,15 @@ class TestDcorrStat:
         assert_almost_equal(stat2, obs_stat, decimal=2)
         assert_almost_equal(pvalue1, obs_pvalue, decimal=2)
 
+    @pytest.mark.parametrize("n", [100, 200])
+    def test_rep(self, n):
+        x, y = linear(n, 1)
+        stat1, pvalue1 = Dcorr().test(x, y, random_state=2)
+        stat2, pvalue2 = Dcorr().test(x, y, random_state=2)
+
+        assert stat1 == stat2
+        assert pvalue1 == pvalue2
+
 
 class TestDcorrTypeIError:
     def test_oned(self):

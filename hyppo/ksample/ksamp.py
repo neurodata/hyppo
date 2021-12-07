@@ -236,7 +236,7 @@ class KSample(KSampleTest):
 
         return self.indep_test.statistic(u, v)
 
-    def test(self, *args, reps=1000, workers=1, auto=True):
+    def test(self, *args, reps=1000, workers=1, auto=True, random_state=None):
         r"""
         Calculates the *k*-sample test statistic and p-value.
 
@@ -298,4 +298,6 @@ class KSample(KSampleTest):
         if self.indep_test_name in ["dcorr", "hsic"]:
             kwargs = {"auto": auto}
 
-        return self.indep_test.test(u, v, reps, workers, **kwargs)
+        return self.indep_test.test(
+            u, v, reps, workers, **kwargs, random_state=random_state
+        )
