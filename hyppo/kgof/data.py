@@ -10,6 +10,7 @@ from abc import ABC, abstractmethod
 import autograd.numpy as np
 import _utils
 import scipy.stats as stats
+from numpy.random import default_rng
 
 class Data(object):
     """
@@ -127,12 +128,12 @@ class DSIsotropicNormal(DataSource):
         self.variance = variance
 
     def sample(self, n, seed=2):
-        with _utils.NumpySeedContext(seed=seed):
-            d = len(self.mean)
-            mean = self.mean
-            variance = self.variance
-            X = np.random.randn(n, d)*np.sqrt(variance) + mean
-            return Data(X)
+        rng = default_rng(seed)
+        d = len(self.mean)
+        mean = self.mean
+        variance = self.variance
+        X = rng.standard_normal(size=(n, d))*np.sqrt(variance) + mean
+        return Data(X)
 
 
 class DSNormal(DataSource):
@@ -150,13 +151,13 @@ class DSNormal(DataSource):
         assert cov.shape[0] == cov.shape[1]
 
     def sample(self, n, seed=3):
-        with _utils.NumpySeedContext(seed=seed):
-            mvn = stats.multivariate_normal(self.mean, self.cov)
-            X = mvn.rvs(size=n)
-            if len(X.shape) ==1:
-                # This can happen if d=1
-                X = X[:, np.newaxis]
-            return Data(X)
+        rng = default_rng(seed)
+        mvn = stats.multivariate_normal(self.mean, self.cov)
+        X = mvn.rvs(size=n)
+        if len(X.shape) ==1:
+            # This can happen if d=1
+            X = X[:, np.newaxis]
+        return Data(X)
 
 class DSIsoGaussianMixture(DataSource):
     """
@@ -190,21 +191,21 @@ class DSIsoGaussianMixture(DataSource):
         variances = self.variances
         k, d = self.means.shape
         sam_list = []
-        with _utils.NumpySeedContext(seed=seed):
-            # counts for each mixture component 
-            counts = np.random.multinomial(n, pmix, size=1)
+        rng = default_rng(seed)
+        # counts for each mixture component 
+        counts = rng.multinomial(n, pmix, size=1)
 
-            # counts is a 2d array
-            counts = counts[0]
+        # counts is a 2d array
+        counts = counts[0]
 
-            # For each component, draw from its corresponding mixture component.            
-            for i, nc in enumerate(counts):
-                # Sample from ith component
-                sam_i = np.random.randn(nc, d)*np.sqrt(variances[i]) + means[i]
-                sam_list.append(sam_i)
-            sample = np.vstack(sam_list)
-            assert sample.shape[0] == n
-            np.random.shuffle(sample)
+        # For each component, draw from its corresponding mixture component.            
+        for i, nc in enumerate(counts):
+            # Sample from ith component
+            sam_i = rng.standard_normal(size=(nc, d))*np.sqrt(variances[i]) + means[i]
+            sam_list.append(sam_i)
+        sample = np.vstack(sam_list)
+        assert sample.shape[0] == n
+        np.random.shuffle(sample)
         return Data(sample)
 
 class DSGaussianMixture(DataSource):
@@ -240,23 +241,23 @@ class DSGaussianMixture(DataSource):
         variances = self.variances
         k, d = self.means.shape
         sam_list = []
-        with _utils.NumpySeedContext(seed=seed):
-            # counts for each mixture component 
-            counts = np.random.multinomial(n, pmix, size=1)
+        rng = default_rng(seed)
+        # counts for each mixture component 
+        counts = rng.multinomial(n, pmix, size=1)
 
-            # counts is a 2d array
-            counts = counts[0]
+        # counts is a 2d array
+        counts = counts[0]
 
-            # For each component, draw from its corresponding mixture component.            
-            for i, nc in enumerate(counts):
-                cov = variances[i]
-                mnorm = stats.multivariate_normal(means[i], cov)
-                # Sample from ith component
-                sam_i = mnorm.rvs(size=nc)
-                sam_list.append(sam_i)
-            sample = np.vstack(sam_list)
-            assert sample.shape[0] == n
-            np.random.shuffle(sample)
+        # For each component, draw from its corresponding mixture component.            
+        for i, nc in enumerate(counts):
+            cov = variances[i]
+            mnorm = stats.multivariate_normal(means[i], cov)
+            # Sample from ith component
+            sam_i = mnorm.rvs(size=nc)
+            sam_list.append(sam_i)
+        sample = np.vstack(sam_list)
+        assert sample.shape[0] == n
+        rng.shuffle(sample)
         return Data(sample)
 
 
@@ -276,9 +277,9 @@ class DSLaplace(DataSource):
         self.scale = scale
 
     def sample(self, n, seed=4):
-        with _utils.NumpySeedContext(seed=seed):
-            X = np.random.laplace(loc=self.loc, scale=self.scale, size=(n, self.d))
-            return Data(X)
+        rng = default_rng(seed)
+        X = rng.laplace(loc=self.loc, scale=self.scale, size=(n, self.d))
+        return Data(X)
 
 class DSTDistribution(DataSource):
     """
@@ -292,10 +293,10 @@ class DSTDistribution(DataSource):
         self.df = df 
 
     def sample(self, n, seed=5):
-        with _utils.NumpySeedContext(seed=seed):
-            X = stats.t.rvs(df=self.df, size=n)
-            X = X[:, np.newaxis]
-            return Data(X)
+        rng = default_rng(seed)
+        X = stats.t.rvs(df=self.df, size=n)
+        X = X[:, np.newaxis]
+        return Data(X)
 
 
 class DSGaussBernRBM(DataSource):
@@ -367,15 +368,15 @@ class DSGaussBernRBM(DataSource):
         dx = len(b)
 
         # Initialize the state of the Markov chain
-        with _utils.NumpySeedContext(seed=seed):
-            X = np.random.randn(n, dx)
-            H = np.random.randint(1, 2, (n, dh))*2 - 1.0
+        rng = default_rng(seed)
+        X = rng.standard_normal(n, dx)
+        H = rng.integers(1, 2, (n, dh))*2 - 1.0
 
-            # burn-in
-            for t in range(self.burnin):
-                X, H = self._blocked_gibbs_next(X, H)
-            # sampling
+        # burn-in
+        for t in range(self.burnin):
             X, H = self._blocked_gibbs_next(X, H)
+        # sampling
+        X, H = self._blocked_gibbs_next(X, H)
         if return_latent:
             return Data(X), H
         else:
@@ -407,11 +408,11 @@ class DSISIPoissonLinear(DataSource):
         return F_l
         
     def sample(self, n, seed=3):
-        with _utils.NumpySeedContext(seed=seed):
-            X = self.nonhom_linear(size=n)
-            if len(X.shape) ==1:
-                # This can happen if d=1
-                X = X[:, np.newaxis]
+        rng = default_rng(seed)
+        X = self.nonhom_linear(size=n)
+        if len(X.shape) ==1:
+            # This can happen if d=1
+            X = X[:, np.newaxis]
             return Data(X)
 
 class DSISIPoissonSine(DataSource):
@@ -483,12 +484,12 @@ class DSISIPoissonSine(DataSource):
         return t
 
     def sample(self, n, seed=3):
-        with _utils.NumpySeedContext(seed=seed):
-            X = self.nonhom_sine(size=n)
-            if len(X.shape) ==1:
-                # This can happen if d=1
-                X = X[:, np.newaxis]
-            return Data(X)
+        rng = default_rng(seed)
+        X = self.nonhom_sine(size=n)
+        if len(X.shape) ==1:
+            # This can happen if d=1
+            X = X[:, np.newaxis]
+        return Data(X)
 
 class DSGamma(DataSource):
     """
@@ -503,12 +504,12 @@ class DSGamma(DataSource):
         self.beta = beta
 
     def sample(self, n, seed=3):
-        with _utils.NumpySeedContext(seed=seed):
-            X = stats.gamma.rvs(self.alpha, size=n, scale = old_div(1.0,self.beta))
-            if len(X.shape) ==1:
-                # This can happen if d=1
-                X = X[:, np.newaxis]
-            return Data(X)
+        rng = default_rng(seed)
+        X = stats.gamma.rvs(self.alpha, size=n, scale = old_div(1.0,self.beta))
+        if len(X.shape) ==1:
+            # This can happen if d=1
+            X = X[:, np.newaxis]
+        return Data(X)
 
 
 class DSLogGamma(DataSource):
@@ -524,12 +525,12 @@ class DSLogGamma(DataSource):
         self.beta = beta
 
     def sample(self, n, seed=3):
-        with _utils.NumpySeedContext(seed=seed):
-            X = np.log(stats.gamma.rvs(self.alpha, size=n, scale = old_div(1.0,self.beta)))
-            if len(X.shape) ==1:
-                # This can happen if d=1
-                X = X[:, np.newaxis]
-            return Data(X)
+        rng = default_rng(seed)
+        X = np.log(stats.gamma.rvs(self.alpha, size=n, scale = old_div(1.0,self.beta)))
+        if len(X.shape) ==1:
+            # This can happen if d=1
+            X = X[:, np.newaxis]
+        return Data(X)
 
 class DSISILogPoissonLinear(DataSource):
     """
@@ -554,12 +555,12 @@ class DSISILogPoissonLinear(DataSource):
         return F_l
         
     def sample(self, n, seed=3):
-        with _utils.NumpySeedContext(seed=seed):
-            X = np.log(self.nonhom_linear(size=n))
-            if len(X.shape) ==1:
-                # This can happen if d=1
-                X = X[:, np.newaxis]
-            return Data(X)
+        rng = default_rng(seed)
+        X = np.log(self.nonhom_linear(size=n))
+        if len(X.shape) ==1:
+            # This can happen if d=1
+            X = X[:, np.newaxis]
+        return Data(X)
 
 class DSISIPoisson2D(DataSource):
     """
@@ -604,12 +605,12 @@ class DSISIPoisson2D(DataSource):
         return X_acc
 
     def sample(self, n, seed=3):
-        with _utils.NumpySeedContext(seed=seed):
-            X = self.inh2d(lamb_bar=n)
-            if len(X.shape) ==1:
-                # This can happen if d=1
-                X = X[:, np.newaxis]
-            return Data(X)
+        rng = default_rng(seed)
+        X = self.inh2d(lamb_bar=n)
+        if len(X.shape) ==1:
+            # This can happen if d=1
+            X = X[:, np.newaxis]
+        return Data(X)
 
 class DSISISigmoidPoisson2D(DataSource):
     """
@@ -657,12 +658,12 @@ class DSISISigmoidPoisson2D(DataSource):
         return X_acc
 
     def sample(self, n, seed=3):
-        with _utils.NumpySeedContext(seed=seed):
-            X = np.log(old_div(1,self.inh2d(lamb_bar=n))-1)
-            if len(X.shape) ==1:
-                # This can happen if d=1
-                X = X[:, np.newaxis]
-            return Data(X)
+        rng = default_rng(seed)
+        X = np.log(old_div(1,self.inh2d(lamb_bar=n))-1)
+        if len(X.shape) ==1:
+            # This can happen if d=1
+            X = X[:, np.newaxis]
+        return Data(X)
 
 class DSPoisson2D(DataSource):
     """
@@ -710,13 +711,13 @@ class DSPoisson2D(DataSource):
         return X_acc
 
     def sample(self, n, seed=3):
-        with _utils.NumpySeedContext(seed=seed):
-            X_gmm, llh = self.gmm_sample(N=n)
-            X = X_gmm
-            if len(X.shape) ==1:
-                # This can happen if d=1
-                X = X[:, np.newaxis]
-            return Data(X)
+        rng = default_rng(seed)
+        X_gmm, llh = self.gmm_sample(N=n)
+        X = X_gmm
+        if len(X.shape) ==1:
+            # This can happen if d=1
+            X = X[:, np.newaxis]
+        return Data(X)
 
 class DSResample(DataSource):
     """
@@ -765,30 +766,30 @@ class DSGaussCosFreqs(DataSource):
         d = len(self.freqs)
         sigma2 = self.sigma2
         freqs = self.freqs
-        with _utils.NumpySeedContext(seed=seed):
-            # rejection sampling
-            sam = np.zeros((n, d))
-            # sample block_size*d at a time.
-            block_size = 500
-            from_ind = 0
-            while from_ind < n:
-                # The proposal q is N(0, sigma2*I)
-                X = np.random.randn(block_size, d)*np.sqrt(sigma2)
-                q_un = np.exp(old_div(-np.sum(X**2, 1),(2.0*sigma2)))
-                # unnormalized density p
-                p_un = q_un*(1+np.prod(np.cos(X*freqs), 1))
-                c = 2.0
-                I = stats.uniform.rvs(size=block_size) < old_div(p_un,(c*q_un))
+        rng = default_rng(seed)
+        # rejection sampling
+        sam = np.zeros((n, d))
+        # sample block_size*d at a time.
+        block_size = 500
+        from_ind = 0
+        while from_ind < n:
+            # The proposal q is N(0, sigma2*I)
+            X = rng.standard_normal(size=(block_size, d))*np.sqrt(sigma2)
+            q_un = np.exp(old_div(-np.sum(X**2, 1),(2.0*sigma2)))
+            # unnormalized density p
+            p_un = q_un*(1+np.prod(np.cos(X*freqs), 1))
+            c = 2.0
+            I = stats.uniform.rvs(size=block_size) < old_div(p_un,(c*q_un))
 
-                # accept 
-                accepted_count = np.sum(I)
-                to_take = min(n - from_ind, accepted_count)
-                end_ind = from_ind + to_take
+            # accept 
+            accepted_count = np.sum(I)
+            to_take = min(n - from_ind, accepted_count)
+            end_ind = from_ind + to_take
 
-                AX = X[I, :]
-                X_take = AX[:to_take, :]
-                sam[from_ind:end_ind, :] = X_take
-                from_ind = end_ind
+            AX = X[I, :]
+            X_take = AX[:to_take, :]
+            sam[from_ind:end_ind, :] = X_take
+            from_ind = end_ind
         return Data(sam)
 
     def dim(self):

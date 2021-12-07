@@ -11,6 +11,7 @@ import logging
 
 import scipy
 import scipy.stats as stats
+from numpy.random import default_rng
 
 class FSSD(GofTest):
     """
@@ -237,18 +238,17 @@ class FSSD(GofTest):
         block_size = max(20, int(old_div(1000.0,(d*J))))
         fssds = np.zeros(n_simulate)
         from_ind = 0
-        with _utils.NumpySeedContext(seed=seed):
-            while from_ind < n_simulate:
-                to_draw = min(block_size, n_simulate-from_ind)
-                # draw chi^2 random variables. 
-                chi2 = np.random.randn(d*J, to_draw)**2
-
-                # an array of length to_draw 
-                sim_fssds = eigs.dot(chi2-1.0)
-                # store 
-                end_ind = from_ind+to_draw
-                fssds[from_ind:end_ind] = sim_fssds
-                from_ind = end_ind
+        rng = default_rng(seed)
+        while from_ind < n_simulate:
+            to_draw = min(block_size, n_simulate-from_ind)
+            # draw chi^2 random variables. 
+            chi2 = rng.standard_normal(size=(d*J, to_draw))**2
+            # an array of length to_draw 
+            sim_fssds = eigs.dot(chi2-1.0)
+            # store 
+            end_ind = from_ind+to_draw
+            fssds[from_ind:end_ind] = sim_fssds
+            from_ind = end_ind
         return fssds
 
     @staticmethod

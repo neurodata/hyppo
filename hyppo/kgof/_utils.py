@@ -10,25 +10,7 @@ from builtins import object
 import autograd.numpy as np
 import time
 from sklearn.metrics.pairwise import euclidean_distances
-
-class NumpySeedContext(object):
-    """
-    A context manager to reset the random seed by numpy.random.seed(..).
-    Set the seed back at the end of the block.
-
-    From: https://github.com/wittawatj/fsic-test 
-    """
-    def __init__(self, seed):
-        self.seed = seed 
-
-    def __enter__(self):
-        rstate = np.random.get_state()
-        self.cur_state = rstate
-        np.random.seed(self.seed)
-        return self
-
-    def __exit__(self, *args):
-        np.random.set_state(self.cur_state)
+from numpy.random import default_rng
 
 def constrain(val, min_val, max_val):
     return min(max_val, max(min_val, val))
@@ -91,8 +73,8 @@ def subsample_ind(n, k, seed=32):
     Return a list of indices to choose k out of n without replacement
 
     """
-    with NumpySeedContext(seed=seed):
-        ind = np.random.choice(n, k, replace=False)
+    rng = default_rng(seed)
+    ind = rng.choice(n, k, replace=False)
     return ind
     
 def fit_gaussian_draw(X, J, seed=28, reg=1e-7, eig_pow=1.0):
@@ -106,18 +88,18 @@ def fit_gaussian_draw(X, J, seed=28, reg=1e-7, eig_pow=1.0):
     
     From: https://github.com/wittawatj/fsic-test
     """
-    with NumpySeedContext(seed=seed):
-        d = X.shape[1]
-        mean_x = np.mean(X, 0)
-        cov_x = np.cov(X.T)
-        if d==1:
-            cov_x = np.array([[cov_x]])
-        [evals, evecs] = np.linalg.eig(cov_x)
-        evals = np.maximum(0, np.real(evals))
-        assert np.all(np.isfinite(evals))
-        evecs = np.real(evecs)
-        shrunk_cov = evecs.dot(np.diag(evals**eig_pow)).dot(evecs.T) + reg*np.eye(d)
-        V = np.random.multivariate_normal(mean_x, shrunk_cov, J)
+    rng = default_rng(seed)
+    d = X.shape[1]
+    mean_x = np.mean(X, 0)
+    cov_x = np.cov(X.T)
+    if d==1:
+        cov_x = np.array([[cov_x]])
+    [evals, evecs] = np.linalg.eig(cov_x)
+    evals = np.maximum(0, np.real(evals))
+    assert np.all(np.isfinite(evals))
+    evecs = np.real(evecs)
+    shrunk_cov = evecs.dot(np.diag(evals**eig_pow)).dot(evecs.T) + reg*np.eye(d)
+    V = rng.multivariate_normal(mean_x, shrunk_cov, J)
     return V
 
 def outer_rows(X, Y):
