@@ -49,24 +49,22 @@ class FSSD(GofTest):
         """
         dat: an instance of Data
         """
-        with _utils.ContextTimer() as t:
-            alpha = self.alpha
-            null_sim = self.null_sim
-            n_simulate = null_sim.n_simulate
-            X = dat.data()
-            n = X.shape[0]
-            J = self.V.shape[0]
+        alpha = self.alpha
+        null_sim = self.null_sim
+        n_simulate = null_sim.n_simulate
+        X = dat.data()
+        n = X.shape[0]
+        J = self.V.shape[0]
 
-            nfssd, fea_tensor = self.statistic(dat, return_feature_tensor=True)
-            sim_results = null_sim.simulate(self, dat, fea_tensor)
-            arr_nfssd = sim_results['sim_stats']
+        nfssd, fea_tensor = self.statistic(dat, return_feature_tensor=True)
+        sim_results = null_sim.simulate(self, dat, fea_tensor)
+        arr_nfssd = sim_results['sim_stats']
 
-            # approximate p-value with the permutations 
-            pvalue = np.mean(arr_nfssd > nfssd)
+        # approximate p-value with the permutations 
+        pvalue = np.mean(arr_nfssd > nfssd)
 
         results = {'alpha': self.alpha, 'pvalue': pvalue, 'test_stat': nfssd,
                 'h0_rejected': pvalue < alpha, 'n_simulate': n_simulate,
-                'time_secs': t.secs, 
                 }
         if return_simulated_stats:
             results['sim_stats'] = arr_nfssd

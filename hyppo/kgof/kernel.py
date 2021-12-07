@@ -129,8 +129,6 @@ class KSTKernel(ABC):
         """
         raise NotImplementedError()
 
-# end KSTKernel
-
 class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
     """
     The standard isotropic Gaussian kernel.

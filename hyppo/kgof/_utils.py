@@ -11,30 +11,6 @@ import autograd.numpy as np
 import time
 from sklearn.metrics.pairwise import euclidean_distances
 
-class ContextTimer(object):
-    """
-    A class used to time an execution of a code snippet. 
-    Use it with with .... as ...
-    For example, 
-        with ContextTimer() as t:
-            # do something 
-        time_spent = t.secs
-    From https://www.huyng.com/posts/python-performance-analysis
-    """
-
-    def __init__(self, verbose=False):
-        self.verbose = verbose
-
-    def __enter__(self):
-        self.start = time.time()
-        return self
-
-    def __exit__(self, *args):
-        self.end = time.time()
-        self.secs = self.end - self.start 
-        if self.verbose:
-            print('elapsed time: %f ms' % (self.secs*1000))
-
 class NumpySeedContext(object):
     """
     A context manager to reset the random seed by numpy.random.seed(..).
@@ -92,20 +68,6 @@ def meddistance(X, subsample=None, mean_on_fail=True):
         np.random.set_state(rand_state)
         # recursion just one
         return meddistance(X[ind, :], None, mean_on_fail)
-
-
-def is_real_num(X):
-    """return true if x is a real number. 
-    Work for a numpy array as well. Return an array of the same dimension."""
-    def each_elem_true(x):
-        try:
-            float(x)
-            return not (np.isnan(x) or np.isinf(x))
-        except:
-            return False
-    f = np.vectorize(each_elem_true)
-    return f(X)
-    
 
 def tr_te_indices(n, tr_proportion, seed=9282 ):
     """Get two logical vectors for indexing train/test points.

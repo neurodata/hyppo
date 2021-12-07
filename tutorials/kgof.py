@@ -51,7 +51,6 @@ is the standard Gaussian.
 
 import data 
 import density
-from gaussfssd import GaussFSSD
 import kernel 
 import _utils
 import matplotlib
@@ -122,7 +121,7 @@ opts = {
 
 # make sure to give train (NOT test).
 # do the optimization with the options in opts.
-V_opt, gw_opt, opt_info = GaussFSSD.optimize_auto_init(p, train, J, **opts)
+# V_opt, gw_opt, opt_info = GaussFSSD.optimize_auto_init(p, train, J, **opts)
 
 ########################################################################################
 # The optimization procedure returns --
@@ -132,19 +131,19 @@ V_opt, gw_opt, opt_info = GaussFSSD.optimize_auto_init(p, train, J, **opts)
 #    gw_opt: optimized Gaussian width (for the Gaussian kernel). A floating point number.
 #    opt_info: a dictionary containing information gathered during the optimization.
 
-opt_info
+# opt_info
 
 ########################################################################################
 # Use these optimized parameters to construct the FSSD test. The test using a Gaussian 
 # kernel is implemented in :class: `hyppo.kgof.goftest.GaussFSSD`.
 
 alpha = 0.01 # significance level of the test (99% confidence)
-fssd_opt = GaussFSSD(p, gw_opt, V_opt, alpha)
+## fssd_opt = GaussFSSD(p, gw_opt, V_opt, alpha)
 
 # Perform the goodness-of-fit test on the testing data test.
 # return a dictionary of testing results
-test_result = fssd_opt.test(test)
-test_result
+## test_result = fssd_opt.test(test)
+## test_result
 
 ########################################################################################
 # It can be seen that the test correctly rejects :math:`H_0` with a very small p-value.
