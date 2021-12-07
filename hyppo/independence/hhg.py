@@ -19,11 +19,12 @@ class HHG(IndependenceTest):
     :footcite:p:`hellerConsistentMultivariateTest2013`. It can also operate on multiple
     dimensions :footcite:p:`hellerConsistentMultivariateTest2013`.
 
-    When the data is 1 dimension, the fast version of this test is run, based on 
+    The fast version of this test can also be run, based on 
     Heller 2016 paper on multivariate tests based on univariate tests. 
     The test statistic is the Hoeffding's dependence statistic from the distances of
-    sample points from a single center point. Center point is either random sample
-    point or center of mass of the samples.
+    sample points from a single center point. Center point is the center of mass of the samples.
+    This version has relatively low power, but performs well in scenarios where the center of
+    mass carries a lot of information (e.g. circular or elliptical geometry).
 
     Parameters
     ----------
@@ -53,11 +54,7 @@ class HHG(IndependenceTest):
         function.
 
     fast : boolean, default: False
-        Used to force fast version of test if desired.
-
-    pointer: string, default: "sample"
-        For fast test. Single center point used for distance calculations from sample
-        points. Choice must be 'sample' or 'center'.
+        Used to opt into fast version of test if desired.
 
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
@@ -115,9 +112,8 @@ class HHG(IndependenceTest):
     For the fast version of the test, the test statistic is derived as follows:
 
     Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
-    :math:`X` and :math:`Y`. A center point - either a randomly selected pair of 
-    points or the center of mass of points in 'X' and 'Y' - is chosen. 
-    For every sample :math:`i`, calculate the distances from the center point
+    :math:`X` and :math:`Y`. A center point - the center of mass of points in 'X' and 'Y' 
+    - is chosen. For every sample :math:`i`, calculate the distances from the center point
     in :math:`x` and :math:`y` and denote this as :math:`d_x(x_i)` 
     and :math:`d_y(y_i)`. This will create a 1D collection of distances for each
     sample group.
@@ -141,8 +137,8 @@ class HHG(IndependenceTest):
     and :math:`Q_{i}` is the bivariate rank = 1 plus the number of points with both x and y
     values less than the :math:`i`-th point.
 
-    D ranges between -0.5 and 1, with 1 indicating complete dependence. D is notably sensitive to ties
-    and may get smaller the more pairs of variables with identical values.
+    D ranges between -0.5 and 1, with 1 indicating complete dependence. D is notably 
+    sensitive to ties and may get smaller the more pairs of variables with identical values.
 
     The p-value returned is calculated using a permutation test using 
     :math:`hyppo.tools.perm_test`.
@@ -152,12 +148,11 @@ class HHG(IndependenceTest):
     .. footbibliography::
     """
 
-    def __init__(self, compute_distance="euclidean", fast = False, pointer="sample", **kwargs):
+    def __init__(self, compute_distance="euclidean", fast = False, **kwargs):
         self.is_distance = False
         if not compute_distance:
             self.is_distance = True
         self.fast = fast
-        self.pointer = fastpointer
         IndependenceTest.__init__(self, compute_distance=compute_distance, **kwargs)
 
     def statistic(self, x, y):
@@ -197,13 +192,9 @@ class HHG(IndependenceTest):
             self.stat = stat
 
         else:
-            #Fast HHG - assumes center point is random sample
+            #Fast HHG
             if not self.is_distance:
-                if self.pointer == "sample":
-                    sample = np.random.choice(x.shape[0], 1, replace=False)
-                    pointer = (x[sample],y[sample])
-                elif self.pointer == "center":
-                    pointer = (np.mean(x, axis=0), np.mean(y, axis=0))
+                pointer = (np.mean(x, axis=0), np.mean(y, axis=0))
                 zx, zy = pointer
                 zx = np.array(zx).reshape(1, -1)
                 zy = np.array(zy).reshape(1, -1)
@@ -274,13 +265,8 @@ class HHG(IndependenceTest):
         x, y = check_input()
 
         #Fast HHG Test
-        if self.fast or (x.shape[1] == 1 
-            and y.shape[1] == 1):
-            if self.pointer == "sample":
-                    sample = np.random.choice(x.shape[0], 1, replace=False)
-                    pointer = (x[sample],y[sample])
-            elif self.pointer == "center":
-                    pointer = (np.mean(x, axis=0), np.mean(y, axis=0))
+        if self.fast:
+            pointer = (np.mean(x, axis=0), np.mean(y, axis=0))
             zx, zy = pointer
             zx = np.array(zx).reshape(1, -1)
             zy = np.array(zy).reshape(1, -1)
@@ -288,7 +274,7 @@ class HHG(IndependenceTest):
             x = distx[distx != 0]
             y = disty[disty != 0]
             self.is_distance = True
-            stat, pvalue = super(HHG, self).test(x, y, reps, workers, is_distsim =False)
+            stat, pvalue = super(HHG, self).test(x, y, reps, workers, is_distsim=False)
 
         else:
             x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)

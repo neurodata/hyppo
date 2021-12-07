@@ -69,7 +69,6 @@ Now, let's look at unique properties of some of the tests in :mod:`hyppo.indepen
 #
 # **Heller Heller Gorfine (HHG)** is a powerful multivariate independence test that
 # compares intersample distance, and computes a Pearson statistic.
-# More details can be found in :class:`hyppo.independence.HHG`.
 #
 # .. note::
 #
@@ -77,7 +76,25 @@ Now, let's look at unique properties of some of the tests in :mod:`hyppo.indepen
 #    :Cons: - Very slow (computationally complex)
 #           - Test statistic not very interpretable, not between (-1, 1)
 #
-# This test runs like :ref:`any other test<general indep>`.
+# An alternate fast HHG test is also available, based on a paper that proposed multivariate 
+# tests of association through univariate tests. 
+# This test obtains distance of all samples from the center of mass of the sample group and 
+# then computes the Hoeffding's D statistic (a univariate independence test).
+#
+# .. note::
+#
+#    :Pros: - High power when the center of mass provides large amount of information
+#           - Fast due to univariate simplicity
+#           
+#    :Cons: - Not accurate when compared to other tests in most situations
+#           - Inherits assumptions from Hoeffding's D test, such as continuity
+#             of distance distribution
+#           - Non-informative if measure of center point is zero
+#           - Statistic is sensitive to ties in computed distance
+#
+# More details can be found in :class:`hyppo.independence.HHG`.
+#
+# Both tests run like :ref:`any other test<general indep>`.
 #
 # ------------
 #
