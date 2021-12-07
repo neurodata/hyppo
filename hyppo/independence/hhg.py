@@ -4,7 +4,7 @@ from scipy.sparse.construct import random
 
 from ..tools import compute_dist
 from ._utils import _CheckInputs
-from .base import IndependenceTest
+from .base import IndependenceTest, IndependenceTestOutput
 from scipy.spatial.distance import cdist
 from scipy.stats import rankdata
 
