@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 
 from .. import fssd, data, density, _utils, kernel, h0simulator
 
+from fssd import FSSD
+from numpy.random import default_rng
+
 import scipy.stats as stats 
 import unittest
 
@@ -24,7 +27,9 @@ class TestFSSD(unittest.TestCase):
             # only one dimension of the mean is shifted
             draw_mean = mean +0
             draw_variance = variance + 1
-            X = _utils.randn(n, d, seed=seed)*np.sqrt(draw_variance) + draw_mean
+
+            rng = default_rng(seed)
+            X = rng.standard_normal(size=(n, d))*np.sqrt(draw_variance) + draw_mean
             dat = data.Data(X)
 
             # Test
@@ -35,9 +40,9 @@ class TestFSSD(unittest.TestCase):
                 # random test locations
                 V = _utils.fit_gaussian_draw(X, J, seed=seed+1)
                 null_sim = h0simulator.FSSDH0SimCovObs(n_simulate=200, seed=3)
-                fssd = fssd.FSSD(isonorm, k, V, null_sim=null_sim, alpha=alpha)
+                fssd = FSSD(isonorm, k, V, null_sim=null_sim, alpha=alpha)
 
-                tresult = fssd.perform_test(dat, return_simulated_stats=True)
+                tresult = fssd.test(dat, return_simulated_stats=True)
 
                 # assertions
                 self.assertGreaterEqual(tresult['pvalue'], 0)
@@ -55,7 +60,8 @@ class TestFSSD(unittest.TestCase):
 
             draw_mean = mean + 2
             draw_variance = variance + 1
-            X = _utils.randn(n, d, seed=seed)*np.sqrt(draw_variance) + draw_mean
+            rng = default_rng(seed)
+            X = rng.standard_normal(size=(n, d))*np.sqrt(draw_variance) + draw_mean
             dat = data.Data(X)
 
             # Test
@@ -67,10 +73,10 @@ class TestFSSD(unittest.TestCase):
                 V = _utils.fit_gaussian_draw(X, J, seed=seed+1)
 
                 null_sim = h0simulator.FSSDH0SimCovObs(n_simulate=200, seed=3)
-                fssd = fssd.FSSD(isonorm, k, V, null_sim=null_sim, alpha=alpha)
+                fssd = FSSD(isonorm, k, V, null_sim=null_sim, alpha=alpha)
                 fea_tensor = fssd.feature_tensor(X)
 
-                u_mean, u_variance = fssd.FSSD.ustat_h1_mean_variance(fea_tensor)
+                u_mean, u_variance = FSSD.ustat_h1_mean_variance(fea_tensor)
 
                 # assertions
                 self.assertGreaterEqual(u_variance, 0)

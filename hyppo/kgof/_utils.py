@@ -8,7 +8,6 @@ from past.utils import old_div
 from builtins import object
 
 import autograd.numpy as np
-import time
 from sklearn.metrics.pairwise import euclidean_distances
 from numpy.random import default_rng
 
@@ -44,24 +43,24 @@ def meddistance(X, subsample=None, mean_on_fail=True):
     else:
         assert subsample > 0
         rand_state = np.random.get_state()
-        np.random.seed(9827)
+        rng = default_rng(9827)
         n = X.shape[0]
-        ind = np.random.choice(n, min(subsample, n), replace=False)
+        ind = rng.choice(n, min(subsample, n), replace=False)
         np.random.set_state(rand_state)
         # recursion just one
         return meddistance(X[ind, :], None, mean_on_fail)
 
-def tr_te_indices(n, tr_proportion, seed=9282 ):
+def tr_te_indices(n, tr_proportion, seed=9282):
     """Get two logical vectors for indexing train/test points.
     Return (tr_ind, te_ind)
 
     From: https://github.com/wittawatj/fsic-test
     """
     rand_state = np.random.get_state()
-    np.random.seed(seed)
+    rng = default_rng(seed)
 
     Itr = np.zeros(n, dtype=bool)
-    tr_ind = np.random.choice(n, int(tr_proportion*n), replace=False)
+    tr_ind = rng.choice(n, int(tr_proportion*n), replace=False)
     Itr[tr_ind] = True
     Ite = np.logical_not(Itr)
 

@@ -5,6 +5,10 @@ from past.utils import old_div
 
 import autograd.numpy as np
 import _utils
+import data
+import density
+import kernel
+import h0simulator
 from .base import GofTest
 from h0simulator import FSSDH0SimCovObs
 import logging
