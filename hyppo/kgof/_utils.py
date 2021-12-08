@@ -66,15 +66,6 @@ def tr_te_indices(n, tr_proportion, seed=9282):
 
     np.random.set_state(rand_state)
     return (Itr, Ite)
-
-def subsample_ind(n, k, seed=32):
-    """
-    Return a list of indices to choose k out of n without replacement
-
-    """
-    rng = default_rng(seed)
-    ind = rng.choice(n, k, replace=False)
-    return ind
     
 def fit_gaussian_draw(X, J, seed=28, reg=1e-7, eig_pow=1.0):
     """

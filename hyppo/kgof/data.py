@@ -68,7 +68,8 @@ class Data(object):
         """Subsample without replacement. Return a new Data. """
         if n > self.X.shape[0]:
             raise ValueError('n should not be larger than sizes of X')
-        ind_x = _utils.subsample_ind( self.X.shape[0], n, seed )
+        rng = default_rng(seed)
+        ind_x = rng.choice(self.X.shape[0], n, replace=False)
         if return_ind:
             return Data(self.X[ind_x, :]), ind_x
         else:
