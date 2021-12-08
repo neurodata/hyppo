@@ -3,6 +3,7 @@ from __future__ import print_function, division, unicode_literals, absolute_impo
 
 from builtins import zip, int, range
 from future import standard_library
+
 standard_library.install_aliases()
 from past.utils import old_div
 from builtins import object
@@ -11,8 +12,10 @@ import autograd.numpy as np
 from sklearn.metrics.pairwise import euclidean_distances
 from numpy.random import default_rng
 
+
 def constrain(val, min_val, max_val):
     return min(max_val, max(min_val, val))
+
 
 def meddistance(X, subsample=None, mean_on_fail=True):
     """
@@ -22,7 +25,7 @@ def meddistance(X, subsample=None, mean_on_fail=True):
     ----------
     X : n x d numpy array
     mean_on_fail: True/False. If True, use the mean when the median distance is 0.
-        This can happen especially, when the data are discrete e.g., 0/1, and 
+        This can happen especially, when the data are discrete e.g., 0/1, and
         there are more slightly more 0 than 1. In this case, the m
     Return
     ------
@@ -50,6 +53,7 @@ def meddistance(X, subsample=None, mean_on_fail=True):
         # recursion just one
         return meddistance(X[ind, :], None, mean_on_fail)
 
+
 def tr_te_indices(n, tr_proportion, seed=9282):
     """Get two logical vectors for indexing train/test points.
     Return (tr_ind, te_ind)
@@ -60,37 +64,39 @@ def tr_te_indices(n, tr_proportion, seed=9282):
     rng = default_rng(seed)
 
     Itr = np.zeros(n, dtype=bool)
-    tr_ind = rng.choice(n, int(tr_proportion*n), replace=False)
+    tr_ind = rng.choice(n, int(tr_proportion * n), replace=False)
     Itr[tr_ind] = True
     Ite = np.logical_not(Itr)
 
     np.random.set_state(rand_state)
     return (Itr, Ite)
-    
+
+
 def fit_gaussian_draw(X, J, seed=28, reg=1e-7, eig_pow=1.0):
     """
-    Fit a multivariate normal to the data X (n x d) and draw J points 
-    from the fit. 
+    Fit a multivariate normal to the data X (n x d) and draw J points
+    from the fit.
     - reg: regularizer to use with the covariance matrix
-    - eig_pow: raise eigenvalues of the covariance matrix to this power to construct 
-        a new covariance matrix before drawing samples. Useful to shrink the spread 
+    - eig_pow: raise eigenvalues of the covariance matrix to this power to construct
+        a new covariance matrix before drawing samples. Useful to shrink the spread
         of the variance.
-    
+
     From: https://github.com/wittawatj/fsic-test
     """
     rng = default_rng(seed)
     d = X.shape[1]
     mean_x = np.mean(X, 0)
     cov_x = np.cov(X.T)
-    if d==1:
+    if d == 1:
         cov_x = np.array([[cov_x]])
     [evals, evecs] = np.linalg.eig(cov_x)
     evals = np.maximum(0, np.real(evals))
     assert np.all(np.isfinite(evals))
     evecs = np.real(evecs)
-    shrunk_cov = evecs.dot(np.diag(evals**eig_pow)).dot(evecs.T) + reg*np.eye(d)
+    shrunk_cov = evecs.dot(np.diag(evals ** eig_pow)).dot(evecs.T) + reg * np.eye(d)
     V = rng.multivariate_normal(mean_x, shrunk_cov, J)
     return V
+
 
 def outer_rows(X, Y):
     """
@@ -99,4 +105,4 @@ def outer_rows(X, Y):
     Y: n x dy numpy array
     Return an n x dx x dy numpy array.
     """
-    return np.einsum('ij,ik->ijk', X, Y)
+    return np.einsum("ij,ik->ijk", X, Y)

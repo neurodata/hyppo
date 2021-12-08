@@ -9,8 +9,9 @@ from abc import ABC, abstractmethod
 import data
 import _utils
 import density
-import kernel 
+import kernel
 import h0simulator
+
 
 class GofTest(ABC):
     """
@@ -29,10 +30,10 @@ class GofTest(ABC):
     def test(self, dat):
         """perform the goodness-of-fit test and return values computed in a dictionary:
         {
-            alpha: 0.01, 
-            pvalue: 0.0002, 
-            test_stat: 2.3, 
-            h0_rejected: True, 
+            alpha: 0.01,
+            pvalue: 0.0002,
+            test_stat: 2.3,
+            h0_rejected: True,
             time_secs: ...
         }
         dat: an instance of Data
@@ -43,4 +44,3 @@ class GofTest(ABC):
     def statistic(self, dat):
         """Compute the test statistic"""
         raise NotImplementedError()
-

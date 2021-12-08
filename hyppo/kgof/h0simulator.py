@@ -7,15 +7,16 @@ from future.utils import with_metaclass
 from abc import ABCMeta, abstractmethod
 import autograd.numpy as np
 import fssd
-import data 
+import data
 import density
 
 import scipy
 import scipy.stats as stats
 
+
 class H0Simulator(with_metaclass(ABCMeta, object)):
     """
-    An abstract class representing a simulator to draw samples from the 
+    An abstract class representing a simulator to draw samples from the
     null distribution. For some tests, these are needed to conduct the test.
     """
 
@@ -36,23 +37,25 @@ class H0Simulator(with_metaclass(ABCMeta, object)):
         """
         gof: a GofTest
         dat: a Data (observed data)
-        Simulate from the null distribution and return a dictionary. 
-        One of the item is 
+        Simulate from the null distribution and return a dictionary.
+        One of the item is
             sim_stats: a numpy array of stats.
 
         From: https://github.com/wittawatj/fsic-test
         """
         raise NotImplementedError()
 
+
 class FSSDH0SimCovObs(H0Simulator):
     """
     An asymptotic null distribution simulator for FSSD.  Simulate from the
     asymptotic null distribution given by the weighted sum of chi-squares. The
     eigenvalues (weights) are computed from the covarince matrix wrt. the
-    observed sample. 
+    observed sample.
     This is not the correct null distribution; but has the correct asymptotic
     types-1 error at alpha.
     """
+
     def __init__(self, n_simulate=3000, seed=10):
         super(FSSDH0SimCovObs, self).__init__(n_simulate, seed)
 
@@ -74,23 +77,26 @@ class FSSDH0SimCovObs(H0Simulator):
         # Make sure it is a matrix i.e, np.cov returns a scalar when Tau is
         # 1d.
         cov = np.cov(Tau.T) + np.zeros((1, 1))
-        #cov = Tau.T.dot(Tau/n)
+        # cov = Tau.T.dot(Tau/n)
 
-        arr_nfssd, eigs = fssd.FSSD.list_simulate_spectral(cov, J, n_simulate,
-                seed=self.seed)
-        return {'sim_stats': arr_nfssd}
+        arr_nfssd, eigs = fssd.FSSD.list_simulate_spectral(
+            cov, J, n_simulate, seed=self.seed
+        )
+        return {"sim_stats": arr_nfssd}
+
 
 class FSSDH0SimCovDraw(H0Simulator):
     """
     An asymptotic null distribution simulator for FSSD.  Simulate from the
     asymptotic null distribution given by the weighted sum of chi-squares. The
     eigenvalues (weights) are computed from the covarince matrix wrt. the
-    sample drawn from p (the density to test against). 
-    
+    sample drawn from p (the density to test against).
+
     - The UnnormalizedDensity p is required to implement get_datasource() method.
 
     From: https://github.com/wittawatj/fsic-test
     """
+
     def __init__(self, n_draw=2000, n_simulate=3000, seed=10):
         """
         n_draw: number of samples to draw from the UnnormalizedDensity p
@@ -110,7 +116,7 @@ class FSSDH0SimCovDraw(H0Simulator):
         p = gof.p
         ds = p.get_datasource()
         if ds is None:
-            raise ValueError('DataSource associated with p must be available.')
+            raise ValueError("DataSource associated with p must be available.")
         Xdraw = ds.sample(n=self.n_draw, seed=self.seed)
         _, fea_tensor = gof.compute_stat(Xdraw, return_feature_tensor=True)
 
@@ -121,9 +127,10 @@ class FSSDH0SimCovDraw(H0Simulator):
         Tau = fea_tensor.reshape(n, -1)
         # Make sure it is a matrix i.e, np.cov returns a scalar when Tau is
         # 1d.
-        cov = old_div(Tau.T.dot(Tau),n) + np.zeros((1, 1))
+        cov = old_div(Tau.T.dot(Tau), n) + np.zeros((1, 1))
         n_simulate = self.n_simulate
 
-        arr_nfssd, eigs = fssd.FSSD.list_simulate_spectral(cov, J, n_simulate,
-                seed=self.seed)
-        return {'sim_stats': arr_nfssd}
+        arr_nfssd, eigs = fssd.FSSD.list_simulate_spectral(
+            cov, J, n_simulate, seed=self.seed
+        )
+        return {"sim_stats": arr_nfssd}
