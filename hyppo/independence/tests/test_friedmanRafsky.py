@@ -313,7 +313,7 @@ def num_runs(labels, MST_connections):
 
 
 @jit(nopython=True, cache=True)
- def permutation(nperm, labels, MST_connections):
+ def permutation(perm, labels, MST_connections):
 
     r"""
     Helper function that randomizes labels and calculates respective
