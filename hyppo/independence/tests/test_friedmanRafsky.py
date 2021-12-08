@@ -322,7 +322,7 @@ def num_runs(labels, MST_connections):
     """
 
     runs = []
-    for itr in np.arange(nperm):
+    for itr in np.arange(perm):
 
         lab_shuffle = np.random.sample(labels, len(labels))
 
