@@ -27,6 +27,88 @@ class FriedmanRafsky(IndependenceTest):
     def __init__(self, **kwargs):
 
         IndependenceTest.__init__(self, **kwargs)
+        
+        
+    class Graph:
+
+        r"""
+        Helper class that finds the MST for a given dataset using
+        Kruskal's MST algorithm. Takes in node lables and edge weights
+        before returning all pairs of connected node labels in the
+        resultant MST.
+
+        Parameters
+        ----------
+
+        i,j,weight : int, int, float
+            Input node indeces i, j, and corresponding Euclidean distance
+            edge weight between them.
+
+        Returns
+        -------
+
+        result : list
+            List of pairs of nodes connected in final MST.
+
+        """
+
+        def __init__(self2, vertex):
+
+            self2.V = vertex
+            self2.graph = (
+                []
+            )  # Empty matrix for holding vertices and weights connecting them
+
+        def add_edge(self2, v1, v2, w):
+
+            self2.graph.append(
+                [v1, v2, w]
+            )  # Add method for creating edges between vertices
+
+        def search(
+            self2, parent, i
+        ):  # Method for determining location of vertex in existing tree
+
+            if parent[i] == i:
+                return i
+
+            return self2.search(parent, parent[i])
+
+        def apply_union(
+            self2, parent, rank, x, y
+        ):  # Method for deleting and merging branches
+
+            xroot = self2.search(parent, x)
+            yroot = self2.search(parent, y)
+            if rank[xroot] < rank[yroot]:
+                parent[xroot] = yroot
+            elif rank[xroot] > rank[yroot]:
+                parent[yroot] = xroot
+            else:
+                parent[yroot] = xroot
+                rank[xroot] += 1
+
+        def kruskal(self2):
+
+            result = []
+            i, e = 0, 0
+            self2.graph = sorted(self2.graph, key=lambda item: item[2])
+            parent = []
+            rank = []
+            for node in range(self2.V):
+                parent.append(node)
+                rank.append(0)
+            while e < self2.V - 1:
+                v1, v2, w = self2.graph[i]
+                i = i + 1
+                x = self2.search(parent, v1)
+                y = self2.search(parent, v2)
+                if x != y:
+                    e = e + 1
+                    result.append([v1, v2])
+                    self2.apply_union(parent, rank, x, y)
+
+            return result
 
     def pval(self, perm_stat, true_stat):
 
@@ -81,93 +163,9 @@ class FriedmanRafsky(IndependenceTest):
 
         self.stat = stat
 
-        pvalue = pval(W_perm, stat)
+        pvalue = self.pval(W_perm, stat)
 
         return IndependenceTestOutput(stat, pvalue)
-
-
-@jit(nopython=True, cache=True)
-class Graph:
-
-    r"""
-    Helper class that finds the MST for a given dataset using
-    Kruskal's MST algorithm. Takes in node lables and edge weights
-    before returning all pairs of connected node labels in the
-    resultant MST.
-
-    Parameters
-    ----------
-
-    i,j,weight : int, int, float
-        Input node indeces i, j, and corresponding Euclidean distance
-        edge weight between them.
-
-    Returns
-    -------
-
-    result : list
-        List of pairs of nodes connected in final MST.
-
-    """
-
-    def __init__(self2, vertex):
-
-        self2.V = vertex
-        self2.graph = (
-            []
-        )  # Empty matrix for holding vertices and weights connecting them
-
-    def add_edge(self2, v1, v2, w):
-
-        self2.graph.append(
-            [v1, v2, w]
-        )  # Add method for creating edges between vertices
-
-    def search(
-        self2, parent, i
-    ):  # Method for determining location of vertex in existing tree
-
-        if parent[i] == i:
-            return i
-
-        return self2.search(parent, parent[i])
-
-    def apply_union(
-        self2, parent, rank, x, y
-    ):  # Method for deleting and merging branches
-
-        xroot = self2.search(parent, x)
-        yroot = self2.search(parent, y)
-        if rank[xroot] < rank[yroot]:
-            parent[xroot] = yroot
-        elif rank[xroot] > rank[yroot]:
-            parent[yroot] = xroot
-        else:
-            parent[yroot] = xroot
-            rank[xroot] += 1
-
-    def kruskal(self2):
-
-        result = []
-        i, e = 0, 0
-        self2.graph = sorted(self2.graph, key=lambda item: item[2])
-        parent = []
-        rank = []
-        for node in range(self2.V):
-            parent.append(node)
-            rank.append(0)
-        while e < self2.V - 1:
-            v1, v2, w = self2.graph[i]
-            i = i + 1
-            x = self2.search(parent, v1)
-            y = self2.search(parent, v2)
-            if x != y:
-                e = e + 1
-                result.append([v1, v2])
-                self2.apply_union(parent, rank, x, y)
-
-        return result
-
 
 @jit(nopython=True, cache=True)
 def prim(weight_mat):
@@ -243,7 +241,7 @@ def MST(data, algorithm):
     """
     if algorithm == "Kruskal":
 
-        g = Graph(len(data[0] - 1))
+        g = self.Graph(len(data[0] - 1))
 
         for i in range(len(data[0])):
             j = i + 1
