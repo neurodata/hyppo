@@ -309,7 +309,7 @@ class GaussianMixture(UnnormalizedDensity):
         
         evals, evecs = np.linalg.eigh(cov)
         cov_half_inv = evecs.dot(np.diag(evals**(-0.5))).dot(evecs.T)
-    #     print(evals)
+        #print(evals)
         half_evals = np.dot(X-mean, cov_half_inv)
         full_evals = np.sum(half_evals**2, 1)
         unden = np.exp(-0.5*full_evals)
