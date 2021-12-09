@@ -215,7 +215,7 @@ class DSIsoGaussianMixture(DataSource):
             sam_list.append(sam_i)
         sample = np.vstack(sam_list)
         assert sample.shape[0] == n
-        np.random.shuffle(sample)
+        rng.shuffle(sample)
         return Data(sample)
 
 
@@ -367,12 +367,13 @@ class DSGaussBernRBM(DataSource):
         # Ph: n x dh matrix
         Ph = DSGaussBernRBM.sigmoid(XB2C)
         # H: n x dh
-        H = (np.random.rand(n, dh) <= Ph) * 2 - 1.0
+        rng = default_rng()
+        H = (rng.random(size=(n, dh)) <= Ph) * 2 - 1.0
         assert np.all(np.abs(H) - 1 <= 1e-6)
         # Draw X.
         # mean: n x dx
         mean = old_div(np.dot(H, B.T), 2.0) + b
-        X = np.random.randn(n, dx) + mean
+        X = rng.standard_normal(size=(n, dx)) + mean
         return X, H
 
     def sample(self, n, seed=3, return_latent=False):
@@ -420,7 +421,8 @@ class DSISIPoissonLinear(DataSource):
 
     def nonhom_linear(self, size):
         b = self.b
-        u = np.random.rand(size)
+        rng = default_rng()
+        u = rng.random(size=size)
         if np.abs(b) <= 1e-8:
             F_l = -np.log(1 - u)
         else:
@@ -500,7 +502,8 @@ class DSISIPoissonSine(DataSource):
         return t
 
     def nonhom_sine(self, size=1000):
-        u = np.random.rand(size)
+        rng = default_rng()
+        u = rng.random(size=size)
         x = -np.log(1 - u)
         t = np.zeros(size)
         for i in range(size):
@@ -576,7 +579,8 @@ class DSISILogPoissonLinear(DataSource):
 
     def nonhom_linear(self, size):
         b = self.b
-        u = np.random.rand(size)
+        rng = default_rng()
+        u = rng.random(size=size)
         if np.abs(b) <= 1e-8:
             F_l = -np.log(1 - u)
         else:
@@ -628,10 +632,11 @@ class DSISIPoisson2D(DataSource):
 
     def inh2d(self, lamb_bar=100000):
         self.lamb_bar = lamb_bar
-        N = np.random.poisson(2 * self.lamb_bar)
-        X = np.random.rand(N, 2)
+        rng = default_rng()
+        N = rng.poisson(size=(2 * self.lamb_bar))
+        X = rng.random(size=(N, 2))
         intensity = self.intensity(X)
-        u = np.random.rand(N)
+        u = rng.random(size=N)
         lamb_T = old_div(intensity, lamb_bar)
         X_acc = X[u < lamb_T]
         return X_acc
@@ -682,10 +687,11 @@ class DSISISigmoidPoisson2D(DataSource):
 
     def inh2d(self, lamb_bar=100000):
         self.lamb_bar = lamb_bar
-        N = np.random.poisson(2 * self.lamb_bar)
-        X = np.random.rand(N, 2)
+        rng = default_rng()
+        N = rng.poisson(size=(2 * self.lamb_bar))
+        X = rng.random(size=(N, 2))
         intensity = self.intensity(X)
-        u = np.random.rand(N)
+        u = rng.random(size=N)
         lamb_T = old_div(intensity, lamb_bar)
         X_acc = X[u < lamb_T]
         return X_acc
@@ -711,18 +717,18 @@ class DSPoisson2D(DataSource):
         self.w = w
 
     def gmm_sample(self, mean=None, w=None, N=10000, n=10, d=2, seed=10):
-        np.random.seed(seed)
+        rng = default_rng(seed)
         self.d = d
         if mean is None:
-            mean = np.random.randn(n, d) * 10
+            mean = rng.standard_normal(size=(n, d)) * 10
         if w is None:
-            w = np.random.rand(n)
+            w = rng.random(size=n)
         w = old_div(w, sum(w))
-        multi = np.random.multinomial(N, w)
+        multi = rng.multinomial(size=(N, w))
         X = np.zeros((N, d))
         base = 0
         for i in range(n):
-            X[base : base + multi[i], :] = np.random.multivariate_normal(
+            X[base : base + multi[i], :] = rng.multivariate_normal(
                 mean[i, :], np.eye(self.d), multi[i]
             )
             base += multi[i]
@@ -743,7 +749,8 @@ class DSPoisson2D(DataSource):
         if func is None:
             self.func = self.lamb_sin
         rate = old_div(self.func(X), llh)
-        u = np.random.rand(len(X))
+        rng = default_rng()
+        u = rng.random(size=(len(X)))
         X_acc = X[u < rate]
         return X_acc
 

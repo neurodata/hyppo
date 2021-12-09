@@ -2,7 +2,7 @@ import autograd
 import autograd.numpy as np
 import matplotlib.pyplot as plt
 
-from .. import data, density, _utils, kernel, fssd
+from .. import data, density, _utils, kernel, fssd, h0simulator
 import scipy.stats as stats
 import numpy.testing as testing
 from numpy.random import default_rng
@@ -49,7 +49,7 @@ class TestKGauss(unittest.TestCase):
         rng = default_rng(10)
         for d in [1, 3]:
             y = rng.standard_normal(size=d) * 2
-            X = rng.random(n, d) * 3
+            X = rng.random(size=(n, d)) * 3
 
             sigma2 = 1.3
             k = kernel.KGauss(sigma2=sigma2)
