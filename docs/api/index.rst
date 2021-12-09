@@ -73,9 +73,27 @@ Discriminability
 
 
 
-.. automodule:: hyppo.tools
+.. automodule:: hyppo.kgof
 
-.. currentmodule:: hyppo.tools
+.. currentmodule:: hyppo.kgof
+
+Kernel Goodness-of-Fit
+-----------------------
+
+..autosummary::
+   :toctree: generated/
+
+   FSSD
+   Data
+   UnnormalizedDensity
+   Kernel
+   H0Simulator
+
+
+
+   ..automodule:: hyppo.tools
+   
+   ..currentmodule:: hyppo.tools
 
 Simulations
 -------------
