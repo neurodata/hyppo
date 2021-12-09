@@ -143,6 +143,11 @@ workflows:
           requires:
             - "v3.8"
       - test-module:
+          name: "kgof"
+          module: "kgof"
+          requires:
+            - "v3.8"
+      - test-module:
           name: "tools"
           module: "tools"
           requires:
@@ -153,6 +158,7 @@ workflows:
             - "ksample"
             - "time_series"
             - "discrim"
+            - "kgof"
             - "tools"
           filters:
             tags:
