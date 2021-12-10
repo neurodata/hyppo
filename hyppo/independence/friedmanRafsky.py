@@ -110,14 +110,7 @@ class FriedmanRafsky(IndependenceTest):
         """
 
         stat, pvalue, null_dist = perm_test(
-            self.statistic, 
-            x, 
-            y, 
-            reps, 
-            workers, 
-            is_distsim, 
-            perm_blocks, 
-            random_state
+            self.statistic, x, y, reps, workers, is_distsim, perm_blocks, random_state
         )
 
         return IndependenceTestOutput(stat, pvalue, null_dist)
