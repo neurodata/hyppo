@@ -1,189 +1,220 @@
 import random
 from numba import jit
-
 import numpy as np
 
 from .base import IndependenceTest, IndependenceTestOutput
-
+from ..tools import perm_test
 
 class FriedmanRafsky(IndependenceTest):
-
     r"""
     Friedman-Rafksy (FR) test statistic and p-value.
     This is a multivariate extension of the Wald-Wolfowitz
     runs test for randomness. The normal concept of a 'run'
-    is replaced by a minimum spanning tree calculated between
+    is replaced by a minimum spanning tree (MST) calculated between
     the points in respective data sets with edge weights defined
     as the Euclidean distance between two such points. After MST
     has been determined, all edges such that both corresponding
     nodes do not belong to the same class are severed and the
     number of independent resulting trees is counted. This test is
-    consistent against similar tests
+    consistent against similar tests.
     :footcite:p:`GSARMultivariateAdaptationofWaldWolfowitzTest`
     """
-
     def __init__(self, **kwargs):
 
         IndependenceTest.__init__(self, **kwargs)
 
-    class Graph:
-
+    def statistic(self, x, y, algorithm):
         r"""
-        Helper class that finds the MST for a given dataset using
-        Kruskal's MST algorithm. Takes in node lables and edge weights
-        before returning all pairs of connected node labels in the
-        resultant MST.
+        Helper function that calculates the Friedman Rafksy test statistic.
+        
         Parameters
         ----------
-        i,j,weight : int, int, float
-            Input node indeces i, j, and corresponding Euclidean distance
-            edge weight between them.
+        x,y : ndarray
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            rows. That is, the shapes must be ``(n, p)`` and ``(n, 1)`` where
+            `n` is the number of combined samples and `p` is the number of
+            dimensions. ``y`` is the array of labels corresponding to the two
+            samples, respectively.
+        algoritm : str, default: 'Kruskal'
+            The algorithm to be used to determine the minimum spanning tree.
+            Currently only 'Kruskal' and 'Prim' are supported.
+            
         Returns
         -------
-        result : list
-            List of pairs of nodes connected in final MST.
+        stat : float
+            The computed Dcorr statistic.
         """
+        x = np.transpose(x)
+        y = np.transpose(y)
+        
+        MST_connections = MST(x, algorithm)
+        stat = num_runs(y, MST_connections)
+        
+        self.stat = stat
+        
+        return stat
 
-        def __init__(self2, vertex):
-
-            self2.V = vertex
-            self2.graph = (
-                []
-            )  # Empty matrix for holding vertices and weights connecting them
-
-        def add_edge(self2, v1, v2, w):
-
-            self2.graph.append(
-                [v1, v2, w]
-            )  # Add method for creating edges between vertices
-
-        def search(
-            self2, parent, i
-        ):  # Method for determining location of vertex in existing tree
-
-            if parent[i] == i:
-                return i
-
-            return self2.search(parent, parent[i])
-
-        def apply_union(
-            self2, parent, rank, x, y
-        ):  # Method for deleting and merging branches
-
-            xroot = self2.search(parent, x)
-            yroot = self2.search(parent, y)
-            if rank[xroot] < rank[yroot]:
-                parent[xroot] = yroot
-            elif rank[xroot] > rank[yroot]:
-                parent[yroot] = xroot
-            else:
-                parent[yroot] = xroot
-                rank[xroot] += 1
-
-        def kruskal(self2):
-
-            result = []
-            i, e = 0, 0
-            self2.graph = sorted(self2.graph, key=lambda item: item[2])
-            parent = []
-            rank = []
-            for node in range(self2.V):
-                parent.append(node)
-                rank.append(0)
-            while e < self2.V - 1:
-                v1, v2, w = self2.graph[i]
-                i = i + 1
-                x = self2.search(parent, v1)
-                y = self2.search(parent, v2)
-                if x != y:
-                    e = e + 1
-                    result.append([v1, v2])
-                    self2.apply_union(parent, rank, x, y)
-
-            return result
-
-    def pval(self, perm_stat, true_stat):
-
+    def test(self,
+             x,
+             y,
+             algorithm='Kruskal',
+             reps=1000,
+             workers=1,
+             is_distsim=False,
+             perm_blocks=None,
+             random_state=None
+):
         r"""
-        Helper function that calculates the Friedman Rafksy p-value.
-        """
-
-        pvalue = (np.sum(perm_stat <= true_stat) + 1) / (len(perm_stat) + 1)
-
-        return pvalue
-
-    def test(self, data, labels, perm, algorithm):
-
-        r"""
-        Function to take in data, labels, nperm and return both test-statistic and
-        p-value.
+        Calculates the Dcorr test statistic and p-value.
+        
         Parameters
         ----------
-        data, labels, nperm : ndarray, ndarray, int
-            Data is array such that each column corresponds to a given point. Labels
-            are the corresponding data labels for each point. It is of note that
-            data and labels must have the same number of columns. Nperm is the
-            number of randomized iterations to be used in calculating the test_statistic
-            and p-value.
-        Return
-        ------
-        W_true, p_value : float, float
-            Corresponding test-statistic and p-value for the given data, labels, and
-            number of randomized permutations used.
+        x,y : ndarray
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            rows. That is, the shapes must be ``(n, p)`` and ``(n, 1)`` where
+            `n` is the number of combined samples and `p` is the number of
+            dimensions. ``y`` is the array of labels corresponding to the two
+            samples, respectively.
+        algoritm : str, default: 'Kruskal'
+            The algorithm to be used to determine the minimum spanning tree.
+            Currently only 'Kruskal' and 'Prim' are supported.
+        reps : int, default: 1000
+            The number of replications used to estimate the null distribution
+            when using the permutation test used to calculate the p-value.
+        workers : int, default: 1
+            The number of cores to parallelize the p-value computation over.
+            Supply ``-1`` to use all cores available to the Process.
+        perm_blocks : None or ndarray, default: None
+            Defines blocks of exchangeable samples during the permutation test.
+            If None, all samples can be permuted with one another. Requires `n`
+            rows. At each column, samples with matching column value are
+            recursively partitioned into blocks of samples. Within each final
+            block, samples are exchangeable. Blocks of samples from the same
+            partition are also exchangeable between one another. If a column
+            value is negative, that block is fixed and cannot be exchanged.
+        random_state : int, default: None
+            The random_state for permutation testing to be fixed for
+            reproducibility. 
+            
+        Returns
+        -------
+        stat : float
+            The computed Dcorr statistic.
+        pvalue : float
+            The computed Dcorr p-value.
+        null_dist : array
+            The null distribution of Friedman Rafsky test statistics.
         """
+        
+        stat, pvalue, null_dist = perm_test(self.statistic,
+                                            x,
+                                            y,
+                                            reps,
+                                            workers,
+                                            is_distsim,
+                                            perm_blocks,
+                                            random_state)
+               
+        return IndependenceTestOutput(stat, pvalue, null_dist)
 
-        num_rows, num_cols = data.shape
+class Graph:
+    r"""
+    Helper class to find the MST for a given dataset using
+    Kruskal's MST algorithm. Takes in node lables and edge weights
+    before returning all pairs of connected node labels in the
+    resultant MST.
+    """
+    def __init__(self, vertex):
 
-        if num_cols != len(labels):
-            raise IndexError("Number of features and labels not equal")
+        self.V = vertex
+        self.graph = []
 
-        MST_connections = MST(data, algorithm)
+    def add_edge(self, v1, v2, w):
+        r"""Helper function to add edge to the parent graph
+        
+        Parameters
+        ----------
+        v1, v2 : int
+            Input node indeces v1, v2 to be connected by edge in
+            the graph.
+        weight : float
+            The Euclidean distance between these two points.   
+        """
+        self.graph.append([v1, v2, w])
 
-        runs_true = num_runs(labels, MST_connections)
+    def search(self, parent, i):   
+        r"""
+        Method for determining location of vertex in existing tree
+        """
+        if parent[i] == i:
+            return i
 
-        runs = permutation(perm, labels, MST_connections)
+        return self.search(parent, parent[i])
 
-        W_perm = (runs - mean(runs)) / np.std(runs)
+    def apply_union(self, parent, rank, x, y):  
+        r"""
+        Method for determining if current node already exists in 
+        minimum spanning tree and severing all edges deemed inefficient.
+        """
+        xroot = self.search(parent, x)
+        yroot = self.search(parent, y)
+        if rank[xroot] < rank[yroot]:
+            parent[xroot] = yroot
+        elif rank[xroot] > rank[yroot]:
+            parent[yroot] = xroot
+        else:
+            parent[yroot] = xroot
+            rank[xroot] += 1
 
-        stat = (runs_true - mu_runs) / sd_runs
+    def kruskal(self):
+        r"""
+        Helper function to calculate minimum spanning tree
+        via Kruskal's algorithm.
+        """
+        result = []
+        i, e = 0, 0
+        self.graph = sorted(self.graph, key=lambda item: item[2])
+        parent = []
+        rank = []
+        for node in range(self.V):
+            parent.append(node)
+            rank.append(0)
+        while e < self.V - 1:
+            v1, v2, w = self.graph[i]
+            i = i + 1
+            x = self.search(parent, v1)
+            y = self.search(parent, v2)
+            if x != y:
+                e = e + 1
+                result.append([v1, v2])
+                self.apply_union(parent, rank, x, y)
 
-        self.stat = stat
-
-        pvalue = self.pval(W_perm, stat)
-
-        return IndependenceTestOutput(stat, pvalue)
-
+        return result
 
 @jit(nopython=True, cache=True)
 def prim(weight_mat):
-
     r"""
     Helper function to read weighted matrix input and compute minimum
-    spanning tree via Prim's algorithm
+    spanning tree via Prim's algorithm.
+    
     Parameters
     ----------
     data : ndarry
-        Weighted connection matrix
+        Weighted connection matrix.
+        
     Returns
     -------
     MST_connections : list
         List of pairs of nodes connected in final MST.
     """
-
     INF = 9999999
-
-    V = len(labels)
-
-    selected = np.zeros(len(labels))
-
+    V = len(y)
+    selected = np.zeros(len(y))
     no_edge = 0
-
     selected[0] = True
-
     MST_connections = []
-
+    
     while no_edge < V - 1:
-
         minimum = INF
         x = 0
         y = 0
@@ -202,17 +233,21 @@ def prim(weight_mat):
 
     return MST_connections
 
-
 @jit(nopython=True, cache=True)
-def MST(data, algorithm):
-
+def MST(x, algorithm):
     r"""
     Helper function to read input data and calculate Euclidean distance
     between each possible pair of points before finding MST.
+    
     Parameters
+    
     ----------
     data : ndarry
         Dataset such that each column corresponds to a point of data.
+    algoritm : str, default: 'Kruskal'
+            The algorithm to be used to determine the minimum spanning tree.
+            Currently only 'Kruskal' and 'Prim' are supported.
+            
     Returns
     -------
     MST_connections : list
@@ -220,30 +255,26 @@ def MST(data, algorithm):
     """
     if algorithm == "Kruskal":
 
-        g = self.Graph(len(data[0] - 1))
+        g = self.Graph(len(x[0]))
 
-        for i in range(len(data[0])):
-            j = i + 1
+        for i in range(len(x[0])):
 
-            while j <= (len(data[0]) - 1):
-                weight = np.linalg.norm(data[:, i] - data[:, j])
+            for j in range(i+1, len(x[0])):
+                weight = np.linalg.norm(x[:, i] - x[:, j])
                 g.add_edge(i, j, weight)
-                j += 1
 
         MST_connections = g.kruskal()
 
     if algorithm == "Prim":
 
-        G = zeros((len(data[0]), len(data[0])))
+        G = zeros((len(x[0]), len(x[0])))
 
-        for i in range(len(data[0])):
-            j = i + 1
+        for i in range(len(x[0])):
 
-        while j <= (len(data[0]) - 1):
-            weight = np.linalg.norm(data[:, i] - data[:, j])
-            G[i][j] = weight
-            G[j][i] = weight
-            j += 1
+            for j in range(i+1, len(x[0])):
+                weight = np.linalg.norm(x[:, i] - x[:, j])
+                G[i][j] = weight
+                G[j][i] = weight
 
         MST_connections = prim(G)
 
@@ -251,23 +282,24 @@ def MST(data, algorithm):
 
 
 @jit(nopython=True, cache=True)
-def num_runs(labels, MST_connections):
-
+def num_runs(y, MST_connections):
     r"""
     Helper function to determine number of independent
-    'runs' from MST connections
+    'runs' from MST connections.
+    
     Parameters
     ----------
-    labels, MST_connections : ndarry, list
-        Lables corresponding to respective classes of points and MST_connections
-        defining which pairs of points remain connect in final MST.
+    y : ndarry
+        Lables corresponding to respective classes of samples.
+    MST_connections: list
+        List containing pairs of points connected in final MST.
+        
     Returns
     -------
     run_count : int
         Number of runs after severing all such edges with nodes of
         differing class labels.
     """
-
     run_count = 1
 
     for x in MST_connections:
@@ -275,23 +307,3 @@ def num_runs(labels, MST_connections):
             run_count += 1
 
     return run_count
-
-
-@jit(nopython=True, cache=True)
-def permutation(perm, labels, MST_connections):
-
-    r"""
-    Helper function that randomizes labels and calculates respective
-    'run' counts for a specified number of iterations.
-    """
-
-    runs = []
-    for itr in np.arange(perm):
-
-        lab_shuffle = np.random.sample(labels, len(labels))
-
-        run_val = num_runs(lab_shuffle, MST_connections)
-
-        runs.append(run_val)
-
-    return runs
