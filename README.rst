@@ -82,7 +82,13 @@ has detailed information about contributing code, documentation and tests.
 - Download releases: https://pypi.org/project/hyppo/
 - Issue tracker: https://github.com/neurodata/hyppo/issues
 
-**Note: We have recently moved our** ``benchmarks`` **(with relevant figure replication code for our papers) folder to a new** `repo <https://github.com/neurodata/hyppo-papers>`_\ **!** We aim to add test development code and paper figure replication code there, and will add relevant tests (with tutorials) to hyppo.
+**Note: We have recently moved our** ``benchmarks`` **(with relevant figure replication code for our papers) folder to a new**
+`repo <https://github.com/neurodata/hyppo-papers>`_\ **!** We aim to add test development code and paper figure replication code
+there, and will add relevant tests (with tutorials) to hyppo.
+
+Contributors
+--------------
+
 
 Project History
 ----------------
