@@ -111,8 +111,8 @@ plt.show()
 
 
 # Independence tests figures
-N_DATASETS = 1000
-REPS = 500
+N_DATASETS = 100
+REPS = 100
 test_results = defaultdict(list)
 
 for i in range(N_DATASETS):
@@ -146,6 +146,7 @@ divider = make_axes_locatable(ax)
 cax = divider.append_axes("bottom", size="5%", pad=0.05)
 plt.colorbar(heatmap, cax=cax, ticks=[0, 10], orientation="horizontal")
 
+
 # Plot Y matrices
 ax = fig.add_subplot(242)
 heatmap = ax.pcolor(squareform(pdist(Y_within[:10, np.newaxis])), cmap=plt.cm.Blues)
@@ -175,6 +176,7 @@ ax.set_title("Y across distance matrix")
 divider = make_axes_locatable(ax)
 cax = divider.append_axes("bottom", size="5%", pad=0.05)
 plt.colorbar(heatmap, cax=cax, ticks=[0, 1], orientation="horizontal")
+
 
 # Plot pvalue histograms and errorbars using binomial CIs
 ax = None
