@@ -44,7 +44,7 @@ class FriedmanRafsky(IndependenceTest):
         Returns
         -------
         stat : float
-            The computed Dcorr statistic.
+            The computed Friedman Rafsky statistic.
         """
         x = np.transpose(x)
         y = np.transpose(y)
@@ -68,7 +68,7 @@ class FriedmanRafsky(IndependenceTest):
         random_state=None,
     ):
         r"""
-        Calculates the Dcorr test statistic and p-value.
+        Calculates the Friedman Rafsky test statistic and p-value.
 
         Parameters
         ----------
@@ -102,15 +102,22 @@ class FriedmanRafsky(IndependenceTest):
         Returns
         -------
         stat : float
-            The computed Dcorr statistic.
+            The computed Friedman Rafsky statistic.
         pvalue : float
-            The computed Dcorr p-value.
+            The computed Friedman Rafsky p-value.
         null_dist : array
             The null distribution of Friedman Rafsky test statistics.
         """
 
         stat, pvalue, null_dist = perm_test(
-            self.statistic, x, y, reps, workers, is_distsim, perm_blocks, random_state
+            self.statistic, 
+            x, 
+            y, 
+            reps, 
+            workers, 
+            is_distsim, 
+            perm_blocks, 
+            random_state
         )
 
         return IndependenceTestOutput(stat, pvalue, null_dist)
