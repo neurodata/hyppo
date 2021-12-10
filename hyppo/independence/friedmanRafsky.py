@@ -18,7 +18,10 @@ class FriedmanRafsky(IndependenceTest):
     nodes do not belong to the same class are severed and the
     number of independent resulting trees is counted. This test is
     consistent against similar tests.
-    :footcite:p:`GSARMultivariateAdaptationofWaldWolfowitzTest`
+    
+    References
+    ----------
+    .. footbibliography::
     """
 
     def __init__(self, **kwargs):
