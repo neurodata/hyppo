@@ -4,11 +4,7 @@ from builtins import zip, str, range, object
 from past.utils import old_div
 
 import autograd.numpy as np
-import _utils
-import data
-import density
-import kernel
-import h0simulator
+import _utils, data, density, kernel, h0simulator
 from .base import GofTest
 from h0simulator import FSSDH0SimCovObs
 import logging
@@ -23,8 +19,10 @@ class FSSD(GofTest):
     Goodness-of-fit test using The Finite Set Stein Discrepancy statistic.
     and a set of paired test locations. The statistic is n*FSSD^2.
     The statistic can be negative because of the unbiased estimator.
-    H0: the sample follows p
-    H1: the sample does not follow p
+
+    H0 : the sample follows p
+    H1 : the sample does not follow p
+
     p is specified to the constructor in the form of an UnnormalizedDensity.
     """
 
@@ -38,12 +36,14 @@ class FSSD(GofTest):
     def __init__(
         self, p, k, V, null_sim=FSSDH0SimCovObs(n_simulate=3000, seed=101), alpha=0.01
     ):
-        """
-        p: an instance of UnnormalizedDensity
-        k: a DifferentiableKernel object
-        V: J x dx numpy array of J locations to test the difference
-        null_sim: an instance of H0Simulator for simulating from the null distribution.
-        alpha: significance level
+        r"""
+        Parameters
+        ----------
+        p : an instance of UnnormalizedDensity
+        k : a DifferentiableKernel object
+        V : J x dx numpy array of J locations to test the difference
+        null_sim : an instance of H0Simulator for simulating from the null distribution.
+        alpha : significance level
         """
         super(FSSD, self).__init__(p, alpha)
         self.k = k
@@ -51,8 +51,10 @@ class FSSD(GofTest):
         self.null_sim = null_sim
 
     def test(self, dat, return_simulated_stats=False):
-        """
-        dat: an instance of Data
+        r"""
+        Parameters
+        ----------
+        dat : an instance of Data
         """
         alpha = self.alpha
         null_sim = self.null_sim
@@ -80,8 +82,16 @@ class FSSD(GofTest):
         return results
 
     def statistic(self, dat, return_feature_tensor=False):
-        """
-        The statistic is n*FSSD^2.
+        r"""
+        Compute the test statistic. The statistic is n*FSSD^2.
+
+        Parameters
+        ----------
+        dat : an instance of Data
+
+        Returns
+        -------
+        stat : the test statistic, n*FSSD^2
         """
         X = dat.data()
         n = X.shape[0]
@@ -97,9 +107,18 @@ class FSSD(GofTest):
             return stat
 
     def get_H1_mean_variance(self, dat):
-        """
-        Return the mean and variance under H1 of the test statistic (divided by
+        r"""
+        Calculate the mean and variance under H1 of the test statistic (divided by
         n).
+
+        Parameters
+        ----------
+        dat : an instance of Data
+
+        Returns
+        -------
+        mean : the mean under the alternative hypothesis of the test statistic
+        variance : the variance under the alternative hypothesis of the test statistic
 
         From: https://github.com/wittawatj/fsic-test
         """
@@ -109,12 +128,18 @@ class FSSD(GofTest):
         return mean, variance
 
     def feature_tensor(self, X):
-        """
+        r"""
         Compute the feature tensor which is n x d x J.
         The feature tensor can be used to compute the statistic, and the
         covariance matrix for simulating from the null distribution.
-        X: n x d data numpy array
-        return an n x d x J numpy array
+
+        Parameters
+        ----------
+        X : n x d data numpy array
+
+        Returns
+        -------
+        an n x d x J numpy array
 
         From: https://github.com/wittawatj/fsic-test
         """
@@ -138,148 +163,178 @@ class FSSD(GofTest):
         Xi = old_div((grad_logp_K + dKdV), np.sqrt(d * J))
         return Xi
 
-    @staticmethod
-    def power_criterion(
-        p, dat, k, test_locs, reg=1e-2, use_unbiased=True, use_2terms=False
-    ):
-        """
-        Compute the mean and standard deviation of the statistic under H1.
-        Return mean/sd.
-        use_2terms: True if the objective should include the first term in the power
-            expression. This term carries the test threshold and is difficult to
-            compute (depends on the optimized test locations). If True, then
-            the objective will be -1/(n**0.5*sigma_H1) + n**0.5 FSSD^2/sigma_H1,
-            which ignores the test threshold in the first term.
 
-        From: https://github.com/wittawatj/fsic-test
-        """
-        X = dat.data()
-        n = X.shape[0]
-        V = test_locs
-        fssd = FSSD(p, k, V, null_sim=None)
-        fea_tensor = fssd.feature_tensor(X)
-        u_mean, u_variance = FSSD.ustat_h1_mean_variance(
-            fea_tensor, return_variance=True, use_unbiased=use_unbiased
-        )
+def power_criterion(
+    p, dat, k, test_locs, reg=1e-2, use_unbiased=True, use_2terms=False
+):
+    r"""
+    Compute the mean and standard deviation of the statistic under H1.
 
-        # mean/sd criterion
-        sigma_h1 = np.sqrt(u_variance + reg)
-        ratio = old_div(u_mean, sigma_h1)
-        if use_2terms:
-            obj = old_div(-1.0, (np.sqrt(n) * sigma_h1)) + np.sqrt(n) * ratio
-        else:
-            obj = ratio
-        return obj
+    Parameters
+    ----------
+    use_2terms : True if the objective should include the first term in the power
+        expression. This term carries the test threshold and is difficult to
+        compute (depends on the optimized test locations). If True, then
+        the objective will be -1/(n**0.5*sigma_H1) + n**0.5 FSSD^2/sigma_H1,
+        which ignores the test threshold in the first term.
 
-    @staticmethod
-    def ustat_h1_mean_variance(fea_tensor, return_variance=True, use_unbiased=True):
-        """
-        Compute the mean and variance of the asymptotic normal distribution
-        under H1 of the test statistic.
-        fea_tensor: feature tensor obtained from feature_tensor()
-        return_variance: If false, avoid computing and returning the variance.
-        use_unbiased: If True, use the unbiased version of the mean. Can be
-            negative.
-        Return the mean [and the variance]
+    Returns
+    -------
+    obj : mean/sd
 
-        From: https://github.com/wittawatj/fsic-test
-        """
-        Xi = fea_tensor
-        n, d, J = Xi.shape
+    From: https://github.com/wittawatj/fsic-test
+    """
+    X = dat.data()
+    n = X.shape[0]
+    V = test_locs
+    fssd = FSSD(p, k, V, null_sim=None)
+    fea_tensor = fssd.feature_tensor(X)
+    u_mean, u_variance = FSSD.ustat_h1_mean_variance(
+        fea_tensor, return_variance=True, use_unbiased=use_unbiased
+    )
 
-        assert n > 1, "Need n > 1 to compute the mean of the statistic."
-        # n x d*J
-        Tau = np.reshape(Xi, [n, d * J])
-        if use_unbiased:
-            t1 = np.sum(np.mean(Tau, 0) ** 2) * (old_div(n, float(n - 1)))
-            t2 = old_div(np.sum(np.mean(Tau ** 2, 0)), float(n - 1))
-            # stat is the mean
-            stat = t1 - t2
-        else:
-            stat = np.sum(np.mean(Tau, 0) ** 2)
+    # mean/sd criterion
+    sigma_h1 = np.sqrt(u_variance + reg)
+    ratio = old_div(u_mean, sigma_h1)
+    if use_2terms:
+        obj = old_div(-1.0, (np.sqrt(n) * sigma_h1)) + np.sqrt(n) * ratio
+    else:
+        obj = ratio
+    return obj
 
-        if not return_variance:
-            return stat
 
-        # compute the variance
-        # mu: d*J vector
-        mu = np.mean(Tau, 0)
-        variance = 4 * np.mean(np.dot(Tau, mu) ** 2) - 4 * np.sum(mu ** 2) ** 2
-        return stat, variance
+def ustat_h1_mean_variance(fea_tensor, return_variance=True, use_unbiased=True):
+    r"""
+    Compute the mean and variance of the asymptotic normal distribution
+    under H1 of the test statistic.
 
-    @staticmethod
-    def list_simulate_spectral(cov, J, n_simulate=1000, seed=82):
-        """
-        Simulate the null distribution using the spectrums of the covariance
-        matrix.  This is intended to be used to approximate the null
-        distribution.
-        Return (a numpy array of simulated n*FSSD values, eigenvalues of cov)
+    Parameters
+    ----------
+    fea_tensor : feature tensor obtained from feature_tensor()
+    return_variance : If false, avoid computing and returning the variance.
+    use_unbiased : If True, use the unbiased version of the mean. Can be
+        negative.
 
-        From: https://github.com/wittawatj/fsic-test
-        """
-        # eigen decompose
-        eigs, _ = np.linalg.eig(cov)
-        eigs = np.real(eigs)
-        # sort in decreasing order
-        eigs = -np.sort(-eigs)
-        sim_fssds = FSSD.simulate_null_dist(eigs, J, n_simulate=n_simulate, seed=seed)
-        return sim_fssds, eigs
+    Returns
+    -------
+    stat : the mean
+    variance: the variance
 
-    @staticmethod
-    def simulate_null_dist(eigs, J, n_simulate=2000, seed=7):
-        """
-        Simulate the null distribution using the spectrums of the covariance
-        matrix of the U-statistic. The simulated statistic is n*FSSD^2 where
-        FSSD is an unbiased estimator.
-        - eigs: a numpy array of estimated eigenvalues of the covariance
-          matrix. eigs is of length d*J, where d is the input dimension, and
-        - J: the number of test locations.
-        Return a numpy array of simulated statistics.
+    From: https://github.com/wittawatj/fsic-test
+    """
+    Xi = fea_tensor
+    n, d, J = Xi.shape
 
-        From: https://github.com/wittawatj/fsic-test
-        """
-        d = old_div(len(eigs), J)
-        assert d > 0
-        # draw at most d x J x block_size values at a time
-        block_size = max(20, int(old_div(1000.0, (d * J))))
-        fssds = np.zeros(n_simulate)
-        from_ind = 0
-        rng = default_rng(seed)
-        while from_ind < n_simulate:
-            to_draw = min(block_size, n_simulate - from_ind)
-            # draw chi^2 random variables.
-            chi2 = rng.standard_normal(size=(d * J, to_draw)) ** 2
-            # an array of length to_draw
-            sim_fssds = eigs.dot(chi2 - 1.0)
-            # store
-            end_ind = from_ind + to_draw
-            fssds[from_ind:end_ind] = sim_fssds
-            from_ind = end_ind
-        return fssds
+    assert n > 1, "Need n > 1 to compute the mean of the statistic."
+    # n x d*J
+    Tau = np.reshape(Xi, [n, d * J])
+    if use_unbiased:
+        t1 = np.sum(np.mean(Tau, 0) ** 2) * (old_div(n, float(n - 1)))
+        t2 = old_div(np.sum(np.mean(Tau ** 2, 0)), float(n - 1))
+        # stat is the mean
+        stat = t1 - t2
+    else:
+        stat = np.sum(np.mean(Tau, 0) ** 2)
 
-    @staticmethod
-    def fssd_grid_search_kernel(p, dat, test_locs, list_kernel):
-        """
-        Linear search for the best kernel in the list that maximizes
-        the test power criterion, fixing the test locations to V.
-        - p: UnnormalizedDensity
-        - dat: a Data object
-        - list_kernel: list of kernel candidates
-        return: (best kernel index, array of test power criteria)
+    if not return_variance:
+        return stat
 
-        From: https://github.com/wittawatj/fsic-test
-        """
-        V = test_locs
-        X = dat.data()
-        n_cand = len(list_kernel)
-        objs = np.zeros(n_cand)
-        for i in range(n_cand):
-            ki = list_kernel[i]
-            objs[i] = FSSD.power_criterion(p, dat, ki, test_locs)
-            logging.info("(%d), obj: %5.4g, k: %s" % (i, objs[i], str(ki)))
+    # compute the variance
+    # mu: d*J vector
+    mu = np.mean(Tau, 0)
+    variance = 4 * np.mean(np.dot(Tau, mu) ** 2) - 4 * np.sum(mu ** 2) ** 2
+    return stat, variance
 
-        # Widths that come early in the list
-        # are preferred if test powers are equal.
 
-        besti = objs.argmax()
-        return besti, objs
+def list_simulate_spectral(cov, J, n_simulate=1000, seed=82):
+    r"""
+    Simulate the null distribution using the spectrums of the covariance
+    matrix.  This is intended to be used to approximate the null
+    distribution.
+
+    Returns
+    -------
+    sim_fssds : a numpy array of simulated n*FSSD values
+    eigs : eigenvalues of cov
+
+    From: https://github.com/wittawatj/fsic-test
+    """
+    # eigen decompose
+    eigs, _ = np.linalg.eig(cov)
+    eigs = np.real(eigs)
+    # sort in decreasing order
+    eigs = -np.sort(-eigs)
+    sim_fssds = FSSD.simulate_null_dist(eigs, J, n_simulate=n_simulate, seed=seed)
+    return sim_fssds, eigs
+
+
+def simulate_null_dist(eigs, J, n_simulate=2000, seed=7):
+    r"""
+    Simulate the null distribution using the spectrums of the covariance
+    matrix of the U-statistic. The simulated statistic is n*FSSD^2 where
+    FSSD is an unbiased estimator.
+
+    Parameters
+    ----------
+    eigs : a numpy array of estimated eigenvalues of the covariance
+        matrix. eigs is of length d*J, where d is the input dimension, and
+    J : the number of test locations.
+
+    Returns
+    -------
+    fssds : a numpy array of simulated statistics.
+
+    From: https://github.com/wittawatj/fsic-test
+    """
+    d = old_div(len(eigs), J)
+    assert d > 0
+    # draw at most d x J x block_size values at a time
+    block_size = max(20, int(old_div(1000.0, (d * J))))
+    fssds = np.zeros(n_simulate)
+    from_ind = 0
+    rng = default_rng(seed)
+    while from_ind < n_simulate:
+        to_draw = min(block_size, n_simulate - from_ind)
+        # draw chi^2 random variables.
+        chi2 = rng.standard_normal(size=(d * J, to_draw)) ** 2
+        # an array of length to_draw
+        sim_fssds = eigs.dot(chi2 - 1.0)
+        # store
+        end_ind = from_ind + to_draw
+        fssds[from_ind:end_ind] = sim_fssds
+        from_ind = end_ind
+    return fssds
+
+
+def fssd_grid_search_kernel(p, dat, test_locs, list_kernel):
+    r"""
+    Linear search for the best kernel in the list that maximizes
+    the test power criterion, fixing the test locations to V.
+
+    Parameters
+    ----------
+    p : UnnormalizedDensity
+    dat : a Data object
+    list_kernel : list of kernel candidates
+
+    Returns
+    -------
+    besti : best kernel index
+    objs : array of test power criteria
+
+    From: https://github.com/wittawatj/fsic-test
+    """
+    V = test_locs
+    X = dat.data()
+    n_cand = len(list_kernel)
+    objs = np.zeros(n_cand)
+    for i in range(n_cand):
+        ki = list_kernel[i]
+        objs[i] = FSSD.power_criterion(p, dat, ki, test_locs)
+        logging.info("(%d), obj: %5.4g, k: %s" % (i, objs[i], str(ki)))
+
+    # Widths that come early in the list
+    # are preferred if test powers are equal.
+
+    besti = objs.argmax()
+    return besti, objs

@@ -261,6 +261,3 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         D2 = np.sum((X - Y) ** 2, 1)
         Kvec = np.exp(old_div(-D2, (2.0 * self.sigma2)))
         return Kvec
-
-    def __str__(self):
-        return "KGauss(%.3f)" % self.sigma2

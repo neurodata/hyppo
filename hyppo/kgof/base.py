@@ -14,21 +14,27 @@ import h0simulator
 
 
 class GofTest(ABC):
-    """
-    Abstract class for a goodness-of-fit test.
-    """
+    """ Abstract class for a goodness-of-fit test. """
 
     def __init__(self, p, alpha):
         """
-        p: an UnnormalizedDensity
-        alpha: significance level of the test
+        p : an UnnormalizedDensity object
+        alpha : float, significance level of the test
         """
         self.p = p
         self.alpha = alpha
 
     @abstractmethod
     def test(self, dat):
-        """perform the goodness-of-fit test and return values computed in a dictionary:
+        """ 
+        Perform the goodness-of-fit test and return values computed in a dictionary.
+        
+        Parameters
+        ----------
+        dat : an instance of data
+
+        Returns
+        -------
         {
             alpha: 0.01,
             pvalue: 0.0002,
@@ -36,11 +42,10 @@ class GofTest(ABC):
             h0_rejected: True,
             time_secs: ...
         }
-        dat: an instance of Data
         """
         raise NotImplementedError()
 
     @abstractmethod
     def statistic(self, dat):
-        """Compute the test statistic"""
+        """ Compute the test statistic """
         raise NotImplementedError()

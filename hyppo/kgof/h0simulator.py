@@ -6,9 +6,7 @@ from future.utils import with_metaclass
 
 from abc import ABCMeta, abstractmethod
 import autograd.numpy as np
-import fssd
-import data
-import density
+import fssd, data, density
 
 import scipy
 import scipy.stats as stats

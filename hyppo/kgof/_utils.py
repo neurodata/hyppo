@@ -18,17 +18,19 @@ def constrain(val, min_val, max_val):
 
 
 def meddistance(X, subsample=None, mean_on_fail=True):
-    """
+    r"""
     Compute the median of pairwise distances (not distance squared) of points
     in the matrix.  Useful as a heuristic for setting Gaussian kernel's width.
+
     Parameters
     ----------
     X : n x d numpy array
     mean_on_fail: True/False. If True, use the mean when the median distance is 0.
         This can happen especially, when the data are discrete e.g., 0/1, and
         there are more slightly more 0 than 1. In this case, the m
-    Return
-    ------
+
+    Returns
+    -------
     median distance
 
     From: https://github.com/wittawatj/fsic-test
@@ -55,8 +57,8 @@ def meddistance(X, subsample=None, mean_on_fail=True):
 
 
 def tr_te_indices(n, tr_proportion, seed=9282):
-    """Get two logical vectors for indexing train/test points.
-    Return (tr_ind, te_ind)
+    r"""
+    Get two logical vectors for indexing train/test points.
 
     From: https://github.com/wittawatj/fsic-test
     """
@@ -73,11 +75,14 @@ def tr_te_indices(n, tr_proportion, seed=9282):
 
 
 def fit_gaussian_draw(X, J, seed=28, reg=1e-7, eig_pow=1.0):
-    """
+    r"""
     Fit a multivariate normal to the data X (n x d) and draw J points
     from the fit.
-    - reg: regularizer to use with the covariance matrix
-    - eig_pow: raise eigenvalues of the covariance matrix to this power to construct
+    
+    Parameters
+    ----------
+    reg : regularizer to use with the covariance matrix
+    eig_pow : raise eigenvalues of the covariance matrix to this power to construct
         a new covariance matrix before drawing samples. Useful to shrink the spread
         of the variance.
 
@@ -99,10 +104,16 @@ def fit_gaussian_draw(X, J, seed=28, reg=1e-7, eig_pow=1.0):
 
 
 def outer_rows(X, Y):
-    """
+    r"""
     Compute the outer product of each row in X, and Y.
-    X: n x dx numpy array
-    Y: n x dy numpy array
+    
+    Parameters
+    ----------
+    X : n x dx numpy array
+    Y : n x dy numpy array
+    
+    Returns
+    -------
     Return an n x dx x dy numpy array.
     """
     return np.einsum("ij,ik->ijk", X, Y)
