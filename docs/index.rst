@@ -3,7 +3,7 @@
 hyppo
 ********
 
-.. include:: ../README.rst
+.. include:: ../README.md
     :start-after: placeholder-for-doc-index
 
 .. toctree::
