@@ -1,6 +1,6 @@
 """
 Block Permutations
-=================================
+=============================
 
 :class:`hyppo.independence.KMERF` can be restricted to appropriately match known
 dependencies under the null distribution. Without such modifications, calculated
