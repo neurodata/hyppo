@@ -12,64 +12,87 @@ class SmoothCFTest(KSampleTest):
     The Smooth Characteristic Function test is a two-sample test that uses
     differences in the smoothed (analytic) characteristic function of
     two data distributions in order to determine how different
-    the two data are.
+    the two data are :footcite:p:`chwialkowski2015fast`.
+
+    Parameters
+    ----------
+    num_randfreq: integer
+        Used to construct random array with size ''(p, q)'' where 'p' is the number of
+        dimensions of the data and 'q' is the random frequency at which the
+        test is performed. These are the random test points at which test occurs (see notes).
 
     Notes
-    ____
-
+    -----
     The test statistic takes on the following form:
 
-    :math: 'nW_n\Sigma_n^{-1}W_n'
+    :math:'nW_n\Sigma_n^{-1}W_n'
 
     As seen in the above formulation, this test-statistic takes the same form as
     the Hotelling :math: 'T^2' statistic. However, the components are
     defined differently in this case. Given data sets
     X and Y, define the following as :math: 'Z_i', the vector of differences:
 
-    :math: 'Z_i = (k(X_i, T_1) - k(Y_i, T_1), \ldots, k(X_i, T_J) - k(Y_i, T_J)) \in mathbb{R}^J'
+    .. math::
+
+        Z_i = (k(X_i, T_1) - k(Y_i, T_1), \ldots,
+        k(X_i, T_J) - k(Y_i, T_J)) \in mathbb{R}^J
 
     The above is the vector of differences between kernels at test points, :math: 'T_j'.
     This same formulation is used in the Mean Embedding Test.
     Moving forward, :math: 'W_n' can be defined:
 
-    :math: 'W_n = \frac{1}{n} \sum_{i = 1}^n Z_i
+    :math:'W_n = \frac{1}{n} \sum_{i = 1}^n Z_i
 
-    This leaves :math: '\Sigma_n', the covariance matrix as:
+    This leaves :math:'\Sigma_n', the covariance matrix as:
 
-    :math: '\Sigma_n = \frac{1}{n}ZZ^T'
+    :math:'\Sigma_n = \frac{1}{n}ZZ^T'
 
     In the specific case of the Smooth Characteristic function test,
     the vector of differences can be defined as follows:
 
-    :math: 'Z_i = (f(X_i)\sin(X_iT_1) - f(Y_i)\sin(Y_iT_1), f(X_i)\cos(X_iT_1) - f(Y_i)\cos(Y_iT_1),
-    \cdots) \in \mathbb{R}^{2J}'
+    .. math::
 
-    Once :math: 'S_n' is calculated, a threshold :math: 'r_{\alpha}' corresponding to the
-    :math: '1 - \alpha' quantil of a Chi-squared distribution w/ J degrees of freedom
-    is chosen. Null is rejected if :math: 'S_n' is larger than this threshold.
+        Z_i = (f(X_i)\sin(X_iT_1) - f(Y_i)\sin(Y_iT_1),
+        f(X_i)\cos(X_iT_1) - f(Y_i)\cos(Y_iT_1),\cdots) \in \mathbb{R}^{2J}
+
+    Once :math:'S_n' is calculated, a threshold :math:'r_{\alpha}' corresponding to the
+    :math:'1 - \alpha' quantil of a Chi-squared distribution w/ J degrees of freedom
+    is chosen. Null is rejected if :math:'S_n' is larger than this threshold.
 
     References
     ----------
     .. footbibliography::
     """
-    def __init__(self, scale=1.0, num_random_features=5, **kwargs):
+    def __init__(self, num_randfreq = 5):
 
-        self.scale = scale
-        self.num_random_features = num_random_features
+        self.num_randfreq = num_randfreq
         KSampleTest.__init__(
-            self,  **kwargs
+            self
         )
 
     def statistic(self, x, y):
-        """
-        :return: test statistic for smoothCF
-        """
-        _, dim_x = np.shape(x)
-        random_frequencies = _gen_random(dim_x, self.num_random_features)
-        difference = _smooth_difference(random_frequencies, self.scale * x, self.scale * y)
-        return _distance(difference, 2 * self.num_random_features)
+        r"""
+        Calculates the smooth CF test statistic.
 
-    def test(self, x, y, random_state=None):
+        Parameters
+        ----------
+        x,y : ndarray
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            dimensions. That is, the shapes must be ``(n, p)`` and ``(m, p)`` where
+            `n` is the number of samples and `p` and `q` are the number of
+            dimensions.
+
+        Returns
+        -------
+        stat : float
+            The computed Smooth CF statistic.
+        """
+        _, p = np.shape(x)
+        random_frequencies = _gen_random(p, self.num_randfreq)
+        difference = _smooth_difference(random_frequencies, x, y)
+        return distance(difference, 2 * self.num_randfreq)
+
+    def test(self, x, y):
         r"""
         Calculates the smooth CF test statistic and p-value.
 
@@ -87,6 +110,17 @@ class SmoothCFTest(KSampleTest):
             The computed Smooth CF statistic.
         pvalue : float
             The computed smooth CF p-value.
+
+        Examples
+        --------
+        >>> import numpy as np
+        >>> from hyppo.ksample import SmoothCFTest
+        >>> np.random.seed(120)
+        >>> x = np.random.randn(10, 1)
+        >>> y = np.random.randn(10, 1)
+        >>> stat, pvalue = SmoothCFTest().test(x, y)
+        >>> %.2f, %.3f' % (stat, pvalue)
+        '4.69, 0.454'
         """
         check_input = _CheckInputs(
             inputs=[x,y],
@@ -95,7 +129,7 @@ class SmoothCFTest(KSampleTest):
         x, y = check_input()
 
         stat = self.statistic(x,y)
-        pvalue = chi2.sf(stat, self.num_random_features)
+        pvalue = chi2.sf(stat, self.num_randfreq)
         self.stat = stat
         self.pvalue = pvalue
 
@@ -103,9 +137,9 @@ class SmoothCFTest(KSampleTest):
 
 
 @jit(nopython=True, cache=True)
-def _gen_random(dimension, num_random_features):
+def _gen_random(dimension, num_randfeatures):
     """Generates test points for vector of differences"""
-    return np.random.randn(dimension, num_random_features)
+    return np.random.randn(dimension, num_randfeatures)
 
 
 @jit(nopython=True, cache=True)
@@ -137,14 +171,32 @@ def _smooth_difference(random_frequencies, X, Y):
     return _smooth_cf(X, x_smooth, random_frequencies) - _smooth_cf(Y, y_smooth, random_frequencies)
 
 
-def _distance(difference, num_random_features):
-    """computes final Hotelling :math: 'T^2' statistic"""
+def distance(difference, num_randfeatures):
+    r"""
+    Using the vector of differences as defined above,
+    calculates the Smooth Characteristic Function statistic in the form:
+
+    :math:'nW_n\Sigma_n^{-1}W_n'
+
+    Where :math:'W_n' is the vector of differences.
+
+    Parameters
+    ----------
+    difference : ndarray
+        The vector of differences which indicates distance between mean embeddings.
+    num_randfeatures : integer
+        The number of test frequencies
+    Returns
+    -------
+    stat : float
+        The computed smooth CF statistic.
+    """
     num_samples, _ = np.shape(difference)
     sigma = np.cov(np.transpose(difference))
 
     mu = np.mean(difference, 0)
 
-    if num_random_features == 1:
+    if num_randfeatures == 1:
         stat = float(num_samples * mu ** 2) / float(sigma)
     else:
         stat = num_samples * mu.dot(np.linalg.solve(sigma, np.transpose(mu)))

@@ -1,4 +1,4 @@
-from hyppo.independence import INDEP_TESTS
+from ..independence import INDEP_TESTS
 from ._utils import _CheckInputs, k_sample_transform
 from .base import KSampleTest
 

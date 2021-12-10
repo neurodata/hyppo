@@ -5,8 +5,9 @@ from .hotelling import Hotelling
 from .ksamp import KSample
 from .manova import MANOVA
 from .mmd import MMD
-from .smoothCF import SmoothCFTest
-from .mean_embedding import MeanEmbeddingTest
+
+from .smoothCF import SmoothCFTest, distance
+from .mean_embedding import MeanEmbeddingTest, distance
 __all__ = [s for s in dir()]  # add imported tests to __all__
 
 

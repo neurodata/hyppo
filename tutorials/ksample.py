@@ -173,30 +173,15 @@ print(stat, pvalue)
 # of a random variable. In hypothesis testing, it is useful to estimate characteristic functions
 # for given data. However, empirical characteristic functions can be very complex and therefore
 # expensive to compute. The smooth characteristic function can serve as a heuristic in place of
-# the empirical function which is much faster w.r.t. computation times.
-#
-# .. note::
-#
-#   The Smooth Characteristic Function Test can only be used in two-sample testing cases.
+# the empirical function which is much faster w.r.t. computation times. More information can be
+# found at :class:`hyppo.ksample.SmoothCFTest`
 #
 # .. note::
 #
 #   :Pros: - Very fast computation time
 #          - Faster than current, state-of-the-art quadratic-time kernel-based tests
-#   :Cons: - Only supports two-sample testing
-#
-import numpy as np
-from hyppo.ksample import SmoothCFTest
-
-
-num_samples = 500
-dimensions = 10
-X = np.random.randn(num_samples, dimensions)
-Y = np.random.randn(num_samples, dimensions)
-print(X.shape, Y.shape)
-
-smoothCF = SmoothCFTest()
-stat, p_val = smoothCF.test(X, Y)
+#   :Cons: - Heuristic method, almost surely sufficient to check at one frequency but checking
+#            more frequencies will give more power.
 #
 #
 #
@@ -208,32 +193,15 @@ stat, p_val = smoothCF.test(X, Y)
 # space (RKHS). Hilbert spaces allow the representation of functions as points; thus, if
 # mean embeddings can be determined for two data distributions then the distance between
 # these two distributions in the hilbert space can be determined. In other words, the RKHS
-# allows the mapping of probability measures into a finite dimensional Euclidean space.
-#
-# .. note::
-#
-#   The Smooth Characteristic Function Test can only be used in two-sample testing cases.
+# allows the mapping of probability measures into a finite dimensional Euclidean space. More
+# details can be found at :class:`hyppo.ksample.MeanEmbeddingTest`
 #
 # .. note::
 #
 #   :Pros: - Very fast computation time
 #          - Faster than current, state-of-the-art quadratic-time kernel-based tests
-#   :Cons: - Only supports two-sample testing
-#
-from hyppo.ksample import MeanEmbeddingTest
-import numpy as np
-
-
-num_samples = 500
-dimensions = 10
-X = np.random.randn(num_samples, dimensions)
-Y = np.random.randn(num_samples, dimensions)
-print(X.shape, Y.shape)
-
-MEtest = MeanEmbeddingTest()
-statistic, pval = MEtest.test(X,Y)
-#
-#
+#   :Cons: - Heuristic method, almost surely sufficient to check at one frequency but checking
+#            more frequencies will give more power.
 #
 #
 # .. _[1]: https://link.springer.com/article/10.1007/s10182-020-00378-1
