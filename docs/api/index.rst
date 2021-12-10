@@ -21,6 +21,7 @@ Independence
    HHG
    CCA
    RV
+   friedmanRafsky
 
 
 
