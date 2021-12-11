@@ -6,7 +6,7 @@ from past.utils import old_div
 import autograd.numpy as np
 from ._utils import outer_rows
 from .base import GofTest
-from h0simulator import FSSDH0SimCovObs
+from .h0simulator import FSSDH0SimCovObs
 import logging
 
 import scipy
