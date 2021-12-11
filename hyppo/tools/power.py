@@ -106,12 +106,13 @@ def power(test, sim_type, sim=None, n=100, alpha=0.05, reps=1000, auto=False, **
     Parameters
     ----------
     test : str or list
-        The name of the independence test (from the :mod:`hyppo.independence` module)
-        that is to be tested. If MaxMargin, accepts list with first entry "MaxMargin"
-        and second entry the name of another independence test.
+        The name of the independence test (from the :mod:`hyppo.independence` module
+        or the :mod:`hyppo.d_variate` module) that is to be tested. If MaxMargin,
+        accepts list with first entry "MaxMargin" and second entry the name of
+        another independence test.
         For :class:`hyppo.ksample.KSample` put the name of the independence test.
         For other tests in :mod:`hyppo.ksample` just use the name of the class.
-    sim_type : "indep", "ksamp", "gauss"
+    sim_type : "indep", "ksamp", "gauss", "multi"
         Type of power method to calculate. Depends on the type of ``sim``.
     sim : str, default: None
         The name of the independence simulation (from the :mod:`hyppo.tools` module).

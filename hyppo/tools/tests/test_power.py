@@ -30,6 +30,11 @@ class TestPower:
         est_power = power("Dcorr", "gauss", auto=True, case=2)
         assert_almost_equal(est_power, 1.0, decimal=1)
 
+    def test_dvar(self):
+        np.random.seed(123456789)
+        est_power = power("dHsic", sim_type="multi", sim="multimodal_independence", n=100, p=1, auto=False)
+        assert_almost_equal(est_power, 0.05, decimal=1)
+
 
 class TestPowerErrorWarn:
     def test_power_nosim(self):
