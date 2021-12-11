@@ -6,9 +6,6 @@ from __future__ import division
 
 from abc import ABC, abstractmethod
 
-import data, _utils, density, kernel, h0simulator
-
-
 class GofTest(ABC):
     """Abstract class for a goodness-of-fit test."""
 

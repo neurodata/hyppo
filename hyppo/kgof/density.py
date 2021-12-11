@@ -6,7 +6,7 @@ Module will be rewritten to remove dependencies on this object.
 """
 from __future__ import division
 
-from builtins import range, object
+from builtins import range
 from past.utils import old_div
 
 from abc import ABC, abstractmethod

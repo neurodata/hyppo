@@ -1,6 +1,5 @@
 import numpy as np
 import numpy.testing as testing
-import matplotlib.pyplot as plt
 
 from .. import FSSD, data, density, _utils, kernel, h0simulator
 

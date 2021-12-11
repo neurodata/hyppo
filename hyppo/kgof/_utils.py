@@ -1,12 +1,10 @@
 """A module containing convenient methods"""
 from __future__ import print_function, division, unicode_literals, absolute_import
 
-from builtins import zip, int, range
+from builtins import int
 from future import standard_library
 
 standard_library.install_aliases()
-from past.utils import old_div
-from builtins import object
 
 import autograd.numpy as np
 from sklearn.metrics.pairwise import euclidean_distances

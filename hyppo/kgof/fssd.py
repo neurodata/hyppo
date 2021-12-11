@@ -1,6 +1,6 @@
 from __future__ import division
 
-from builtins import zip, str, range, object
+from builtins import str, range, object
 from past.utils import old_div
 
 import autograd.numpy as np
