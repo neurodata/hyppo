@@ -5,7 +5,6 @@ from scipy.sparse.construct import random
 from ..tools import compute_dist
 from ._utils import _CheckInputs
 from .base import IndependenceTest, IndependenceTestOutput
-from scipy.spatial.distance import cdist
 from scipy.stats import rankdata
 
 
@@ -21,9 +20,8 @@ class HHG(IndependenceTest):
     dimensions :footcite:p:`hellerConsistentMultivariateTest2013`.
 
     The fast version of this test can also be run, based on
-    Heller 2016 paper on multivariate tests based on univariate tests.
-    The test statistic is the Hoeffding's dependence statistic from the distances of
-    sample points from a single center point. Center point is the center of mass of the samples.
+    Heller 2016 paper on multivariate tests based on univariate tests. The univariate test
+    used is Hoeffding's independence test.
     This version has relatively low power, but performs well in scenarios where the center of
     mass carries a lot of information (e.g. circular or elliptical geometry).
 
@@ -53,10 +51,8 @@ class HHG(IndependenceTest):
         where ``x`` is the data matrix for which pairwise distances are
         calculated and ``**kwargs`` are extra arguements to send to your custom
         function.
-
-    fast : boolean, default: False
+    auto : boolean, default: False
         Used to opt into fast version of test if desired.
-
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
 
@@ -95,7 +91,7 @@ class HHG(IndependenceTest):
     :math:`A_{1 \cdot}` and :math:`A_{2 \cdot}` are the row sums, and
     :math:`n - 2` is the number of degrees of freedom. From this table, we can
     calculate the Pearson's chi squared test statistic using,
-
+    
     .. math::
 
         S(i, j) = \frac{(n-2) (A_{12} A_{21} - A_{11} A_{22})^2}
@@ -120,22 +116,22 @@ class HHG(IndependenceTest):
     sample group.
 
     From these distances, we can calculate the Hoeffding's dependence score between
-    the two groups - denoted as D - using,
+    the two groups - denoted as :math:`D` - using,
 
     .. math::
 
-        D = \frac{(n-2) (n-3) D_{1} + D_{2} - 2(n-2) D_{3}}
+        D &= \frac{(n-2) (n-3) D_{1} + D_{2} - 2(n-2) D_{3}}
                  {n (n-1) (n-2) (n-3) (n-4)}
 
-        D_{1} = \sum_{i} (Q_{i}-1) (Q_{i}-2)
+        D_{1} &= \sum_{i} (Q_{i}-1) (Q_{i}-2)
 
-        D_{2} = \sum_{i} (R_{i} - 1) (R_{i} - 2) (S_{i} - 1) (S_{i} - 2)
+        D_{2} &= \sum_{i} (R_{i} - 1) (R_{i} - 2) (S_{i} - 1) (S_{i} - 2)
 
-        D_{3} = \sum_{i} {R_{i} - 2} (S_{i} - 2) (Q_{i}-1)
+        D_{3} &= \sum_{i} {R_{i} - 2} (S_{i} - 2) (Q_{i}-1) 
 
-    where :math:`R_{i}` is the rank of :math:`x_{i}`
-    and :math:`D_{i}` is the rank of :math:`y_{i}`
-    and :math:`Q_{i}` is the bivariate rank = 1 plus the number of points with both x and y
+    where :math:`R_{i}` is the rank of :math:`x_{i}`,
+    :math:`D_{i}` is the rank of :math:`y_{i}`,
+    :math:`Q_{i}` is the bivariate rank = 1 plus the number of points with both x and y
     values less than the :math:`i`-th point.
 
     D ranges between -0.5 and 1, with 1 indicating complete dependence. D is notably
@@ -149,11 +145,11 @@ class HHG(IndependenceTest):
     .. footbibliography::
     """
 
-    def __init__(self, compute_distance="euclidean", fast=False, **kwargs):
+    def __init__(self, compute_distance="euclidean", auto=False, **kwargs):
         self.is_distance = False
         if not compute_distance:
             self.is_distance = True
-        self.fast = fast
+        self.auto = auto
         IndependenceTest.__init__(self, compute_distance=compute_distance, **kwargs)
 
     def statistic(self, x, y):
@@ -181,7 +177,7 @@ class HHG(IndependenceTest):
         distx = x
         disty = y
 
-        if not self.fast:
+        if not self.auto:
             if not self.is_distance:
                 distx, disty = compute_dist(
                     x, y, metric=self.compute_distance, **self.kwargs
@@ -199,12 +195,18 @@ class HHG(IndependenceTest):
                 zx, zy = pointer
                 zx = np.array(zx).reshape(1, -1)
                 zy = np.array(zy).reshape(1, -1)
-                distx, disty = _point_distance(self, x, y, zx, zy)
+                xin = np.concatenate((zx, x))
+                yin = np.concatenate((zy, y))
+                distx, disty = compute_dist(
+                    xin, yin, metric=self.compute_distance, **self.kwargs
+                )
+                distx = distx[0]
                 distx = distx[distx != 0]
+                disty = disty[0]
                 disty = disty[disty != 0]
             distx = distx.flatten()
             disty = disty.flatten()
-            stat = hoeffdingsD(distx, disty)
+            stat = hoeffdings(distx, disty)
             self.stat = stat
 
         return stat
@@ -271,6 +273,7 @@ class HHG(IndependenceTest):
             zx, zy = pointer
             zx = np.array(zx).reshape(1, -1)
             zy = np.array(zy).reshape(1, -1)
+            x
             distx, disty = _point_distance(self, x, y, zx, zy)
             x = distx[distx != 0]
             y = disty[disty != 0]
@@ -310,32 +313,15 @@ def _pearson_stat(distx, disty):  # pragma: no cover
 
     return S
 
-
-def _point_distance(self, x, y, zx, zy, **kwargs):
-    """
-    For fast HHG,
-    Returns a collection of distances between sample points and chosen centre point
-    """
-    distx = cdist(zx, x, metric=self.compute_distance, **kwargs)
-    disty = cdist(zy, y, metric=self.compute_distance, **kwargs)
-
-    return distx, disty
-
-
-def hoeffdingsD(x, y):
-    """
-    For fast HHG, calculates the Hoeffding's dependence statistic
-    """
+def hoeffdings(x, y):
+    """For fast HHG, calculates the Hoeffding's dependence statistic"""
     xin = x
     yin = y
     # crop data to the smallest array, length have to be equal
     if len(xin) < len(yin):
-        yin = yin[: len(xin)]
+        yin
     if len(xin) > len(yin):
-        xin = xin[: len(yin)]
-    # dropna
-    x = xin[~(np.isnan(xin) | np.isnan(yin))]
-    y = yin[~(np.isnan(xin) | np.isnan(yin))]
+        xin
 
     # undersampling if length too long
     lenx = len(x)

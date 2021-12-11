@@ -79,8 +79,6 @@ Now, let's look at unique properties of some of the tests in :mod:`hyppo.indepen
 #
 # An alternate fast HHG test is also available, based on a paper that proposed multivariate 
 # tests of association through univariate tests. 
-# This test obtains distance of all samples from the center of mass of the sample group and 
-# then computes the Hoeffding's D statistic (a univariate independence test).
 #
 # .. note::
 #
