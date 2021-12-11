@@ -10,11 +10,10 @@ from ..density import IsotropicNormal
 from numpy.random import default_rng
 
 import scipy.stats as stats
-import unittest
 import pytest
 
 
-class TestFSSD(unittest.TestCase):
+class TestFSSD:
     @pytest.mark.parametrize("n", [100])
     @pytest.mark.parametrize("alpha", [0.01])
     @pytest.mark.parametrize("d", [1, 4])

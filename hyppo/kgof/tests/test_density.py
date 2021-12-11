@@ -5,11 +5,10 @@ from ..density import IsotropicNormal, GaussianMixture
 import scipy.stats as stats
 from numpy.random import default_rng
 
-import unittest
 import pytest
 
 
-class TestIsotropicNormal(unittest.TestCase):
+class TestIsotropicNormal:
     @pytest.mark.parametrize("n", [7])
     @pytest.mark.parametrize("d", [3, 1])
     def test_log_den(self, n, d):
@@ -41,7 +40,7 @@ class TestIsotropicNormal(unittest.TestCase):
         testing.assert_almost_equal(grad_log, my_grad_log)
 
 
-class TestGaussianMixture(unittest.TestCase):
+class TestGaussianMixture:
     @pytest.mark.parametrize("i", [0, 1, 2, 3])
     def test_multivariate_normal_density(self, i):
         rng = default_rng(i + 8)
