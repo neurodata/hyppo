@@ -77,8 +77,8 @@ Now, let's look at unique properties of some of the tests in :mod:`hyppo.indepen
 #    :Cons: - Very slow (computationally complex)
 #           - Test statistic not very interpretable, not between (-1, 1)
 #
-# An alternate fast HHG test is also available, based on a paper that proposed multivariate 
-# tests of association through univariate tests. 
+# An alternate fast HHG test is also available, based on a paper that proposed multivariate
+# tests of association through univariate tests.
 #
 # .. note::
 #
