@@ -6,3 +6,5 @@ pytest-cov
 codecov
 black
 twine
+autograd
+future
