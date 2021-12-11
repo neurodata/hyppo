@@ -1,7 +1,11 @@
 import numpy as np
 import numpy.testing as testing
 
-from .. import FSSD, data, density, _utils, kernel, h0simulator
+from ..fssd import FSSD, FSSDH0SimCovObs
+from .._utils import meddistance, fit_gaussian_draw
+from ..kernel import KGauss
+from ..data import Data
+from ..density import IsotropicNormal
 
 from numpy.random import default_rng
 
@@ -20,7 +24,7 @@ class TestFSSD(unittest.TestCase):
         # sample
         mean = np.zeros(d)
         variance = 1
-        isonorm = density.IsotropicNormal(mean, variance)
+        isonorm = IsotropicNormal(mean, variance)
 
         # only one dimension of the mean is shifted
         draw_mean = mean + 0
@@ -28,15 +32,15 @@ class TestFSSD(unittest.TestCase):
 
         rng = default_rng(seed)
         X = rng.standard_normal(size=(n, d)) * np.sqrt(draw_variance) + draw_mean
-        dat = data.Data(X)
+        dat = Data(X)
 
         # Test
-        sig2 = _utils.meddistance(X, subsample=1000) ** 2
-        k = kernel.KGauss(sig2)
+        sig2 = meddistance(X, subsample=1000) ** 2
+        k = KGauss(sig2)
 
         # random test locations
-        V = _utils.fit_gaussian_draw(X, J, seed=seed + 1)
-        null_sim = h0simulator.FSSDH0SimCovObs(n_simulate=200, seed=3)
+        V = fit_gaussian_draw(X, J, seed=seed + 1)
+        null_sim = FSSDH0SimCovObs(n_simulate=200, seed=3)
         fssd = FSSD(isonorm, k, V, null_sim=null_sim, alpha=alpha)
 
         tresult = fssd.test(dat, return_simulated_stats=True)
@@ -54,22 +58,22 @@ class TestFSSD(unittest.TestCase):
         # sample
         mean = np.zeros(d)
         variance = 1
-        isonorm = density.IsotropicNormal(mean, variance)
+        isonorm = IsotropicNormal(mean, variance)
 
         draw_mean = mean + 2
         draw_variance = variance + 1
         rng = default_rng(seed)
         X = rng.standard_normal(size=(n, d)) * np.sqrt(draw_variance) + draw_mean
-        dat = data.Data(X)
+        dat = Data(X)
 
         # Test
-        sig2 = _utils.meddistance(X, subsample=1000) ** 2
-        k = kernel.KGauss(sig2)
+        sig2 = meddistance(X, subsample=1000) ** 2
+        k = KGauss(sig2)
 
         # random test locations
-        V = _utils.fit_gaussian_draw(X, J, seed=seed + 1)
+        V = fit_gaussian_draw(X, J, seed=seed + 1)
 
-        null_sim = h0simulator.FSSDH0SimCovObs(n_simulate=200, seed=3)
+        null_sim = FSSDH0SimCovObs(n_simulate=200, seed=3)
         fssd = FSSD(isonorm, k, V, null_sim=null_sim, alpha=alpha)
         fea_tensor = fssd.feature_tensor(X)
 

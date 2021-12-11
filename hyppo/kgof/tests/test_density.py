@@ -1,7 +1,7 @@
 import numpy as np
 from numpy import testing
 
-from .. import density
+from ..density import IsotropicNormal, GaussianMixture
 import scipy.stats as stats
 from numpy.random import default_rng
 
@@ -18,7 +18,7 @@ class TestIsotropicNormal(unittest.TestCase):
         mean = rng.standard_normal(size=d)
         X = rng.random(size=(n, d)) + 1
 
-        isonorm = density.IsotropicNormal(mean, variance)
+        isonorm = IsotropicNormal(mean, variance)
         log_dens = isonorm.log_den(X)
         my_log_dens = -np.sum((X - mean) ** 2, 1) / (2.0 * variance)
 
@@ -33,7 +33,7 @@ class TestIsotropicNormal(unittest.TestCase):
         mean = rng.standard_normal(size=d) + 1
         X = rng.random(size=(n, d)) - 2
 
-        isonorm = density.IsotropicNormal(mean, variance)
+        isonorm = IsotropicNormal(mean, variance)
         grad_log = isonorm.grad_log(X)
         my_grad_log = -(X - mean) / variance
 
@@ -49,7 +49,7 @@ class TestGaussianMixture(unittest.TestCase):
         cov = stats.wishart(df=10 + d, scale=np.eye(d)).rvs(size=1)
         mean = rng.standard_normal(size=d)
         X = rng.standard_normal(size=(11, d))
-        den_estimate = density.GaussianMixture.multivariate_normal_density(mean, cov, X)
+        den_estimate = GaussianMixture.multivariate_normal_density(mean, cov, X)
 
         mnorm = stats.multivariate_normal(mean=mean, cov=cov)
         den_truth = mnorm.pdf(X)
