@@ -7,4 +7,3 @@ codecov
 black
 twine
 autograd
-future
