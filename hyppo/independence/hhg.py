@@ -91,7 +91,7 @@ class HHG(IndependenceTest):
     :math:`A_{1 \cdot}` and :math:`A_{2 \cdot}` are the row sums, and
     :math:`n - 2` is the number of degrees of freedom. From this table, we can
     calculate the Pearson's chi squared test statistic using,
-    
+
     .. math::
 
         S(i, j) = \frac{(n-2) (A_{12} A_{21} - A_{11} A_{22})^2}
@@ -127,7 +127,7 @@ class HHG(IndependenceTest):
 
         D_{2} &= \sum_{i} (R_{i} - 1) (R_{i} - 2) (S_{i} - 1) (S_{i} - 2)
 
-        D_{3} &= \sum_{i} {R_{i} - 2} (S_{i} - 2) (Q_{i}-1) 
+        D_{3} &= \sum_{i} {R_{i} - 2} (S_{i} - 2) (Q_{i}-1)
 
     where :math:`R_{i}` is the rank of :math:`x_{i}`,
     :math:`D_{i}` is the rank of :math:`y_{i}`,
@@ -312,6 +312,7 @@ def _pearson_stat(distx, disty):  # pragma: no cover
                     S[i, j] = ((n - 2) * (t12 * t21 - t11 * t22) ** 2) / denom
 
     return S
+
 
 def hoeffdings(x, y):
     """For fast HHG, calculates the Hoeffding's dependence statistic"""
