@@ -16,6 +16,7 @@ from ...independence import Dcorr
 from ..common import (
     _check_distmat,
     _check_kernmat,
+    _multi_check_kernmat,
     _PermTree,
     check_ndarray_xy,
     check_perm_blocks,
@@ -142,6 +143,12 @@ class TestErrorWarn:
         y = np.arange(10).reshape(1, -1)
         assert_raises(ValueError, _check_distmat, x, y)
         assert_raises(ValueError, _check_kernmat, x, y)
+
+    def test_error_multidistkern(self):
+        # raises error if samples are low (< 3)
+        x = np.arange(10).reshape(-1, 1)
+        y = np.arange(10).reshape(1, -1)
+        assert_raises(ValueError, _multi_check_kernmat, x, y)
 
     def test_error_nans(self):
         # raises error if inputs contain NaNs
