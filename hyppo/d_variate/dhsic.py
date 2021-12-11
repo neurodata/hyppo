@@ -93,9 +93,7 @@ class dHsic(DVariateTest):
         stat : float
             The computed dHsic statistic.
         """
-        kerns = multi_compute_kern(
-            *args, metric=self.compute_kernel, **self.kwargs
-        )
+        kerns = multi_compute_kern(*args, metric=self.compute_kernel, **self.kwargs)
 
         n = kerns[0].shape[0]
         term1 = np.ones((n, n))
@@ -142,9 +140,7 @@ class dHsic(DVariateTest):
         )
         args = check_input()
 
-        stat, pvalue = super(dHsic, self).test(
-            *args, reps=reps, workers=workers
-        )
+        stat, pvalue = super(dHsic, self).test(*args, reps=reps, workers=workers)
         self.stat = stat
         self.pvalue = pvalue
 

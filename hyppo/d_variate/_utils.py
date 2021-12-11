@@ -31,9 +31,7 @@ def _check_dim(mat):
     if mat.ndim == 1:
         mat = mat[:, np.newaxis]
     elif mat.ndim != 2:
-        raise ValueError(
-            "Expected a 2-D array, found shape " "{}".format(mat.shape)
-        )
+        raise ValueError("Expected a 2-D array, found shape " "{}".format(mat.shape))
 
     _check_nd_indeptest(mat)
 
@@ -54,7 +52,8 @@ def _check_nd_indeptest(mat):
     samples.append(n)
     if any(sample != samples[0] for sample in samples):
         raise ValueError(
-            "Shape mismatch, all input data matrices must have shape " "[n, p] and [n, q]."
+            "Shape mismatch, all input data matrices must have shape "
+            "[n, p] and [n, q]."
         )
 
 
@@ -64,9 +63,7 @@ def _check_min_samples(mat):
     n = mat.shape[0]
     samples.append(n)
     if any(sample <= 2 for sample in samples):
-        raise ValueError(
-            "Number of samples is too low. Must be at least 3."
-        )
+        raise ValueError("Number of samples is too low. Must be at least 3.")
 
 
 def _check_variance(mat):

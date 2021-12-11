@@ -174,7 +174,9 @@ def _multi_check_kernmat(*args):
                 "{is_sym} symmetric and {one_diag} "
                 "ones along the diagonal".format(
                     is_sym="is not" if not np.array_equal(x, x.T) else "is",
-                    one_diag="doesn't have" if not np.all((x.diagonal() == 1)) else "has",
+                    one_diag="doesn't have"
+                    if not np.all((x.diagonal() == 1))
+                    else "has",
                 )
             )
 
