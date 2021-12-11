@@ -6,6 +6,7 @@ from __future__ import division
 
 from abc import ABC, abstractmethod
 
+
 class GofTest(ABC):
     """Abstract class for a goodness-of-fit test."""
 

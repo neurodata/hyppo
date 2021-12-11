@@ -12,7 +12,14 @@ from past.utils import old_div
 from abc import ABC, abstractmethod
 import autograd
 import autograd.numpy as np
-from .data import DSNormal, DSIsotropicNormal, DSIsoGaussianMixture, DSGaussianMixture, DSGaussBernRBM, DSGaussCosFreqs
+from .data import (
+    DSNormal,
+    DSIsotropicNormal,
+    DSIsoGaussianMixture,
+    DSGaussianMixture,
+    DSGaussBernRBM,
+    DSGaussCosFreqs,
+)
 import scipy.stats as stats
 import logging
 
