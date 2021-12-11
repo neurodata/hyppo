@@ -32,7 +32,14 @@ class TestPower:
 
     def test_dvar(self):
         np.random.seed(123456789)
-        est_power = power("dHsic", sim_type="multi", sim="multimodal_independence", n=100, p=1, auto=False)
+        est_power = power(
+            "dHsic",
+            sim_type="multi",
+            sim="multimodal_independence",
+            n=100,
+            p=1,
+            auto=False,
+        )
         assert_almost_equal(est_power, 0.05, decimal=1)
 
 
