@@ -10,7 +10,7 @@ from past.utils import old_div
 
 from abc import ABC, abstractmethod
 import autograd.numpy as np
-import _utils
+from ._utils import tr_te_indices
 import scipy.stats as stats
 from numpy.random import default_rng
 
@@ -59,7 +59,7 @@ class Data(object):
         Return (Data for tr, Data for te)"""
         X = self.X
         nx, dx = X.shape
-        Itr, Ite = _utils.tr_te_indices(nx, tr_proportion, seed)
+        Itr, Ite = tr_te_indices(nx, tr_proportion, seed)
         tr_data = Data(X[Itr, :])
         te_data = Data(X[Ite, :])
         if return_tr_ind:

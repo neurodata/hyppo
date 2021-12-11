@@ -4,7 +4,7 @@ from past.utils import old_div
 
 from abc import ABC, abstractmethod
 import autograd.numpy as np
-import fssd, data, density, kernel
+from .fssd import FSSD
 
 import scipy
 import scipy.stats as stats
@@ -59,7 +59,7 @@ class FSSDH0SimCovObs(H0Simulator):
         """
         fea_tensor: n x d x J feature matrix
         """
-        assert isinstance(gof, fssd.FSSD)
+        assert isinstance(gof, FSSD)
         n_simulate = self.n_simulate
         seed = self.seed
         if fea_tensor is None:
@@ -75,7 +75,7 @@ class FSSDH0SimCovObs(H0Simulator):
         cov = np.cov(Tau.T) + np.zeros((1, 1))
         # cov = Tau.T.dot(Tau/n)
 
-        arr_nfssd, eigs = fssd.FSSD.list_simulate_spectral(
+        arr_nfssd, eigs = FSSD.list_simulate_spectral(
             cov, J, n_simulate, seed=self.seed
         )
         return {"sim_stats": arr_nfssd}
@@ -126,7 +126,7 @@ class FSSDH0SimCovDraw(H0Simulator):
         cov = old_div(Tau.T.dot(Tau), n) + np.zeros((1, 1))
         n_simulate = self.n_simulate
 
-        arr_nfssd, eigs = fssd.FSSD.list_simulate_spectral(
+        arr_nfssd, eigs = FSSD.list_simulate_spectral(
             cov, J, n_simulate, seed=self.seed
         )
         return {"sim_stats": arr_nfssd}

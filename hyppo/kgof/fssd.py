@@ -4,7 +4,7 @@ from builtins import str, range, object
 from past.utils import old_div
 
 import autograd.numpy as np
-import _utils, data, density, kernel, h0simulator
+from ._utils import outer_rows
 from .base import GofTest
 from h0simulator import FSSDH0SimCovObs
 import logging
@@ -191,7 +191,7 @@ class FSSD(GofTest):
         dKdV = np.transpose(stack0, (1, 2, 0))
 
         # n x d x J tensor
-        grad_logp_K = _utils.outer_rows(grad_logp, K)
+        grad_logp_K = outer_rows(grad_logp, K)
 
         Xi = old_div((grad_logp_K + dKdV), np.sqrt(d * J))
         return Xi

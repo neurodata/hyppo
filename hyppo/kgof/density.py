@@ -12,7 +12,7 @@ from past.utils import old_div
 from abc import ABC, abstractmethod
 import autograd
 import autograd.numpy as np
-import data
+from .data import DSNormal, DSIsotropicNormal, DSIsoGaussianMixture, DSGaussianMixture, DSGaussBernRBM, DSGaussCosFreqs
 import scipy.stats as stats
 import logging
 
@@ -164,7 +164,7 @@ class IsotropicNormal(UnnormalizedDensity):
         )
 
     def get_datasource(self):
-        return data.DSIsotropicNormal(self.mean, self.variance)
+        return DSIsotropicNormal(self.mean, self.variance)
 
     def dim(self):
         return len(self.mean)
@@ -199,7 +199,7 @@ class Normal(UnnormalizedDensity):
         return unden
 
     def get_datasource(self):
-        return data.DSNormal(self.mean, self.cov)
+        return DSNormal(self.mean, self.cov)
 
     def dim(self):
         return len(self.mean)
@@ -264,7 +264,7 @@ class IsoGaussianMixture(UnnormalizedDensity):
         return den
 
     def get_datasource(self):
-        return data.DSIsoGaussianMixture(self.means, self.variances, self.pmix)
+        return DSIsoGaussianMixture(self.means, self.variances, self.pmix)
 
     def dim(self):
         k, d = self.means.shape
@@ -341,7 +341,7 @@ class GaussianMixture(UnnormalizedDensity):
         return den
 
     def get_datasource(self):
-        return data.DSGaussianMixture(self.means, self.variances, self.pmix)
+        return DSGaussianMixture(self.means, self.variances, self.pmix)
 
     def dim(self):
         k, d = self.means.shape
@@ -409,7 +409,7 @@ class GaussBernRBM(UnnormalizedDensity):
         return S
 
     def get_datasource(self, burnin=2000):
-        return data.DSGaussBernRBM(self.B, self.b, self.c, burnin=burnin)
+        return DSGaussBernRBM(self.B, self.b, self.c, burnin=burnin)
 
     def dim(self):
         return len(self.b)
@@ -488,7 +488,7 @@ class Gamma(UnnormalizedDensity):
         return unden
 
     def get_datasource(self):
-        return data.DSNormal(self.mean, self.cov)
+        return DSNormal(self.mean, self.cov)
 
     def dim(self):
         return 1
@@ -516,7 +516,7 @@ class LogGamma(UnnormalizedDensity):
         return unden
 
     def get_datasource(self):
-        return data.DSNormal(self.mean, self.cov)
+        return DSNormal(self.mean, self.cov)
 
     def dim(self):
         return 1
@@ -681,4 +681,4 @@ class GaussCosFreqs(UnnormalizedDensity):
         return len(self.freqs)
 
     def get_datasource(self):
-        return data.DSGaussCosFreqs(self.sigma2, self.freqs)
+        return DSGaussCosFreqs(self.sigma2, self.freqs)
