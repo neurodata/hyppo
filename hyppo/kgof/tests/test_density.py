@@ -9,6 +9,7 @@ from numpy.random import default_rng
 import unittest
 import pytest
 
+
 class TestIsotropicNormal(unittest.TestCase):
     @pytest.mark.parametrize("n", [7])
     @pytest.mark.parametrize("d", [3, 1])
@@ -49,9 +50,7 @@ class TestGaussianMixture(unittest.TestCase):
         cov = stats.wishart(df=10 + d, scale=np.eye(d)).rvs(size=1)
         mean = rng.standard_normal(size=d)
         X = rng.standard_normal(size=(11, d))
-        den_estimate = density.GaussianMixture.multivariate_normal_density(
-            mean, cov, X
-        )
+        den_estimate = density.GaussianMixture.multivariate_normal_density(mean, cov, X)
 
         mnorm = stats.multivariate_normal(mean=mean, cov=cov)
         den_truth = mnorm.pdf(X)

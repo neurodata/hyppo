@@ -78,7 +78,7 @@ def fit_gaussian_draw(X, J, seed=28, reg=1e-7, eig_pow=1.0):
     r"""
     Fit a multivariate normal to the data X (n x d) and draw J points
     from the fit.
-    
+
     Parameters
     ----------
     reg : regularizer to use with the covariance matrix
@@ -106,12 +106,12 @@ def fit_gaussian_draw(X, J, seed=28, reg=1e-7, eig_pow=1.0):
 def outer_rows(X, Y):
     r"""
     Compute the outer product of each row in X, and Y.
-    
+
     Parameters
     ----------
     X : n x dx numpy array
     Y : n x dy numpy array
-    
+
     Returns
     -------
     Return an n x dx x dy numpy array.

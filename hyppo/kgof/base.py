@@ -8,8 +8,9 @@ from abc import ABC, abstractmethod
 
 import data, _utils, density, kernel, h0simulator
 
+
 class GofTest(ABC):
-    """ Abstract class for a goodness-of-fit test. """
+    """Abstract class for a goodness-of-fit test."""
 
     def __init__(self, p, alpha):
         """
@@ -21,9 +22,9 @@ class GofTest(ABC):
 
     @abstractmethod
     def test(self, dat):
-        """ 
+        """
         Perform the goodness-of-fit test and return values computed in a dictionary.
-        
+
         Parameters
         ----------
         dat : an instance of data
@@ -42,5 +43,5 @@ class GofTest(ABC):
 
     @abstractmethod
     def statistic(self, dat):
-        """ Compute the test statistic """
+        """Compute the test statistic"""
         raise NotImplementedError()

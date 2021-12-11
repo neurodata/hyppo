@@ -27,35 +27,35 @@ class FSSD(GofTest):
 
     Notes
     -----
-    Given a known probability density :math: `p` (model) and a sample 
-    :math: `\{ \mathbf{x}_i \}_{i=1}^n \sim q` where :math:`q` is an unknown 
-    density, the GoF test tests whether or not the sample :math: `\{ \mathbf{x}_i \}_{i=1}^n` 
+    Given a known probability density :math: `p` (model) and a sample
+    :math: `\{ \mathbf{x}_i \}_{i=1}^n \sim q` where :math:`q` is an unknown
+    density, the GoF test tests whether or not the sample :math: `\{ \mathbf{x}_i \}_{i=1}^n`
     is distributed according to a known :math:`p`.
 
-    The implemented test relies on a new test statistic called The Finite-Set Stein Discrepancy (FSSD) 
+    The implemented test relies on a new test statistic called The Finite-Set Stein Discrepancy (FSSD)
     which is a discrepancy measure between a density and a sample. Unique features of the new goodness-of-fit test are:
 
-    It makes only a few mild assumptions on the distributions :math: `p` and :math: `q`. The model :math: `p` 
-    can take almost any form. The normalizer of :math: `p` is not assumed known. The test only assesses the goodness of 
+    It makes only a few mild assumptions on the distributions :math: `p` and :math: `q`. The model :math: `p`
+    can take almost any form. The normalizer of :math: `p` is not assumed known. The test only assesses the goodness of
     :math: `p` through :math: `\nabla_{\mathbf{x}} \log p(\mathbf{x})` i.e., the first derivative of the log density.
 
-    The runtime complexity of the full test (both parameter tuning and the actual test) is 
+    The runtime complexity of the full test (both parameter tuning and the actual test) is
     :math: `\mathcal{O}(n)` i.e., linear in the sample size.
 
     It returns a set of points (features) which indicate where :math: `p` fails to fit the data.
 
     The FSSD test requires that the derivative of :math: `\log p` exists.
-    The test requires a technical condition called the "vanishing boundary" condition for it to be consistent. 
-    The condition is :math: `\lim_{\|\mathbf{x} \|\to \infty} p(\mathbf{x}) \mathbf{g}(\mathbf{x}) = \mathbf{0}` where 
-    :math: `\mathbf{g}` is the so called the Stein witness function which depends on the kernel and 
-    :math: `\nabla_{\mathbf{x}} \log p(\mathbf{x})`. For a density :math: `p` which has support everywhere e.g., 
-    Gaussian, there is no problem at all. However, for a density defined on a domain 
-    with a boundary, one has to be careful. For example, if :math: `p` is a 
-    Gamma density defined on the positive orthant of :math: `\mathbb{R}`, the density itself can actually be evaluated on negative points. 
-    Looking at the way the Gamma density is written, there is nothing that tells the test that it cannot be evaluated on negative orthant. 
-    Therefore, if :math: `p` is Gamma, and the observed sample also follows :math: `p` 
-    (i.e., :math:`H_0` is true), the test will still reject :math:`H_0`! 
-    The reason is that the data do not match the left tail (in the negative region!) of the Gamma. 
+    The test requires a technical condition called the "vanishing boundary" condition for it to be consistent.
+    The condition is :math: `\lim_{\|\mathbf{x} \|\to \infty} p(\mathbf{x}) \mathbf{g}(\mathbf{x}) = \mathbf{0}` where
+    :math: `\mathbf{g}` is the so called the Stein witness function which depends on the kernel and
+    :math: `\nabla_{\mathbf{x}} \log p(\mathbf{x})`. For a density :math: `p` which has support everywhere e.g.,
+    Gaussian, there is no problem at all. However, for a density defined on a domain
+    with a boundary, one has to be careful. For example, if :math: `p` is a
+    Gamma density defined on the positive orthant of :math: `\mathbb{R}`, the density itself can actually be evaluated on negative points.
+    Looking at the way the Gamma density is written, there is nothing that tells the test that it cannot be evaluated on negative orthant.
+    Therefore, if :math: `p` is Gamma, and the observed sample also follows :math: `p`
+    (i.e., :math:`H_0` is true), the test will still reject :math:`H_0`!
+    The reason is that the data do not match the left tail (in the negative region!) of the Gamma.
     It is necessary to include the fact that negative region has 0 density into the density itself.
     """
 
