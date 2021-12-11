@@ -1,10 +1,8 @@
 from __future__ import division
 
 from past.utils import old_div
-from builtins import object
-from future.utils import with_metaclass
 
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 import autograd.numpy as np
 import fssd, data, density, kernel
 
@@ -12,7 +10,7 @@ import scipy
 import scipy.stats as stats
 
 
-class H0Simulator(with_metaclass(ABCMeta, object)):
+class H0Simulator(ABC):
     """
     An abstract class representing a simulator to draw samples from the
     null distribution. For some tests, these are needed to conduct the test.
