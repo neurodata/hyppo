@@ -1,23 +1,22 @@
-from .base import MultivariateTest, MultivariateTestOutput
+from .base import DVariateTest, DVariateTestOutput
 from ..tools import multi_compute_kern
 from ._utils import _CheckInputs
 
 import numpy as np
 
 
-class Dhsic(MultivariateTest):
+class dHsic(DVariateTest):
     r"""
-    d-variate Hilbert Schmidt Independence Criterion (Dhsic) test statistic
+    d-variate Hilbert Schmidt Independence Criterion (dHsic) test statistic
     and p-value.
 
-    The d-variable Hilbert Schmidt independence criterion (Dhsic) is a
-    non-parametric kernel-based independence test between an arbitrary number
-    of variables. The Dhsic statistic is 0 if the variables are jointly
-    independent and positive if the variables are dependent.
+    dHsic is a non-parametric kernel-based independence test between an
+    arbitrary number of variables. The dHsic statistic is 0 if the variables
+    are jointly independent and positive if the variables are dependent.
     :footcite:p:`grettonKernelJointIndependence2016`.
     The default choice is the Gaussian kernel, which uses the median distance
     as the bandwidth, which is a characteristic kernel that guarantees that
-    Dhsic is a consistent test
+    dHsic is a consistent test.
     :footcite:p:`grettonKernelStatisticalTest2007`
     :footcite:p:`grettonConsistentNonparametricTests2010`
     :footcite:p:`grettonKernelJointIndependence2016`.
@@ -35,7 +34,7 @@ class Dhsic(MultivariateTest):
             ``"laplacian"``, ``"sigmoid"``, ``"cosine"``]
 
         Note ``"rbf"`` and ``"gaussian"`` are the same metric.
-        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already similarity
+        Set to ``None`` or ``"precomputed"`` if ``args`` are already similarity
         matrices. To call a custom function, either create the similarity matrix
         before-hand or create a function of the form :func:`metric(x, **kwargs)`
         where ``x`` is the data matrix for which pairwise kernel similarity matrices are
@@ -50,11 +49,21 @@ class Dhsic(MultivariateTest):
     The statistic can be derived as follows
     :footcite:p:`grettonKernelJointIndependence2016`:
 
-    Dhsic builds on the two-variable Hilbert Schmidt Independence Criterion (Hsic),
+    dHsic builds on the two-variable Hilbert Schmidt Independence Criterion (Hsic),
     implemented in :class:`hyppo.independence.Hsic`, but allows for an arbitrary
     number of variables. For a given kernel, the joint distribution and the product
     of the marginals is mapped to the reproducing kernel Hilbert space and the
-    squared distance between the embeddings is calculated.
+    squared distance between the embeddings is calculated. The dHsic statistic can
+    be calculated by,
+
+    .. math::
+
+        \mathrm{dHsic} (\mathbb{P}^{(X^1, ..., X^d)}) = \Vert \prod(\mathbb{P}^{X^1}
+        \bigotimes \cdot\cdot\cdot \bigotimes \mathbb{P}^{X^d}) - \prod(\mathbb{P}^
+        {(X^1, ..., X^d)}) \Vert^2_H
+
+    Similar to Hsic, dHsic uses a gaussian median kernel by default, and the p-value
+    is calculated using a permutation test using :meth:`hyppo.tools.multi_perm_test`.
 
     References
     ----------
@@ -65,60 +74,58 @@ class Dhsic(MultivariateTest):
         self.compute_kernel = compute_kernel
         self.bias = bias
 
-        MultivariateTest.__init__(self, compute_distance=None, **kwargs)
+        DVariateTest.__init__(self, compute_kernel=self.compute_kernel, **kwargs)
 
-    def statistic(self, *data_matrices):
+    def statistic(self, *args):
         """
-        Helper function that calculates the Dhsic test statistic.
+        Helper function that calculates the dHsic test statistic.
 
         Parameters
         ----------
-        *data_matrices: Tuple[np.ndarray]
-            Input data matrices. All elements of the tuple must have the same
+        *args: np.ndarray
+            Variable length input data matrices. All inputs must have the same
             number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
             etc., where `n` is the number of samples and `p` and `q` are the
-            number of dimensions. Alternatively, the elements can be distance
-            matrices, where the shapes must both be ``(n, n)``.
+            number of dimensions.
 
         Returns
         -------
         stat : float
-            The computed Dhsic statistic.
+            The computed dHsic statistic.
         """
         kerns = multi_compute_kern(
-            *data_matrices, metric=self.compute_kernel, **self.kwargs
+            *args, metric=self.compute_kernel, **self.kwargs
         )
 
         n = kerns[0].shape[0]
         term1 = np.ones((n, n))
         term2 = 1
         term3 = (2 / n) * np.ones((n,))
-        for j in range(len(kerns)):
-            term1 = np.multiply(term1, kerns[j])
-            term2 = (1 / n ** 2) * term2 * np.sum(kerns[j])
-            term3 = (1 / n) * np.multiply(term3, np.sum(kerns[j], axis=1))
+        for kern in kerns:
+            term1 = np.multiply(term1, kern)
+            term2 = (1 / n ** 2) * term2 * np.sum(kern)
+            term3 = (1 / n) * np.multiply(term3, np.sum(kern, axis=1))
 
         stat = (1 / n ** 2) * np.sum(term1) + term2 - np.sum(term3)
         self.stat = stat
 
         return stat
 
-    def test(self, *data_matrices, reps=1000, workers=1):
+    def test(self, *args, reps=1000, workers=1):
         """
-        Calculates the Dhsic test statistic and p-value.
+        Calculates the dHsic test statistic and p-value.
 
         Parameters
         ----------
-        *data_matrices: Tuple[np.ndarray]
-            Input data matrices. All elements of the tuple must have the same
+        *args: np.ndarray
+            Variable length input data matrices. All inputs must have the same
             number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
             etc., where `n` is the number of samples and `p` and `q` are the
-            number of dimensions. Alternatively, the elements can be distance
-            matrices, where the shapes must both be ``(n, n)``.
-        reps : int, default=1000
+            number of dimensions.
+        reps : int, default: 1000
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        workers : int, default=1
+        workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
             Supply ``-1`` to use all cores available to the Process.
 
@@ -130,13 +137,15 @@ class Dhsic(MultivariateTest):
             The computed dHsic p-value.
         """
         check_input = _CheckInputs(
-            *data_matrices,
+            *args,
             reps=reps,
         )
-        data_matrices = check_input()
+        args = check_input()
 
-        stat, pvalue = super(Dhsic, self).test(
-            *data_matrices, reps=reps, workers=workers
+        stat, pvalue = super(dHsic, self).test(
+            *args, reps=reps, workers=workers
         )
+        self.stat = stat
+        self.pvalue = pvalue
 
-        return MultivariateTestOutput(stat, pvalue)
+        return DVariateTestOutput(stat, pvalue)

@@ -24,6 +24,20 @@ Independence
 
 
 
+.. automodule:: hyppo.d_variate
+
+.. currentmodule:: hyppo.d_variate
+
+*D*-Variate
+-------------
+
+.. autosummary::
+    :toctree: generated/
+
+    dHsic
+
+
+
 .. automodule:: hyppo.ksample
 
 .. currentmodule:: hyppo.ksample

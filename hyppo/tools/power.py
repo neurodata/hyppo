@@ -4,7 +4,7 @@ import numpy as np
 
 from ..independence import INDEP_TESTS
 from ..ksample import KSAMP_TESTS, KSample, k_sample_transform
-from ..multivariate import MULTI_TESTS
+from ..d_variate import MULTI_TESTS
 from .indep_sim import indep_sim
 from .ksample_sim import gaussian_3samp, rot_ksamp
 
@@ -70,7 +70,7 @@ def _ksamp_perm_stat(test, sim_type, **kwargs):
 
 def _multi_perm_stat(test, sim_type, **kwargs):
     """
-    Generates null and alternate distributions for the multivariate independence test.
+    Generates null and alternate distributions for the d_variate independence test.
     """
     x, y = _sim_gen(sim_type=sim_type, **kwargs)
     obs_stat = test.statistic(*(x, y))
