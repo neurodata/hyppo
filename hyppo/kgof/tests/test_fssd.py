@@ -12,8 +12,6 @@ import unittest
 
 
 class TestFSSD(unittest.TestCase):
-    def setUp(self):
-        pass
 
     def test_basic(self):
         seed = 12
@@ -83,6 +81,3 @@ class TestFSSD(unittest.TestCase):
                 self.assertGreaterEqual(u_variance, 0)
                 # should reject H0
                 self.assertGreaterEqual(u_mean, 0)
-
-    def tearDown(self):
-        pass

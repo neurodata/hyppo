@@ -80,20 +80,16 @@ Discriminability
 Kernel Goodness-of-Fit
 -----------------------
 
-..autosummary::
+.. autosummary::
    :toctree: generated/
 
    FSSD
-   Data
-   UnnormalizedDensity
-   Kernel
-   H0Simulator
 
 
 
-   ..automodule:: hyppo.tools
-   
-   ..currentmodule:: hyppo.tools
+.. automodule:: hyppo.tools
+
+.. currentmodule:: hyppo.tools
 
 Simulations
 -------------
@@ -146,7 +142,12 @@ Time-Series Simulations
    nonlinear_process
    ts_sim
 
+Goodness-of-Fit Simulations
+""""""""""""""""""""""""""""
+.. autosummary::
+   :toctree: generated/
 
+   H0Simulator
 
 .. automodule:: hyppo
 
@@ -165,6 +166,9 @@ Miscellaneous
    tools.perm_test
    tools.chi2_approx
    tools.power
+   kgof.data
+   kgof.density
+   kgof.kernel
 
 
 
@@ -178,3 +182,4 @@ Base Classes
    ksample.base.KSampleTest
    time_series.base.TimeSeriesTest
    discrim.base.DiscriminabilityTest
+   kgof.base.GofTest

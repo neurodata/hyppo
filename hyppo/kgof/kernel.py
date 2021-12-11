@@ -1,4 +1,9 @@
-"""Module containing kernel related classes"""
+"""
+Module containing kernel related classes
+Contains overlapping functionality with sims that exist in 
+hyppo.tools.common.compute_kern.
+Module will be rewritten to remove dependencies on this object.
+"""
 from __future__ import division
 
 from builtins import str

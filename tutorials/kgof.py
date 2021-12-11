@@ -2,14 +2,22 @@ r"""
 .. _kgof:
 
 Kernel Goodness-of-Fit Testing
-*********************
+******************************
 
-This notebook will introduce usage of kgof, a kernel goodness-of-fit hyppo package 
-implementing a linear time kernel-based GoF test.
+Figuring out the origin of a particular set of data is difficult. However, insights gained from 
+the origin of a set of samples (i.e., its target density function) can be instrumental in understanding
+its characteristics. This sort of testing is desirable in practice to answer questions such as: does this
+sample correctly represent this population? Can a certain statistical phenomena be attributed to a given 
+distribution?
 
-Given a known probability density :math: `p` (model) and a sample 
-:math: `\{ \mathbf{x}_i \}_{i=1}^n \sim q` where :math:`q` is an unknown 
-density, a goodness-of-fit test proposes null and alternative hypotheses:
+For anyone interested in questions like the above, this module of the package is perfect! 
+The goal of goodness-of-fit testing is to determine, given a set of samples, 
+how likely it is that these were generated from a target density function. The tests can be found in
+:mod:`hyppo.kgof`, and will be elaborated upon in detail below. But let's take a look 
+at some of the mathematical theory behind the test formation:
+
+Consider a known probability density :math: `p` and a sample :math: `\{ \mathbf{x}_i \}_{i=1}^n \sim q`
+where :math: `q` is an unknown density, a goodness-of-fit test proposes null and alternative hypotheses: 
 
 .. math::
 
@@ -26,13 +34,8 @@ It makes only a few mild assumptions on the distributions :math: `p` and :math: 
 can take almost any form. The normalizer of :math: `p` is not assumed known. The test only assesses the goodness of 
 :math: `p` through :math: `\nabla_{\mathbf{x}} \log p(\mathbf{x})` i.e., the first derivative of the log density.
 
-The runtime complexity of the full test (both parameter tuning and the actual test) is 
-:math: `\mathcal{O}(n)` i.e., linear in the sample size.
-
 It returns a set of points (features) which indicate where :math: `p` fails to fit the data.
 
-For demonstration purposes, let us consider a simple two-dimensional problem where :math: `p` 
-is the standard Gaussian.
 """
 
 ########################################################################################
@@ -49,14 +52,13 @@ is the standard Gaussian.
 # reject :math: `H_0`.
 # First construct the log density function for the model
 
-import data 
-import density
-import kernel 
-import _utils
+import data, density, kernel, _utils, h0simulator
+from fssd import FSSD
 import matplotlib
 import matplotlib.pyplot as plt
 import autograd.numpy as np
 import scipy.stats as stats
+from numpy.random import default_rng
 
 def isogauss_log_den(X):
   mean = np.zeros(2)
@@ -85,9 +87,9 @@ p = density.from_log_den(2, isogauss_log_den) # UnnormalizedDensity object
 m = 1 # If m = 0, p = q and H_0 is true
 
 seed = 4
-np.random.seed(seed)
+rng = default_rng(seed)
 n = 400
-X = np.random.randn(n, 2) + np.array([m, 0])
+X = rng.standard_normal(size=(n, 2)) + np.array([m, 0])
 
 # Plot the data from q
 plt.plot(X[:, 0], X[:, 1], 'ko', label='Data from $q$')
@@ -97,75 +99,24 @@ plt.legend()
 # All the implemented tests take the data in the form of a :class: `hyppo.kgof.data.Data` object. 
 # This is just an encapsulation of the sample :math: `X`. To construct :class: `data.Data` do the following:
 
-# dat will be fed to the test.
-dat = data.Data(X) # Creates a fssdgof Data object here
+dat = data.Data(X)
 
 ########################################################################################
-# Now that the data has been generated, randomly split it into two disjoint halves: ``train`` and ``test``. 
-# The training set ``train`` will be used for parameter optimization. The testing set ``test`` will be used 
-# for the actual goodness-of-fit ``test``. ``train``` and ``test`` are again of type :class: `data.Data`.
+# Conduct an FSSD kernel goodness-of-fit test for an isotropic normal density with mean 
+# 0 and variance 1. 
 
-train, test = dat.split_tr_te(tr_proportion=0.2, seed=2)
+mean = 0
+variance = 1
 
-# Optimize the parameters of the test on train. The optimization relies on autograd to compute the gradient. 
-# A Gaussian kernel is being used for the test.
-
-# J is the # of test locs (features), not larger than 10
 J = 1
+sig2 = _utils.meddistance(X, subsample=1000) ** 2
+k = kernel.KGauss(sig2)
+isonorm = density.IsotropicNormal(mean, variance)
 
-opts = {
-    'reg': 1e-2, # regularization parameter in the optimization objective
-    'max_iter': 50, # maximum number of gradient ascent iterations
-    'tol_fun':1e-7, # termination tolerance of the objective
-}
+# random test locations
+V = _utils.fit_gaussian_draw(X, J, seed=seed + 1)
+null_sim = h0simulator.FSSDH0SimCovObs(n_simulate=200, seed=3)
+fssd = FSSD(isonorm, k, V, null_sim=null_sim, alpha=0.01)
 
-# make sure to give train (NOT test).
-# do the optimization with the options in opts.
-# V_opt, gw_opt, opt_info = GaussFSSD.optimize_auto_init(p, train, J, **opts)
-
-########################################################################################
-# The optimization procedure returns --
-# .. note::
-#
-#    V_opt: optimized test locations (features). A :math:`J \times d` ``numpy`` array.
-#    gw_opt: optimized Gaussian width (for the Gaussian kernel). A floating point number.
-#    opt_info: a dictionary containing information gathered during the optimization.
-
-# opt_info
-
-########################################################################################
-# Use these optimized parameters to construct the FSSD test. The test using a Gaussian 
-# kernel is implemented in :class: `hyppo.kgof.goftest.GaussFSSD`.
-
-alpha = 0.01 # significance level of the test (99% confidence)
-## fssd_opt = GaussFSSD(p, gw_opt, V_opt, alpha)
-
-# Perform the goodness-of-fit test on the testing data test.
-# return a dictionary of testing results
-## test_result = fssd_opt.test(test)
-## test_result
-
-########################################################################################
-# It can be seen that the test correctly rejects :math:`H_0` with a very small p-value.
-
-########################################################################################
-#
-# Important note
-# ---------------------------------------------
-#
-# A few points worth mentioning
-#
-# The FSSD test requires that the derivative of :math: `\log p` exists.
-# The test requires a technical condition called the "vanishing boundary" condition for it to be consistent. 
-# The condition is :math: `\lim_{\|\mathbf{x} \|\to \infty} p(\mathbf{x}) \mathbf{g}(\mathbf{x}) = \mathbf{0}` where 
-# :math: `\mathbf{g}` is the so called the Stein witness function which depends on the kernel and 
-# :math: `\nabla_{\mathbf{x}} \log p(\mathbf{x})`. For a density :math: `p` which has support everywhere e.g., 
-# Gaussian, there is no problem at all. 
-# However, for a density defined on a domain with a boundary, one has to be careful. For example, if :math: `p` is a 
-# Gamma density defined on the positive orthant of :math: `\mathbb{R}`, the density itself can actually be evaluated on negative points. 
-# Looking at the way the Gamma density is written, there is nothing that tells the test that it cannot be evaluated on negative orthant. 
-# Therefore, if :math: `p` is Gamma, and the observed sample also follows :math: `p` 
-# (i.e., :math:`H_0` is true), the test will still reject :math:`H_0`! 
-# The reason is that the data do not match the left tail (in the negative region!) of the Gamma. 
-# It is necessary to include the fact that negative region has 0 density into the density itself.
+tresult = fssd.test(dat, return_simulated_stats=True)
 

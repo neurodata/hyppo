@@ -11,8 +11,6 @@ import unittest
 
 
 class TestKGauss(unittest.TestCase):
-    def setUp(self):
-        pass
 
     def test_basic(self):
         # sample
@@ -84,10 +82,3 @@ class TestKGauss(unittest.TestCase):
 
             self.assertEqual(G.shape, myG.shape)
             testing.assert_almost_equal(G, myG)
-
-    def tearDown(self):
-        pass
-
-
-if __name__ == "__main__":
-    unittest.main()

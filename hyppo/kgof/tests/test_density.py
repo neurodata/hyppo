@@ -9,8 +9,6 @@ from numpy.random import default_rng
 
 
 class TestIsotropicNormal(unittest.TestCase):
-    def setUp(self):
-        pass
 
     def test_log_den(self):
         n = 7
@@ -62,7 +60,3 @@ class TestGaussianMixture(unittest.TestCase):
             den_truth = mnorm.pdf(X)
 
             np.testing.assert_almost_equal(den_estimate, den_truth)
-
-
-if __name__ == "__main__":
-    unittest.main()
