@@ -2,9 +2,6 @@
 from __future__ import print_function, division, unicode_literals, absolute_import
 
 from builtins import int
-from future import standard_library
-
-standard_library.install_aliases()
 
 import autograd.numpy as np
 from sklearn.metrics.pairwise import euclidean_distances
