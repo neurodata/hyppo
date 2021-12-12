@@ -253,7 +253,7 @@ class FSSD(GofTest):
 
         # n x d x J
         Xi = self.feature_tensor(X)
-        unscaled_mean = FSSD.ustat_h1_mean_variance(Xi, return_variance=False)
+        unscaled_mean = ustat_h1_mean_variance(Xi, return_variance=False)
         stat = n * unscaled_mean
 
         if return_feature_tensor:
@@ -279,7 +279,7 @@ class FSSD(GofTest):
         """
         X = dat.data()
         Xi = self.feature_tensor(X)
-        mean, variance = FSSD.ustat_h1_mean_variance(Xi, return_variance=True)
+        mean, variance = ustat_h1_mean_variance(Xi, return_variance=True)
         return mean, variance
 
     def feature_tensor(self, X):
@@ -344,7 +344,7 @@ def power_criterion(
     V = test_locs
     fssd = FSSD(p, k, V, null_sim=None)
     fea_tensor = fssd.feature_tensor(X)
-    u_mean, u_variance = FSSD.ustat_h1_mean_variance(
+    u_mean, u_variance = ustat_h1_mean_variance(
         fea_tensor, return_variance=True, use_unbiased=use_unbiased
     )
 

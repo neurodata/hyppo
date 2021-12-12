@@ -45,8 +45,8 @@ class TestFSSD:
         tresult = fssd.test(dat, return_simulated_stats=True)
 
         # assertions
-        self.assertGreaterEqual(tresult["pvalue"], 0)
-        self.assertLessEqual(tresult["pvalue"], 1)
+        testing.assert_almost_equal(tresult["pvalue"], 0, decimal=1)
+        testing.assert_almost_equal(tresult["test_stat"], 0, decimal=1)
 
     @pytest.mark.parametrize("n", [200])
     @pytest.mark.parametrize("alpha", [0.01])
@@ -79,6 +79,6 @@ class TestFSSD:
         u_mean, u_variance = ustat_h1_mean_variance(fea_tensor)
 
         # assertions
-        self.assertGreaterEqual(u_variance, 0)
+        testing.assert_almost_equal(u_variance, 0, decimal=1)
         # should reject H0
-        self.assertGreaterEqual(u_mean, 0)
+        testing.assert_almost_equal(u_mean, 0, decimal=1)
