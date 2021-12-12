@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.testing as testing
 
-from ..fssd import FSSD, FSSDH0SimCovObs
+from ..fssd import FSSD, FSSDH0SimCovObs, ustat_h1_mean_variance
 from .._utils import meddistance, fit_gaussian_draw
 from ..kernel import KGauss
 from ..data import Data
@@ -76,7 +76,7 @@ class TestFSSD:
         fssd = FSSD(isonorm, k, V, null_sim=null_sim, alpha=alpha)
         fea_tensor = fssd.feature_tensor(X)
 
-        u_mean, u_variance = FSSD.ustat_h1_mean_variance(fea_tensor)
+        u_mean, u_variance = ustat_h1_mean_variance(fea_tensor)
 
         # assertions
         self.assertGreaterEqual(u_variance, 0)

@@ -52,9 +52,11 @@ It returns a set of points (features) which indicate where :math: `p` fails to f
 # reject :math: `H_0`.
 # First construct the log density function for the model
 
-import data, density, kernel, _utils, h0simulator
-from fssd import FSSD
-import matplotlib
+from data import Data
+from kernel import KGauss
+from density import IsotropicNormal, from_log_den
+from _utils import fit_gaussian_draw, meddistance
+from fssd import FSSD, FSSDH0SimCovObs
 import matplotlib.pyplot as plt
 import autograd.numpy as np
 import scipy.stats as stats
@@ -80,7 +82,7 @@ def isogauss_log_den(X):
 # Construct an :class: `UnnormalizedDensity` which will represent a Gaussian model. All the implemented
 # goodness-of-fit tests take this object as input.
 
-p = density.from_log_den(2, isogauss_log_den) # UnnormalizedDensity object
+p = from_log_den(2, isogauss_log_den) # UnnormalizedDensity object
 
 # Next, draw a sample from q.
 # Drawing n points from q
@@ -92,14 +94,14 @@ n = 400
 X = rng.standard_normal(size=(n, 2)) + np.array([m, 0])
 
 # Plot the data from q
-plt.plot(X[:, 0], X[:, 1], 'ko', label='Data from $q$')
+plt.plot(X[0], X[1], 'ko', label='Data from $q$')
 plt.legend()
 
 ########################################################################################
 # All the implemented tests take the data in the form of a :class: `hyppo.kgof.data.Data` object. 
 # This is just an encapsulation of the sample :math: `X`. To construct :class: `data.Data` do the following:
 
-dat = data.Data(X)
+dat = Data(X)
 
 ########################################################################################
 # Conduct an FSSD kernel goodness-of-fit test for an isotropic normal density with mean 
@@ -109,13 +111,13 @@ mean = 0
 variance = 1
 
 J = 1
-sig2 = _utils.meddistance(X, subsample=1000) ** 2
-k = kernel.KGauss(sig2)
-isonorm = density.IsotropicNormal(mean, variance)
+sig2 = meddistance(X, subsample=1000) ** 2
+k = KGauss(sig2)
+isonorm = IsotropicNormal(mean, variance)
 
 # random test locations
-V = _utils.fit_gaussian_draw(X, J, seed=seed + 1)
-null_sim = h0simulator.FSSDH0SimCovObs(n_simulate=200, seed=3)
+V = fit_gaussian_draw(X, J, seed=seed + 1)
+null_sim = FSSDH0SimCovObs(n_simulate=200, seed=3)
 fssd = FSSD(isonorm, k, V, null_sim=null_sim, alpha=0.01)
 
 tresult = fssd.test(dat, return_simulated_stats=True)

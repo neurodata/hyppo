@@ -1,7 +1,7 @@
 """
 Module containing data structures for representing datasets.
 Contains overlapping functionality with sims that exist in hyppo.tools.
-Module will be rewritten to remove dependencies on this object.
+Module will be refactored to remove dependencies on this object.
 """
 from __future__ import print_function, division
 
