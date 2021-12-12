@@ -81,4 +81,4 @@ class TestFSSD:
         # assertions
         testing.assert_almost_equal(u_variance, 1, decimal=1)
         # should reject H0
-        testing.assert_almost_equal(u_mean, 0, decimal=1)
+        testing.assert_almost_equal(u_mean, 0.8, decimal=1)
