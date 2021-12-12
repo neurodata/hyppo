@@ -20,6 +20,8 @@ class SmoothCFTest(KSampleTest):
         Used to construct random array with size ''(p, q)'' where 'p' is the number of
         dimensions of the data and 'q' is the random frequency at which the
         test is performed. These are the random test points at which test occurs (see notes).
+    random_state: integer
+        Set random seed for generation of test points
 
     Notes
     -----
@@ -63,8 +65,12 @@ class SmoothCFTest(KSampleTest):
     ----------
     .. footbibliography::
     """
-    def __init__(self, num_randfreq = 5):
+    def __init__(self, num_randfreq = 5, random_state = None):
 
+        if random_state:
+            self.random_state = random_state
+        else:
+            self.random_state = None
         self.num_randfreq = num_randfreq
         KSampleTest.__init__(
             self
@@ -88,7 +94,7 @@ class SmoothCFTest(KSampleTest):
             The computed Smooth CF statistic.
         """
         _, p = np.shape(x)
-        random_frequencies = _gen_random(p, self.num_randfreq)
+        random_frequencies = _gen_random(p, self.num_randfreq, self.random_state)
         difference = _smooth_difference(random_frequencies, x, y)
         return distance(difference, 2 * self.num_randfreq)
 
@@ -115,12 +121,12 @@ class SmoothCFTest(KSampleTest):
         --------
         >>> import numpy as np
         >>> from hyppo.ksample import SmoothCFTest
-        >>> np.random.seed(120)
+        >>> np.random.seed(1234)
         >>> x = np.random.randn(10, 1)
         >>> y = np.random.randn(10, 1)
-        >>> stat, pvalue = SmoothCFTest().test(x, y)
+        >>> stat, pvalue = SmoothCFTest(random_state=1234).test(x, y)
         >>> %.2f, %.3f' % (stat, pvalue)
-        '4.69, 0.454'
+        '4.69, 0.910'
         """
         check_input = _CheckInputs(
             inputs=[x,y],
@@ -129,16 +135,17 @@ class SmoothCFTest(KSampleTest):
         x, y = check_input()
 
         stat = self.statistic(x,y)
-        pvalue = chi2.sf(stat, self.num_randfreq)
+        pvalue = chi2.sf(stat, 2*self.num_randfreq)
         self.stat = stat
         self.pvalue = pvalue
 
         return KSampleTestOutput(stat, pvalue)
 
 
-@jit(nopython=True, cache=True)
-def _gen_random(dimension, num_randfeatures):
+def _gen_random(dimension, num_randfeatures, random_state):
     """Generates test points for vector of differences"""
+    if random_state:
+        np.random.seed(random_state)
     return np.random.randn(dimension, num_randfeatures)
 
 

@@ -10,8 +10,8 @@ class TestSmoothCF:
     @pytest.mark.parametrize(
         "n, obs_stat, obs_pvalue",
         [
-            (2000, 1300, 1.59e-117),
-            (1000, 500, 5.08e-280),
+            (2000, 1317.0159, 8.134e-277),
+            (1000, 546.279, 5.608e-111),
         ],
     )
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
@@ -19,7 +19,8 @@ class TestSmoothCF:
         x, y = rot_ksamp("linear", n, 1, k=2)
         stat, pvalue = SmoothCFTest().test(x,y)
 
-        assert_almost_equal(stat, obs_stat, decimal=-3)
-        assert_almost_equal(pvalue, obs_pvalue, decimal=110)
+        assert_almost_equal(stat, obs_stat, decimal=1)
+        assert_almost_equal(pvalue, obs_pvalue, decimal=100)
+
 
 
