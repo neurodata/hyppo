@@ -78,13 +78,13 @@ class DiscrimOneSample(DiscriminabilityTest):
 
         Parameters
         ----------
-        x : ndarray
+        x : ndarray of floats
             Input data matrices. ``x`` must have shape ``(n, p)`` where `n` is the
             number of
             samples and `p` are the number of dimensions. Alternatively, ``x`` can be
             distance matrices, where the shape must be ``(n, n)``, and ``is_dist`` must
             set to ``True`` in this case.
-        y : ndarray
+        y : ndarray of floats
             A vector containing the sample ids for our `n` samples.
         reps : int, default: 1000
             The number of replications used to estimate the null distribution
