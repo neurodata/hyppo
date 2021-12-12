@@ -41,23 +41,6 @@ class TestIsotropicNormal:
         testing.assert_almost_equal(grad_log, my_grad_log)
 
 
-class TestNormal:
-    @pytest.mark.parametrize("n", [7])
-    @pytest.mark.parametrize("d", [3, 1])
-    def test_log_den(self, n, d):
-        rng = default_rng(16)
-        variance = 1.1
-        mean = rng.standard_normal(size=d)
-        X = rng.random(size=(n, d)) + 1
-
-        norm = Normal(mean, variance)
-        log_dens = norm.log_den(X)
-        my_log_dens = -np.sum((X - mean) ** 2, 1) / (2.0 * variance)
-
-        # check correctness
-        testing.assert_almost_equal(log_dens, my_log_dens)
-
-
 class TestGaussianMixture:
     @pytest.mark.parametrize("i", [0, 1, 2, 3])
     def test_multivariate_normal_density(self, i):
