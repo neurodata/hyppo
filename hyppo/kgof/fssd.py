@@ -79,7 +79,7 @@ class FSSDH0SimCovObs(H0Simulator):
         cov = np.cov(Tau.T) + np.zeros((1, 1))
         # cov = Tau.T.dot(Tau/n)
 
-        arr_nfssd, eigs = FSSD.list_simulate_spectral(
+        arr_nfssd, eigs = list_simulate_spectral(
             cov, J, n_simulate, seed=self.seed
         )
         return {"sim_stats": arr_nfssd}
@@ -130,7 +130,7 @@ class FSSDH0SimCovDraw(H0Simulator):
         cov = old_div(Tau.T.dot(Tau), n) + np.zeros((1, 1))
         n_simulate = self.n_simulate
 
-        arr_nfssd, eigs = FSSD.list_simulate_spectral(
+        arr_nfssd, eigs = list_simulate_spectral(
             cov, J, n_simulate, seed=self.seed
         )
         return {"sim_stats": arr_nfssd}
@@ -419,7 +419,7 @@ def list_simulate_spectral(cov, J, n_simulate=1000, seed=82):
     eigs = np.real(eigs)
     # sort in decreasing order
     eigs = -np.sort(-eigs)
-    sim_fssds = FSSD.simulate_null_dist(eigs, J, n_simulate=n_simulate, seed=seed)
+    sim_fssds = simulate_null_dist(eigs, J, n_simulate=n_simulate, seed=seed)
     return sim_fssds, eigs
 
 
@@ -485,7 +485,7 @@ def fssd_grid_search_kernel(p, dat, test_locs, list_kernel):
     objs = np.zeros(n_cand)
     for i in range(n_cand):
         ki = list_kernel[i]
-        objs[i] = FSSD.power_criterion(p, dat, ki, test_locs)
+        objs[i] = power_criterion(p, dat, ki, test_locs)
         logging.info("(%d), obj: %5.4g, k: %s" % (i, objs[i], str(ki)))
 
     # Widths that come early in the list
