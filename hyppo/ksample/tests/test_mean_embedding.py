@@ -4,7 +4,7 @@ from numpy.testing import assert_almost_equal
 
 from hyppo.tools import rot_ksamp
 from hyppo.ksample import MeanEmbeddingTest
-from hyppo.ksample.mean_embedding import _get_estimate
+import hyppo.ksample.mean_embedding
 
 
 class TestMeanEmbedding:
@@ -29,12 +29,26 @@ class TestMeanEmbedding:
             ([0.00637311, 0.59369549, 0.16233412, 0.32396812, 0.05284812]),
         ],
     )
-    def test_norm(self, actual_norm):
+    def test_get_estimate(self, actual_norm):
         np.random.seed(123456789)
         x = np.random.randn(5, 2)
         point = np.random.randn(5, 2)
-        norm = _get_estimate(x, point)
+        norm = hyppo.ksample.mean_embedding._get_estimate(x, point)
         assert_almost_equal(norm, actual_norm)
+
+    @pytest.mark.parametrize(
+        "actual_diff",
+        [
+            ([-0.2081915, -0.37618035, 0.70235683, -0.7459787, 0.44686362]),
+        ],
+    )
+    def test_get_difference(self, actual_diff):
+        np.random.seed(123456789)
+        x = np.random.randn(5, 2)
+        y = np.random.randn(5, 2)
+        point = np.random.randn(5, 2)
+        diff = hyppo.ksample.mean_embedding._get_difference(point, x, y)
+        assert_almost_equal(diff, actual_diff)
 
     def test_null(self):
         np.random.seed(120)

@@ -201,9 +201,6 @@ def distance(difference, num_randfeatures):
 
     mu = np.mean(difference, 0)
 
-    if num_randfeatures == 1:
-        stat = float(num_samples * mu ** 2) / float(sigma)
-    else:
-        stat = num_samples * mu.dot(np.linalg.solve(sigma, np.transpose(mu)))
+    stat = num_samples * mu.dot(np.linalg.solve(sigma, np.transpose(mu)))
 
     return stat
