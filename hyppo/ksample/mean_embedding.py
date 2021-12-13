@@ -57,8 +57,10 @@ class MeanEmbeddingTest(KSampleTest):
     .. footbibliography::
     """
 
-    def __init__(self, num_randfreq=5):
+    def __init__(self, num_randfreq=5, random_state=None):
         self.num_randfreq = num_randfreq
+        if random_state:
+            self.random_state = random_state
         KSampleTest.__init__(self)
 
     def statistic(self, x, y):
@@ -79,7 +81,7 @@ class MeanEmbeddingTest(KSampleTest):
             The computed mean embedding statistic.
         """
         _, p = np.shape(x)
-        obs = _vector_of_differences(p, x, y, self.num_randfreq)
+        obs = _vector_of_differences(p, x, y, self.num_randfreq, self.random_state)
         return distance(obs, self.num_randfreq)
 
     def test(self, x, y):
@@ -104,13 +106,13 @@ class MeanEmbeddingTest(KSampleTest):
         Examples
         --------
         >>> import numpy as np
-        >>> from hyppo.ksample import SmoothCFTest
-        >>> np.random.seed(120)
-        >>> x = np.random.randn(10, 1)
-        >>> y = np.random.randn(10, 1)
-        >>> stat, pvalue = SmoothCFTest().test(x, y)
-        >>> '%.3f, %.3f' % (stat, pvalue)
-        '3.852, 0.571'
+        >>> from hyppo.ksample import MeanEmbeddingTest
+        >>> np.random.seed(1234)
+        >>> x = np.random.randn(500, 10)
+        >>> y = np.random.randn(500, 10)
+        >>> stat, pvalue = MeanEmbeddingTest(random_state=1234).test(x, y)
+        >>> '%.2f, %.3f' % (stat, pvalue)
+        '5.33, 0.377'
         """
         check_input = _CheckInputs(inputs=[x, y], indep_test=None)
         x, y = check_input()
@@ -139,8 +141,10 @@ def _get_difference(point, x, y):
 
 
 @jit(nopython=True, cache=True)
-def _vector_of_differences(dim, x, y, num_randfreq):
+def _vector_of_differences(dim, x, y, num_randfreq, random_state):
     """Calculates vector of differences using above helpers"""
+    if random_state:
+        np.random.seed(random_state)
     points = np.random.randn(num_randfreq, dim)
     ra = np.zeros((num_randfreq, x.shape[0]))
 

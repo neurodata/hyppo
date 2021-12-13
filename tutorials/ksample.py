@@ -166,6 +166,7 @@ print(stat, pvalue)
 # Otherwise, these tests runs like :ref:`any other test<general indep>`.
 ########################################################################################
 # Smooth Characteristic Function Test
+# --------------------------------------------
 #
 # The Smooth Characteristic Function Test, or Smooth CF, is a form of non-parametric two-sample
 # tests. The Smooth CF test utilizes smoothed empirical characteristic functions to represent
@@ -182,12 +183,10 @@ print(stat, pvalue)
 #          - Faster than current, state-of-the-art quadratic-time kernel-based tests
 #   :Cons: - Heuristic method, almost surely sufficient to check at one frequency but checking
 #            more frequencies will give more power.
-#
-#
-#
 ########################################################################################
 # Mean Embedding Test
 # --------------------------------------------
+#
 # The mean embedding test is another non-parametric two-sample statistical test. This test
 # is based on analytic mean embeddings of data distributions in a reproducing kernel hilbert
 # space (RKHS). Hilbert spaces allow the representation of functions as points; thus, if
