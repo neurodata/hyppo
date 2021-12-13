@@ -35,3 +35,32 @@ class TestMeanEmbedding:
         point = np.random.randn(5, 2)
         norm = _get_estimate(x, point)
         assert_almost_equal(norm, actual_norm)
+
+    def test_null(self):
+        np.random.seed(120)
+        x = np.random.randn(500, 10)
+        y = np.random.randn(500, 10)
+        _, pval = MeanEmbeddingTest().test(x, y)
+        assert pval > 0.05
+
+    def test_alternative(self):
+        np.random.seed(120)
+        x = np.random.randn(500, 10)
+        x[:, 1] *= 3
+        y = np.random.randn(500, 10)
+        _, pval = MeanEmbeddingTest().test(x, y)
+        assert pval < 0.05
+
+    @pytest.mark.parametrize(
+        "obs_stat, obs_pval",
+        [
+            (0.0164, 0.8980),
+        ],
+    )
+    def test_one_frequency(self, obs_stat, obs_pval):
+        np.random.seed(123456789)
+        x = np.random.randn(500, 10)
+        y = np.random.randn(500, 10)
+        stat, pvalue = MeanEmbeddingTest(random_state=1234, num_randfreq=1).test(x, y)
+        assert_almost_equal(stat, obs_stat, decimal=2)
+        assert_almost_equal(pvalue, obs_pval, decimal=2)
