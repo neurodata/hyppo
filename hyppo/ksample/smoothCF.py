@@ -96,8 +96,10 @@ class SmoothCFTest(KSampleTest):
         if self.random_state:
             np.random.seed(self.random_state)
         random_frequencies = np.random.randn(p, self.num_randfreq)
-        x_smooth = _smooth(x)
-        y_smooth = _smooth(y)
+
+        x_smooth = np.exp(-np.linalg.norm(x, axis=1) ** 2 / 2).reshape(-1, 1)
+        y_smooth = np.exp(-np.linalg.norm(y, axis=1) ** 2 / 2).reshape(-1, 1)
+
         difference = _smooth_cf(x, x_smooth, random_frequencies) - _smooth_cf(
             y, y_smooth, random_frequencies
         )
@@ -142,17 +144,6 @@ class SmoothCFTest(KSampleTest):
         self.pvalue = pvalue
 
         return KSampleTestOutput(stat, pvalue)
-
-
-@jit(nopython=True, cache=True)
-def _smooth(data):
-    """Smooth kernel"""
-    norms = np.zeros(data.shape[0])
-    for i in range(data.shape[0]):
-        norms[i] = np.sqrt(np.sum(data[i] ** 2))
-    w = norms
-    w = np.exp(-(w ** 2) / 2)
-    return w.reshape(-1, 1)
 
 
 @jit(nopython=True, cache=True)

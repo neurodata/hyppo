@@ -1,5 +1,4 @@
 import numpy as np
-from numba import jit
 from scipy.stats import chi2
 from ._utils import _CheckInputs
 from .base import KSampleTestOutput, KSampleTest
@@ -92,7 +91,10 @@ class MeanEmbeddingTest(KSampleTest):
 
         ra = np.zeros((self.num_randfreq, x.shape[0]))
         for idx, point in enumerate(points):
-            ra[idx] = _get_estimate(x, point) - _get_estimate(y, point)
+
+            ra[idx] = np.exp(-(np.linalg.norm(x - point, axis=1) ** 2) / 2) - np.exp(
+                -(np.linalg.norm(y - point, axis=1) ** 2) / 2
+            )
 
         obs = ra.T
         return distance(obs, self.num_randfreq)
@@ -136,16 +138,6 @@ class MeanEmbeddingTest(KSampleTest):
         self.pvalue = pvalue
 
         return KSampleTestOutput(stat, pvalue)
-
-
-@jit(nopython=True, cache=True)
-def _get_estimate(data, point):
-    z = data - point
-    norms = np.zeros(z.shape[0])
-    for i in range(z.shape[0]):
-        norms[i] = np.sqrt(np.sum(z[i] ** 2))
-    z2 = norms ** 2
-    return np.exp(-z2 / 2.0)
 
 
 def distance(difference, num_randfeatures):
