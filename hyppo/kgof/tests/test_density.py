@@ -2,7 +2,7 @@ import numpy as np
 from numpy import testing
 from scipy.linalg.misc import norm
 
-from ..density import IsotropicNormal, Normal, GaussianMixture
+from ..density import IsotropicNormal, GaussianMixture
 import scipy.stats as stats
 from numpy.random import default_rng
 

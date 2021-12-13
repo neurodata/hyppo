@@ -12,13 +12,7 @@ from past.utils import old_div
 from abc import ABC, abstractmethod
 import autograd
 import autograd.numpy as np
-from .data import (
-    DSNormal,
-    DSIsotropicNormal,
-    DSGaussianMixture,
-    DSGaussBernRBM,
-    DSGaussCosFreqs,
-)
+from .data import DSNormal, DSIsotropicNormal, DSGaussianMixture
 import scipy.stats as stats
 import logging
 
@@ -286,104 +280,3 @@ class GaussianMixture(UnnormalizedDensity):
     def dim(self):
         k, d = self.means.shape
         return d
-
-
-class GaussBernRBM(UnnormalizedDensity):
-    """
-    Gaussian-Bernoulli Restricted Boltzmann Machine.
-    The joint density takes the form
-        p(x, h) = Z^{-1} exp(0.5*x^T B h + b^T x + c^T h - 0.5||x||^2)
-    where h is a vector of {-1, 1}.
-    """
-
-    def __init__(self, B, b, c):
-        """
-        B: a dx x dh matrix
-        b: a numpy array of length dx
-        c: a numpy array of length dh
-        """
-        dh = len(c)
-        dx = len(b)
-        assert B.shape[0] == dx
-        assert B.shape[1] == dh
-        assert dx > 0
-        assert dh > 0
-        self.B = B
-        self.b = b
-        self.c = c
-
-    def log_den(self, X):
-        B = self.B
-        b = self.b
-        c = self.c
-
-        XBC = 0.5 * np.dot(X, B) + c
-        unden = (
-            np.dot(X, b)
-            - 0.5 * np.sum(X ** 2, 1)
-            + np.sum(np.log(np.exp(XBC) + np.exp(-XBC)), 1)
-        )
-        assert len(unden) == X.shape[0]
-        return unden
-
-    def grad_log(self, X):
-        #    """
-        #    Evaluate the gradients (with respect to the input) of the log density at
-        #    each of the n points in X. This is the score function.
-
-        #    X: n x d numpy array.
-        """
-        Evaluate the gradients (with respect to the input) of the log density at
-        each of the n points in X. This is the score function.
-        X: n x d numpy array.
-        Return an n x d numpy array of gradients.
-        """
-        XB = np.dot(X, self.B)
-        Y = 0.5 * XB + self.c
-        E2y = np.exp(2 * Y)
-        # n x dh
-        Phi = old_div((E2y - 1.0), (E2y + 1))
-        # n x dx
-        T = np.dot(Phi, 0.5 * self.B.T)
-        S = self.b - X + T
-        return S
-
-    def get_datasource(self, burnin=2000):
-        return DSGaussBernRBM(self.B, self.b, self.c, burnin=burnin)
-
-    def dim(self):
-        return len(self.b)
-
-
-class GaussCosFreqs(UnnormalizedDensity):
-    """
-    p(x) \propto exp(-||x||^2/2sigma^2)*(1+ prod_{i=1}^d cos(w_i*x_i))
-    where w1,..wd are frequencies of each dimension.
-    sigma^2 is the overall variance.
-    """
-
-    def __init__(self, sigma2, freqs):
-        """
-        sigma2: overall scale of the distribution. A positive scalar.
-        freqs: a 1-d array of length d for the frequencies.
-        """
-        self.sigma2 = sigma2
-        if sigma2 <= 0:
-            raise ValueError("sigma2 must be > 0")
-        self.freqs = freqs
-
-    def log_den(self, X):
-        sigma2 = self.sigma2
-        freqs = self.freqs
-        log_unden = (
-            old_div(-np.sum(X ** 2, 1), (2.0 * sigma2))
-            + 1
-            + np.prod(np.cos(X * freqs), 1)
-        )
-        return log_unden
-
-    def dim(self):
-        return len(self.freqs)
-
-    def get_datasource(self):
-        return DSGaussCosFreqs(self.sigma2, self.freqs)
