@@ -77,7 +77,7 @@ class FriedmanRafsky(IndependenceTest):
             `n` is the number of combined samples and `p` is the number of
             dimensions. ``y`` is the array of labels corresponding to the two
             samples, respectively.
-        algoritm : str, default: 'Kruskal'
+        algoritm : str, default: 'Prim'
             The algorithm to be used to determine the minimum spanning tree.
             Currently only 'Kruskal' and 'Prim' are supported.
         reps : int, default: 1000
@@ -113,82 +113,6 @@ class FriedmanRafsky(IndependenceTest):
         )
 
         return IndependenceTestOutput(stat, pvalue, null_dist)
-
-
-class Graph:
-    r"""
-    Helper class to find the MST for a given dataset using
-    Kruskal's MST algorithm. Takes in node lables and edge weights
-    before returning all pairs of connected node labels in the
-    resultant MST.
-    """
-
-    def __init__(self, vertex):
-
-        self.V = vertex
-        self.graph = []
-
-    def add_edge(self, v1, v2, w):
-        r"""Helper function to add edge to the parent graph
-
-        Parameters
-        ----------
-        v1, v2 : int
-            Input node indeces v1, v2 to be connected by edge in
-            the graph.
-        weight : float
-            The Euclidean distance between these two points.
-        """
-        self.graph.append([v1, v2, w])
-
-    def search(self, parent, i):
-        r"""
-        Method for determining location of vertex in existing tree
-        """
-        if parent[i] == i:
-            return i
-
-        return self.search(parent, parent[i])
-
-    def apply_union(self, parent, rank, x, y):
-        r"""
-        Method for determining if current node already exists in
-        minimum spanning tree and severing all edges deemed inefficient.
-        """
-        xroot = self.search(parent, x)
-        yroot = self.search(parent, y)
-        if rank[xroot] < rank[yroot]:
-            parent[xroot] = yroot
-        elif rank[xroot] > rank[yroot]:
-            parent[yroot] = xroot
-        else:
-            parent[yroot] = xroot
-            rank[xroot] += 1
-
-    def kruskal(self):
-        r"""
-        Helper function to calculate minimum spanning tree
-        via Kruskal's algorithm.
-        """
-        result = []
-        i, e = 0, 0
-        self.graph = sorted(self.graph, key=lambda item: item[2])
-        parent = []
-        rank = []
-        for node in range(self.V):
-            parent.append(node)
-            rank.append(0)
-        while e < self.V - 1:
-            v1, v2, w = self.graph[i]
-            i = i + 1
-            x = self.search(parent, v1)
-            y = self.search(parent, v2)
-            if x != y:
-                e = e + 1
-                result.append([v1, v2])
-                self.apply_union(parent, rank, x, y)
-
-        return result
 
 
 @jit(nopython=True, cache=True)
@@ -254,17 +178,6 @@ def MST(x, algorithm):
     MST_connections : list
         List of pairs of nodes connected in final MST.
     """
-    if algorithm == "Kruskal":
-
-        g = Graph(len(x[0]))
-
-        for i in range(len(x[0])):
-
-            for j in range(i + 1, len(x[0])):
-                weight = np.linalg.norm(x[:, i] - x[:, j])
-                g.add_edge(i, j, weight)
-
-        MST_connections = g.kruskal()
 
     if algorithm == "Prim":
 
