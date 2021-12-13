@@ -24,7 +24,7 @@ class FriedmanRafsky(IndependenceTest):
 
         IndependenceTest.__init__(self, **kwargs)
 
-    def statistic(self, x, y, algorithm='Kruskal'):
+    def statistic(self, x, y, algorithm="Kruskal"):
         r"""
         Helper function that calculates the Friedman Rafksy test statistic.
 
