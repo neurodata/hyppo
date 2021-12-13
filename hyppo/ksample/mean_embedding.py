@@ -109,9 +109,8 @@ class MeanEmbeddingTest(KSampleTest):
         >>> x = np.random.randn(10, 1)
         >>> y = np.random.randn(10, 1)
         >>> stat, pvalue = SmoothCFTest().test(x, y)
-        >>>'%.3f, %.3f' % (stat, pvalue)
+        >>> %.3f, %.3f' % (stat, pvalue)
         '3.852, 0.571'
-
         """
         check_input = _CheckInputs(inputs=[x, y], indep_test=None)
         x, y = check_input()
