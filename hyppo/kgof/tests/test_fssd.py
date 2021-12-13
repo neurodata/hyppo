@@ -61,7 +61,6 @@ class TestFSSD:
         fssd_grid_search_kernel(p=isonorm, dat=dat, test_locs=V, list_kernel=list_k)
         fssd.get_H1_mean_variance(dat=dat)
 
-
         tresult = fssd.test(dat, return_simulated_stats=True)
         dat.__add__(dat)
 
