@@ -32,6 +32,11 @@ class TestFSSD:
         rng = default_rng(seed)
         X = rng.standard_normal(size=(n, d)) * np.sqrt(draw_variance) + draw_mean
         dat = Data(X)
+        dat.dim()
+        dat.sample_size()
+        dat.n()
+        dat.split_tr_te()
+        dat.subsample(n=4)
 
         # Test
         sig2 = meddistance(X, subsample=1000) ** 2

@@ -30,15 +30,6 @@ class Data(object):
         if not np.all(np.isfinite(X)):
             raise ValueError("Not all elements in X are finite.")
 
-    def __str__(self):
-        mean_x = np.mean(self.X, 0)
-        std_x = np.std(self.X, 0)
-        prec = 4
-        desc = ""
-        desc += "E[x] = %s \n" % (np.array_str(mean_x, precision=prec))
-        desc += "Std[x] = %s \n" % (np.array_str(std_x, precision=prec))
-        return desc
-
     def dim(self):
         """Return the dimension of the data."""
         dx = self.X.shape[1]
