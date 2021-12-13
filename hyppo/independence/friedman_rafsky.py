@@ -23,6 +23,32 @@ class FriedmanRafsky(IndependenceTest):
     def __init__(self, **kwargs):
 
         IndependenceTest.__init__(self, **kwargs)
+        
+    def num_runs(self, labels, MST_connections):
+        r"""
+        Helper function to determine number of independent
+        'runs' from MST connections.
+
+        Parameters
+        ----------
+        labels : ndarry
+            Lables corresponding to respective classes of samples.
+        MST_connections: list
+            List containing pairs of points connected in final MST.
+
+        Returns
+        -------
+        run_count : int
+            Number of runs after severing all such edges with nodes of
+            differing class labels.
+        """
+        run_count = 1
+
+        for x in MST_connections:
+            if labels[x[0]] != labels[x[1]]:
+                run_count += 1
+
+        return run_count
 
     def statistic(self, x, y, algorithm="Prim"):
         r"""
@@ -49,7 +75,7 @@ class FriedmanRafsky(IndependenceTest):
         labels = np.transpose(y)
 
         MST_connections = MST(x, labels, algorithm)
-        stat = num_runs(labels, MST_connections)
+        stat = self.num_runs(labels, MST_connections)
 
         self.stat = stat
 
@@ -197,31 +223,3 @@ def MST(x, labels, algorithm):
         MST_connections = prim(G, labels)
 
     return MST_connections
-
-
-@jit(nopython=True, cache=True)
-def num_runs(labels, MST_connections):
-    r"""
-    Helper function to determine number of independent
-    'runs' from MST connections.
-
-    Parameters
-    ----------
-    labels : ndarry
-        Lables corresponding to respective classes of samples.
-    MST_connections: list
-        List containing pairs of points connected in final MST.
-
-    Returns
-    -------
-    run_count : int
-        Number of runs after severing all such edges with nodes of
-        differing class labels.
-    """
-    run_count = 1
-
-    for x in MST_connections:
-        if labels[x[0]] != labels[x[1]]:
-            run_count += 1
-
-    return run_count
