@@ -128,6 +128,11 @@ workflows:
           requires:
             - "v3.8"
       - test-module:
+          name: "d_variate"
+          module: "d_variate"
+          requires:
+            - "v3.8"
+      - test-module:
           name: "ksample"
           module: "ksample"
           requires:
@@ -150,6 +155,7 @@ workflows:
       - deploy:
           requires:
             - "independence"
+            - "d_variate"
             - "ksample"
             - "time_series"
             - "discrim"
