@@ -21,6 +21,8 @@ class TestIsotropicNormal:
         X = rng.random(size=(n, d)) + 1
 
         isonorm = IsotropicNormal(mean, variance)
+        isonorm.log_normalized_den(X)
+        isonorm.dim()
         log_dens = isonorm.log_den(X)
         my_log_dens = -np.sum((X - mean) ** 2, 1) / (2.0 * variance)
 
@@ -65,6 +67,9 @@ class TestNormal:
 
         ds_norm = DSNormal(test_mean, cov)
         ds_norm.sample(n=10)
+        ds_norm.dim()
+        norm.get_datasource()
+        norm.dim()
 
         # check correctness
         testing.assert_almost_equal(log_dens, my_log_dens)
