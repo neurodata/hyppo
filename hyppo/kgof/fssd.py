@@ -67,7 +67,7 @@ class FSSDH0SimCovObs(H0Simulator):
         n_simulate = self.n_simulate
         seed = self.seed
         if fea_tensor is None:
-            _, fea_tensor = gof.compute_stat(dat, return_feature_tensor=True)
+            _, fea_tensor = gof.statistic(dat, return_feature_tensor=True)
 
         J = fea_tensor.shape[2]
         X = dat.data()
@@ -116,7 +116,7 @@ class FSSDH0SimCovDraw(H0Simulator):
         if ds is None:
             raise ValueError("DataSource associated with p must be available.")
         Xdraw = ds.sample(n=self.n_draw, seed=self.seed)
-        _, fea_tensor = gof.compute_stat(Xdraw, return_feature_tensor=True)
+        _, fea_tensor = gof.statistic(Xdraw, return_feature_tensor=True)
 
         X = Xdraw.data()
         J = fea_tensor.shape[2]
