@@ -14,15 +14,6 @@ import autograd
 import autograd.numpy as np
 from .data import DSNormal, DSIsotropicNormal
 import scipy.stats as stats
-import logging
-
-
-def warn_bounded_domain(self):
-    logging.warning(
-        "{} has a bounded domain. This may have an unintended effect to the test result of FSSD.".format(
-            self.__class__
-        )
-    )
 
 
 class UnnormalizedDensity(ABC):
