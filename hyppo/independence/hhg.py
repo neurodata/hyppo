@@ -49,10 +49,11 @@ class HHG(IndependenceTest):
         matrices. To call a custom function, either create the distance matrix
         before-hand or create a function of the form ``metric(x, **kwargs)``
         where ``x`` is the data matrix for which pairwise distances are
-        calculated and ``**kwargs`` are extra arguements to send to your custom
+        calculated and ``**kwargs`` are extra arguments to send to your custom
         function.
     auto : boolean, default: False
-        Used to opt into fast version of test if desired.
+        Automatically uses fast approximation of HHG test. :class:`hyppo.tools.perm_test` 
+        will still be run.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
 
@@ -204,8 +205,6 @@ class HHG(IndependenceTest):
                 distx = distx[distx != 0]
                 disty = disty[0]
                 disty = disty[disty != 0]
-            distx = distx.flatten()
-            disty = disty.flatten()
             stat = hoeffdings(distx, disty)
             self.stat = stat
 
@@ -268,17 +267,23 @@ class HHG(IndependenceTest):
         x, y = check_input()
 
         # Fast HHG Test
-        if self.fast:
+        if self.auto:
             pointer = (np.mean(x, axis=0), np.mean(y, axis=0))
             zx, zy = pointer
             zx = np.array(zx).reshape(1, -1)
             zy = np.array(zy).reshape(1, -1)
-            x
-            distx, disty = _point_distance(self, x, y, zx, zy)
-            x = distx[distx != 0]
-            y = disty[disty != 0]
+            xin = np.concatenate((zx, x))
+            yin = np.concatenate((zy, y))
+            distx, disty = compute_dist(
+                    xin, yin, metric=self.compute_distance, **self.kwargs
+                )
+            #take first row of distance matrix (distance from center point)
+            distx = distx[0]
+            distx = distx[distx != 0].reshape(-1,1)
+            disty = disty[0]
+            disty = disty[disty != 0].reshape(-1,1)
             self.is_distance = True
-            stat, pvalue = super(HHG, self).test(x, y, reps, workers, is_distsim=False)
+            stat, pvalue = super(HHG, self).test(distx, disty, reps, workers, is_distsim=False)
 
         else:
             x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
@@ -316,21 +321,6 @@ def _pearson_stat(distx, disty):  # pragma: no cover
 
 def hoeffdings(x, y):
     """For fast HHG, calculates the Hoeffding's dependence statistic"""
-    xin = x
-    yin = y
-    # crop data to the smallest array, length have to be equal
-    if len(xin) < len(yin):
-        yin
-    if len(xin) > len(yin):
-        xin
-
-    # undersampling if length too long
-    lenx = len(x)
-    if lenx > 99999:
-        factor = math.ceil(lenx / 100000)
-        x = x[::factor]
-        y = y[::factor]
-
     R = rankdata(x)
     S = rankdata(y)
 
