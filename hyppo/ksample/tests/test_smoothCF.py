@@ -21,5 +21,3 @@ class TestSmoothCF:
 
         assert_almost_equal(stat, obs_stat, decimal=1)
         assert_almost_equal(pvalue, obs_pvalue, decimal=100)
-
-
