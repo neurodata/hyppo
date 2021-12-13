@@ -157,8 +157,10 @@ Miscellaneous
    independence.sim_matrix
    ksample.k_sample_transform
    tools.compute_kern
+   tools.multi_compute_kern
    tools.compute_dist
    tools.perm_test
+   tools.multi_perm_test
    tools.chi2_approx
    tools.power
 
@@ -171,6 +173,7 @@ Base Classes
    :toctree: generated/
 
    independence.base.IndependenceTest
+   d_variate.base.DVariateTest
    ksample.base.KSampleTest
    time_series.base.TimeSeriesTest
    discrim.base.DiscriminabilityTest
