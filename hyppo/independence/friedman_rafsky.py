@@ -132,7 +132,7 @@ class FriedmanRafsky(IndependenceTest):
             self.statistic, x, y, reps, workers, is_distsim, perm_blocks, random_state
         )
 
-        return IndependenceTestOutput(stat, pvalue, null_dist)
+        return IndependenceTestOutput(stat, pvalue)
 
 
 @jit(nopython=True, cache=True)
