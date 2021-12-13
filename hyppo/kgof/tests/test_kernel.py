@@ -1,6 +1,5 @@
 import autograd.numpy as np
 from numpy import testing
-import matplotlib.pyplot as plt
 from ..kernel import KGauss
 
 import pytest
