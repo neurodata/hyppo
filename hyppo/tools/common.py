@@ -165,6 +165,95 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
     return simx, simy
 
 
+def _multi_check_kernmat(*args):
+    """Check if every input is a similarity matrix."""
+    for x in args:
+        if not np.allclose(x, x.T) or not np.all((x.diagonal() == 1)):
+            raise ValueError(
+                "x must be a kernel similarity matrix, "
+                "{is_sym} symmetric and {one_diag} "
+                "ones along the diagonal".format(
+                    is_sym="is not" if not np.array_equal(x, x.T) else "is",
+                    one_diag="doesn't have"
+                    if not np.all((x.diagonal() == 1))
+                    else "has",
+                )
+            )
+
+
+def multi_compute_kern(*args, metric="gaussian", workers=1, **kwargs):
+    """
+    Kernel similarity matrices for the input matrices.
+
+    Parameters
+    ----------
+    *args: ndarray
+        Variable length input data matrices. All inputs must have the same
+        number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
+        etc., where `n` is the number of samples and `p` and `q` are the
+        number of dimensions.
+    metric: str, callable, or None, default="gaussian"
+        A function that computes the kernel similarity among the samples within each
+        data matrix.
+        Valid strings for ``metric`` are, as defined in
+        :func:`sklearn.metrics.pairwise.pairwise_kernels`,
+
+            [``"additive_chi2"``, ``"chi2"``, ``"linear"``, ``"poly"``,
+            ``"polynomial"``, ``"rbf"``,
+            ``"laplacian"``, ``"sigmoid"``, ``"cosine"``]
+
+        Note ``"rbf"`` and ``"gaussian"`` are the same metric.
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already similarity
+        matrices. To call a custom function, either create the similarity matrix
+        before-hand or create a function of the form :func:`metric(x, **kwargs)`
+        where ``x`` is the data matrix for which pairwise kernel similarity matrices are
+        calculated and kwargs are extra arguements to send to your custom function.
+    workers: int, default=1
+        The number of cores to parallelize the p-value computation over.
+        Supply ``-1`` to use all cores available to the Process.
+    **kwargs
+        Arbitrary keyword arguments provided to
+        :func:`sklearn.metrics.pairwise.pairwise_kernels`
+        or a custom kernel function.
+
+    Returns
+    -------
+    sim_matrices: ndarray
+        Similarity matrices based on the metric provided by the user.
+        Must be same shape as ''args''.
+    """
+    if not metric:
+        metric = "precomputed"
+    if metric in ["gaussian", "rbf"]:
+        if "gamma" not in kwargs:
+            l2 = pairwise_distances(args[0], metric="l2", n_jobs=workers)
+            n = l2.shape[0]
+            # compute median of off diagonal elements
+            med = np.median(
+                np.lib.stride_tricks.as_strided(
+                    l2, (n - 1, n + 1), (l2.itemsize * (n + 1), l2.itemsize)
+                )[:, 1:]
+            )
+            # prevents division by zero when used on label vectors
+            med = med if med else 1
+            kwargs["gamma"] = 1.0 / (2 * (med ** 2))
+        metric = "rbf"
+    if callable(metric):
+        sim_mats = []
+        for mat in args:
+            sim_mat = metric(mat, **kwargs)
+            sim_mats.append(sim_mat)
+        sim_matrices = tuple(sim_mats)
+        _multi_check_kernmat(*sim_matrices)
+    else:
+        sim_mats = []
+        for mat in args:
+            sim_mat = pairwise_kernels(mat, metric=metric, n_jobs=workers, **kwargs)
+            sim_mats.append(sim_mat)
+        sim_matrices = tuple(sim_mats)
+    return sim_matrices
+
+
 def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
     """
     Distance matrices for the inputs.
@@ -459,6 +548,65 @@ def perm_test(
                 delayed(_perm_stat)(calc_stat, x, y, is_distsim, permuter, rng)
                 for rng in random_state
             ]
+        )
+    )
+    pvalue = (1 + (null_dist >= stat).sum()) / (1 + reps)
+
+    return stat, pvalue, null_dist
+
+
+def _multi_perm_stat(calc_stat, *args):
+    """Permute every entry and calculate test statistic"""
+    # permute each row
+    comb_matrix = np.concatenate(args, axis=1)
+    perm_matrix = np.zeros(np.shape(comb_matrix))
+    for j in range(comb_matrix.shape[1]):
+        order = np.random.permutation(comb_matrix.shape[0])
+        perm_matrix[:, j] = comb_matrix[order, j]
+    perm_args = tuple(np.split(perm_matrix, len(args), axis=1))
+
+    # calculate test statistic using permuted matrices
+    perm_stat = calc_stat(*perm_args)
+
+    return perm_stat
+
+
+def multi_perm_test(calc_stat, *args, reps=1000, workers=1):
+    """
+    Permutation test for the p-value of a nonparametric test with multiple variables.
+
+    Parameters
+    ----------
+    calc_stat : callable
+        The method used to calculate the test statistic (must use hyppo API).
+    *args : ndarray
+        Variable length input data matrices. All inputs must have the same
+        number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
+        etc., where `n` is the number of samples and `p` and `q` are the
+        number of dimensions.
+    reps : int, default: 1000
+        The number of replications used to estimate the null distribution
+        when using the permutation test used to calculate the p-value.
+    workers : int, default: 1
+        The number of cores to parallelize the p-value computation over.
+        Supply ``-1`` to use all cores available to the Process.
+
+    Returns
+    -------
+    stat : float
+        The computed test statistic.
+    pvalue : float
+        The computed p-value.
+    null_dist : list of float
+        The approximated null distribution of shape ``(reps,)``.
+    """
+    # calculate observed test statistic
+    stat = calc_stat(*args)
+
+    # calculate null distribution
+    null_dist = np.array(
+        Parallel(n_jobs=workers)(
+            [delayed(_multi_perm_stat)(calc_stat, *args) for _ in range(reps)]
         )
     )
     pvalue = (1 + (null_dist >= stat).sum()) / (1 + reps)
