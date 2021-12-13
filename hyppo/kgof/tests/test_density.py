@@ -3,7 +3,7 @@ from numpy import testing
 from past.utils import old_div
 from scipy.linalg.misc import norm
 
-from ..density import IsotropicNormal, Normal, GaussianMixture
+from ..density import IsotropicNormal, Normal
 import scipy.stats as stats
 from numpy.random import default_rng
 
@@ -61,19 +61,3 @@ class TestNormal:
 
         # check correctness
         testing.assert_almost_equal(log_dens, my_log_dens)
-
-
-class TestGaussianMixture:
-    @pytest.mark.parametrize("i", [0, 1, 2, 3])
-    def test_multivariate_normal_density(self, i):
-        rng = default_rng(i + 8)
-        d = i + 2
-        cov = stats.wishart(df=10 + d, scale=np.eye(d)).rvs(size=1)
-        mean = rng.standard_normal(size=d)
-        X = rng.standard_normal(size=(11, d))
-        den_estimate = GaussianMixture.multivariate_normal_density(mean, cov, X)
-
-        mnorm = stats.multivariate_normal(mean=mean, cov=cov)
-        den_truth = mnorm.pdf(X)
-
-        testing.assert_almost_equal(den_estimate, den_truth)

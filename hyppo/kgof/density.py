@@ -12,7 +12,7 @@ from past.utils import old_div
 from abc import ABC, abstractmethod
 import autograd
 import autograd.numpy as np
-from .data import DSNormal, DSIsotropicNormal, DSGaussianMixture
+from .data import DSNormal, DSIsotropicNormal
 import scipy.stats as stats
 import logging
 
@@ -144,80 +144,3 @@ class Normal(UnnormalizedDensity):
 
     def dim(self):
         return len(self.mean)
-
-
-class GaussianMixture(UnnormalizedDensity):
-    """
-    UnnormalizedDensity of a Gaussian mixture in R^d where each component
-    can be arbitrary. This is the most general form of a Gaussian mixture.
-    Let k be the number of mixture components.
-    """
-
-    def __init__(self, means, variances, pmix=None):
-        """
-        means: a k x d 2d array specifying the means.
-        variances: a k x d x d numpy array containing a stack of k covariance
-            matrices, one for each mixture component.
-        pmix: a one-dimensional length-k array of mixture weights. Sum to one.
-        """
-        k, d = means.shape
-        if k != variances.shape[0]:
-            raise ValueError(
-                "Number of components in means and variances do not match."
-            )
-
-        if pmix is None:
-            pmix = old_div(np.ones(k), float(k))
-
-        if np.abs(np.sum(pmix) - 1) > 1e-8:
-            raise ValueError("Mixture weights do not sum to 1.")
-
-        self.pmix = pmix
-        self.means = means
-        self.variances = variances
-
-    def log_den(self, X):
-        return self.log_normalized_den(X)
-
-    def log_normalized_den(self, X):
-        pmix = self.pmix
-        means = self.means
-        variances = self.variances
-        k, d = self.means.shape
-        n = X.shape[0]
-
-        den = np.zeros(n, dtype=float)
-        for i in range(k):
-            norm_den_i = GaussianMixture.multivariate_normal_density(
-                means[i], variances[i], X
-            )
-            den = den + norm_den_i * pmix[i]
-        return np.log(den)
-
-    @staticmethod
-    def multivariate_normal_density(mean, cov, X):
-        """
-        Exact density (not log density) of a multivariate Gaussian.
-        mean: length-d array
-        cov: a dxd covariance matrix
-        X: n x d 2d-array
-        """
-
-        evals, evecs = np.linalg.eigh(cov)
-        cov_half_inv = evecs.dot(np.diag(evals ** (-0.5))).dot(evecs.T)
-        # print(evals)
-        half_evals = np.dot(X - mean, cov_half_inv)
-        full_evals = np.sum(half_evals ** 2, 1)
-        unden = np.exp(-0.5 * full_evals)
-
-        Z = np.sqrt(np.linalg.det(2.0 * np.pi * cov))
-        den = unden / Z
-        assert len(den) == X.shape[0]
-        return den
-
-    def get_datasource(self):
-        return DSGaussianMixture(self.means, self.variances, self.pmix)
-
-    def dim(self):
-        k, d = self.means.shape
-        return d
