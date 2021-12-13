@@ -181,7 +181,7 @@ def MST(x, algorithm):
 
     if algorithm == "Prim":
 
-        G = zeros((len(x[0]), len(x[0])))
+        G = np.zeros((len(x[0]), len(x[0])))
 
         for i in range(len(x[0])):
 
