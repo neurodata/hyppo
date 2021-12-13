@@ -124,7 +124,7 @@ class SmoothCFTest(KSampleTest):
         >>> x = np.random.randn(10, 1)
         >>> y = np.random.randn(10, 1)
         >>> stat, pvalue = SmoothCFTest(random_state=1234).test(x, y)
-        >>> %.2f, %.3f' % (stat, pvalue)
+        >>> '%.2f, %.3f' % (stat, pvalue)
         '4.69, 0.910'
         """
         check_input = _CheckInputs(inputs=[x, y], indep_test=None)
