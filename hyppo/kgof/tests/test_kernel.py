@@ -24,11 +24,17 @@ class TestKGauss:
         rng = default_rng(10)
         y = rng.standard_normal(size=d) * 2
         X = rng.random(size=(n, d)) * 3
+        Y = rng.standard_normal(size=(n, d)) * 2
 
         sigma2 = 1.3
         k = KGauss(sigma2=sigma2)
         # n x d
         G = k.gradX_y(X, y)
+        k.gradX_Y(X, Y, dim=d - 1)
+        k.gradXY_sum(X, Y)
+        k.pair_gradX_Y(X, Y)
+        k.pair_gradXY_sum(X, Y)
+        k.pair_eval(X, Y)
         # check correctness
         K = k.eval(X, y[np.newaxis, :])
         myG = -K / sigma2 * (X - y)
