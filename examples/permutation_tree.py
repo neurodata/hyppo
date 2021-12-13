@@ -2,7 +2,7 @@
 Block Permutations
 =============================
 
-:class:`hyppo.independence.KMERF` can be restricted to appropriately match known
+The permutations of :class:`hyppo.independence.Dcorr` can be restricted to appropriately match known
 dependencies under the null distribution. Without such modifications, calculated
 pvalues are invalid as the permutation generated null distribution is incorrect.
 
