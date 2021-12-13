@@ -3,7 +3,7 @@ import pytest
 from numpy.testing import assert_almost_equal, assert_raises, assert_warns
 
 from ...tools import linear, power
-from .. import friedmanRafsky
+from .. import friedman_rafsky
 
 
 class TestFriedmanRafskyStat:
