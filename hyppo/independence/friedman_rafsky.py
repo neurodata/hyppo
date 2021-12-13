@@ -147,7 +147,7 @@ def prim(weight_mat, labels):
         for i in range(V):
             if selected[i]:
                 for j in range(V):
-                    if (not selected[j]) and G[i][j]:
+                    if (not selected[j]) and weight_mat[i][j]:
                         # not in selected and there is an edge
                         if minimum > weight_mat[i][j]:
                             minimum = weight_mat[i][j]
