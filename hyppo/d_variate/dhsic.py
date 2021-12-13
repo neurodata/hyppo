@@ -58,9 +58,9 @@ class dHsic(DVariateTest):
 
     .. math::
 
-        \mathrm{dHsic} (\mathbb{P}^{(X^1, ..., X^d)}) = \Vert \prod(\mathbb{P}^{X^1}
-        \otimes \cdot\cdot\cdot \otimes \mathbb{P}^{X^d}) - \prod(\mathbb{P}^
-        {(X^1, ..., X^d)}) \Vert^2_{\mathscr{H}}
+        \mathrm{dHsic} (\mathbb{P}^{(X^1, ..., X^d)}) = \Big\Vert \Pi(\mathbb{P}^{X^1}
+        \otimes \cdot\cdot\cdot \otimes \mathbb{P}^{X^d}) - \Pi(\mathbb{P}^
+        {(X^1, ..., X^d)}) \Big\Vert^2_{\mathscr{H}}
 
     Similar to Hsic, dHsic uses a gaussian median kernel by default, and the p-value
     is calculated using a permutation test using :meth:`hyppo.tools.multi_perm_test`.
