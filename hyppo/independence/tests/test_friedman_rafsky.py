@@ -15,6 +15,7 @@ class TestFriedmanRafskyStat:
         x, y = linear(n, 1)
         num_rows, num_cols = x.shape
         y = np.random.choice([0, 1], num_rows, p=[0.5, 0.5])
+        y = np.transpose(y)
         stat1, pvalue1 = FriedmanRafsky().test(x, y)
         stat2 = FriedmanRafsky().statistic(x, y)
 
@@ -27,6 +28,7 @@ class TestFriedmanRafskyStat:
         x, y = linear(n, 1)
         num_rows, num_cols = x.shape
         y = np.random.choice([0, 1], num_rows, p=[0.5, 0.5])
+        y = np.transpose(y)
         stat1, pvalue1 = FriedmanRafsky().test(x, y, random_state=2)
         stat2, pvalue2 = FriedmanRafsky().test(x, y, random_state=2)
 
