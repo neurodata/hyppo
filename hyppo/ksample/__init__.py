@@ -8,6 +8,7 @@ from .mmd import MMD
 
 from .smoothCF import SmoothCFTest, distance
 from .mean_embedding import MeanEmbeddingTest, distance
+
 __all__ = [s for s in dir()]  # add imported tests to __all__
 
 
@@ -19,5 +20,5 @@ KSAMP_TESTS = {
     "manova": MANOVA,
     "mmd": MMD,
     "smoothCF": SmoothCFTest,
-    "mean_embedding": MeanEmbeddingTest
+    "mean_embedding": MeanEmbeddingTest,
 }
