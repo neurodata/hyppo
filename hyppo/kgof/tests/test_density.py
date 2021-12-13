@@ -3,6 +3,7 @@ from numpy import testing
 from past.utils import old_div
 from scipy.linalg.misc import norm
 
+from ..data import DSNormal
 from ..density import IsotropicNormal, Normal
 import scipy.stats as stats
 from numpy.random import default_rng
@@ -51,6 +52,9 @@ class TestNormal:
         mean = rng.standard_normal(size=(n, d))
         X = rng.random(size=(n, d)) + 1
 
+        test_mean = np.ones(2)
+        test_cov = np.array([[1.1, 1.2], [1.1, 1.2]])
+
         norm = Normal(mean, cov)
         log_dens = norm.log_den(X)
         E, V = np.linalg.eigh(cov)
@@ -58,6 +62,9 @@ class TestNormal:
         X0 = X - mean
         X0prec = np.dot(X0, prec)
         my_log_dens = old_div(-np.sum(X0prec * X0, 1), 2.0)
+
+        ds_norm = DSNormal(test_mean, cov)
+        ds_norm.sample(n=10)
 
         # check correctness
         testing.assert_almost_equal(log_dens, my_log_dens)
