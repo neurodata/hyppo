@@ -16,8 +16,8 @@ class MeanEmbeddingTest(KSampleTest):
     Parameters
     ----------
     num_randfreq: integer
-        Used to construct random array with size ''(p, q)'' where 'p' is the number of
-        dimensions of the data and 'q' is the random frequency at which the
+        Used to construct random array with size ``(p, q)`` where `p` is the number of
+        dimensions of the data and `q` is the random frequency at which the
         test is performed. These are the random test points at which test occurs (see notes).
     random_state: integer
         Set random seed for generation of test points
@@ -26,12 +26,14 @@ class MeanEmbeddingTest(KSampleTest):
     -----
     The test statistic, like the Smooth CF statistic, takes on the following form:
 
-    :math:'nW_n\Sigma_n^{-1}W_n'
+    .. math::
+
+        W_n\Sigma_n^{-1}W_n
 
     As seen in the above formulation, this test-statistic takes the same form as
-    the Hotelling :math:'T^2' statistic found in :class:`hyppo.ksample.Hotelling`.
+    the Hotelling :math:`T^2` statistic found in :class:`hyppo.ksample.Hotelling`.
     However, the components are defined differently in this case. Given data sets
-    X and Y, define the following as :math: 'Z_i', the vector of differences:
+    X and Y, define the following as :math:`Z_i`, the vector of differences:
 
     .. math::
 
@@ -39,19 +41,23 @@ class MeanEmbeddingTest(KSampleTest):
         k(X_i, T_J) - k(Y_i, T_J)) \in mathbb{R}^J
 
     The above is the vector of differences between kernels at test points,
-    :math: 'T_j'. The kernel maps into the reproducing kernel Hilbert space.
+    :math:`T_j`. The kernel maps into the reproducing kernel Hilbert space.
     This same formulation is used in the Mean Embedding Test.
-    Moving forward, :math: 'W_n' can be defined:
+    Moving forward, :math:`W_n` can be defined:
 
-    :math:'W_n = \frac{1}{n} \sum_{i = 1}^n Z_i
+    .. math::
 
-    This leaves :math: '\Sigma_n', the covariance matrix as:
+        W_n = \frac{1}{n} \sum_{i = 1}^n Z_i
 
-    :math:'\Sigma_n = \frac{1}{n}ZZ^T'
+    This leaves :math:`\Sigma_n`, the covariance matrix as:
 
-    Once :math:'S_n' is calculated, a threshold :math:'r_{\alpha}' corresponding to the
-    :math:'1 - \alpha' quantile of a Chi-squared distribution w/ J degrees of freedom
-    is chosen. Null is rejected if :math: 'S_n' is larger than this threshold.
+    .. math::
+
+        \Sigma_n = \frac{1}{n}ZZ^T
+
+    Once :math:`S_n` is calculated, a threshold :math:`r_{\alpha}` corresponding to the
+    :math:`1 - \alpha` quantile of a Chi-squared distribution w/ J degrees of freedom
+    is chosen. Null is rejected if :math:`S_n` is larger than this threshold.
 
     References
     ----------
@@ -145,9 +151,11 @@ def distance(difference, num_randfeatures):
     Using the vector of differences as defined above,
     calculates the Mean Embedding statistic in the form:
 
-    :math:'nW_n\Sigma_n^{-1}W_n'
+    .. math::
 
-    Where :math:'W_n' is the vector of differences.
+        nW_n\Sigma_n^{-1}W_n
+
+    Where :math:`W_n` is the vector of differences.
 
     Parameters
     ----------

@@ -16,8 +16,8 @@ class SmoothCFTest(KSampleTest):
     Parameters
     ----------
     num_randfreq: integer
-        Used to construct random array with size ''(p, q)'' where 'p' is the number of
-        dimensions of the data and 'q' is the random frequency at which the
+        Used to construct random array with size ``(p, q)`` where `p` is the number of
+        dimensions of the data and `q` is the random frequency at which the
         test is performed. These are the random test points at which test occurs (see notes).
     random_state: integer
         Set random seed for generation of test points
@@ -26,27 +26,33 @@ class SmoothCFTest(KSampleTest):
     -----
     The test statistic takes on the following form:
 
-    :math:'nW_n\Sigma_n^{-1}W_n'
+    .. math::
+
+        nW_n\Sigma_n^{-1}W_n
 
     As seen in the above formulation, this test-statistic takes the same form as
-    the Hotelling :math: 'T^2' statistic. However, the components are
+    the Hotelling :math:`T^2` statistic. However, the components are
     defined differently in this case. Given data sets
-    X and Y, define the following as :math: 'Z_i', the vector of differences:
+    X and Y, define the following as :math:`Z_i`, the vector of differences:
 
     .. math::
 
         Z_i = (k(X_i, T_1) - k(Y_i, T_1), \ldots,
         k(X_i, T_J) - k(Y_i, T_J)) \in mathbb{R}^J
 
-    The above is the vector of differences between kernels at test points, :math: 'T_j'.
+    The above is the vector of differences between kernels at test points, :math:`T_j`.
     This same formulation is used in the Mean Embedding Test.
-    Moving forward, :math: 'W_n' can be defined:
+    Moving forward, :math:`W_n` can be defined:
 
-    :math:'W_n = \frac{1}{n} \sum_{i = 1}^n Z_i
+    .. math::
 
-    This leaves :math:'\Sigma_n', the covariance matrix as:
+        W_n = \frac{1}{n} \sum_{i = 1}^n Z_i
 
-    :math:'\Sigma_n = \frac{1}{n}ZZ^T'
+    This leaves :math:`\Sigma_n`, the covariance matrix as:
+
+    .. math::
+
+        \Sigma_n = \frac{1}{n}ZZ^T
 
     In the specific case of the Smooth Characteristic function test,
     the vector of differences can be defined as follows:
@@ -56,9 +62,9 @@ class SmoothCFTest(KSampleTest):
         Z_i = (f(X_i)\sin(X_iT_1) - f(Y_i)\sin(Y_iT_1),
         f(X_i)\cos(X_iT_1) - f(Y_i)\cos(Y_iT_1),\cdots) \in \mathbb{R}^{2J}
 
-    Once :math:'S_n' is calculated, a threshold :math:'r_{\alpha}' corresponding to the
-    :math:'1 - \alpha' quantil of a Chi-squared distribution w/ J degrees of freedom
-    is chosen. Null is rejected if :math:'S_n' is larger than this threshold.
+    Once :math:`S_n` is calculated, a threshold :math:`r_{\alpha}` corresponding to the
+    :math:`1 - \alpha` quantile of a Chi-squared distribution w/ J degrees of freedom
+    is chosen. Null is rejected if :math:`S_n` is larger than this threshold.
 
     References
     ----------
@@ -110,7 +116,7 @@ class SmoothCFTest(KSampleTest):
         )
 
         difference = x_smooth_cf - y_smooth_cf
-        return distance(difference, 2 * self.num_randfreq)
+        return distance(difference)
 
     def test(self, x, y):
         r"""
@@ -153,14 +159,14 @@ class SmoothCFTest(KSampleTest):
         return KSampleTestOutput(stat, pvalue)
 
 
-def distance(difference, num_randfeatures):
+def distance(difference):
     r"""
     Using the vector of differences as defined above,
     calculates the Smooth Characteristic Function statistic in the form:
 
-    :math:'nW_n\Sigma_n^{-1}W_n'
+    :math:`nW_n\Sigma_n^{-1}W_n`
 
-    Where :math:'W_n' is the vector of differences.
+    Where :math:`W_n` is the vector of differences.
 
     Parameters
     ----------
