@@ -121,8 +121,8 @@ class SmoothCFTest(KSampleTest):
         >>> import numpy as np
         >>> from hyppo.ksample import SmoothCFTest
         >>> np.random.seed(1234)
-        >>> x = np.random.randn(10, 1)
-        >>> y = np.random.randn(10, 1)
+        >>> x = np.random.randn(500, 10)
+        >>> y = np.random.randn(500, 10)
         >>> stat, pvalue = SmoothCFTest(random_state=1234).test(x, y)
         >>> '%.2f, %.3f' % (stat, pvalue)
         '4.69, 0.910'
