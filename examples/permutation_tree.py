@@ -18,10 +18,9 @@ where observations are dependent within pairs. Because of the :math:`Y` values i
 2-sample testing case, block labels of :math:`[1, 1, 2, 2, \ldots]` would also have been
 allowable for both cases but would lead to unnecessary permutations being computed.
 
-As shown in the following figures, pvalues under unrestricted permutations are heavily
-skewed and certainly not uniform as one would want to be able to reject at a
-specified :math:`\alpha`-level. When the permutations are restricted, the pvalues under
-the null distribution are empirically approximately uniformly distributed. 95% binomial
+As shown in the following figures, pvalues under the default permutations are heavily
+skewed and certainly not uniform, thus presenting either an inflated false positive rate or potentially incredibly low power. When the permutations are restricted, the pvalues under
+the null distribution are empirically approximately uniformly distributed, as we would hope for. 95% binomial
 proportion confidence interval error bars are displayed on the histogram of empirical
 p-values for each bin.
 """
