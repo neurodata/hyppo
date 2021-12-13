@@ -36,20 +36,6 @@ class TestMeanEmbedding:
         norm = hyppo.ksample.mean_embedding._get_estimate(x, point)
         assert_almost_equal(norm, actual_norm)
 
-    @pytest.mark.parametrize(
-        "actual_diff",
-        [
-            ([-0.2081915, -0.37618035, 0.70235683, -0.7459787, 0.44686362]),
-        ],
-    )
-    def test_get_difference(self, actual_diff):
-        np.random.seed(123456789)
-        x = np.random.randn(5, 2)
-        y = np.random.randn(5, 2)
-        point = np.random.randn(5, 2)
-        diff = hyppo.ksample.mean_embedding._get_difference(point, x, y)
-        assert_almost_equal(diff, actual_diff)
-
     def test_null(self):
         np.random.seed(120)
         x = np.random.randn(500, 10)

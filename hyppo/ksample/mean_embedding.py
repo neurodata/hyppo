@@ -85,7 +85,16 @@ class MeanEmbeddingTest(KSampleTest):
             The computed mean embedding statistic.
         """
         _, p = np.shape(x)
-        obs = _vector_of_differences(p, x, y, self.num_randfreq, self.random_state)
+
+        if self.random_state:
+            np.random.seed(self.random_state)
+        points = np.random.randn(self.num_randfreq, p)
+
+        ra = np.zeros((self.num_randfreq, x.shape[0]))
+        for idx, point in enumerate(points):
+            ra[idx] = _get_estimate(x, point) - _get_estimate(y, point)
+
+        obs = ra.T
         return distance(obs, self.num_randfreq)
 
     def test(self, x, y):
@@ -137,24 +146,6 @@ def _get_estimate(data, point):
         norms[i] = np.sqrt(np.sum(z[i] ** 2))
     z2 = norms ** 2
     return np.exp(-z2 / 2.0)
-
-
-@jit(nopython=True, cache=True)
-def _get_difference(point, x, y):
-    return _get_estimate(x, point) - _get_estimate(y, point)
-
-
-def _vector_of_differences(dim, x, y, num_randfreq, random_state):
-    """Calculates vector of differences using above helpers"""
-    if random_state:
-        np.random.seed(random_state)
-    points = np.random.randn(num_randfreq, dim)
-    ra = np.zeros((num_randfreq, x.shape[0]))
-
-    for idx, point in enumerate(points):
-        ra[idx] = _get_difference(point, x, y)
-
-    return ra.T
 
 
 def distance(difference, num_randfeatures):

@@ -93,8 +93,14 @@ class SmoothCFTest(KSampleTest):
             The computed Smooth CF statistic.
         """
         _, p = np.shape(x)
-        random_frequencies = _gen_random(p, self.num_randfreq, self.random_state)
-        difference = _smooth_difference(random_frequencies, x, y)
+        if self.random_state:
+            np.random.seed(self.random_state)
+        random_frequencies = np.random.randn(p, self.num_randfreq)
+        x_smooth = _smooth(x)
+        y_smooth = _smooth(y)
+        difference = _smooth_cf(x, x_smooth, random_frequencies) - _smooth_cf(
+            y, y_smooth, random_frequencies
+        )
         return distance(difference, 2 * self.num_randfreq)
 
     def test(self, x, y):
@@ -138,13 +144,6 @@ class SmoothCFTest(KSampleTest):
         return KSampleTestOutput(stat, pvalue)
 
 
-def _gen_random(dimension, num_randfeatures, random_state):
-    """Generates test points for vector of differences"""
-    if random_state:
-        np.random.seed(random_state)
-    return np.random.randn(dimension, num_randfeatures)
-
-
 @jit(nopython=True, cache=True)
 def _smooth(data):
     """Smooth kernel"""
@@ -159,21 +158,9 @@ def _smooth(data):
 @jit(nopython=True, cache=True)
 def _smooth_cf(data, w, random_frequencies):
     """Vector of differences for Smooth CF"""
-    n, _ = data.shape
-    _, d = random_frequencies.shape
     mat = data.dot(random_frequencies)
     arr = np.concatenate((np.sin(mat) * w, np.cos(mat) * w), 1)
     return arr
-
-
-@jit(nopython=True, cache=True)
-def _smooth_difference(random_frequencies, X, Y):
-    """Vector of differences for Smooth CF"""
-    x_smooth = _smooth(X)
-    y_smooth = _smooth(Y)
-    return _smooth_cf(X, x_smooth, random_frequencies) - _smooth_cf(
-        Y, y_smooth, random_frequencies
-    )
 
 
 def distance(difference, num_randfeatures):
