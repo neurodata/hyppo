@@ -25,24 +25,6 @@ def warn_bounded_domain(self):
     )
 
 
-def from_log_den(d, f):
-    """
-    Construct an UnnormalizedDensity from the function f, implementing the log
-    of an unnormalized density.
-    f: X -> den where X: n x d and den is a numpy array of length n.
-    """
-    return UDFromCallable(d, flog_den=f)
-
-
-def from_grad_log(d, g):
-    """
-    Construct an UnnormalizedDensity from the function g, implementing the
-    gradient of the log of an unnormalized density.
-    g: X -> grad where X: n x d and grad is n x d (2D numpy array)
-    """
-    return UDFromCallable(d, fgrad_log=g)
-
-
 class UnnormalizedDensity(ABC):
     """
     An abstract class of an unnormalized probability density function.  This is
@@ -95,47 +77,6 @@ class UnnormalizedDensity(ABC):
         Return the dimension of the input.
         """
         raise NotImplementedError()
-
-
-class UDFromCallable(UnnormalizedDensity):
-    """
-    UnnormalizedDensity constructed from the specified implementations of
-    log_den() and grad_log() as callable objects.
-    """
-
-    def __init__(self, d, flog_den=None, fgrad_log=None):
-        """
-        Only one of log_den and grad_log are required.
-        If log_den is specified, the gradient is automatically computed with
-        autograd.
-        d: the dimension of the domain of the density
-        log_den: a callable object (function) implementing the log of an unnormalized density. See UnnormalizedDensity.log_den.
-        grad_log: a callable object (function) implementing the gradient of the log of an unnormalized density.
-        """
-        if flog_den is None and fgrad_log is None:
-            raise ValueError("At least one of {log_den, grad_log} must be specified.")
-        self.d = d
-        self.flog_den = flog_den
-        self.fgrad_log = fgrad_log
-
-    def log_den(self, X):
-        flog_den = self.flog_den
-        if flog_den is None:
-            raise ValueError("log_den callable object is None.")
-        return flog_den(X)
-
-    def grad_log(self, X):
-        fgrad_log = self.fgrad_log
-        if fgrad_log is None:
-            # autograd
-            g = autograd.elementwise_grad(self.flog_den)
-            G = g(X)
-        else:
-            G = fgrad_log(X)
-        return G
-
-    def dim(self):
-        return self.d
 
 
 class IsotropicNormal(UnnormalizedDensity):
