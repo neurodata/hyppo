@@ -38,7 +38,7 @@ class TestFriedmanRafskyTypeIError:
     def test_oned(self):
         np.random.seed(123456789)
         est_power = power(
-            "friedmanRafsky",
+            "friedman_rafsky",
             sim_type="indep",
             sim="multimodal_independence",
             n=100,
@@ -51,7 +51,7 @@ class TestFriedmanRafskyTypeIError:
     def test_oned_fast(self):
         np.random.seed(123456789)
         est_power = power(
-            "friedmanRafsky",
+            "friedman_rafsky",
             sim_type="indep",
             sim="multimodal_independence",
             n=100,
@@ -65,7 +65,7 @@ class TestFriedmanRafskyTypeIError:
     def test_threed_fast(self):
         np.random.seed(123456789)
         est_power = power(
-            "friedmanRafsky",
+            "friedman_rafsky",
             sim_type="indep",
             sim="multimodal_independence",
             n=100,
