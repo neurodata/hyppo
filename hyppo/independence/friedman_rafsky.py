@@ -46,10 +46,10 @@ class FriedmanRafsky(IndependenceTest):
             The computed Friedman Rafsky statistic.
         """
         x = np.transpose(x)
-        y = np.transpose(y)
+        labels = np.transpose(y)
 
-        MST_connections = MST(x, algorithm)
-        stat = num_runs(y, MST_connections)
+        MST_connections = MST(x, labels, algorithm)
+        stat = num_runs(labels, MST_connections)
 
         self.stat = stat
 
@@ -116,15 +116,17 @@ class FriedmanRafsky(IndependenceTest):
 
 
 @jit(nopython=True, cache=True)
-def prim(weight_mat):
+def prim(weight_mat, labels):
     r"""
     Helper function to read weighted matrix input and compute minimum
     spanning tree via Prim's algorithm.
 
     Parameters
     ----------
-    data : ndarry
+    weight_mat : ndarry
         Weighted connection matrix.
+    labels : ndarry
+        Lables corresponding to respective classes of samples.
 
     Returns
     -------
@@ -132,8 +134,8 @@ def prim(weight_mat):
         List of pairs of nodes connected in final MST.
     """
     INF = 9999999
-    V = len(y)
-    selected = np.zeros(len(y))
+    V = len(labels)
+    selected = np.zeros(len(labels))
     no_edge = 0
     selected[0] = True
     MST_connections = []
@@ -159,7 +161,7 @@ def prim(weight_mat):
 
 
 @jit(nopython=True, cache=True)
-def MST(x, algorithm):
+def MST(x, labels, algorithm):
     r"""
     Helper function to read input data and calculate Euclidean distance
     between each possible pair of points before finding MST.
@@ -169,6 +171,8 @@ def MST(x, algorithm):
     ----------
     data : ndarry
         Dataset such that each column corresponds to a point of data.
+    labels : ndarry
+        Lables corresponding to respective classes of samples.
     algoritm : str, default: 'Kruskal'
             The algorithm to be used to determine the minimum spanning tree.
             Currently only 'Kruskal' and 'Prim' are supported.
@@ -190,20 +194,20 @@ def MST(x, algorithm):
                 G[i][j] = weight
                 G[j][i] = weight
 
-        MST_connections = prim(G)
+        MST_connections = prim(G, labels)
 
     return MST_connections
 
 
 @jit(nopython=True, cache=True)
-def num_runs(y, MST_connections):
+def num_runs(labels, MST_connections):
     r"""
     Helper function to determine number of independent
     'runs' from MST connections.
 
     Parameters
     ----------
-    y : ndarry
+    labels : ndarry
         Lables corresponding to respective classes of samples.
     MST_connections: list
         List containing pairs of points connected in final MST.
