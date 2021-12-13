@@ -187,7 +187,7 @@ def multi_compute_kern(*args, metric="gaussian", workers=1, **kwargs):
 
     Parameters
     ----------
-    *args: np.ndarray
+    *args: ndarray
         Variable length input data matrices. All inputs must have the same
         number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
         etc., where `n` is the number of samples and `p` and `q` are the
@@ -218,7 +218,7 @@ def multi_compute_kern(*args, metric="gaussian", workers=1, **kwargs):
 
     Returns
     -------
-    sim_matrices: Tuple[np.ndaaray]
+    sim_matrices: ndarray
         Similarity matrices based on the metric provided by the user.
         Must be same shape as ''args''.
     """
@@ -579,7 +579,7 @@ def multi_perm_test(calc_stat, *args, reps=1000, workers=1):
     ----------
     calc_stat : callable
         The method used to calculate the test statistic (must use hyppo API).
-    *args : np.ndarray
+    *args : ndarray
         Variable length input data matrices. All inputs must have the same
         number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
         etc., where `n` is the number of samples and `p` and `q` are the

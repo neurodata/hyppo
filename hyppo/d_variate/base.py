@@ -11,7 +11,7 @@ class DVariateTestOutput(NamedTuple):
 
 class DVariateTest(ABC):
     r"""
-    A base class for a d_variate independence test.
+    A base class for a :math:`d`-variate independence test.
 
     Parameters
     ----------
@@ -47,11 +47,11 @@ class DVariateTest(ABC):
     @abstractmethod
     def statistic(self, *args):
         r"""
-        Calculates the d_variate independence test statistic.
+        Calculates the :math:`d`-variate independence test statistic.
 
         Parameters
         ----------
-        *args: np.ndarray
+        *args: ndarray
             Variable length input data matrices. All inputs must have the same
             number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
             etc., where `n` is the number of samples and `p` and `q` are the
@@ -65,7 +65,7 @@ class DVariateTest(ABC):
 
         Parameters
         ----------
-        *args : np.ndarray
+        *args : ndarray
             Variable length input data matrices. All inputs must have the same
             number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
             etc., where `n` is the number of samples and `p` and `q` are the
@@ -80,9 +80,9 @@ class DVariateTest(ABC):
         Returns
         -------
         stat : float
-            The computed d_variate independence test statistic.
+            The computed :math:`d`-variate independence test statistic.
         pvalue : float
-            The computed d_variate independence p-value.
+            The computed :math:`d`-variate independence p-value.
         """
         self.args = args
 

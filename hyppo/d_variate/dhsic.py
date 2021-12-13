@@ -7,19 +7,19 @@ import numpy as np
 
 class dHsic(DVariateTest):
     r"""
-    d-variate Hilbert Schmidt Independence Criterion (dHsic) test statistic
-    and p-value.
+    :math:`d`-variate Hilbert Schmidt Independence Criterion (dHsic) test
+    statistic and p-value.
 
     dHsic is a non-parametric kernel-based independence test between an
     arbitrary number of variables. The dHsic statistic is 0 if the variables
-    are jointly independent and positive if the variables are dependent.
+    are jointly independent and positive if the variables are dependent
     :footcite:p:`grettonKernelJointIndependence2016`.
     The default choice is the Gaussian kernel, which uses the median distance
     as the bandwidth, which is a characteristic kernel that guarantees that
-    dHsic is a consistent test.
+    dHsic is a consistent test
+    :footcite:p:`grettonKernelJointIndependence2016`
     :footcite:p:`grettonKernelStatisticalTest2007`
-    :footcite:p:`grettonConsistentNonparametricTests2010`
-    :footcite:p:`grettonKernelJointIndependence2016`.
+    :footcite:p:`grettonConsistentNonparametricTests2010`.
 
     Parameters
     ----------
@@ -59,8 +59,8 @@ class dHsic(DVariateTest):
     .. math::
 
         \mathrm{dHsic} (\mathbb{P}^{(X^1, ..., X^d)}) = \Vert \prod(\mathbb{P}^{X^1}
-        \bigotimes \cdot\cdot\cdot \bigotimes \mathbb{P}^{X^d}) - \prod(\mathbb{P}^
-        {(X^1, ..., X^d)}) \Vert^2_H
+        \otimes \cdot\cdot\cdot \otimes \mathbb{P}^{X^d}) - \prod(\mathbb{P}^
+        {(X^1, ..., X^d)}) \Vert^2_{\mathscr{H}}
 
     Similar to Hsic, dHsic uses a gaussian median kernel by default, and the p-value
     is calculated using a permutation test using :meth:`hyppo.tools.multi_perm_test`.
@@ -82,7 +82,7 @@ class dHsic(DVariateTest):
 
         Parameters
         ----------
-        *args: np.ndarray
+        *args: ndarray
             Variable length input data matrices. All inputs must have the same
             number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
             etc., where `n` is the number of samples and `p` and `q` are the
@@ -115,7 +115,7 @@ class dHsic(DVariateTest):
 
         Parameters
         ----------
-        *args: np.ndarray
+        *args: ndarray
             Variable length input data matrices. All inputs must have the same
             number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
             etc., where `n` is the number of samples and `p` and `q` are the
