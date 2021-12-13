@@ -1,8 +1,9 @@
 import numpy as np
 from numpy import testing
+from past.utils import old_div
 from scipy.linalg.misc import norm
 
-from ..density import IsotropicNormal, GaussianMixture
+from ..density import IsotropicNormal, Normal, GaussianMixture
 import scipy.stats as stats
 from numpy.random import default_rng
 
@@ -39,6 +40,27 @@ class TestIsotropicNormal:
 
         # check correctness
         testing.assert_almost_equal(grad_log, my_grad_log)
+
+
+class TestNormal:
+    @pytest.mark.parametrize("n", [2])
+    @pytest.mark.parametrize("d", [2])
+    def test_log_den(self, n, d):
+        rng = default_rng(16)
+        cov = np.array([[1.1, 1.2], [1.1, 1.2]])
+        mean = rng.standard_normal(size=(n, d))
+        X = rng.random(size=(n, d)) + 1
+
+        norm = Normal(mean, cov)
+        log_dens = norm.log_den(X)
+        E, V = np.linalg.eigh(cov)
+        prec = np.dot(np.dot(V, np.diag(old_div(1.0, E))), V.T)
+        X0 = X - mean
+        X0prec = np.dot(X0, prec)
+        my_log_dens = old_div(-np.sum(X0prec * X0, 1), 2.0)
+
+        # check correctness
+        testing.assert_almost_equal(log_dens, my_log_dens)
 
 
 class TestGaussianMixture:
