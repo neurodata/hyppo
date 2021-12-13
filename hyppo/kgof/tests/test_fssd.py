@@ -9,7 +9,7 @@ from ..fssd import (
     power_criterion,
     fssd_grid_search_kernel,
 )
-from .._utils import meddistance, fit_gaussian_draw
+from .._utils import meddistance, fit_gaussian_draw, constrain
 from ..kernel import KGauss
 from ..data import Data
 from ..density import IsotropicNormal
@@ -74,6 +74,7 @@ class TestFSSD:
     @pytest.mark.parametrize("J", [1])
     def test_ustat_h1_mean_variance(self, n, alpha, d, J):
         seed = 20
+        constrain(20, 19, 21)
         # sample
         mean = np.zeros(d)
         variance = 1
