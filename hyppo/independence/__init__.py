@@ -21,5 +21,5 @@ INDEP_TESTS = {
     "mgc": MGC,
     "kmerf": KMERF,
     "maxmargin": MaxMargin,
-    "friedman_rafsky": FriedmanRafsky
+    "friedman_rafsky": FriedmanRafsky,
 }
