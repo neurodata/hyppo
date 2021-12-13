@@ -1,4 +1,6 @@
 r"""
+.. _d_var:
+
 D-Variate Independence Testing
 *******************************
 
