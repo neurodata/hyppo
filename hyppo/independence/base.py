@@ -59,7 +59,7 @@ class IndependenceTest(ABC):
     @abstractmethod
     def statistic(self, x, y):
         r"""
-        Calulates the independence test statistic.
+        Calculates the independence test statistic.
 
         Parameters
         ----------
@@ -83,7 +83,7 @@ class IndependenceTest(ABC):
         random_state=None,
     ):
         r"""
-        Calulates the independence test statistic and p-value.
+        Calculates the independence test statistic and p-value.
 
         Parameters
         ----------
@@ -127,7 +127,6 @@ class IndependenceTest(ABC):
         self.x = x
         self.y = y
 
-        # calculate p-value
         stat, pvalue, null_dist = perm_test(
             self.statistic,
             x,

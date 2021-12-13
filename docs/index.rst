@@ -23,6 +23,7 @@ hyppo
 
     sample_data/index.rst
     tutorials/independence.rst
+    tutorials/dvariate.rst
     tutorials/ksample.rst
     tutorials/time_series.rst
     tutorials/discrim.rst

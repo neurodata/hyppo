@@ -151,7 +151,8 @@ print(u"Fast time (fast statistic chi-square): {0:.3g}s".format(fast_chisq_time)
 # has a sample size greater than 20, then the test will run.
 # In the case where the data is 1 dimensional and Euclidean, an even faster version is
 # run.
-#
+
+########################################################################################
 # ------------
 #
 # **Multiscale graph correlation (MGC)** is a powerful independence test the uses the
