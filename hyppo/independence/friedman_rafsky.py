@@ -73,8 +73,6 @@ class FriedmanRafsky(IndependenceTest):
         MST_connections = MST(x, labels, algorithm)
         stat = self.num_runs(labels, MST_connections)
 
-        self.stat = stat
-
         return stat
 
     def test(
@@ -131,7 +129,14 @@ class FriedmanRafsky(IndependenceTest):
         stat, pvalue, null_dist = perm_test(
             self.statistic, x, y, reps, workers, is_distsim, perm_blocks, random_state
         )
-        stat = (stat - np.mean(null_dist)) / np.std(null_dist)
+        
+        x = np.transpose(x)
+        labels = np.transpose(y)
+        
+        MST_connections = MST(x, labels, algorithm)
+        runs_true = self.num_runs(labels, MST_connections)
+        stat = (runs_true - np.mean(null_dist)) / np.std(null_dist)
+        self.stat = stat
 
         return IndependenceTestOutput(stat, pvalue)
 
