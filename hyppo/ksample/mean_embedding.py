@@ -20,6 +20,8 @@ class MeanEmbeddingTest(KSampleTest):
         Used to construct random array with size ''(p, q)'' where 'p' is the number of
         dimensions of the data and 'q' is the random frequency at which the
         test is performed. These are the random test points at which test occurs (see notes).
+    random_state: integer
+        Set random seed for generation of test points
 
     Notes
     -----
@@ -61,6 +63,8 @@ class MeanEmbeddingTest(KSampleTest):
         self.num_randfreq = num_randfreq
         if random_state:
             self.random_state = random_state
+        else:
+            self.random_state = None
         KSampleTest.__init__(self)
 
     def statistic(self, x, y):
@@ -140,7 +144,6 @@ def _get_difference(point, x, y):
     return _get_estimate(x, point) - _get_estimate(y, point)
 
 
-@jit(nopython=True, cache=True)
 def _vector_of_differences(dim, x, y, num_randfreq, random_state):
     """Calculates vector of differences using above helpers"""
     if random_state:
