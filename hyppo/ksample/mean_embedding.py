@@ -56,11 +56,10 @@ class MeanEmbeddingTest(KSampleTest):
     ----------
     .. footbibliography::
     """
+
     def __init__(self, num_randfreq=5):
         self.num_randfreq = num_randfreq
-        KSampleTest.__init__(
-            self
-        )
+        KSampleTest.__init__(self)
 
     def statistic(self, x, y):
         r"""
@@ -114,13 +113,10 @@ class MeanEmbeddingTest(KSampleTest):
         '3.852, 0.571'
 
         """
-        check_input = _CheckInputs(
-            inputs=[x,y],
-            indep_test=None
-        )
+        check_input = _CheckInputs(inputs=[x, y], indep_test=None)
         x, y = check_input()
 
-        stat = self.statistic(x,y)
+        stat = self.statistic(x, y)
         pvalue = chi2.sf(stat, self.num_randfreq)
         self.stat = stat
         self.pvalue = pvalue
@@ -134,8 +130,8 @@ def _get_estimate(data, point):
     norms = np.zeros(z.shape[0])
     for i in range(z.shape[0]):
         norms[i] = np.sqrt(np.sum(z[i] ** 2))
-    z2 = norms**2
-    return np.exp(-z2/2.0)
+    z2 = norms ** 2
+    return np.exp(-z2 / 2.0)
 
 
 @jit(nopython=True, cache=True)
@@ -186,4 +182,3 @@ def distance(difference, num_randfeatures):
         stat = num_samples * mu.dot(np.linalg.solve(sigma, np.transpose(mu)))
 
     return stat
-

@@ -17,9 +17,7 @@ class TestMeanEmbedding:
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
         x, y = rot_ksamp("linear", n, 1, k=2)
-        stat, pvalue = MeanEmbeddingTest().test(x,y)
+        stat, pvalue = MeanEmbeddingTest().test(x, y)
 
         assert_almost_equal(stat, obs_stat, decimal=-4)
         assert_almost_equal(pvalue, obs_pvalue, decimal=50)
-
-

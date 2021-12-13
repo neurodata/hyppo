@@ -65,16 +65,15 @@ class SmoothCFTest(KSampleTest):
     ----------
     .. footbibliography::
     """
-    def __init__(self, num_randfreq = 5, random_state = None):
+
+    def __init__(self, num_randfreq=5, random_state=None):
 
         if random_state:
             self.random_state = random_state
         else:
             self.random_state = None
         self.num_randfreq = num_randfreq
-        KSampleTest.__init__(
-            self
-        )
+        KSampleTest.__init__(self)
 
     def statistic(self, x, y):
         r"""
@@ -128,14 +127,11 @@ class SmoothCFTest(KSampleTest):
         >>> %.2f, %.3f' % (stat, pvalue)
         '4.69, 0.910'
         """
-        check_input = _CheckInputs(
-            inputs=[x,y],
-            indep_test=None
-        )
+        check_input = _CheckInputs(inputs=[x, y], indep_test=None)
         x, y = check_input()
 
-        stat = self.statistic(x,y)
-        pvalue = chi2.sf(stat, 2*self.num_randfreq)
+        stat = self.statistic(x, y)
+        pvalue = chi2.sf(stat, 2 * self.num_randfreq)
         self.stat = stat
         self.pvalue = pvalue
 
@@ -154,10 +150,10 @@ def _smooth(data):
     """Smooth kernel"""
     norms = np.zeros(data.shape[0])
     for i in range(data.shape[0]):
-        norms[i] = np.sqrt(np.sum(data[i]**2))
+        norms[i] = np.sqrt(np.sum(data[i] ** 2))
     w = norms
-    w = np.exp(-w ** 2 / 2)
-    return w.reshape(-1,1)
+    w = np.exp(-(w ** 2) / 2)
+    return w.reshape(-1, 1)
 
 
 @jit(nopython=True, cache=True)
@@ -175,7 +171,9 @@ def _smooth_difference(random_frequencies, X, Y):
     """Vector of differences for Smooth CF"""
     x_smooth = _smooth(X)
     y_smooth = _smooth(Y)
-    return _smooth_cf(X, x_smooth, random_frequencies) - _smooth_cf(Y, y_smooth, random_frequencies)
+    return _smooth_cf(X, x_smooth, random_frequencies) - _smooth_cf(
+        Y, y_smooth, random_frequencies
+    )
 
 
 def distance(difference, num_randfeatures):
@@ -209,6 +207,3 @@ def distance(difference, num_randfeatures):
         stat = num_samples * mu.dot(np.linalg.solve(sigma, np.transpose(mu)))
 
     return stat
-
-
-
