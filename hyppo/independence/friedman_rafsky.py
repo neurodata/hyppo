@@ -256,7 +256,7 @@ def MST(x, algorithm):
     """
     if algorithm == "Kruskal":
 
-        g = self.Graph(len(x[0]))
+        g = Graph(len(x[0]))
 
         for i in range(len(x[0])):
 
