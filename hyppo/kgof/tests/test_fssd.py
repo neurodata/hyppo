@@ -7,6 +7,7 @@ from ..fssd import (
     FSSDH0SimCovDraw,
     ustat_h1_mean_variance,
     power_criterion,
+    fssd_grid_search_kernel,
 )
 from .._utils import meddistance, fit_gaussian_draw
 from ..kernel import KGauss
@@ -48,6 +49,7 @@ class TestFSSD:
         # Test
         sig2 = meddistance(X, subsample=1000) ** 2
         k = KGauss(sig2)
+        list_k = [k]
 
         # random test locations
         V = fit_gaussian_draw(X, J, seed=seed + 1)
@@ -56,6 +58,9 @@ class TestFSSD:
         fssd = FSSD(isonorm, k, V, null_sim=null_sim, alpha=alpha)
         check_sim = extra_sim.simulate(dat=dat, gof=fssd)
         power_criterion(p=isonorm, dat=dat, k=k, test_locs=V)
+        fssd_grid_search_kernel(p=isonorm, dat=dat, test_locs=V, list_kernel=list_k)
+        fssd.get_H1_mean_variance(dat=dat)
+
 
         tresult = fssd.test(dat, return_simulated_stats=True)
         dat.__add__(dat)
