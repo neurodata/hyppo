@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.testing as testing
 
-from ..fssd import FSSD, FSSDH0SimCovObs, ustat_h1_mean_variance
+from ..fssd import FSSD, FSSDH0SimCovObs, FSSDH0SimCovDraw, ustat_h1_mean_variance
 from .._utils import meddistance, fit_gaussian_draw
 from ..kernel import KGauss
 from ..data import Data
@@ -37,6 +37,7 @@ class TestFSSD:
         dat.n()
         dat.split_tr_te()
         dat.subsample(n=4)
+        dat.clone()
 
         # Test
         sig2 = meddistance(X, subsample=1000) ** 2
@@ -45,9 +46,11 @@ class TestFSSD:
         # random test locations
         V = fit_gaussian_draw(X, J, seed=seed + 1)
         null_sim = FSSDH0SimCovObs(n_simulate=200, seed=3)
+        extra_sim = FSSDH0SimCovDraw()
         fssd = FSSD(isonorm, k, V, null_sim=null_sim, alpha=alpha)
 
         tresult = fssd.test(dat, return_simulated_stats=True)
+        dat.__add__(dat)
 
         # assertions
         testing.assert_almost_equal(tresult["pvalue"], 0, decimal=1)
