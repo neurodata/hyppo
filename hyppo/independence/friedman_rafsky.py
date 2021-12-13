@@ -24,6 +24,7 @@ class FriedmanRafsky(IndependenceTest):
 
         IndependenceTest.__init__(self, **kwargs)
         
+        
     def num_runs(self, labels, MST_connections):
         r"""
         Helper function to determine number of independent
