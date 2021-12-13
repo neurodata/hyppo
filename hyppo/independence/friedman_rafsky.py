@@ -149,8 +149,8 @@ def prim(weight_mat, labels):
                 for j in range(V):
                     if (not selected[j]) and G[i][j]:
                         # not in selected and there is an edge
-                        if minimum > G[i][j]:
-                            minimum = G[i][j]
+                        if minimum > weight_mat[i][j]:
+                            minimum = weight_mat[i][j]
                             x = i
                             y = j
         MST_connections.append([x, y])
