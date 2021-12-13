@@ -8,7 +8,7 @@ from .. import FriedmanRafsky
 
 class TestFriedmanRafskyStat:
     @pytest.mark.parametrize("n", [100, 200])
-    @pytest.mark.parametrize("obs_stat", [-.50])
+    @pytest.mark.parametrize("obs_stat", [-0.50])
     @pytest.mark.parametrize("obs_pvalue", [1 / 1000])
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
