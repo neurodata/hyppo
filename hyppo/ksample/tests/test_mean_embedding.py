@@ -4,7 +4,6 @@ from numpy.testing import assert_almost_equal
 
 from hyppo.tools import rot_ksamp
 from hyppo.ksample import MeanEmbeddingTest
-import hyppo.ksample.mean_embedding
 
 
 class TestMeanEmbedding:

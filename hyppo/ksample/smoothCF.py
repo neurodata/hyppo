@@ -1,5 +1,4 @@
 import numpy as np
-from numba import jit
 from scipy.stats import chi2
 from ._utils import _CheckInputs
 from hyppo.ksample.base import KSampleTest, KSampleTestOutput
@@ -100,9 +99,17 @@ class SmoothCFTest(KSampleTest):
         x_smooth = np.exp(-np.linalg.norm(x, axis=1) ** 2 / 2).reshape(-1, 1)
         y_smooth = np.exp(-np.linalg.norm(y, axis=1) ** 2 / 2).reshape(-1, 1)
 
-        difference = _smooth_cf(x, x_smooth, random_frequencies) - _smooth_cf(
-            y, y_smooth, random_frequencies
+        x_mat = x.dot(random_frequencies)
+        y_mat = y.dot(random_frequencies)
+
+        x_smooth_cf = np.concatenate(
+            (np.sin(x_mat) * x_smooth, np.cos(x_mat) * x_smooth), 1
         )
+        y_smooth_cf = np.concatenate(
+            (np.sin(y_mat) * y_smooth, np.cos(y_mat) * y_smooth), 1
+        )
+
+        difference = x_smooth_cf - y_smooth_cf
         return distance(difference, 2 * self.num_randfreq)
 
     def test(self, x, y):
@@ -144,14 +151,6 @@ class SmoothCFTest(KSampleTest):
         self.pvalue = pvalue
 
         return KSampleTestOutput(stat, pvalue)
-
-
-@jit(nopython=True, cache=True)
-def _smooth_cf(data, w, random_frequencies):
-    """Vector of differences for Smooth CF"""
-    mat = data.dot(random_frequencies)
-    arr = np.concatenate((np.sin(mat) * w, np.cos(mat) * w), 1)
-    return arr
 
 
 def distance(difference, num_randfeatures):
