@@ -4,7 +4,7 @@ Block Permutations
 
 The permutations of :class:`hyppo.independence.Dcorr` can be restricted to appropriately match known
 dependencies of samples under the null distribution (i.e. multilevel and longitudinal data). Without such modifications, calculated
-pvalues are invalid as the permutation generated null distribution is incorrect.
+pvalues are invalid as the default space of permutations are misspecified.
 
 In order to restrict the permutations, we pass in a list of group labels. Each column
 is a list of labels which partitions the observations by shared label into blocks and
