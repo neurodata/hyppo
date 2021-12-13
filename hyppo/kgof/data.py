@@ -27,9 +27,6 @@ class Data(object):
         """
         self.X = X
 
-        if not np.all(np.isfinite(X)):
-            raise ValueError("Not all elements in X are finite.")
-
     def dim(self):
         """Return the dimension of the data."""
         dx = self.X.shape[1]
