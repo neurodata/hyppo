@@ -38,7 +38,7 @@ class SmoothCFTest(KSampleTest):
     .. math::
 
         Z_i = (k(X_i, T_1) - k(Y_i, T_1), \ldots,
-        k(X_i, T_J) - k(Y_i, T_J)) \in mathbb{R}^J
+        k(X_i, T_J) - k(Y_i, T_J)) \in \mathbb{R}^J
 
     The above is the vector of differences between kernels at test points, :math:`T_j`.
     This same formulation is used in the Mean Embedding Test.
@@ -161,12 +161,7 @@ class SmoothCFTest(KSampleTest):
 
 def distance(difference):
     r"""
-    Using the vector of differences as defined above,
-    calculates the Smooth Characteristic Function statistic in the form:
-
-    :math:`nW_n\Sigma_n^{-1}W_n`
-
-    Where :math:`W_n` is the vector of differences.
+    Calculates the Smooth CF test statistic using the vector of differences.
 
     Parameters
     ----------
