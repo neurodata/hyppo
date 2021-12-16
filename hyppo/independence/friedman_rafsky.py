@@ -48,7 +48,7 @@ class FriedmanRafsky(IndependenceTest):
 
         return run_count
 
-    def statistic(self, x, y, algorithm="Prim"):
+    def statistic(self, x, y):
         r"""
         Helper function that calculates the Friedman Rafksy test statistic.
         Parameters
@@ -59,9 +59,6 @@ class FriedmanRafsky(IndependenceTest):
             `n` is the number of combined samples and `p` is the number of
             dimensions. ``y`` is the array of labels corresponding to the two
             samples, respectively.
-        algoritm : str, default: 'Kruskal'
-            The algorithm to be used to determine the minimum spanning tree.
-            Currently only 'Kruskal' and 'Prim' are supported.
         Returns
         -------
         stat : float
@@ -70,7 +67,7 @@ class FriedmanRafsky(IndependenceTest):
         x = np.transpose(x)
         labels = np.transpose(y)
 
-        MST_connections = MST(x, labels, algorithm)
+        MST_connections = MST(x, labels)
         stat = self.num_runs(labels, MST_connections)
 
         return stat
@@ -79,7 +76,6 @@ class FriedmanRafsky(IndependenceTest):
         self,
         x,
         y,
-        algorithm="Prim",
         reps=1000,
         workers=1,
         is_distsim=False,
@@ -96,9 +92,6 @@ class FriedmanRafsky(IndependenceTest):
             `n` is the number of combined samples and `p` is the number of
             dimensions. ``y`` is the array of labels corresponding to the two
             samples, respectively.
-        algoritm : str, default: 'Prim'
-            The algorithm to be used to determine the minimum spanning tree.
-            Currently only 'Kruskal' and 'Prim' are supported.
         reps : int, default: 1000
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
@@ -131,7 +124,7 @@ class FriedmanRafsky(IndependenceTest):
         )
         x = np.transpose(x)
         labels = np.transpose(y)
-        MST_connections = MST(x, labels, algorithm)
+        MST_connections = MST(x, labels)
         runs_true = self.num_runs(labels, MST_connections)
         stat = (runs_true - np.mean(null_dist)) / np.std(null_dist)
         self.stat = stat
@@ -183,7 +176,7 @@ def prim(weight_mat, labels):
 
 
 @jit(nopython=True, cache=True)
-def MST(x, labels, algorithm):
+def MST(x, labels):
     r"""
     Helper function to read input data and calculate Euclidean distance
     between each possible pair of points before finding MST.
@@ -193,26 +186,21 @@ def MST(x, labels, algorithm):
         Dataset such that each column corresponds to a point of data.
     labels : ndarry
         Lables corresponding to respective classes of samples.
-    algoritm : str, default: 'Kruskal'
-            The algorithm to be used to determine the minimum spanning tree.
-            Currently only 'Kruskal' and 'Prim' are supported.
     Returns
     -------
     MST_connections : list
         List of pairs of nodes connected in final MST.
     """
 
-    if algorithm == "Prim":
+    G = np.zeros((len(x[0]), len(x[0])))
 
-        G = np.zeros((len(x[0]), len(x[0])))
+    for i in range(len(x[0])):
 
-        for i in range(len(x[0])):
+        for j in range(i + 1, len(x[0])):
+            weight = np.linalg.norm(x[:, i] - x[:, j])
+            G[i][j] = weight
+            G[j][i] = weight
 
-            for j in range(i + 1, len(x[0])):
-                weight = np.linalg.norm(x[:, i] - x[:, j])
-                G[i][j] = weight
-                G[j][i] = weight
-
-        MST_connections = prim(G, labels)
+    MST_connections = prim(G, labels)
 
     return MST_connections
