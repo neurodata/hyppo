@@ -78,7 +78,8 @@ Now, let's look at unique properties of some of the tests in :mod:`hyppo.indepen
 #           - Test statistic not very interpretable, not between (-1, 1)
 #
 # An alternate fast HHG test is also available, based on a paper that proposed multivariate
-# tests of association through univariate tests.
+# tests of association through univariate tests. The univariate test used is Hoeffding's 
+# D test.
 #
 # .. note::
 #

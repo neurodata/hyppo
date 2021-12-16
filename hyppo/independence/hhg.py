@@ -50,7 +50,7 @@ class HHG(IndependenceTest):
         calculated and ``**kwargs`` are extra arguments to send to your custom
         function.
     auto : boolean, default: False
-        Automatically uses fast approximation of HHG test. :class:`hyppo.tools.perm_test`
+        Automatically use fast approximation of HHG test. :class:`hyppo.tools.perm_test`
         will still be run.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
