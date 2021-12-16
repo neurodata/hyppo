@@ -7,7 +7,8 @@ from .. import FriedmanRafsky
 
 
 class TestFriedmanRafskyStat:
-    @pytest.mark.parametrize("n", [200, 300])
+    @pytest.mark.parametrize("n", [100])
+    @pytest.mark.parametrize("num_runs", [45])
     @pytest.mark.parametrize("obs_stat", [-0.50])
     @pytest.mark.parametrize("obs_pvalue", [1 / 1000])
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
@@ -20,7 +21,7 @@ class TestFriedmanRafskyStat:
         stat2 = FriedmanRafsky().statistic(x, y)
 
         assert_almost_equal(stat1, obs_stat, decimal=2)
-        assert_almost_equal(stat2, obs_stat, decimal=2)
+        assert_almost_equal(stat2, num_runs, decimal=2)
         assert_almost_equal(pvalue1, obs_pvalue, decimal=2)
 
     @pytest.mark.parametrize("n", [100, 200])
