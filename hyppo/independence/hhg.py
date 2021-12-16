@@ -19,10 +19,6 @@ class HHG(IndependenceTest):
     :footcite:p:`hellerConsistentMultivariateTest2013`. It can also operate on multiple
     dimensions :footcite:p:`hellerConsistentMultivariateTest2013`.
 
-    The fast version of this test performs a multivariate independence test
-    based on univariate test statistics. The univariate test used is Hoeffding's independence test.
-    :footcite:p:`hellerMultivariateTestsOfAssociation2016`.
-
     Parameters
     ----------
     compute_distance : str, callable, or None, default: "euclidean"
@@ -105,7 +101,9 @@ class HHG(IndependenceTest):
     The p-value returned is calculated using a permutation test using
     :math:`hyppo.tools.perm_test`.
 
-    For the fast version of the test, the test statistic is derived as follows
+    The fast version of this test performs a multivariate independence test
+    based on univariate test statistics :footcite:p:`hellerMultivariateTestsOfAssociation2016`.
+    The univariate test statistic used is Hoeffding's independence test, derived as follows
     :footcite:p:`sasHoeffdingDependenceCoefficient`:
 
     Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
