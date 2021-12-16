@@ -74,24 +74,11 @@ Now, let's look at unique properties of some of the tests in :mod:`hyppo.indepen
 # .. note::
 #
 #    :Pros: - Very accurate in certain settings
+#           - Has fast implementation
 #    :Cons: - Very slow (computationally complex)
 #           - Test statistic not very interpretable, not between (-1, 1)
 #
-# An alternate fast HHG test is also available, based on a paper that proposed multivariate
-# tests of association through univariate tests. The univariate test used is Hoeffding's 
-# D test.
-#
-# .. note::
-#
-#    :Pros: - High power when the center of mass provides large amount of information
-#           - Fast due to univariate simplicity
-#    :Cons: - Not accurate when compared to other tests in most situations
-#           - Inherits assumptions from Hoeffding's D test, such as continuity
-#             of distance distribution
-#           - Non-informative if measure of center point is zero
-#           - Statistic is sensitive to ties in computed distance
-#
-# Both tests run like :ref:`any other test<general indep>`.
+# This test runs like :ref:`any other test<general indep>`.
 #
 # ------------
 #
