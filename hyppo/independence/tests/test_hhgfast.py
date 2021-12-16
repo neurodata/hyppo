@@ -29,6 +29,13 @@ class TestFastHHGStat:
 
         assert_almost_equal(stat, 1.0, decimal=2)
 
+    def test_stat(self):
+        np.random.seed(123456789)
+        x, y = linear(100, 1)
+        stat = HHG(auto=True).statistic(x, y)
+
+        assert_almost_equal(stat, 1.0, decimal=2)
+
     @pytest.mark.parametrize("n", [10, 200])
     def test_rep(self, n):
         x, y = linear(n, 1)
