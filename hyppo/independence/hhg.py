@@ -19,11 +19,11 @@ class HHG(IndependenceTest):
     :footcite:p:`hellerConsistentMultivariateTest2013`. It can also operate on multiple
     dimensions :footcite:p:`hellerConsistentMultivariateTest2013`.
 
-    The fast version of this test can also be run, based on
-    Heller 2016 paper on multivariate tests based on univariate tests. The univariate test
-    used is Hoeffding's independence test.
+    The fast version of this test performs a multivariate independence test 
+    based on univariate test statistics. The univariate test used is Hoeffding's independence test.
     This version has relatively low power, but performs well in scenarios where the center of
     mass carries a lot of information (e.g. circular or elliptical geometry).
+    :footcite:p:`hellerMultivariateTestsOfAssociation`.
 
     Parameters
     ----------
@@ -326,47 +326,13 @@ def hoeffdings(x, y):
 
     # core processing
     N = x.shape
-    dico = {(np.nan, np.nan): np.nan}
-    dicoRin = {np.nan: np.nan}
-    dicoSin = {np.nan: np.nan}
-    dicoRless = {np.nan: np.nan}
-    dicoSless = {np.nan: np.nan}
     Q = np.ones(N[0])
 
-    i = 0
-    for r, s in np.nditer([R, S]):
-        r = float(r)
-        s = float(s)
-        if (r, s) in dico.keys():
-            Q[i] = dico[(r, s)]
-        else:
-            if r in dicoRin.keys():
-                isinR = dicoRin[r]
-                lessR = dicoRless[r]
-            else:
-                isinR = np.isin(R, r)
-                dicoRin[r] = isinR
-                lessR = np.less(R, r)
-                dicoRless[r] = lessR
-
-            if s in dicoSin.keys():
-                isinS = dicoSin[s]
-                lessS = dicoSless[s]
-            else:
-                isinS = np.isin(S, s)
-                dicoSin[s] = isinS
-                lessS = np.less(S, s)
-                dicoSless[s] = lessS
-
-            Q[i] = (
-                Q[i]
-                + np.count_nonzero(lessR & lessS)
-                + 1 / 4 * (np.count_nonzero(isinR & isinS) - 1)
-                + 1 / 2 * (np.count_nonzero(isinR & lessS))
-                + 1 / 2 * (np.count_nonzero(lessR & isinS))
-            )
-            dico[(r, s)] = Q[i]
-        i += 1
+    for i in range(0, N[0]):
+        Q[i] = Q[i] + np.sum(np.bitwise_and(R<R[i], S<S[i]))
+        Q[i] = Q[i] + 1/4 * (np.sum(np.bitwise_and(np.isin(R,R[i]), np.isin(S,S[i])))-1)
+        Q[i] = Q[i] + 1/2 * (np.sum(np.bitwise_and(np.isin(R,R[i]), S<S[i])))
+        Q[i] = Q[i] + 1/2 * (np.sum(np.bitwise_and(R<R[i], np.isin(S,S[i]))))
 
     D1 = np.sum(np.multiply((Q - 1), (Q - 2)))
     D2 = np.sum(
