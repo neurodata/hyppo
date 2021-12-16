@@ -19,7 +19,7 @@ class HHG(IndependenceTest):
     :footcite:p:`hellerConsistentMultivariateTest2013`. It can also operate on multiple
     dimensions :footcite:p:`hellerConsistentMultivariateTest2013`.
 
-    The fast version of this test performs a multivariate independence test 
+    The fast version of this test performs a multivariate independence test
     based on univariate test statistics. The univariate test used is Hoeffding's independence test.
     :footcite:p:`hellerMultivariateTestsOfAssociation2016`.
 
@@ -50,7 +50,7 @@ class HHG(IndependenceTest):
         calculated and ``**kwargs`` are extra arguments to send to your custom
         function.
     auto : boolean, default: False
-        Automatically uses fast approximation of HHG test. :class:`hyppo.tools.perm_test` 
+        Automatically uses fast approximation of HHG test. :class:`hyppo.tools.perm_test`
         will still be run.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
@@ -135,7 +135,7 @@ class HHG(IndependenceTest):
     values less than the :math:`i`-th point.
 
     D is notably sensitive to ties and gets smaller the more pairs of variables with identical values.
-    If there are no ties in the data,D ranges between -0.5 and 1, with 1 indicating complete dependence. 
+    If there are no ties in the data,D ranges between -0.5 and 1, with 1 indicating complete dependence.
     :footcite:p:`sasHoeffdingDependenceCoefficient`
 
     The p-value returned is calculated using a permutation test using
@@ -275,15 +275,17 @@ class HHG(IndependenceTest):
             xin = np.concatenate((zx, x))
             yin = np.concatenate((zy, y))
             distx, disty = compute_dist(
-                    xin, yin, metric=self.compute_distance, **self.kwargs
-                )
-            #take first row of distance matrix (distance from center point)
+                xin, yin, metric=self.compute_distance, **self.kwargs
+            )
+            # take first row of distance matrix (distance from center point)
             distx = distx[0]
-            distx = distx[distx != 0].reshape(-1,1)
+            distx = distx[distx != 0].reshape(-1, 1)
             disty = disty[0]
-            disty = disty[disty != 0].reshape(-1,1)
+            disty = disty[disty != 0].reshape(-1, 1)
             self.is_distance = True
-            stat, pvalue = super(HHG, self).test(distx, disty, reps, workers, is_distsim=False)
+            stat, pvalue = super(HHG, self).test(
+                distx, disty, reps, workers, is_distsim=False
+            )
 
         else:
             x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
@@ -329,10 +331,12 @@ def hoeffdings(x, y):
     Q = np.ones(N[0])
 
     for i in range(0, N[0]):
-        Q[i] = Q[i] + np.sum(np.bitwise_and(R<R[i], S<S[i]))
-        Q[i] = Q[i] + 1/4 * (np.sum(np.bitwise_and(np.isin(R,R[i]), np.isin(S,S[i])))-1)
-        Q[i] = Q[i] + 1/2 * (np.sum(np.bitwise_and(np.isin(R,R[i]), S<S[i])))
-        Q[i] = Q[i] + 1/2 * (np.sum(np.bitwise_and(R<R[i], np.isin(S,S[i]))))
+        Q[i] = Q[i] + np.sum(np.bitwise_and(R < R[i], S < S[i]))
+        Q[i] = Q[i] + 1 / 4 * (
+            np.sum(np.bitwise_and(np.isin(R, R[i]), np.isin(S, S[i]))) - 1
+        )
+        Q[i] = Q[i] + 1 / 2 * (np.sum(np.bitwise_and(np.isin(R, R[i]), S < S[i])))
+        Q[i] = Q[i] + 1 / 2 * (np.sum(np.bitwise_and(R < R[i], np.isin(S, S[i]))))
 
     D1 = np.sum(np.multiply((Q - 1), (Q - 2)))
     D2 = np.sum(

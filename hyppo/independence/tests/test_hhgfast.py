@@ -23,9 +23,9 @@ class TestFastHHGStat:
         x, y = linear(100, 1)
         zx = np.mean(x, axis=0).reshape(1, -1)
         zy = np.mean(y, axis=0).reshape(1, -1)
-        distx = pairwise_distances(zx, x).reshape(-1,1)
-        disty = pairwise_distances(zy, y).reshape(-1,1)
-        stat = HHG(compute_distance=None,auto=True).statistic(distx, disty)
+        distx = pairwise_distances(zx, x).reshape(-1, 1)
+        disty = pairwise_distances(zy, y).reshape(-1, 1)
+        stat = HHG(compute_distance=None, auto=True).statistic(distx, disty)
 
         assert_almost_equal(stat, 1.0, decimal=2)
 
