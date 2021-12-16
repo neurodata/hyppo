@@ -21,9 +21,7 @@ class HHG(IndependenceTest):
 
     The fast version of this test performs a multivariate independence test 
     based on univariate test statistics. The univariate test used is Hoeffding's independence test.
-    This version has relatively low power, but performs well in scenarios where the center of
-    mass carries a lot of information (e.g. circular or elliptical geometry).
-    :footcite:p:`hellerMultivariateTestsOfAssociation`.
+    :footcite:p:`hellerMultivariateTestsOfAssociation2016`.
 
     Parameters
     ----------
@@ -107,7 +105,8 @@ class HHG(IndependenceTest):
     The p-value returned is calculated using a permutation test using
     :math:`hyppo.tools.perm_test`.
 
-    For the fast version of the test, the test statistic is derived as follows:
+    For the fast version of the test, the test statistic is derived as follows
+    :footcite:p:`sasHoeffdingDependenceCoefficient`:
 
     Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
     :math:`X` and :math:`Y`. A center point - the center of mass of points in 'X' and 'Y'
@@ -135,8 +134,9 @@ class HHG(IndependenceTest):
     :math:`Q_{i}` is the bivariate rank = 1 plus the number of points with both x and y
     values less than the :math:`i`-th point.
 
-    D ranges between -0.5 and 1, with 1 indicating complete dependence. D is notably
-    sensitive to ties and may get smaller the more pairs of variables with identical values.
+    D is notably sensitive to ties and gets smaller the more pairs of variables with identical values.
+    If there are no ties in the data,D ranges between -0.5 and 1, with 1 indicating complete dependence. 
+    :footcite:p:`sasHoeffdingDependenceCoefficient`
 
     The p-value returned is calculated using a permutation test using
     :math:`hyppo.tools.perm_test`.
