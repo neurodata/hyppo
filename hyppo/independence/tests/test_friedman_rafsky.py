@@ -10,7 +10,7 @@ class TestFriedmanRafskyStat:
     @pytest.mark.parametrize("n", [100])
     @pytest.mark.parametrize("num_runs", [48])
     @pytest.mark.parametrize("obs_stat", [-0.527])
-    @pytest.mark.parametrize("obs_pvalue", [1 / 1000])
+    @pytest.mark.parametrize("obs_pvalue", [0.748])
     def test_linear_oned(self, n, num_runs, obs_stat, obs_pvalue):
         np.random.seed(123456789)
         x, y = linear(n, 1)
