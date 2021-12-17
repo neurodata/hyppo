@@ -164,8 +164,8 @@ Miscellaneous
    tools.multi_perm_test
    tools.chi2_approx
    tools.power
-   ksample.smoothCF.distance
-   ksample.mean_embedding.distance
+   ksample.smoothCF.smooth_cf_distance
+   ksample.mean_embedding.mean_embed_distance
 
 
 

@@ -15,12 +15,10 @@ class SmoothCFTest(KSampleTest):
 
     Parameters
     ----------
-    num_randfreq: integer
+    num_randfreq: int
         Used to construct random array with size ``(p, q)`` where `p` is the number of
         dimensions of the data and `q` is the random frequency at which the
         test is performed. These are the random test points at which test occurs (see notes).
-    random_state: integer
-        Set random seed for generation of test points
 
     Notes
     -----
@@ -71,26 +69,24 @@ class SmoothCFTest(KSampleTest):
     .. footbibliography::
     """
 
-    def __init__(self, num_randfreq=5, random_state=None):
+    def __init__(self, num_randfreq=5):
 
-        if random_state:
-            self.random_state = random_state
-        else:
-            self.random_state = None
         self.num_randfreq = num_randfreq
         KSampleTest.__init__(self)
 
-    def statistic(self, x, y):
+    def statistic(self, x, y, random_state):
         r"""
         Calculates the smooth CF test statistic.
 
         Parameters
         ----------
-        x,y : ndarray
+        x,y : ndarray of float
             Input data matrices. ``x`` and ``y`` must have the same number of
             dimensions. That is, the shapes must be ``(n, p)`` and ``(m, p)`` where
             `n` is the number of samples and `p` and `q` are the number of
             dimensions.
+        random_state: int
+            Set random seed for generation of test points
 
         Returns
         -------
@@ -98,8 +94,8 @@ class SmoothCFTest(KSampleTest):
             The computed Smooth CF statistic.
         """
         _, p = np.shape(x)
-        if self.random_state:
-            np.random.seed(self.random_state)
+        if random_state:
+            np.random.seed(random_state)
         random_frequencies = np.random.randn(p, self.num_randfreq)
 
         x_smooth = np.exp(-np.linalg.norm(x, axis=1) ** 2 / 2).reshape(-1, 1)
@@ -116,19 +112,21 @@ class SmoothCFTest(KSampleTest):
         )
 
         difference = x_smooth_cf - y_smooth_cf
-        return distance(difference)
+        return smooth_cf_distance(difference)
 
-    def test(self, x, y):
+    def test(self, x, y, random_state=None):
         r"""
         Calculates the smooth CF test statistic and p-value.
 
         Parameters
         ----------
-        x,y : ndarray
+        x,y : ndarray of float
             Input data matrices. ``x`` and ``y`` must have the same number of
             dimensions. That is, the shapes must be ``(n, p)`` and ``(m, p)`` where
             `n` is the number of samples and `p` and `q` are the number of
             dimensions.
+        random_state: int
+            Set random seed for generation of test points
 
         Returns
         -------
@@ -144,14 +142,14 @@ class SmoothCFTest(KSampleTest):
         >>> np.random.seed(1234)
         >>> x = np.random.randn(500, 10)
         >>> y = np.random.randn(500, 10)
-        >>> stat, pvalue = SmoothCFTest(random_state=1234).test(x, y)
+        >>> stat, pvalue = SmoothCFTest().test(x, y, random_state=1234)
         >>> '%.2f, %.3f' % (stat, pvalue)
         '4.70, 0.910'
         """
         check_input = _CheckInputs(inputs=[x, y], indep_test=None)
         x, y = check_input()
 
-        stat = self.statistic(x, y)
+        stat = self.statistic(x, y, random_state)
         pvalue = chi2.sf(stat, 2 * self.num_randfreq)
         self.stat = stat
         self.pvalue = pvalue
@@ -159,16 +157,17 @@ class SmoothCFTest(KSampleTest):
         return KSampleTestOutput(stat, pvalue)
 
 
-def distance(difference):
+def smooth_cf_distance(difference):
     r"""
     Calculates the Smooth CF test statistic using the vector of differences.
 
     Parameters
     ----------
-    difference : ndarray
+    difference : ndarray of float
         The vector of differences which indicates distance between mean embeddings.
-    num_randfeatures : integer
+    num_randfeatures : int
         The number of test frequencies
+
     Returns
     -------
     stat : float

@@ -47,6 +47,6 @@ class TestSmoothCF:
         np.random.seed(123456789)
         x = np.random.randn(500, 10)
         y = np.random.randn(500, 10)
-        stat, pvalue = SmoothCFTest(random_state=1234, num_randfreq=1).test(x, y)
+        stat, pvalue = SmoothCFTest(num_randfreq=1).test(x, y, random_state=1234)
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(pvalue, obs_pval, decimal=2)

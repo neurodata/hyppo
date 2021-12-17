@@ -15,12 +15,10 @@ class MeanEmbeddingTest(KSampleTest):
 
     Parameters
     ----------
-    num_randfreq: integer
+    num_randfreq: int
         Used to construct random array with size ``(p, q)`` where `p` is the number of
         dimensions of the data and `q` is the random frequency at which the
         test is performed. These are the random test points at which test occurs (see notes).
-    random_state: integer
-        Set random seed for generation of test points
 
     Notes
     -----
@@ -64,25 +62,23 @@ class MeanEmbeddingTest(KSampleTest):
     .. footbibliography::
     """
 
-    def __init__(self, num_randfreq=5, random_state=None):
+    def __init__(self, num_randfreq=5):
         self.num_randfreq = num_randfreq
-        if random_state:
-            self.random_state = random_state
-        else:
-            self.random_state = None
         KSampleTest.__init__(self)
 
-    def statistic(self, x, y):
+    def statistic(self, x, y, random_state):
         r"""
         Calculates the mean embedding test statistic.
 
         Parameters
         ----------
-        x,y : ndarray
+        x,y : ndarray of float
             Input data matrices. ``x`` and ``y`` must have the same number of
             dimensions. That is, the shapes must be ``(n, p)`` and ``(m, p)`` where
             `n` is the number of samples and `p` and `q` are the number of
             dimensions.
+        random_state: int
+            Set random seed for generation of test points
 
         Returns
         -------
@@ -91,8 +87,8 @@ class MeanEmbeddingTest(KSampleTest):
         """
         _, p = np.shape(x)
 
-        if self.random_state:
-            np.random.seed(self.random_state)
+        if random_state:
+            np.random.seed(random_state)
         points = np.random.randn(self.num_randfreq, p)
 
         ra = np.zeros((self.num_randfreq, x.shape[0]))
@@ -103,19 +99,21 @@ class MeanEmbeddingTest(KSampleTest):
             )
 
         obs = ra.T
-        return distance(obs, self.num_randfreq)
+        return mean_embed_distance(obs, self.num_randfreq)
 
-    def test(self, x, y):
+    def test(self, x, y, random_state=None):
         r"""
         Calculates the mean embedding test statistic and p-value.
 
         Parameters
         ----------
-        x,y : ndarray
+        x,y : ndarray of float
             Input data matrices. ``x`` and ``y`` must have the same number of
             dimensions. That is, the shapes must be ``(n, p)`` and ``(m, p)`` where
             `n` is the number of samples and `p` and `q` are the number of
             dimensions.
+        random_state: int
+            Set random seed for generation of test points
 
         Returns
         -------
@@ -131,14 +129,14 @@ class MeanEmbeddingTest(KSampleTest):
         >>> np.random.seed(1234)
         >>> x = np.random.randn(500, 10)
         >>> y = np.random.randn(500, 10)
-        >>> stat, pvalue = MeanEmbeddingTest(random_state=1234).test(x, y)
+        >>> stat, pvalue = MeanEmbeddingTest().test(x, y, random_state=1234)
         >>> '%.2f, %.3f' % (stat, pvalue)
         '5.33, 0.377'
         """
         check_input = _CheckInputs(inputs=[x, y], indep_test=None)
         x, y = check_input()
 
-        stat = self.statistic(x, y)
+        stat = self.statistic(x, y, random_state)
         pvalue = chi2.sf(stat, self.num_randfreq)
         self.stat = stat
         self.pvalue = pvalue
@@ -146,16 +144,17 @@ class MeanEmbeddingTest(KSampleTest):
         return KSampleTestOutput(stat, pvalue)
 
 
-def distance(difference, num_randfeatures):
+def mean_embed_distance(difference, num_randfeatures):
     r"""
     Calculates the Mean Embedding test statistic using the vector of differences.
 
     Parameters
     ----------
-    difference : ndarray
+    difference : ndarray of float
         The vector of differences which indicates distance between mean embeddings.
-    num_randfeatures : integer
+    num_randfeatures : int
         The number of test frequencies
+
     Returns
     -------
     stat : float

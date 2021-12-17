@@ -164,6 +164,7 @@ print(stat, pvalue)
 # Any addition, if the bias variant of the test statistic is required, then the ``bias``
 # parameter can be set to ``True``. In general, we do not recommend doing this.
 # Otherwise, these tests runs like :ref:`any other test<general indep>`.
+#
 ########################################################################################
 # Smooth Characteristic Function Test
 # --------------------------------------------
@@ -175,7 +176,7 @@ print(stat, pvalue)
 # for given data. However, empirical characteristic functions can be very complex and therefore
 # expensive to compute. The smooth characteristic function can serve as a heuristic in place of
 # the empirical function which is much faster w.r.t. computation times. More information can be
-# found at :class:`hyppo.ksample.SmoothCFTest`
+# found at :class:`hyppo.ksample.SmoothCFTest`.
 #
 # .. note::
 #
@@ -183,6 +184,7 @@ print(stat, pvalue)
 #          - Faster than current, state-of-the-art quadratic-time kernel-based tests
 #   :Cons: - Heuristic method, almost surely sufficient to check at one frequency but checking
 #            more frequencies will give more power.
+#
 ########################################################################################
 # Mean Embedding Test
 # --------------------------------------------
@@ -193,7 +195,7 @@ print(stat, pvalue)
 # mean embeddings can be determined for two data distributions then the distance between
 # these two distributions in the hilbert space can be determined. In other words, the RKHS
 # allows the mapping of probability measures into a finite dimensional Euclidean space. More
-# details can be found at :class:`hyppo.ksample.MeanEmbeddingTest`
+# details can be found at :class:`hyppo.ksample.MeanEmbeddingTest`.
 #
 # .. note::
 #
