@@ -21,7 +21,7 @@ class FriedmanRafsky(IndependenceTest):
     Notes
     -----
     The statistic can be derived as follows
-    :footcite:p:`multivariateGeneralizationsoftheWaldWolfowitzandSmirnovTwoSampleTestsFriedmanRafsky1979`
+    :footcite:p:`friedmanMultivariateGeneralizationsoftheWaldWolfowitzandSmirnovTwoSampleTests1979`
     Let :math:`x` be a combined sample of :math:`(n, p)` and :math:`(m, p)`
     samples of random variables :math:`X` and let :math:`y` be a :math:`(n+m, 1)`
     array of labels :math:`Y`. We can then create a graph such that each point in
