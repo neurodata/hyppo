@@ -131,7 +131,7 @@ class FriedmanRafsky(IndependenceTest):
         """
 
         stat, pvalue, null_dist = perm_test(
-            self.statistic, x, y, reps, workers, is_distsim=False, random_state
+            self.statistic, x, y, reps, workers, random_state, is_distsim=False,
         )
         stat = (stat - np.mean(null_dist)) / np.std(null_dist)
         self.stat = stat
