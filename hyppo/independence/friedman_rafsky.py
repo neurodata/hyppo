@@ -18,10 +18,12 @@ class FriedmanRafsky(IndependenceTest):
     nodes do not belong to the same class are severed and the
     number of independent resulting trees is counted. This test is
     consistent against similar tests.
+    
     Notes
     -----
     The statistic can be derived as follows
     :footcite:p:`friedmanMultivariateGeneralizationsoftheWaldWolfowitzandSmirnovTwoSampleTests1979`
+    
     Let :math:`x` be a combined sample of :math:`(n, p)` and :math:`(m, p)`
     samples of random variables :math:`X` and let :math:`y` be a :math:`(n+m, 1)`
     array of labels :math:`Y`. We can then create a graph such that each point in
@@ -30,6 +32,7 @@ class FriedmanRafsky(IndependenceTest):
     calculated and all edges such that the labels in :math:`Y` are not from the same
     class are removed. The number of independent graphs is then summed to determine
     the uncorrected statistic for the test.
+    
     The p-value and null distribution for the corrected statistic are calculated via
     a permutation test using :math:`hyppo.tools.perm_test`.
     """
@@ -42,12 +45,14 @@ class FriedmanRafsky(IndependenceTest):
         r"""
         Helper function to determine number of independent
         'runs' from MST connections.
+        
         Parameters
         ----------
         labels : ndarry of float
             Lables corresponding to respective classes of samples.
         MST_connections: list of int
             List containing pairs of points connected in final MST.
+            
         Returns
         -------
         run_count : int
@@ -65,6 +70,7 @@ class FriedmanRafsky(IndependenceTest):
     def statistic(self, x, y):
         r"""
         Helper function that calculates the Friedman Rafksy test statistic.
+        
         Parameters
         ----------
         x,y : ndarray of float
@@ -73,6 +79,7 @@ class FriedmanRafsky(IndependenceTest):
             `n` is the number of combined samples and `p` is the number of
             dimensions. ``y`` is the array of labels corresponding to the two
             samples, respectively.
+            
         Returns
         -------
         stat : float
@@ -96,6 +103,7 @@ class FriedmanRafsky(IndependenceTest):
     ):
         r"""
         Calculates the Friedman Rafsky test statistic and p-value.
+        
         Parameters
         ----------
         x,y : ndarray of float
@@ -113,6 +121,7 @@ class FriedmanRafsky(IndependenceTest):
         random_state : int, default: None
             The random_state for permutation testing to be fixed for
             reproducibility.
+            
         Returns
         -------
         stat : float
@@ -141,12 +150,14 @@ def prim(weight_mat, labels):
     r"""
     Helper function to read weighted matrix input and compute minimum
     spanning tree via Prim's algorithm.
+    
     Parameters
     ----------
     weight_mat : ndarry of float
         Weighted connection matrix.
     labels : ndarry of int
         Lables corresponding to respective classes of samples.
+        
     Returns
     -------
     MST_connections : list of int
@@ -184,12 +195,14 @@ def MST(x, labels):  # pragma: no cover
     r"""
     Helper function to read input data and calculate Euclidean distance
     between each possible pair of points before finding MST.
+    
     Parameters
     ----------
     x : ndarry of float
         Dataset such that each column corresponds to a point of data.
     labels : ndarry of int
         Lables corresponding to respective classes of samples.
+        
     Returns
     -------
     MST_connections : list
