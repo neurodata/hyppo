@@ -97,7 +97,7 @@ class Hsic(IndependenceTest):
 
         Parameters
         ----------
-        x,y : ndarray
+        x,y : ndarray of float
             Input data matrices. ``x`` and ``y`` must have the same number of
             samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
@@ -130,7 +130,7 @@ class Hsic(IndependenceTest):
 
         Parameters
         ----------
-        x,y : ndarray
+        x,y : ndarray of float
             Input data matrices. ``x`` and ``y`` must have the same number of
             samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of

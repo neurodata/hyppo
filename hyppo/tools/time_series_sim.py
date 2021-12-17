@@ -51,7 +51,7 @@ def indep_ar(n, lag=1, phi=0.5, sigma=1):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x`` and ``y`` have shape ``(n,)``
         where `n` is the number of samples.
     """
@@ -105,7 +105,7 @@ def cross_corr_ar(n, lag=1, phi=0.5, sigma=1):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x`` and ``y`` have shape ``(n,)``
         where `n` is the number of samples.
     """
@@ -155,7 +155,7 @@ def nonlinear_process(n, lag=1, phi=1, sigma=1):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x`` and ``y`` have shape ``(n,)``
         where `n` is the number of samples.
     """
@@ -205,7 +205,7 @@ def ts_sim(sim, n, **kwargs):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices.
     """
     if sim not in TS_SIMS.keys():
