@@ -164,7 +164,7 @@ print(stat, pvalue)
 # Any addition, if the bias variant of the test statistic is required, then the ``bias``
 # parameter can be set to ``True``. In general, we do not recommend doing this.
 # Otherwise, these tests runs like :ref:`any other test<general indep>`.
-#
+
 ########################################################################################
 # Smooth Characteristic Function Test
 # --------------------------------------------
@@ -184,7 +184,7 @@ print(stat, pvalue)
 #          - Faster than current, state-of-the-art quadratic-time kernel-based tests
 #   :Cons: - Heuristic method, almost surely sufficient to check at one frequency but checking
 #            more frequencies will give more power.
-#
+
 ########################################################################################
 # Mean Embedding Test
 # --------------------------------------------
