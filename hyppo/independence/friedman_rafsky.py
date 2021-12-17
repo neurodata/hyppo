@@ -128,7 +128,7 @@ class FriedmanRafsky(IndependenceTest):
             reps,
             workers,
             is_distsim=False,
-            random_state=random_state
+            random_state=random_state,
         )
         stat = (stat - np.mean(null_dist)) / np.std(null_dist)
         self.stat = stat
