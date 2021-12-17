@@ -18,22 +18,41 @@ class FriedmanRafsky(IndependenceTest):
     nodes do not belong to the same class are severed and the
     number of independent resulting trees is counted. This test is
     consistent against similar tests.
+    
+    Notes
+    -----
+    The statistic can be derived as follows
+    :footcite:p:`multivariateGeneralizationsoftheWaldWolfowitzandSmirnovTwoSampleTestsFriedmanRafsky1979`
+    
+    Let :math:`x` be a combined sample of :math:`(n, p)` and :math:`(m, p)` 
+    samples of random variables :math:`X` and let :math:`y` be a :math:`(n+m, 1)` 
+    array of labels :math:`Y`. We can then create a graph such that each point in
+    :math:`X` is connected to each other point in :math:`X` by an edge weighted by
+    the euclidean distance inbetween those points. The minimum spanning tree is then
+    calculated and all edges such that the labels in :math:`Y` are not from the same
+    class are removed. The number of independent graphs is then summed to determine
+    the uncorrected statistic for the test.
+    
+    The p-value and null distribution for the corrected statistic are calculated via 
+    a permutation test using :math:`hyppo.tools.perm_test`.
     """
 
     def __init__(self, **kwargs):
 
         IndependenceTest.__init__(self, **kwargs)
 
-    def num_runs(self, labels, MST_connections):
+    def _num_runs(self, labels, MST_connections):
         r"""
         Helper function to determine number of independent
         'runs' from MST connections.
+        
         Parameters
         ----------
-        labels : ndarry
+        labels : ndarry of float
             Lables corresponding to respective classes of samples.
-        MST_connections: list
+        MST_connections: list of int
             List containing pairs of points connected in final MST.
+        
         Returns
         -------
         run_count : int
@@ -51,14 +70,16 @@ class FriedmanRafsky(IndependenceTest):
     def statistic(self, x, y):
         r"""
         Helper function that calculates the Friedman Rafksy test statistic.
+        
         Parameters
         ----------
-        x,y : ndarray
+        x,y : ndarray of float
             Input data matrices. ``x`` and ``y`` must have the same number of
             rows. That is, the shapes must be ``(n, p)`` and ``(n, 1)`` where
             `n` is the number of combined samples and `p` is the number of
             dimensions. ``y`` is the array of labels corresponding to the two
             samples, respectively.
+        
         Returns
         -------
         stat : float
@@ -68,7 +89,7 @@ class FriedmanRafsky(IndependenceTest):
         labels = np.transpose(y)
 
         MST_connections = MST(x, labels)
-        stat = self.num_runs(labels, MST_connections)
+        stat = self._num_runs(labels, MST_connections)
 
         return stat
 
@@ -78,15 +99,14 @@ class FriedmanRafsky(IndependenceTest):
         y,
         reps=1000,
         workers=1,
-        is_distsim=False,
-        perm_blocks=None,
         random_state=None,
     ):
         r"""
         Calculates the Friedman Rafsky test statistic and p-value.
+        
         Parameters
         ----------
-        x,y : ndarray
+        x,y : ndarray of float
             Input data matrices. ``x`` and ``y`` must have the same number of
             rows. That is, the shapes must be ``(n, p)`` and ``(n, 1)`` where
             `n` is the number of combined samples and `p` is the number of
@@ -98,54 +118,43 @@ class FriedmanRafsky(IndependenceTest):
         workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
             Supply ``-1`` to use all cores available to the Process.
-        perm_blocks : None or ndarray, default: None
-            Defines blocks of exchangeable samples during the permutation test.
-            If None, all samples can be permuted with one another. Requires `n`
-            rows. At each column, samples with matching column value are
-            recursively partitioned into blocks of samples. Within each final
-            block, samples are exchangeable. Blocks of samples from the same
-            partition are also exchangeable between one another. If a column
-            value is negative, that block is fixed and cannot be exchanged.
         random_state : int, default: None
             The random_state for permutation testing to be fixed for
             reproducibility.
+        
         Returns
         -------
         stat : float
             The computed Friedman Rafsky statistic.
         pvalue : float
             The computed Friedman Rafsky p-value.
-        null_dist : array
-            The null distribution of Friedman Rafsky test statistics.
         """
 
         stat, pvalue, null_dist = perm_test(
-            self.statistic, x, y, reps, workers, is_distsim, perm_blocks, random_state
+            self.statistic, x, y, reps, workers, random_state
         )
-        x = np.transpose(x)
-        labels = np.transpose(y)
-        MST_connections = MST(x, labels)
-        runs_true = self.num_runs(labels, MST_connections)
-        stat = (runs_true - np.mean(null_dist)) / np.std(null_dist)
+        stat = (stat - np.mean(null_dist)) / np.std(null_dist)
         self.stat = stat
 
         return IndependenceTestOutput(stat, pvalue)
 
 
-@jit(nopython=True, cache=True)
+@jit(nopython=True, cache=True) # pragma: no cover
 def prim(weight_mat, labels):
     r"""
     Helper function to read weighted matrix input and compute minimum
     spanning tree via Prim's algorithm.
+    
     Parameters
     ----------
-    weight_mat : ndarry
+    weight_mat : ndarry of float
         Weighted connection matrix.
-    labels : ndarry
+    labels : ndarry of int
         Lables corresponding to respective classes of samples.
+    
     Returns
     -------
-    MST_connections : list
+    MST_connections : list of int
         List of pairs of nodes connected in final MST.
     """
     INF = 9999999
@@ -176,16 +185,18 @@ def prim(weight_mat, labels):
 
 
 @jit(nopython=True, cache=True)
-def MST(x, labels):
+def MST(x, labels): # pragma: no cover
     r"""
     Helper function to read input data and calculate Euclidean distance
     between each possible pair of points before finding MST.
+    
     Parameters
     ----------
-    data : ndarry
+    x : ndarry of float
         Dataset such that each column corresponds to a point of data.
-    labels : ndarry
+    labels : ndarry of int
         Lables corresponding to respective classes of samples.
+    
     Returns
     -------
     MST_connections : list
