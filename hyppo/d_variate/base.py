@@ -51,7 +51,7 @@ class DVariateTest(ABC):
 
         Parameters
         ----------
-        *args: ndarray of type float
+        *args: ndarray of float
             Variable length input data matrices. All inputs must have the same
             number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
             etc., where `n` is the number of samples and `p` and `q` are the
@@ -65,7 +65,7 @@ class DVariateTest(ABC):
 
         Parameters
         ----------
-        *args : ndarray
+        *args : ndarray of float
             Variable length input data matrices. All inputs must have the same
             number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
             etc., where `n` is the number of samples and `p` and `q` are the
