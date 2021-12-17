@@ -55,7 +55,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
         Parameters
         ----------
-        x, y : ndarray
+        x, y : ndarray of float
             Input data matrices. `x` and `y` must have the same number of
             samples. That is, the shapes must be `(n, p)` and `(n, q)` where
             `n` is the number of samples and `p` and `q` are the number of
@@ -78,14 +78,14 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
         Parameters
         ----------
-        x1, x2 : ndarray
+        x1, x2 : ndarray of float
             Input data matrices. `x1` and `x2` must have the same number of
             samples. That is, the shapes must be `(n, p)` and `(n, q)` where
             `n` is the number of samples and `p` and `q` are the number of
             dimensions. Alternatively, `x1` and `x2` can be distance matrices,
             where the shapes must both be `(n, n)`, and ``is_dist`` must set
             to ``True`` in this case.
-        y : ndarray
+        y : ndarray of float
             A vector containing the sample ids for our `n` samples. Should be matched
             to the inputs such that ``y[i]`` is the corresponding label for
             ``x_1[i, :]`` and ``x_2[i, :]``.

@@ -136,7 +136,7 @@ def power(test, sim_type, sim=None, n=100, alpha=0.05, reps=1000, auto=False, **
 
     Returns
     -------
-    empirical_power : ndarray
+    empirical_power : ndarray of float
         Estimated empirical power for the test.
     """
     if sim_type not in _ALL_SIMS.keys():

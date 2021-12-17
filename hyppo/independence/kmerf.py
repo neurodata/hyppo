@@ -111,7 +111,7 @@ class KMERF(IndependenceTest):
 
         Parameters
         ----------
-        x,y : ndarray
+        x,y : ndarray of float
             Input data matrices. ``x`` and ``y`` must have the same number of
             samples. That is, the shapes must be ``(n, p)`` and ``(n, 1)`` where
             `n` is the number of samples and `p` is the number of
@@ -143,7 +143,7 @@ class KMERF(IndependenceTest):
 
         Parameters
         ----------
-        x,y : ndarray
+        x,y : ndarray of float
             Input data matrices. ``x`` and ``y`` must have the same number of
             samples. That is, the shapes must be ``(n, p)`` and ``(n, 1)`` where
             `n` is the number of samples and `p` is the number of
@@ -164,7 +164,7 @@ class KMERF(IndependenceTest):
         kmerf_dict : dict
             Contains additional useful returns containing the following keys:
 
-                - feat_importance : ndarray
+                - feat_importance : ndarray of float
                     An array containing the importance of each dimension
 
         Examples

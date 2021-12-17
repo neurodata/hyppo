@@ -93,7 +93,7 @@ class MANOVA(KSampleTest):
 
         Parameters
         ----------
-        *args : ndarray
+        *args : ndarray of float
             Variable length input data matrices. All inputs must have the same
             number of dimensions. That is, the shapes must be `(n, p)` and
             `(m, p)`, ... where `n`, `m`, ... are the number of samples and `p` is
@@ -120,7 +120,7 @@ class MANOVA(KSampleTest):
 
         Parameters
         ----------
-        *args : ndarray
+        *args : ndarray of float
             Variable length input data matrices. All inputs must have the same
             number of dimensions. That is, the shapes must be `(n, p)` and
             `(m, p)`, ... where `n`, `m`, ... are the number of samples and `p` is
