@@ -227,7 +227,7 @@ def ksamp_sim(ksim, n, **kwargs):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices.
     """
     if ksim not in KSAMP_SIMS.keys():

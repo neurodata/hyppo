@@ -15,7 +15,7 @@ def contains_nan(a):  # from scipy
 
 
 def check_ndarray_xy(x, y):
-    """Check if x or y is an ndarray"""
+    """Check if x or y is an ndarray of float"""
     if not isinstance(x, np.ndarray) or not isinstance(y, np.ndarray):
         raise TypeError("x and y must be ndarrays")
 
@@ -102,7 +102,7 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
 
     Parameters
     ----------
-    x,y : ndarray
+    x,y : ndarray of float
         Input data matrices. ``x`` and ``y`` must have the same number of
         samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
         `n` is the number of samples and `p` and `q` are the number of
@@ -134,7 +134,7 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
 
     Returns
     -------
-    simx, simy : ndarray
+    simx, simy : ndarray of float
         Similarity matrices based on the metric provided by the user.
     """
     if not metric:
@@ -187,7 +187,7 @@ def multi_compute_kern(*args, metric="gaussian", workers=1, **kwargs):
 
     Parameters
     ----------
-    *args: ndarray
+    *args: ndarray of float
         Variable length input data matrices. All inputs must have the same
         number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
         etc., where `n` is the number of samples and `p` and `q` are the
@@ -218,7 +218,7 @@ def multi_compute_kern(*args, metric="gaussian", workers=1, **kwargs):
 
     Returns
     -------
-    sim_matrices: ndarray
+    sim_matrices: ndarray of float
         Similarity matrices based on the metric provided by the user.
         Must be same shape as ''args''.
     """
@@ -260,7 +260,7 @@ def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
 
     Parameters
     ----------
-    x,y : ndarray
+    x,y : ndarray of float
         Input data matrices. ``x`` and ``y`` must have the same number of
         samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
         `n` is the number of samples and `p` and `q` are the number of
@@ -300,7 +300,7 @@ def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
 
     Returns
     -------
-    distx, disty : ndarray
+    distx, disty : ndarray of float
         Distance matrices based on the metric provided by the user.
     """
     if not metric:
@@ -494,7 +494,7 @@ def perm_test(
     ----------
     calc_stat : callable
         The method used to calculate the test statistic (must use hyppo API).
-    x,y : ndarray
+    x,y : ndarray of float
         Input data matrices. ``x`` and ``y`` must have the same number of
         samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
         `n` is the number of samples and `p` and `q` are the number of
@@ -630,7 +630,7 @@ def chi2_approx(calc_stat, x, y):
     ----------
     calc_stat : callable
         The method used to calculate the test statistic (must use hyppo API).
-    x,y : ndarray
+    x,y : ndarray of float
         Input data matrices. ``x`` and ``y`` must have the same number of
         samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
         `n` is the number of samples and `p` and `q` are the number of
