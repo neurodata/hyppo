@@ -241,5 +241,6 @@ stat2, pval2 = MeanEmbeddingTest(num_randfreq=10).test(x, y, random_state=1234)
 print("5 degrees of freedom (stat, pval):\n", stat1, pval1)
 print("10 degrees of freedom (stat, pval):\n", stat2, pval2)
 
+########################################################################################
 # .. _[1]: https://link.springer.com/article/10.1007/s10182-020-00378-1
 # .. _[2]: https://arxiv.org/abs/1910.08883
