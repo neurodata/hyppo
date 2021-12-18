@@ -184,6 +184,25 @@ print(stat, pvalue)
 #          - Faster than current, state-of-the-art quadratic-time kernel-based tests
 #   :Cons: - Heuristic method, almost surely sufficient to check at one frequency but checking
 #            more frequencies will give more power.
+#
+# This test is also initialized with the ``num_randfreq`` parameter. This parameter can be
+# thought ofas the degrees of freedom associated with the test and also dictates the number
+# of test points used in the test (see :class:`hyppo.ksample.SmoothCFTest`). If data
+# is kept constant, increasing the magnitude of this parameter will generally result in
+# larger magnitude test statistics while magnitude of the p-value will fluctuate:
+
+from hyppo.ksample import SmoothCFTest
+import numpy as np
+
+np.random.seed(1234)
+x = np.random.randn(500, 10)
+y = np.random.randn(500, 10)
+
+stat1, pvalue1 = SmoothCFTest(num_randfreq=5).test(x, y, random_state=1234)
+stat2, pvalue2 = SmoothCFTest(num_randfreq=10).test(x, y, random_state=1234)
+
+print("5 degrees of freedom (stat, pval):\n", stat1, pvalue1)
+print("10 degrees of freedom (stat, pval):\n", stat2, pvalue2)
 
 ########################################################################################
 # Mean Embedding Test
@@ -204,6 +223,23 @@ print(stat, pvalue)
 #   :Cons: - Heuristic method, almost surely sufficient to check at one frequency but checking
 #            more frequencies will give more power.
 #
-#
+# This test is also initialized with the ``num_randfreq`` parameter. This parameter can be
+# thought ofas the degrees of freedom associated with the test and also dictates the number
+# of test points used in the test (see :class:`hyppo.ksample.MeanEmbeddingTest`). If data
+# is kept constant, increasing the magnitude of this parameter will generally result in
+# larger magnitude test statistics while magnitude of the p-value will fluctuate:
+
+from hyppo.ksample import MeanEmbeddingTest
+
+np.random.seed(1234)
+x = np.random.randn(500, 10)
+y = np.random.randn(500, 10)
+
+stat1, pval1 = MeanEmbeddingTest(num_randfreq=5).test(x, y, random_state=1234)
+stat2, pval2 = MeanEmbeddingTest(num_randfreq=10).test(x, y, random_state=1234)
+
+print("5 degrees of freedom (stat, pval):\n", stat1, pval1)
+print("10 degrees of freedom (stat, pval):\n", stat2, pval2)
+
 # .. _[1]: https://link.springer.com/article/10.1007/s10182-020-00378-1
 # .. _[2]: https://arxiv.org/abs/1910.08883
