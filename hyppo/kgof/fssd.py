@@ -206,6 +206,16 @@ class FSSD(GofTest):
         Parameters
         ----------
         dat : an instance of Data
+
+        Returns
+        -------
+        {
+            alpha: 0.01,
+            pvalue: 0.0002,
+            test_stat: 2.3,
+            h0_rejected: True,
+            time_secs: ...
+        }
         """
         alpha = self.alpha
         null_sim = self.null_sim
@@ -270,8 +280,6 @@ class FSSD(GofTest):
         -------
         mean : the mean under the alternative hypothesis of the test statistic
         variance : the variance under the alternative hypothesis of the test statistic
-
-        From: https://github.com/wittawatj/fsic-test
         """
         X = dat.data()
         Xi = self.feature_tensor(X)
@@ -290,9 +298,7 @@ class FSSD(GofTest):
 
         Returns
         -------
-        an n x d x J numpy array
-
-        From: https://github.com/wittawatj/fsic-test
+        Xi : an n x d x J numpy array
         """
         k = self.k
         J = self.V.shape[0]
@@ -332,8 +338,6 @@ def power_criterion(
     Returns
     -------
     obj : mean/sd
-
-    From: https://github.com/wittawatj/fsic-test
     """
     X = dat.data()
     n = X.shape[0]
@@ -370,8 +374,6 @@ def ustat_h1_mean_variance(fea_tensor, return_variance=True, use_unbiased=True):
     -------
     stat : the mean
     variance: the variance
-
-    From: https://github.com/wittawatj/fsic-test
     """
     Xi = fea_tensor
     n, d, J = Xi.shape
@@ -407,8 +409,6 @@ def list_simulate_spectral(cov, J, n_simulate=1000, seed=82):
     -------
     sim_fssds : a numpy array of simulated n*FSSD values
     eigs : eigenvalues of cov
-
-    From: https://github.com/wittawatj/fsic-test
     """
     # eigen decompose
     eigs, _ = np.linalg.eig(cov)
@@ -434,8 +434,6 @@ def simulate_null_dist(eigs, J, n_simulate=2000, seed=7):
     Returns
     -------
     fssds : a numpy array of simulated statistics.
-
-    From: https://github.com/wittawatj/fsic-test
     """
     d = old_div(len(eigs), J)
     assert d > 0
@@ -472,8 +470,6 @@ def fssd_grid_search_kernel(p, dat, test_locs, list_kernel):
     -------
     besti : best kernel index
     objs : array of test power criteria
-
-    From: https://github.com/wittawatj/fsic-test
     """
     V = test_locs
     X = dat.data()

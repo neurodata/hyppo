@@ -156,17 +156,6 @@ Time-Series Simulations
    nonlinear_process
    ts_sim
 
-Goodness-of-Fit Simulations
-""""""""""""""""""""""""""""
-.. autosummary::
-   :toctree: generated/
-
-   H0Simulator
-
-.. automodule:: hyppo
-
-.. currentmodule:: hyppo
-
 Miscellaneous
 -----------------
 
