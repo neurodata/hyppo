@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 
 
 class GofTest(ABC):
-    """Abstract class for a goodness-of-fit test."""
+    """A base class for a discriminability test."""
 
     def __init__(self, p, alpha):
         """
