@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 class GofTest(ABC):
     r"""
     A base class for a discriminability test.
-    
+
     Parameters
     ----------
     compute_distance : str, callable, or None, default: "euclidean" or "gaussian"
@@ -46,7 +46,7 @@ class GofTest(ABC):
     @abstractmethod
     def test(self, dat):
         """
-        Perform the goodness-of-fit test and return values 
+        Perform the goodness-of-fit test and return values
         computed in a dictionary.
 
         Parameters
