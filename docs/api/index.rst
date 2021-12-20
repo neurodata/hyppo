@@ -172,9 +172,6 @@ Miscellaneous
    tools.multi_perm_test
    tools.chi2_approx
    tools.power
-   kgof.data
-   kgof.density
-   kgof.kernel
    ksample.smoothCF.smooth_cf_distance
    ksample.mean_embedding.mean_embed_distance
 
