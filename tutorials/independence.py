@@ -424,10 +424,10 @@ fR = FriedmanRafsky()
 # 
 #    x: Array of x and y values such that each row is an observation
 #    y: Numeric labels corresponding to respective x and y observations
-#    perm: Number of permutations with which to calculate permutation statistic
+#    reps: Number of permutations with which to calculate permutation statistic
 
 
-print(fR.test(x, y, perm = 1000))
+print(fR.test(x, y))
 
 # The test class returns --
 # .. note::
