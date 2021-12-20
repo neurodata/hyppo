@@ -8,6 +8,7 @@ from .. import HHG
 from ..hhg import hoeffdings
 import os
 
+
 class TestFastHHGStat:
     @pytest.mark.parametrize("n, obs_stat", [(10, 1.0), (50, 1.0), (100, 1.0)])
     @pytest.mark.parametrize("obs_pvalue", [1 / 1000])
@@ -83,7 +84,7 @@ class TestHHGTypeIError:
 
 class TestHoeffdingStat:
     def simple_test(self):
-        os.environ["NUMBA_DISABLE_JIT"] =1
+        os.environ["NUMBA_DISABLE_JIT"] = 1
         np.random.seed(123456789)
         x, y = linear(100, 1)
         zx = np.mean(x, axis=0).reshape(1, -1)
