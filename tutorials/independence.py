@@ -471,7 +471,7 @@ y = np.transpose(np.append(np.zeros(len(x[0])), np.ones(len(y[0]))))
 
 x = np.transpose(x)
 
-print(fR.test(x, y, perm = 1000))
+print(fR.test(x, y))
 
 # As we see in this case, a large p-value suggests we can reject the null hypothesis that these
 # samples are independently drawn from the same distribution.
