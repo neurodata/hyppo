@@ -438,43 +438,6 @@ print(fR.test(x, y))
 # As expected, a low p-value suggests that we fail to reject the null hypothesis that these samples are drawn
 # independently from the same distribution. 
 # 
-#######################################################################################
-# Now, we examine a case in which our samples are not drawn from the same distribution.
-# In this case, X will be drawn from the same multivariate normal while Y will be drawn from
-# a multivariate normal of varying mean and covariance.
-
-meanX = [0, 0, 0, 0, 0]
-
-covX = [[1, 0, 0, 0, 0],
-       [0, 1, 0, 0, 0],
-       [0, 0, 1, 0, 0],
-       [0, 0, 0, 1, 0],
-       [0, 0, 0, 0, 1]]
-       
-meanY = [1, 2, -1, 0, 1]
-
-covY = [[1, 0, 0, 0, 0],
-       [0, 10, 0, 0, 0],
-       [0, 0, 4, 0, 0],
-       [0, 0, 0, 10, 0],
-       [0, 0, 0, 0, 5]]
-
-x = random.multivariate_normal(meanX, covX, 100)
-y = random.multivariate_normal(meanY, covY, 100)
-
-x = np.transpose(x)
-y = np.transpose(y)
-
-x = np.concatenate((x, y), axis = 1)
-
-y = np.transpose(np.append(np.zeros(len(x[0])), np.ones(len(y[0]))))
-
-x = np.transpose(x)
-
-print(fR.test(x, y))
-
-# As we see in this case, a large p-value suggests we can reject the null hypothesis that these
-# samples are independently drawn from the same distribution.
 # 
 # Important note
 # ---------------------------------------------
