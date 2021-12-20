@@ -157,6 +157,11 @@ Time-Series Simulations
    nonlinear_process
    ts_sim
 
+
+.. automodule:: hyppo
+
+.. currentmodule:: hyppo
+
 Miscellaneous
 -----------------
 
@@ -174,7 +179,6 @@ Miscellaneous
    tools.power
    ksample.smoothCF.smooth_cf_distance
    ksample.mean_embedding.mean_embed_distance
-
 
 
 Base Classes
