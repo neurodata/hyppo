@@ -73,13 +73,8 @@ def isogauss_log_den(X):
 # the normalizer. The gradient :math:`\nabla_{\mathbf{x}} \log p(\mathbf{x})` will be 
 # automatically computed by autograd. In this kgof package, a model :math:`p` can be 
 # specified by implementing the class :class:`hyppo.kgof.density.UnnormalizedDensity`. Implementing
-# this directly is a bit tedious, however. An easier way is to use the function 
-# :function:`hyppo.kgof.density.from_log_den(d, f)` which takes 2 arguments as inputs ``d``, 
-# the dimension of the input space, and ``f``, a function
-# taking in a 2D numpy array of size :math:`n` x :math:`d` and producing a one-dimensional array
-# of size :math:`n` for the :math:`n` values of the log unnormalized density.
-# Construct an :class:`UnnormalizedDensity` which will represent a Gaussian model. All the implemented
-# goodness-of-fit tests take this object as input.
+# this directly is a bit tedious, however. Construct an :class:`UnnormalizedDensity` which will 
+# represent a Gaussian model. All the implemented goodness-of-fit tests take this object as input.
 
 # Next, draw a sample from q.
 # Drawing n points from q
@@ -118,4 +113,5 @@ null_sim = FSSDH0SimCovObs(n_simulate=200, seed=3)
 fssd = FSSD(isonorm, k, V, null_sim=null_sim, alpha=0.01)
 
 tresult = fssd.test(dat, return_simulated_stats=True)
+tresult
 
