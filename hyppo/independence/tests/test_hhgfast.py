@@ -5,6 +5,7 @@ from sklearn.metrics import pairwise_distances
 
 from ...tools import linear, power
 from .. import HHG
+from ..hhg import hoeffdings
 
 
 class TestFastHHGStat:
@@ -78,3 +79,16 @@ class TestHHGTypeIError:
         )
 
         assert_almost_equal(est_power, 0.05, decimal=2)
+
+
+class TestHoeffdingStat:
+    def simple_test(self):
+        np.random.seed(123456789)
+        x, y = linear(100, 1)
+        zx = np.mean(x, axis=0).reshape(1, -1)
+        zy = np.mean(y, axis=0).reshape(1, -1)
+        distx = pairwise_distances(zx, x).reshape(-1, 1)
+        disty = pairwise_distances(zy, y).reshape(-1, 1)
+        stat = hoeffdings(distx, disty)
+
+        assert_almost_equal(stat, 1.0, decimal=2)
