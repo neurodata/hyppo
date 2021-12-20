@@ -417,7 +417,7 @@ x = np.transpose(x)
 y = np.transpose(labels)
 
 # Initialize the test and print results
-fR = FriedmanRafksy()
+fR = FriedmanRafsky()
 
 # Inputs given as --
 # .. note::
@@ -470,8 +470,6 @@ x = np.concatenate((x, y), axis = 1)
 y = np.transpose(np.append(np.zeros(len(x[0])), np.ones(len(y[0]))))
 
 x = np.transpose(x)
-
-fR = FriedmanRafksy()
 
 print(fR.test(x, y, perm = 1000))
 
