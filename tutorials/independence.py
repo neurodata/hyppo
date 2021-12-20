@@ -370,14 +370,14 @@ plt.show()
 # 
 ########################################################################################
 # 
-# .. image:: hyppo/tutorials/Full Tree.png
+# .. image:: Full Tree.png
 #  :width: 400
 #  :alt: Full Minimum Spanning Tree
 # 
 # Here the MST has been calculated with the euclidean distance between points used to determine edge weights. 
 # If we remove all edges such that the neighboring nodes are not of the same class, we find our new collection of subgraphs to be:
 # 
-# .. image:: hyppo/tutorials/Runs Tree.png
+# .. image:: Runs Tree.png
 #  :width: 400
 #  :alt: Runs Tree
 # 
