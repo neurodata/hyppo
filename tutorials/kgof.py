@@ -54,12 +54,11 @@ It returns a set of points (features) which indicate where :math:`p` fails to fi
 
 from hyppo.kgof import Data
 from hyppo.kgof import KGauss
-from hyppo.kgof import IsotropicNormal, from_log_den
+from hyppo.kgof import IsotropicNormal
 from hyppo.kgof import fit_gaussian_draw, meddistance
 from hyppo.kgof import FSSD, FSSDH0SimCovObs
 import matplotlib.pyplot as plt
 import autograd.numpy as np
-import scipy.stats as stats
 from numpy.random import default_rng
 
 def isogauss_log_den(X):
@@ -81,8 +80,6 @@ def isogauss_log_den(X):
 # of size :math:`n` for the :math:`n` values of the log unnormalized density.
 # Construct an :class:`UnnormalizedDensity` which will represent a Gaussian model. All the implemented
 # goodness-of-fit tests take this object as input.
-
-p = from_log_den(2, isogauss_log_den) # UnnormalizedDensity object
 
 # Next, draw a sample from q.
 # Drawing n points from q

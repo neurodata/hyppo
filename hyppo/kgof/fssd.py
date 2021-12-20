@@ -133,15 +133,15 @@ class FSSDH0SimCovDraw(H0Simulator):
 
 
 class FSSD(GofTest):
-    """
+    r"""
     Goodness-of-fit test using The Finite Set Stein Discrepancy statistic.
     and a set of paired test locations. The statistic is n*FSSD^2.
-    The statistic can be negative because of the unbiased estimator. \n
+    The statistic can be negative because of the unbiased estimator.
 
-    :math:`H0` : the sample follows :math:`p` \n
-    :math:`H1` : the sample does not follow :math:`p` \n
+    :math:`H0` : the sample follows :math:`p`
+    :math:`H1` : the sample does not follow :math:`p`
 
-    :math"`p` is specified to the constructor in the form of an UnnormalizedDensity.
+    :math:`p` is specified to the constructor in the form of an UnnormalizedDensity.
 
     Notes
     -----

@@ -1,7 +1,7 @@
-from ._utils import meddistance
-from .fssd import FSSD
+from ._utils import meddistance, fit_gaussian_draw
+from .fssd import FSSD, FSSDH0SimCovObs
 from .data import Data
-from .density import Normal
+from .density import Normal, IsotropicNormal
 from .kernel import KGauss
 
 __all__ = [s for s in dir()]  # add imported tests to all
