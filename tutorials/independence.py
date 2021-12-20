@@ -406,14 +406,14 @@ y = random.multivariate_normal(mean, cov, 100)
 x = np.transpose(x)
 y = np.transpose(y)
 
-# Concatenate the data sets into one, contiguous array such that each column is an observation
+# Concatenate the data sets into one, contiguous array such that each row is an observation
 x = np.concatenate((x, y), axis = 1)
-
-x = np.transpose(x)
 
 # Assign labels for X and Y classes
 labels = np.append(np.zeros(len(x[0])), np.ones(len(y[0])))
 
+
+x = np.transpose(x)
 y = np.tranpose(labels)
 
 # Initialize the test and print results
@@ -422,10 +422,9 @@ fR = FriedmanRafksy()
 # Inputs given as --
 # .. note::
 # 
-#    x: Array of x and y values such that each column is an observation
+#    x: Array of x and y values such that each row is an observation
 #    y: Numeric labels corresponding to respective x and y observations
 #    perm: Number of permutations with which to calculate permutation statistic
-#    aglorithm: Algorithm with which to calculate minimum spanning tree (only Kruskal's and Prim's available at this time)
 
 
 print(fR.test(x, y, perm = 1000))
@@ -468,9 +467,9 @@ y = np.transpose(y)
 
 x = np.concatenate((x, y), axis = 1)
 
-x = np.transpose(x)
-
 y = np.transpose(np.append(np.zeros(len(x[0])), np.ones(len(y[0]))))
+
+x = np.transpose(x)
 
 fR = FriedmanRafksy()
 
@@ -488,7 +487,7 @@ print(fR.test(x, y, perm = 1000))
 # to determine if two samples were independently drawn from the same distribution. If independence testing is 
 # desired, a seperate test from this module should be utilized. Additionally, it need not be necessary that
 # the samples X and Y have the same number of samples, just that they posess the same number of multivariate
-# features. Lastly, labels for X and Y need
+# features. Lastly, labels for X and Y need not be 0 and 1, they just need be consistent across samples.
 # .. _[1]: https://link.springer.com/article/10.1007/s10182-020-00378-1
 
 
