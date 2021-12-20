@@ -55,7 +55,8 @@ Independence
    DISCO
    MANOVA
    Hotelling
-
+   SmoothCFTest
+   MeanEmbeddingTest
 
 
 .. automodule:: hyppo.time_series
@@ -164,6 +165,8 @@ Miscellaneous
    tools.multi_perm_test
    tools.chi2_approx
    tools.power
+   ksample.smoothCF.smooth_cf_distance
+   ksample.mean_embedding.mean_embed_distance
 
 
 

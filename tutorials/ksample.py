@@ -164,6 +164,81 @@ print(stat, pvalue)
 # Any addition, if the bias variant of the test statistic is required, then the ``bias``
 # parameter can be set to ``True``. In general, we do not recommend doing this.
 # Otherwise, these tests runs like :ref:`any other test<general indep>`.
+
+########################################################################################
+# Smooth Characteristic Function Test
+# --------------------------------------------
 #
+# The **Smooth Characteristic Function Test** (Smooth CF), is a form of non-parametric two-sample
+# tests. The Smooth CF test utilizes smoothed empirical characteristic functions to represent
+# two data distributions. Characteristic functions completely define the probability distribution
+# of a random variable. In hypothesis testing, it is useful to estimate characteristic functions
+# for given data. However, empirical characteristic functions can be very complex and therefore
+# expensive to compute. The smooth characteristic function can serve as a heuristic in place of
+# the empirical function which is much faster w.r.t. computation times. More information can be
+# found at :class:`hyppo.ksample.SmoothCFTest`.
+#
+# .. note::
+#
+#    :Pros: - Very fast computation time
+#           - Faster than current, state-of-the-art quadratic-time kernel-based tests
+#    :Cons: - Heuristic method, checking more frequencies will give more power.
+#
+# This test is also initialized with the ``num_randfreq`` parameter. This parameter can be
+# thought of as the degrees of freedom associated with the test and also dictates the number
+# of test points used in the test (see :class:`hyppo.ksample.SmoothCFTest`). If data
+# is kept constant, increasing the magnitude of this parameter will generally result in
+# larger magnitude test statistics while magnitude of the p-value will fluctuate:
+
+import numpy as np
+from hyppo.ksample import SmoothCFTest
+
+np.random.seed(1234)
+x = np.random.randn(500, 10)
+y = np.random.randn(500, 10)
+
+stat1, pvalue1 = SmoothCFTest(num_randfreq=5).test(x, y, random_state=1234)
+stat2, pvalue2 = SmoothCFTest(num_randfreq=10).test(x, y, random_state=1234)
+
+print("5 degrees of freedom (stat, pval):\n", stat1, pvalue1)
+print("10 degrees of freedom (stat, pval):\n", stat2, pvalue2)
+
+########################################################################################
+# Mean Embedding Test
+# --------------------------------------------
+#
+# The **Mean Embedding Test** is another non-parametric two-sample statistical test. This test
+# is based on analytic mean embeddings of data distributions in a reproducing kernel hilbert
+# space (RKHS). Hilbert spaces allow the representation of functions as points; thus, if
+# mean embeddings can be determined for two data distributions then the distance between
+# these two distributions in the hilbert space can be determined. In other words, the RKHS
+# allows the mapping of probability measures into a finite dimensional Euclidean space. More
+# details can be found at :class:`hyppo.ksample.MeanEmbeddingTest`.
+#
+# .. note::
+#
+#    :Pros: - Very fast computation time
+#           - Faster than current, state-of-the-art quadratic-time kernel-based tests
+#    :Cons: - Heuristic method, checking more frequencies will give more power.
+#
+# This test is also initialized with the ``num_randfreq`` parameter. This parameter can be
+# thought ofas the degrees of freedom associated with the test and also dictates the number
+# of test points used in the test (see :class:`hyppo.ksample.MeanEmbeddingTest`). If data
+# is kept constant, increasing the magnitude of this parameter will generally result in
+# larger magnitude test statistics while magnitude of the p-value will fluctuate:
+
+from hyppo.ksample import MeanEmbeddingTest
+
+np.random.seed(1234)
+x = np.random.randn(500, 10)
+y = np.random.randn(500, 10)
+
+stat1, pval1 = MeanEmbeddingTest(num_randfreq=5).test(x, y, random_state=1234)
+stat2, pval2 = MeanEmbeddingTest(num_randfreq=10).test(x, y, random_state=1234)
+
+print("5 degrees of freedom (stat, pval):\n", stat1, pval1)
+print("10 degrees of freedom (stat, pval):\n", stat2, pval2)
+
+########################################################################################
 # .. _[1]: https://link.springer.com/article/10.1007/s10182-020-00378-1
 # .. _[2]: https://arxiv.org/abs/1910.08883
