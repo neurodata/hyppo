@@ -27,6 +27,7 @@ hyppo
     tutorials/ksample.rst
     tutorials/time_series.rst
     tutorials/discrim.rst
+    tutorials/kgof.rst
     benchmarks/index.rst
 
 .. toctree::
