@@ -13,7 +13,7 @@ class TestFastHHGStat:
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
         x, y = linear(n, 1)
-        stat, pvalue = HHG(auto=True).test(x, y)
+        stat, pvalue = HHG().test(x, y, auto=True)
 
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(pvalue, obs_pvalue, decimal=2)
@@ -25,26 +25,29 @@ class TestFastHHGStat:
         zy = np.mean(y, axis=0).reshape(1, -1)
         distx = pairwise_distances(zx, x).reshape(-1, 1)
         disty = pairwise_distances(zy, y).reshape(-1, 1)
-        stat = HHG(compute_distance=None, auto=True).statistic(distx, disty)
+        test = HHG(compute_distance=None)
+        test.auto = True
+        stat = test.statistic(distx, disty)
 
         assert_almost_equal(stat, 1.0, decimal=2)
 
     def test_stat(self):
         np.random.seed(123456789)
         x, y = linear(100, 1)
-        stat = HHG(auto=True).statistic(x, y)
+        test = HHG()
+        test.auto = True
+        stat = test.statistic(x, y)
 
         assert_almost_equal(stat, 1.0, decimal=2)
 
     @pytest.mark.parametrize("n", [10, 200])
     def test_rep(self, n):
         x, y = linear(n, 1)
-        stat, pvalue = HHG(auto=True).test(x, y, random_state=2)
-        stat2, pvalue2 = HHG(auto=True).test(x, y, random_state=2)
+        stat, pvalue = HHG().test(x, y, auto=True, random_state=2)
+        stat2, pvalue2 = HHG().test(x, y, auto=True, random_state=2)
 
         assert stat == stat2
         assert pvalue == pvalue2
-
 
 class TestHHGTypeIError:
     def test_oned(self):
@@ -53,10 +56,10 @@ class TestHHGTypeIError:
             "HHG",
             sim_type="indep",
             sim="multimodal_independence",
-            n=50,
+            n=100,
             p=1,
             alpha=0.05,
-            auto=True,
+            auto=True
         )
 
         assert_almost_equal(est_power, 0.05, decimal=2)
@@ -70,7 +73,7 @@ class TestHHGTypeIError:
             n=100,
             p=3,
             alpha=0.05,
-            auto=True,
+            auto=True
         )
 
         assert_almost_equal(est_power, 0.05, decimal=2)

@@ -6,6 +6,7 @@ from ..tools import compute_dist
 from ._utils import _CheckInputs
 from .base import IndependenceTest, IndependenceTestOutput
 from scipy.stats import rankdata
+from math import exp
 
 
 class HHG(IndependenceTest):
@@ -45,9 +46,6 @@ class HHG(IndependenceTest):
         where ``x`` is the data matrix for which pairwise distances are
         calculated and ``**kwargs`` are extra arguments to send to your custom
         function.
-    auto : boolean, default: False
-        Automatically use fast approximation of HHG test. :class:`hyppo.tools.perm_test`
-        will still be run.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
 
@@ -132,7 +130,7 @@ class HHG(IndependenceTest):
     :math:`Q_{i}` is the bivariate rank = 1 plus the number of points with both x and y
     values less than the :math:`i`-th point.
 
-    D is notably sensitive to ties and gets smaller the more pairs of variables with identical values.
+    :math:`D` is notably sensitive to ties and gets smaller the more pairs of variables with identical values.
     If there are no ties in the data,D ranges between -0.5 and 1, with 1 indicating complete dependence.
     :footcite:p:`sasHoeffdingDependenceCoefficient`
 
@@ -144,11 +142,11 @@ class HHG(IndependenceTest):
     .. footbibliography::
     """
 
-    def __init__(self, compute_distance="euclidean", auto=False, **kwargs):
+    def __init__(self, compute_distance="euclidean", **kwargs):
         self.is_distance = False
         if not compute_distance:
             self.is_distance = True
-        self.auto = auto
+        self.auto = False
         IndependenceTest.__init__(self, compute_distance=compute_distance, **kwargs)
 
     def statistic(self, x, y):
@@ -176,39 +174,25 @@ class HHG(IndependenceTest):
         distx = x
         disty = y
 
-        if not self.auto:
+        if not self.is_distance:
+            distx, disty = compute_dist(
+            x, y, metric=self.compute_distance, **self.kwargs
+        )
+
+        if self.auto:
             if not self.is_distance:
-                distx, disty = compute_dist(
-                    x, y, metric=self.compute_distance, **self.kwargs
-                )
+                distx, disty = _centerpoint_dist(x, y, metric=self.compute_distance, **self.kwargs)
+            stat = hoeffdings(distx, disty)
+        else:
             S = _pearson_stat(distx, disty)
             mask = np.ones(S.shape, dtype=bool)
             np.fill_diagonal(mask, 0)
             stat = np.sum(S[mask])
-            self.stat = stat
-
-        else:
-            # Fast HHG
-            if not self.is_distance:
-                pointer = (np.mean(x, axis=0), np.mean(y, axis=0))
-                zx, zy = pointer
-                zx = np.array(zx).reshape(1, -1)
-                zy = np.array(zy).reshape(1, -1)
-                xin = np.concatenate((zx, x))
-                yin = np.concatenate((zy, y))
-                distx, disty = compute_dist(
-                    xin, yin, metric=self.compute_distance, **self.kwargs
-                )
-                distx = distx[0]
-                distx = distx[distx != 0]
-                disty = disty[0]
-                disty = disty[disty != 0]
-            stat = hoeffdings(distx, disty)
-            self.stat = stat
+        self.stat = stat
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1, random_state=None):
+    def test(self, x, y, reps=1000, workers=1, auto=False, random_state=None):
         r"""
         Calculates the HHG test statistic and p-value.
 
@@ -230,6 +214,9 @@ class HHG(IndependenceTest):
         workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
             Supply ``-1`` to use all cores available to the Process.
+        auto : boolean, default: False
+            Automatically use fast approximation of HHG test. :class:`hyppo.tools.perm_test`
+            will still be run.
 
         Returns
         -------
@@ -263,23 +250,11 @@ class HHG(IndependenceTest):
         """
         check_input = _CheckInputs(x, y, reps=reps)
         x, y = check_input()
+        self.auto = auto
 
         # Fast HHG Test
         if self.auto:
-            pointer = (np.mean(x, axis=0), np.mean(y, axis=0))
-            zx, zy = pointer
-            zx = np.array(zx).reshape(1, -1)
-            zy = np.array(zy).reshape(1, -1)
-            xin = np.concatenate((zx, x))
-            yin = np.concatenate((zy, y))
-            distx, disty = compute_dist(
-                xin, yin, metric=self.compute_distance, **self.kwargs
-            )
-            # take first row of distance matrix (distance from center point)
-            distx = distx[0]
-            distx = distx[distx != 0].reshape(-1, 1)
-            disty = disty[0]
-            disty = disty[disty != 0].reshape(-1, 1)
+            distx, disty = _centerpoint_dist(x,y, metric=self.compute_distance, **self.kwargs)
             self.is_distance = True
             stat, pvalue = super(HHG, self).test(
                 distx, disty, reps, workers, is_distsim=False
@@ -318,7 +293,6 @@ def _pearson_stat(distx, disty):  # pragma: no cover
 
     return S
 
-
 def hoeffdings(x, y):
     """For fast HHG, calculates the Hoeffding's dependence statistic"""
     R = rankdata(x)
@@ -326,15 +300,19 @@ def hoeffdings(x, y):
 
     # core processing
     N = x.shape
-    Q = np.ones(N[0])
+    D = hoeffdings_d_calc(R,S,N)
+    return D
 
+@jit(nopython=True, cache=True)
+def hoeffdings_d_calc(R,S,N):
+    Q = np.ones(N[0])
     for i in range(0, N[0]):
         Q[i] = Q[i] + np.sum(np.bitwise_and(R < R[i], S < S[i]))
         Q[i] = Q[i] + 1 / 4 * (
-            np.sum(np.bitwise_and(np.isin(R, R[i]), np.isin(S, S[i]))) - 1
+            np.sum(np.bitwise_and(R == R[i], S == S[i])) - 1
         )
-        Q[i] = Q[i] + 1 / 2 * (np.sum(np.bitwise_and(np.isin(R, R[i]), S < S[i])))
-        Q[i] = Q[i] + 1 / 2 * (np.sum(np.bitwise_and(R < R[i], np.isin(S, S[i]))))
+        Q[i] = Q[i] + 1 / 2 * (np.sum(np.bitwise_and(R == R[i], S < S[i])))
+        Q[i] = Q[i] + 1 / 2 * (np.sum(np.bitwise_and(R < R[i], S == S[i])))
 
     D1 = np.sum(np.multiply((Q - 1), (Q - 2)))
     D2 = np.sum(
@@ -348,3 +326,23 @@ def hoeffdings(x, y):
         / (N[0] * (N[0] - 1) * (N[0] - 2) * (N[0] - 3) * (N[0] - 4))
     )
     return D
+
+
+def _centerpoint_dist(x, y, metric, **kwargs):
+    """Calculate the distance of x and y from center of mass"""
+    pointer = (np.mean(x, axis=0), np.mean(y, axis=0))
+    zx, zy = pointer
+    zx = np.array(zx).reshape(1, -1)
+    zy = np.array(zy).reshape(1, -1)
+    xin = np.concatenate((zx, x))
+    yin = np.concatenate((zy, y))
+    distx, disty = compute_dist(
+        xin, yin, metric=metric, **kwargs
+    )
+    # take first row of distance matrix = distance of sample points from center point
+    distx = np.delete(distx[0],0)
+    distx = distx.reshape(-1, 1)
+    disty = np.delete(disty[0],0)
+    disty = disty.reshape(-1, 1)
+
+    return distx, disty
