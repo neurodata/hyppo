@@ -49,7 +49,6 @@ class TestFastHHGStat:
         assert stat == stat2
         assert pvalue == pvalue2
 
-
 class TestHHGTypeIError:
     def test_oned(self):
         np.random.seed(123456789)
@@ -60,7 +59,7 @@ class TestHHGTypeIError:
             n=100,
             p=1,
             alpha=0.05,
-            auto=True,
+            auto=True
         )
 
         assert_almost_equal(est_power, 0.05, decimal=2)
@@ -74,7 +73,7 @@ class TestHHGTypeIError:
             n=100,
             p=3,
             alpha=0.05,
-            auto=True,
+            auto=True
         )
 
         assert_almost_equal(est_power, 0.05, decimal=2)

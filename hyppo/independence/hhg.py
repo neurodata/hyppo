@@ -297,7 +297,6 @@ def _pearson_stat(distx, disty):  # pragma: no cover
 
     return S
 
-
 def hoeffdings(x, y):
     """For fast HHG, calculates the Hoeffding's dependence statistic"""
     R = rankdata(x)
@@ -305,12 +304,12 @@ def hoeffdings(x, y):
 
     # core processing
     N = x.shape
-    D = hoeffdings_d_calc(R, S, N)
+    D = _hoeffdings_d_calc(R, S, N)
     return D
 
 
 @jit(nopython=True, cache=True)
-def hoeffdings_d_calc(R, S, N):
+def _hoeffdings_d_calc(R, S, N):
     Q = np.ones(N[0])
     for i in range(0, N[0]):
         Q[i] = Q[i] + np.sum(np.bitwise_and(R < R[i], S < S[i]))
@@ -330,7 +329,6 @@ def hoeffdings_d_calc(R, S, N):
         / (N[0] * (N[0] - 1) * (N[0] - 2) * (N[0] - 3) * (N[0] - 4))
     )
     return D
-
 
 def _centerpoint_dist(x, y, metric, **kwargs):
     """Calculate the distance of x and y from center of mass"""
