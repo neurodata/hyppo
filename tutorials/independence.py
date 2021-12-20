@@ -414,7 +414,7 @@ labels = np.append(np.zeros(len(x[0])), np.ones(len(y[0])))
 
 
 x = np.transpose(x)
-y = np.tranpose(labels)
+y = np.transpose(labels)
 
 # Initialize the test and print results
 fR = FriedmanRafksy()
