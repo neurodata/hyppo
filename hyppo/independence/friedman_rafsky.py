@@ -34,7 +34,7 @@ class FriedmanRafsky(IndependenceTest):
     the uncorrected statistic for the test.
 
     The p-value and null distribution for the corrected statistic are calculated via
-    a permutation test using :math:`hyppo.tools.perm_test`.
+    a permutation test using :meth:`hyppo.tools.perm_test`.
     """
 
     def __init__(self, **kwargs):
