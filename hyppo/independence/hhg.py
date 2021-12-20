@@ -309,7 +309,7 @@ def hoeffdings(x, y):
 
 
 @jit(nopython=True, cache=True)
-def _hoeffdings_d_calc(R, S, N):
+def _hoeffdings_d_calc(R, S, N):  # pragma: no cover
     Q = np.ones(N[0])
     for i in range(0, N[0]):
         Q[i] = Q[i] + np.sum(np.bitwise_and(R < R[i], S < S[i]))
