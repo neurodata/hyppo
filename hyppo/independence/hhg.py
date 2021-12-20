@@ -176,12 +176,14 @@ class HHG(IndependenceTest):
 
         if not self.is_distance:
             distx, disty = compute_dist(
-            x, y, metric=self.compute_distance, **self.kwargs
-        )
+                x, y, metric=self.compute_distance, **self.kwargs
+            )
 
         if self.auto:
             if not self.is_distance:
-                distx, disty = _centerpoint_dist(x, y, metric=self.compute_distance, **self.kwargs)
+                distx, disty = _centerpoint_dist(
+                    x, y, metric=self.compute_distance, **self.kwargs
+                )
             stat = hoeffdings(distx, disty)
         else:
             S = _pearson_stat(distx, disty)
@@ -254,7 +256,9 @@ class HHG(IndependenceTest):
 
         # Fast HHG Test
         if self.auto:
-            distx, disty = _centerpoint_dist(x,y, metric=self.compute_distance, **self.kwargs)
+            distx, disty = _centerpoint_dist(
+                x, y, metric=self.compute_distance, **self.kwargs
+            )
             self.is_distance = True
             stat, pvalue = super(HHG, self).test(
                 distx, disty, reps, workers, is_distsim=False
@@ -293,6 +297,7 @@ def _pearson_stat(distx, disty):  # pragma: no cover
 
     return S
 
+
 def hoeffdings(x, y):
     """For fast HHG, calculates the Hoeffding's dependence statistic"""
     R = rankdata(x)
@@ -300,17 +305,16 @@ def hoeffdings(x, y):
 
     # core processing
     N = x.shape
-    D = hoeffdings_d_calc(R,S,N)
+    D = hoeffdings_d_calc(R, S, N)
     return D
 
+
 @jit(nopython=True, cache=True)
-def hoeffdings_d_calc(R,S,N):
+def hoeffdings_d_calc(R, S, N):
     Q = np.ones(N[0])
     for i in range(0, N[0]):
         Q[i] = Q[i] + np.sum(np.bitwise_and(R < R[i], S < S[i]))
-        Q[i] = Q[i] + 1 / 4 * (
-            np.sum(np.bitwise_and(R == R[i], S == S[i])) - 1
-        )
+        Q[i] = Q[i] + 1 / 4 * (np.sum(np.bitwise_and(R == R[i], S == S[i])) - 1)
         Q[i] = Q[i] + 1 / 2 * (np.sum(np.bitwise_and(R == R[i], S < S[i])))
         Q[i] = Q[i] + 1 / 2 * (np.sum(np.bitwise_and(R < R[i], S == S[i])))
 
@@ -336,13 +340,11 @@ def _centerpoint_dist(x, y, metric, **kwargs):
     zy = np.array(zy).reshape(1, -1)
     xin = np.concatenate((zx, x))
     yin = np.concatenate((zy, y))
-    distx, disty = compute_dist(
-        xin, yin, metric=metric, **kwargs
-    )
+    distx, disty = compute_dist(xin, yin, metric=metric, **kwargs)
     # take first row of distance matrix = distance of sample points from center point
-    distx = np.delete(distx[0],0)
+    distx = np.delete(distx[0], 0)
     distx = distx.reshape(-1, 1)
-    disty = np.delete(disty[0],0)
+    disty = np.delete(disty[0], 0)
     disty = disty.reshape(-1, 1)
 
     return distx, disty
