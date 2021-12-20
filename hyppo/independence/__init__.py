@@ -8,6 +8,7 @@ from .max_margin import MaxMargin
 from .mgc import MGC
 from .rv import RV
 
+
 __all__ = [s for s in dir()]  # add imported tests to __all__
 
 

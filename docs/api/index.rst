@@ -54,7 +54,8 @@ Independence
    DISCO
    MANOVA
    Hotelling
-
+   SmoothCFTest
+   MeanEmbeddingTest
 
 
 .. automodule:: hyppo.time_series
@@ -174,6 +175,8 @@ Miscellaneous
    kgof.data
    kgof.density
    kgof.kernel
+   ksample.smoothCF.smooth_cf_distance
+   ksample.mean_embedding.mean_embed_distance
 
 
 
