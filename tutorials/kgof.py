@@ -16,25 +16,25 @@ how likely it is that these were generated from a target density function. The t
 :mod:`hyppo.kgof`, and will be elaborated upon in detail below. But let's take a look 
 at some of the mathematical theory behind the test formation:
 
-Consider a known probability density :math: `p` and a sample :math: `\{ \mathbf{x}_i \}_{i=1}^n \sim q`
-where :math: `q` is an unknown density, a goodness-of-fit test proposes null and alternative hypotheses: 
+Consider a known probability density :math:`p` and a sample :math:`\{ \mathbf{x}_i \}_{i=1}^n \sim q`
+where :math:`q` is an unknown density, a goodness-of-fit test proposes null and alternative hypotheses: 
 
 .. math::
 
     H_0 &: p = q \\
     H_1 &: p \neq q
 
-In other words, the GoF test tests whether or not the sample :math: `\{ \mathbf{x}_i \}_{i=1}^n` 
+In other words, the GoF test tests whether or not the sample :math:`\{ \mathbf{x}_i \}_{i=1}^n` 
 is distributed according to a known :math:`p`.
 
 The implemented test relies on a new test statistic called The Finite-Set Stein Discrepancy (FSSD) 
 which is a discrepancy measure between a density and a sample. Unique features of the new goodness-of-fit test are:
 
-It makes only a few mild assumptions on the distributions :math: `p` and :math: `q`. The model :math: `p` 
-can take almost any form. The normalizer of :math: `p` is not assumed known. The test only assesses the goodness of 
-:math: `p` through :math: `\nabla_{\mathbf{x}} \log p(\mathbf{x})` i.e., the first derivative of the log density.
+It makes only a few mild assumptions on the distributions :math:`p` and :math:`q`. The model :math:`p` 
+can take almost any form. The normalizer of :math:`p` is not assumed known. The test only assesses the goodness of 
+:math:`p` through :math:`\nabla_{\mathbf{x}} \log p(\mathbf{x})` i.e., the first derivative of the log density.
 
-It returns a set of points (features) which indicate where :math: `p` fails to fit the data.
+It returns a set of points (features) which indicate where :math:`p` fails to fit the data.
 
 """
 
@@ -44,19 +44,19 @@ It returns a set of points (features) which indicate where :math: `p` fails to f
 # A simple Gaussian model
 # ---------------------------------------------
 #
-# Assume that :math: `p(\mathbf{x}) = \mathcal{N}(\mathbf{0}, \mathbf{I})`
-# in :math: `\mathbb{R}^2` (two-dimensional space).
-# The data :math: `\{ \mathbf{x}_i \}_{i=1}^n \sim q = \mathcal{N}([m, 0], \mathbf{I})`
-# where :math: `m` specifies the mean of the first coordinate of :math: `q`.
-# From this setting, if :math: `m\neq 0`, then :math: `H_1` is true and the test should
-# reject :math: `H_0`.
+# Assume that :math:`p(\mathbf{x}) = \mathcal{N}(\mathbf{0}, \mathbf{I})`
+# in :math:`\mathbb{R}^2` (two-dimensional space).
+# The data :math:`\{ \mathbf{x}_i \}_{i=1}^n \sim q = \mathcal{N}([m, 0], \mathbf{I})`
+# where :math:`m` specifies the mean of the first coordinate of :math:`q`.
+# From this setting, if :math:`m\neq 0`, then :math:`H_1` is true and the test should
+# reject :math:`H_0`.
 # First construct the log density function for the model
 
-from data import Data
-from kernel import KGauss
-from density import IsotropicNormal, from_log_den
-from _utils import fit_gaussian_draw, meddistance
-from fssd import FSSD, FSSDH0SimCovObs
+from hyppo.kgof import Data
+from hyppo.kgof import KGauss
+from hyppo.kgof import IsotropicNormal, from_log_den
+from hyppo.kgof import fit_gaussian_draw, meddistance
+from hyppo.kgof import FSSD, FSSDH0SimCovObs
 import matplotlib.pyplot as plt
 import autograd.numpy as np
 import scipy.stats as stats
@@ -70,16 +70,16 @@ def isogauss_log_den(X):
 
 ########################################################################################
 # This function computes the log of an unnormalized density. This works fine as this test
-# only requires a :math: `nabla_{\mathbf{x}} \log p(\mathbf{x})` which does not depend on 
-# the normalizer. The gradient :math: `\nabla_{\mathbf{x}} \log p(\mathbf{x})` will be 
-# automatically computed by autograd. In this kgof package, a model :math: `p` can be 
-# specified by implementing the class :class: `hyppo.kgof.density.UnnormalizedDensity`. Implementing
+# only requires a :math:`nabla_{\mathbf{x}} \log p(\mathbf{x})` which does not depend on 
+# the normalizer. The gradient :math:`\nabla_{\mathbf{x}} \log p(\mathbf{x})` will be 
+# automatically computed by autograd. In this kgof package, a model :math:`p` can be 
+# specified by implementing the class :class:`hyppo.kgof.density.UnnormalizedDensity`. Implementing
 # this directly is a bit tedious, however. An easier way is to use the function 
-# :function: `hyppo.kgof.density.from_log_den(d, f)` which takes 2 arguments as inputs ``d``, 
+# :function:`hyppo.kgof.density.from_log_den(d, f)` which takes 2 arguments as inputs ``d``, 
 # the dimension of the input space, and ``f``, a function
-# taking in a 2D numpy array of size :math: `n` x :math: `d` and producing a one-dimensional array
-# of size :math: `n` for the :math: `n` values of the log unnormalized density.
-# Construct an :class: `UnnormalizedDensity` which will represent a Gaussian model. All the implemented
+# taking in a 2D numpy array of size :math:`n` x :math:`d` and producing a one-dimensional array
+# of size :math:`n` for the :math:`n` values of the log unnormalized density.
+# Construct an :class:`UnnormalizedDensity` which will represent a Gaussian model. All the implemented
 # goodness-of-fit tests take this object as input.
 
 p = from_log_den(2, isogauss_log_den) # UnnormalizedDensity object
@@ -98,8 +98,8 @@ plt.plot(X[0], X[1], 'ko', label='Data from $q$')
 plt.legend()
 
 ########################################################################################
-# All the implemented tests take the data in the form of a :class: `hyppo.kgof.data.Data` object. 
-# This is just an encapsulation of the sample :math: `X`. To construct :class: `data.Data` do the following:
+# All the implemented tests take the data in the form of a :class:`hyppo.kgof.data.Data` object. 
+# This is just an encapsulation of the sample :math:`X`. To construct :class:`data.Data` do the following:
 
 dat = Data(X)
 
