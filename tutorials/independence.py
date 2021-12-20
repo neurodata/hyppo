@@ -74,11 +74,33 @@ Now, let's look at unique properties of some of the tests in :mod:`hyppo.indepen
 # .. note::
 #
 #    :Pros: - Very accurate in certain settings
+#           - Has fast implementation
 #    :Cons: - Very slow (computationally complex)
 #           - Test statistic not very interpretable, not between (-1, 1)
 #
-# This test runs like :ref:`any other test<general indep>`.
-#
+# This test runs like :ref:`any other test<general indep>` and can be implemented 
+# as below:
+
+import timeit
+
+import numpy as np
+
+setup_code = """
+from hyppo.independence import HHG
+from hyppo.tools import w_shaped
+x, y = w_shaped(n=100, p=3, noise=True)
+"""
+
+t_hhg = timeit.Timer(stmt="HHG().test(x, y, auto=False)", setup=setup_code)
+t_fast_hhg = timeit.Timer(stmt="HHG().test(x, y, auto=True)", setup=setup_code)
+
+hhg_time = np.array(t_hhg.timeit(number=1))  # original HHG
+fast_hhg_time  = np.array(t_fast_hhg.timeit(number=5)) / 5  # fast HHG
+
+print(u"Original HHG time: {0:.3g}s".format(hhg_time))
+print(u"Fast HHG time: {0:.3g}s".format(fast_hhg_time))
+
+########################################################################################
 # ------------
 #
 # **Distance Correlation (Dcorr)** is a powerful multivariate independence test based on
