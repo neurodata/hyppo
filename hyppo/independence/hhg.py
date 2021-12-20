@@ -134,7 +134,7 @@ class HHG(IndependenceTest):
     :footcite:p:`sasHoeffdingDependenceCoefficient`
 
     The p-value returned is calculated using a permutation test using
-    :math:`hyppo.tools.perm_test`.
+    :meth:`hyppo.tools.perm_test`.
 
     References
     ----------
