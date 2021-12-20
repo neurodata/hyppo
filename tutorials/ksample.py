@@ -169,7 +169,7 @@ print(stat, pvalue)
 # Smooth Characteristic Function Test
 # --------------------------------------------
 #
-# The Smooth Characteristic Function Test, or Smooth CF, is a form of non-parametric two-sample
+# The **Smooth Characteristic Function Test** (Smooth CF), is a form of non-parametric two-sample
 # tests. The Smooth CF test utilizes smoothed empirical characteristic functions to represent
 # two data distributions. Characteristic functions completely define the probability distribution
 # of a random variable. In hypothesis testing, it is useful to estimate characteristic functions
@@ -180,19 +180,18 @@ print(stat, pvalue)
 #
 # .. note::
 #
-#   :Pros: - Very fast computation time
-#          - Faster than current, state-of-the-art quadratic-time kernel-based tests
-#   :Cons: - Heuristic method, almost surely sufficient to check at one frequency but checking
-#            more frequencies will give more power.
+#    :Pros: - Very fast computation time
+#           - Faster than current, state-of-the-art quadratic-time kernel-based tests
+#    :Cons: - Heuristic method, checking more frequencies will give more power.
 #
 # This test is also initialized with the ``num_randfreq`` parameter. This parameter can be
-# thought ofas the degrees of freedom associated with the test and also dictates the number
+# thought of as the degrees of freedom associated with the test and also dictates the number
 # of test points used in the test (see :class:`hyppo.ksample.SmoothCFTest`). If data
 # is kept constant, increasing the magnitude of this parameter will generally result in
 # larger magnitude test statistics while magnitude of the p-value will fluctuate:
 
-from hyppo.ksample import SmoothCFTest
 import numpy as np
+from hyppo.ksample import SmoothCFTest
 
 np.random.seed(1234)
 x = np.random.randn(500, 10)
@@ -208,7 +207,7 @@ print("10 degrees of freedom (stat, pval):\n", stat2, pvalue2)
 # Mean Embedding Test
 # --------------------------------------------
 #
-# The mean embedding test is another non-parametric two-sample statistical test. This test
+# The **Mean Embedding Test** is another non-parametric two-sample statistical test. This test
 # is based on analytic mean embeddings of data distributions in a reproducing kernel hilbert
 # space (RKHS). Hilbert spaces allow the representation of functions as points; thus, if
 # mean embeddings can be determined for two data distributions then the distance between
@@ -218,10 +217,9 @@ print("10 degrees of freedom (stat, pval):\n", stat2, pvalue2)
 #
 # .. note::
 #
-#   :Pros: - Very fast computation time
-#          - Faster than current, state-of-the-art quadratic-time kernel-based tests
-#   :Cons: - Heuristic method, almost surely sufficient to check at one frequency but checking
-#            more frequencies will give more power.
+#    :Pros: - Very fast computation time
+#           - Faster than current, state-of-the-art quadratic-time kernel-based tests
+#    :Cons: - Heuristic method, checking more frequencies will give more power.
 #
 # This test is also initialized with the ``num_randfreq`` parameter. This parameter can be
 # thought ofas the degrees of freedom associated with the test and also dictates the number
