@@ -59,11 +59,11 @@ class IndependenceTest(ABC):
     @abstractmethod
     def statistic(self, x, y):
         r"""
-        Calulates the independence test statistic.
+        Calculates the independence test statistic.
 
         Parameters
         ----------
-        x,y : ndarray
+        x,y : ndarray of float
             Input data matrices. ``x`` and ``y`` must have the same number of
             samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
@@ -83,11 +83,11 @@ class IndependenceTest(ABC):
         random_state=None,
     ):
         r"""
-        Calulates the independence test statistic and p-value.
+        Calculates the independence test statistic and p-value.
 
         Parameters
         ----------
-        x,y : ndarray
+        x,y : ndarray of float
             Input data matrices. ``x`` and ``y`` must have the same number of
             samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
@@ -127,7 +127,6 @@ class IndependenceTest(ABC):
         self.x = x
         self.y = y
 
-        # calculate p-value
         stat, pvalue, null_dist = perm_test(
             self.statistic,
             x,

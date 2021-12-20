@@ -24,6 +24,20 @@ Independence
 
 
 
+.. automodule:: hyppo.d_variate
+
+.. currentmodule:: hyppo.d_variate
+
+*D*-Variate
+-------------
+
+.. autosummary::
+    :toctree: generated/
+
+    dHsic
+
+
+
 .. automodule:: hyppo.ksample
 
 .. currentmodule:: hyppo.ksample
@@ -40,7 +54,8 @@ Independence
    DISCO
    MANOVA
    Hotelling
-
+   SmoothCFTest
+   MeanEmbeddingTest
 
 
 .. automodule:: hyppo.time_series
@@ -143,10 +158,14 @@ Miscellaneous
    independence.sim_matrix
    ksample.k_sample_transform
    tools.compute_kern
+   tools.multi_compute_kern
    tools.compute_dist
    tools.perm_test
+   tools.multi_perm_test
    tools.chi2_approx
    tools.power
+   ksample.smoothCF.smooth_cf_distance
+   ksample.mean_embedding.mean_embed_distance
 
 
 
@@ -157,6 +176,7 @@ Base Classes
    :toctree: generated/
 
    independence.base.IndependenceTest
+   d_variate.base.DVariateTest
    ksample.base.KSampleTest
    time_series.base.TimeSeriesTest
    discrim.base.DiscriminabilityTest

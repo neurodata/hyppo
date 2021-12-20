@@ -19,7 +19,7 @@ class DiscriminabilityTest(ABC):
 
         Parameters
         ----------
-        x, y : ndarray
+        x, y : ndarray of float
             Input data matrices.
         """
 
@@ -57,9 +57,9 @@ def _discr_rdf(dissimilarities, labels):
 
     Parameters
     ----------
-    dissimilarities : ndarray
+    dissimilarities : ndarray of float
         Input matrix containing the disimilarities.
-    labels : ndarray
+    labels : ndarray of float
         The label matrix corresponding to each dissimilarity.
 
     Returns

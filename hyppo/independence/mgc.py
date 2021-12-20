@@ -136,7 +136,7 @@ class MGC(IndependenceTest):
 
         Parameters
         ----------
-        x,y : ndarray
+        x,y : ndarray of float
             Input data matrices. ``x`` and ``y`` must have the same number of
             samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
@@ -171,7 +171,7 @@ class MGC(IndependenceTest):
 
         Parameters
         ----------
-        x,y : ndarray
+        x,y : ndarray of float
             Input data matrices. ``x`` and ``y`` must have the same number of
             samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
@@ -193,7 +193,7 @@ class MGC(IndependenceTest):
         mgc_dict : dict
             Contains additional useful returns containing the following keys:
 
-                - mgc_map : ndarray
+                - mgc_map : ndarray of float
                     A 2D representation of the latent geometry of the relationship.
                 - opt_scale : (int, int)
                     The estimated optimal scale as a ``(x, y)`` pair.
