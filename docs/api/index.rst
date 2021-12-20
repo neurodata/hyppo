@@ -89,6 +89,20 @@ Discriminability
 
 
 
+.. automodule:: hyppo.kgof
+
+.. currentmodule:: hyppo.kgof
+
+Kernel Goodness-of-Fit
+-----------------------
+
+.. autosummary::
+   :toctree: generated/
+
+   FSSD
+
+
+
 .. automodule:: hyppo.tools
 
 .. currentmodule:: hyppo.tools
@@ -145,7 +159,6 @@ Time-Series Simulations
    ts_sim
 
 
-
 .. automodule:: hyppo
 
 .. currentmodule:: hyppo
@@ -169,7 +182,6 @@ Miscellaneous
    ksample.mean_embedding.mean_embed_distance
 
 
-
 Base Classes
 -------------
 
@@ -181,3 +193,4 @@ Base Classes
    ksample.base.KSampleTest
    time_series.base.TimeSeriesTest
    discrim.base.DiscriminabilityTest
+   kgof.base.GofTest
