@@ -56,7 +56,7 @@ SIM_TITLES = [
 ]
 
 # haven't run for MaxMargin yet
-remove = ["maxmargin"]
+remove = ["maxmargin", "friedman_rafsky"]
 INDEP_TESTS = dict([(k, v) for k, v in INDEP_TESTS.items() if k not in remove])
 
 

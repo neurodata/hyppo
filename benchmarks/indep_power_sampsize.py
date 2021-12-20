@@ -58,7 +58,7 @@ SIM_TITLES = [
 ]
 
 # these tests only make sense for > 1 dimension data
-remove = ["maxmargin", "kmerf"]
+remove = ["maxmargin", "kmerf", "friedman_rafsky"]
 INDEP_TESTS = dict([(k, v) for k, v in INDEP_TESTS.items() if k not in remove])
 
 
