@@ -6,7 +6,6 @@ from ..tools import compute_dist
 from ._utils import _CheckInputs
 from .base import IndependenceTest, IndependenceTestOutput
 from scipy.stats import rankdata
-from math import exp
 
 
 class HHG(IndependenceTest):
