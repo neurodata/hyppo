@@ -348,16 +348,16 @@ plt.show()
 # 
 ########################################################################################
 # 
-.. image:: hyppo/tutorials/Full Tree.png
-  :width: 400
-  :alt: Full Minimum Spanning Tree
+# .. image:: hyppo/tutorials/Full Tree.png
+#  :width: 400
+#  :alt: Full Minimum Spanning Tree
 # 
 # Here the MST has been calculated with the euclidean distance between points used to determine edge weights. 
 # If we remove all edges such that the neighboring nodes are not of the same class, we find our new collection of subgraphs to be:
 # 
-.. image:: hyppo/tutorials/Runs Tree.png
-  :width: 400
-  :alt: Runs Tree
+# .. image:: hyppo/tutorials/Runs Tree.png
+#  :width: 400
+#  :alt: Runs Tree
 # 
 # As such, we see that this set of data contains 3 such runs, and again by randomizing the 
 # labels of each data point we can determine the test statistic and p-value for the hypothesis 
