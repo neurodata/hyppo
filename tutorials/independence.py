@@ -328,8 +328,8 @@ plt.show()
 # The univariate Wald-Wolfowitz runs test is a non-parametric statistical test that checks a randomness hypothesis
 # for a two-valued data sequence. More specifically, it can be used to test the hypothesis that the elements of a sequence 
 # are mutually independent. For a data sequence with identifiers of two groups,
-# say: :math: `X \in \mathbb{R}^n , Y \in \mathbb{R}^m` we begin by sorting the combined data set 
-# :math: `W \in \mathbb{R}^{m+n}` in numerical ascending order. The number of runs is then defined by the number 
+# say: :math: `X , Y` we begin by sorting the combined data set 
+# :math: `W` in numerical ascending order. The number of runs is then defined by the number 
 # of maximal, non-empty segments of the sequence consisting of adjacent and equal elements. 
 # So if we designate every :math: `X = +,  Y = -` an example assortment of the 15 element long sequence 
 # of both sets could be given as :math: `+++----++---+++` which contains 5 runs, 3 of which positive and 2 of which negative. 
