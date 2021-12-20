@@ -390,7 +390,7 @@ plt.show()
 
 import numpy as np
 import numpy.random as random
-from friedmanRafsky import friedmanRafsky
+from hyppo.independence import FriedmanRafsky
 
 mean = [0, 0, 0, 0, 0]
 
@@ -417,7 +417,7 @@ labels = np.append(np.zeros(len(x[0])), np.ones(len(y[0])))
 y = np.tranpose(labels)
 
 # Initialize the test and print results
-fR = friedmanRafksy()
+fR = FriedmanRafksy()
 
 # Inputs given as --
 # .. note::
@@ -472,7 +472,7 @@ x = np.transpose(x)
 
 y = np.transpose(np.append(np.zeros(len(x[0])), np.ones(len(y[0]))))
 
-fR = friedmanRafksy()
+fR = FriedmanRafksy()
 
 print(fR.test(x, y, perm = 1000))
 
