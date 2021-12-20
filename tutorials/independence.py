@@ -78,7 +78,8 @@ Now, let's look at unique properties of some of the tests in :mod:`hyppo.indepen
 #    :Cons: - Very slow (computationally complex)
 #           - Test statistic not very interpretable, not between (-1, 1)
 #
-# This test runs like :ref:`any other test<general indep>`.
+# This test runs like :ref:`any other test<general indep>` and can be implemented 
+# as below:
 
 import timeit
 
