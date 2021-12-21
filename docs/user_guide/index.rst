@@ -9,5 +9,6 @@ User Guide
    ksample.rst
    time_series.rst
    discrim.rst
+   kgof.rst
    benchmarks.rst
    examples.rst
