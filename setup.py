@@ -6,7 +6,7 @@ from setuptools.command.install import install
 
 PACKAGE_NAME = "hyppo"
 DESCRIPTION = "A comprehensive independence testing package"
-with open("README.rst", "r") as f:
+with open("README.md", "r") as f:
     LONG_DESCRIPTION = f.read()
 AUTHOR = ("Sambit Panda",)
 AUTHOR_EMAIL = "spanda3@jhu.edu"
