@@ -126,6 +126,10 @@ We recommended that your contribution complies with the following rules before y
 - If you are proposing adding a new module, make sure you are inheriting from the appropriate base class. See
   [the documentation](https://hyppo.neurodata.io/api/index.html#base-classes) for the appropriate class.
 
+### All Contributors Bot
+
+For all your hard work, please add yourself using the All Contributors bot. Follow instruction [here](https://allcontributors.org/docs/en/bot/usage).
+
 ## Guidelines
 
 ### Coding Guidelines

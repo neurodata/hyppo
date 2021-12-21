@@ -113,6 +113,10 @@ sphinx_gallery_conf = {
     "reference_url": {"hyppo": None},
 }
 
+html_css_files = [
+    "css/custom.css",
+]
+
 # -- sphinx.ext.autodoc
 # autoclass_content = "both"
 # autodoc_default_flags = ["members", "inherited-members"]
@@ -152,6 +156,10 @@ add_function_parentheses = False
 html_show_sourcelink = False
 html_show_sphinx = True
 html_show_copyright = True
+
+import warnings
+
+warnings.filterwarnings("ignore", category=UserWarning)
 
 pygments_style = "sphinx"
 smartquotes = False

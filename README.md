@@ -43,20 +43,20 @@ To upgrade to a newer release use the `--upgrade` flag
 pip install --upgrade hyppo
 ```
 
-The documentation includes more detailed [installation instructions](https://hyppo.neurodata.io/install.html).
+The documentation includes more detailed [installation instructions](https://hyppo.neurodata.io/get_start/install.html).
 hyppo is free software; you can redistribute it and/or modify it under the
-terms of the [license](https://hyppo.neurodata.io/license.html).
+terms of the [license](https://hyppo.neurodata.io/development/license.html).
 
-## Changelog
+## Release Notes
 
-See the [changelog](https://hyppo.neurodata.io/news.html)
+See the [release notes](https://hyppo.neurodata.io/changelog/index.html)
 for a history of notable changes to hyppo.
 
 ## Development
 
 We welcome new contributors of all experience levels. The hyppo
 community goals are to be helpful, welcoming, and effective. The
-[contributor guide](https://hyppo.neurodata.io/contributing.html)
+[contributor guide](https://hyppo.neurodata.io/development/contributing.html)
 has detailed information about contributing code, documentation and tests.
 
 * Official source code: [https://github.com/neurodata/hyppo/tree/main/hyppo](https://github.com/neurodata/hyppo/tree/main/hyppo)
@@ -64,6 +64,8 @@ has detailed information about contributing code, documentation and tests.
 * Issue tracker: [https://github.com/neurodata/hyppo/issues](https://github.com/neurodata/hyppo/issues)
 
 **Note: We have recently moved our benchmarks (with relevant figure replication code for our papers) folder to a new [repo](https://github.com/neurodata/hyppo-papers)!** We aim to add test development code and paper figure replication code there, and will add relevant tests (with tutorials) to hyppo.
+
+## Contributors
 
 ## Project History
 

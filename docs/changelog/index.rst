@@ -1,5 +1,7 @@
-Changelog
+Release Notes
 ================
+
+This is the list of changes to hyppo between each release. For full details, see the `commit logs <https://github.com/neurodata/hyppo/commits/main>`_.
 
 .. toctree::
    :maxdepth: 1
