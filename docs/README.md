@@ -15,12 +15,14 @@ in the `docs/` directory. This is of course in addition to the package requireme
     ipython==7.19.0
     ipykernel==5.4.3
     sphinx==3.3
-    sphinx_rtd_theme==0.4.3
+    pydata-sphinx-theme==0.7.1
     sphinx-gallery==0.8.2
     numpydoc==0.7.0
-    recommonmark
     matplotlib
     seaborn
+    sphinxcontrib-bibtex>=2.2.0
+    docutils==0.17.1
+    sphinx_sitemap
 
 and make sure that you install the package dependencies as well:
 
