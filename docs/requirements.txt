@@ -6,7 +6,7 @@ sphinx==3.3.0
 pydata-sphinx-theme==0.7.1
 sphinx-gallery==0.8.2
 numpydoc==0.7.0
-recommonmark
+myst_parser
 matplotlib
 seaborn
 sphinxcontrib-bibtex>=2.2.0

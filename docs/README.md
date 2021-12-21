@@ -18,6 +18,7 @@ in the `docs/` directory. This is of course in addition to the package requireme
     pydata-sphinx-theme==0.7.1
     sphinx-gallery==0.8.2
     numpydoc==0.7.0
+    myst_parser
     matplotlib
     seaborn
     sphinxcontrib-bibtex>=2.2.0
