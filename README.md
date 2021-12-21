@@ -1,6 +1,6 @@
 # hyppo
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+[all-contrib]: https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat 'All Contributors'
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![CircleCI](https://img.shields.io/circleci/build/github/neurodata/hyppo/main?style=flat)](https://app.circleci.com/pipelines/github/neurodata/hyppo?branch=main)
@@ -9,6 +9,7 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/hyppo?style=flat)](https://pypi.org/project/hyppo/)
 [![PyPI](https://img.shields.io/pypi/v/hyppo?style=flat)](https://pypi.org/project/hyppo/)
 [![arXivshield](https://img.shields.io/badge/arXiv-1907.02088-red.svg?style=flat)](https://arxiv.org/abs/1907.02088)
+[![All Contributors][all-contrib]](#contributors)
 
 hyppo (**HYP**othesis Testing in **P**yth**O**n, pronounced "Hippo") is an open-source software package for multivariate hypothesis testing. We decided to develop hyppo for the following reasons:
 
@@ -69,6 +70,25 @@ has detailed information about contributing code, documentation and tests.
 **Note: We have recently moved our benchmarks (with relevant figure replication code for our papers) folder to a new [repo](https://github.com/neurodata/hyppo-papers)!** We aim to add test development code and paper figure replication code there, and will add relevant tests (with tutorials) to hyppo.
 
 ## Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="http://sampan.me"><img src="https://avatars.githubusercontent.com/u/36676569?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Sambit Panda</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/issues?q=author%3Asampan501" title="Bug reports">🐛</a> <a href="https://github.com/neurodata/hyppo/commits?author=sampan501" title="Code">💻</a> <a href="https://github.com/neurodata/hyppo/commits?author=sampan501" title="Documentation">📖</a> <a href="#ideas-sampan501" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-sampan501" title="Maintenance">🚧</a> <a href="https://github.com/neurodata/hyppo/pulls?q=is%3Apr+reviewed-by%3Asampan501" title="Reviewed Pull Requests">👀</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://allcontributors.org) specification.
+Contributions of any kind are welcome!
 
 ## Project History
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
