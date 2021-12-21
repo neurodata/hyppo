@@ -1,4 +1,7 @@
 # hyppo
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![CircleCI](https://img.shields.io/circleci/build/github/neurodata/hyppo/main?style=flat)](https://app.circleci.com/pipelines/github/neurodata/hyppo?branch=main)
 [![Codecov](https://img.shields.io/codecov/c/github/neurodata/hyppo?style=flat)](https://codecov.io/gh/neurodata/hyppo)
@@ -68,6 +71,19 @@ has detailed information about contributing code, documentation and tests.
 ## Contributors
 
 ## Project History
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="http://sampan.me"><img src="https://avatars.githubusercontent.com/u/36676569?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Sambit Panda</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=sampan501" title="Code">💻</a> <a href="https://github.com/neurodata/hyppo/commits?author=sampan501" title="Documentation">📖</a> <a href="#ideas-sampan501" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-sampan501" title="Maintenance">🚧</a> <a href="https://github.com/neurodata/hyppo/pulls?q=is%3Apr+reviewed-by%3Asampan501" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/neurodata/hyppo/commits?author=sampan501" title="Tests">⚠️</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 hyppo is a rebranding of mgcpy, which was founded in Novemember 2018.
 mgcpy was designed and written by Satish Palaniappan, Sambit
