@@ -18,6 +18,15 @@
         "maintenance",
         "review"
       ]
+    },
+    {
+      "login": "cshen6",
+      "name": "cshen6",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11924683?v=4",
+      "profile": "https://github.com/cshen6",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
