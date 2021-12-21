@@ -1,0 +1,24 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "ebridge2",
+      "name": "Eric Bridgeford",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8883547?v=4",
+      "profile": "http://ericwb.me",
+      "contributions": [
+        "bug"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "hyppo",
+  "projectOwner": "neurodata",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
