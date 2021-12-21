@@ -1,0 +1,24 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "ronakdm",
+      "name": "Ronak D. Mehta",
+      "avatar_url": "https://avatars.githubusercontent.com/u/72722942?v=4",
+      "profile": "https://github.com/ronakdm",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "hyppo",
+  "projectOwner": "neurodata",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
