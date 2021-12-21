@@ -1,0 +1,24 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "v715",
+      "name": "Vivek Gopalakrishnan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29757116?v=4",
+      "profile": "https://vivekg.dev",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "hyppo",
+  "projectOwner": "neurodata",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
