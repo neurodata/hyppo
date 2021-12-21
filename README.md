@@ -70,7 +70,8 @@ has detailed information about contributing code, documentation and tests.
 
 ## Contributors
 
-## Project History
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -84,6 +85,11 @@ has detailed information about contributing code, documentation and tests.
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://allcontributors.org) specification.
+Contributions of any kind are welcome!
+
+## Project History
 
 hyppo is a rebranding of mgcpy, which was founded in Novemember 2018.
 mgcpy was designed and written by Satish Palaniappan, Sambit
