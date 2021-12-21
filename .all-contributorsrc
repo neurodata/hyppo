@@ -1,0 +1,24 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "zdbzdb123123",
+      "name": "zdbzdb123123",
+      "avatar_url": "https://avatars.githubusercontent.com/u/95720890?v=4",
+      "profile": "https://github.com/zdbzdb123123",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "hyppo",
+  "projectOwner": "neurodata",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
