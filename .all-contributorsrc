@@ -1,0 +1,26 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "PSSF23",
+      "name": "Haoyin Xu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20309845?v=4",
+      "profile": "https://github.com/PSSF23",
+      "contributions": [
+        "code",
+        "doc",
+        "review"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "hyppo",
+  "projectOwner": "neurodata",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
