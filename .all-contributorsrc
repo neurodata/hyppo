@@ -4,6 +4,14 @@
   ],
   "imageSize": 100,
   "commit": false,
+  "badgeTemplate": "[all-contrib]: https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg?style=flat 'All Contributors'",
+  "types": {
+    "research": {
+      "symbol": "🔬",
+      "description": "Research",
+      "link": "[<%= symbol %>](<%= url %> \"<%= description %>\"),"
+    }
+  },
   "contributors": [
     {
       "login": "sampan501",
@@ -16,7 +24,17 @@
         "doc",
         "ideas",
         "maintenance",
+        "research",
         "review"
+      ]
+    },
+    {
+      "login": "cshen6",
+      "name": "cshen6",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11924683?v=4",
+      "profile": "https://github.com/cshen6",
+      "contributions": [
+        "research"
       ]
     }
   ],
