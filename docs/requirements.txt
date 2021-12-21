@@ -3,11 +3,12 @@ nbsphinx==0.8.0
 ipython==7.19.0
 ipykernel==5.4.3
 sphinx==3.3.0
-sphinx_rtd_theme==0.5.2
+pydata-sphinx-theme==0.7.1
 sphinx-gallery==0.8.2
 numpydoc==0.7.0
-recommonmark
+myst_parser
 matplotlib
 seaborn
-sphinx-rtd-theme-ext-color-contrast
 sphinxcontrib-bibtex>=2.2.0
+docutils==0.17.1
+sphinx_sitemap
