@@ -1,4 +1,7 @@
 # hyppo
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![CircleCI](https://img.shields.io/circleci/build/github/neurodata/hyppo/main?style=flat)](https://app.circleci.com/pipelines/github/neurodata/hyppo?branch=main)
 [![Codecov](https://img.shields.io/codecov/c/github/neurodata/hyppo?style=flat)](https://codecov.io/gh/neurodata/hyppo)
@@ -68,6 +71,19 @@ has detailed information about contributing code, documentation and tests.
 ## Contributors
 
 ## Project History
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="http://ericwb.me"><img src="https://avatars.githubusercontent.com/u/8883547?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Eric Bridgeford</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/issues?q=author%3Aebridge2" title="Bug reports">🐛</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 hyppo is a rebranding of mgcpy, which was founded in Novemember 2018.
 mgcpy was designed and written by Satish Palaniappan, Sambit
