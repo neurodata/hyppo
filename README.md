@@ -1,6 +1,6 @@
 # hyppo
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[all-contrib]: https://img.shields.io/badge/all_contributors-21-orange.svg?style=flat 'All Contributors'
+[all-contrib]: https://img.shields.io/badge/all_contributors-22-orange.svg?style=flat 'All Contributors'
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![CircleCI](https://img.shields.io/circleci/build/github/neurodata/hyppo/main?style=flat)](https://app.circleci.com/pipelines/github/neurodata/hyppo?branch=main)
@@ -103,6 +103,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/dlee0156"><img src="https://avatars.githubusercontent.com/u/47963020?v=4?s=100" width="100px;" alt=""/><br /><sub><b>dlee0156</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=dlee0156" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/najmieh"><img src="https://avatars.githubusercontent.com/u/31998054?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Najmieh Sadat Safarabadi</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=najmieh" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/TacticalFallacy"><img src="https://avatars.githubusercontent.com/u/56208921?v=4?s=100" width="100px;" alt=""/><br /><sub><b>TacticalFallacy</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=TacticalFallacy" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/darsh-patel"><img src="https://avatars.githubusercontent.com/u/70541374?v=4?s=100" width="100px;" alt=""/><br /><sub><b>darsh-patel</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=darsh-patel" title="Code">💻</a></td>
   </tr>
 </table>
 
