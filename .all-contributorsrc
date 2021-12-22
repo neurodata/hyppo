@@ -39,6 +39,16 @@
         "mentoring",
         "ideas"
       ]
+    },
+    {
+      "login": "tpsatish95",
+      "name": "Satish Palaniappan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10278507?v=4",
+      "profile": "https://in.linkedin.com/in/satishpalaniappan/en",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
