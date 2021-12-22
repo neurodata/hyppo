@@ -1,6 +1,6 @@
 # hyppo
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[all-contrib]: https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat 'All Contributors'
+[all-contrib]: https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat 'All Contributors'
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![CircleCI](https://img.shields.io/circleci/build/github/neurodata/hyppo/main?style=flat)](https://app.circleci.com/pipelines/github/neurodata/hyppo?branch=main)
@@ -82,6 +82,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/cshen6"><img src="https://avatars.githubusercontent.com/u/11924683?v=4?s=100" width="100px;" alt=""/><br /><sub><b>cshen6</b></sub></a><br /><a href="#ideas-cshen6" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="http://neurodata.io"><img src="https://avatars.githubusercontent.com/u/41842?v=4?s=100" width="100px;" alt=""/><br /><sub><b>joshua vogelstein</b></sub></a><br /><a href="#fundingFinding-jovo" title="Funding Finding">🔍</a> <a href="#mentoring-jovo" title="Mentoring">🧑‍🏫</a> <a href="#ideas-jovo" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://in.linkedin.com/in/satishpalaniappan/en"><img src="https://avatars.githubusercontent.com/u/10278507?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Satish Palaniappan</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=tpsatish95" title="Code">💻</a> <a href="#ideas-tpsatish95" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/junhaobearxiong"><img src="https://avatars.githubusercontent.com/u/30681308?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Junhao Xiong</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=junhaobearxiong" title="Code">💻</a> <a href="#ideas-junhaobearxiong" title="Ideas, Planning, & Feedback">🤔</a></td>
   </tr>
 </table>
 
