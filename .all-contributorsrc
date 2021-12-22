@@ -159,6 +159,15 @@
         "doc",
         "review"
       ]
+    },
+    {
+      "login": "hadasarik",
+      "name": "Hadas Arik",
+      "avatar_url": "https://avatars.githubusercontent.com/u/39025628?v=4",
+      "profile": "https://github.com/hadasarik",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
