@@ -69,6 +69,17 @@
         "bug",
         "ideas"
       ]
+    },
+    {
+      "login": "ronakdm",
+      "name": "Ronak D. Mehta",
+      "avatar_url": "https://avatars.githubusercontent.com/u/72722942?v=4",
+      "profile": "https://github.com/ronakdm",
+      "contributions": [
+        "bug",
+        "code",
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
