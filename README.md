@@ -1,6 +1,6 @@
 # hyppo
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[all-contrib]: https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat 'All Contributors'
+[all-contrib]: https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat 'All Contributors'
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![CircleCI](https://img.shields.io/circleci/build/github/neurodata/hyppo/main?style=flat)](https://app.circleci.com/pipelines/github/neurodata/hyppo?branch=main)
@@ -89,6 +89,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://github.com/j1c"><img src="https://avatars.githubusercontent.com/u/5142539?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Jaewon Chung</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/issues?q=author%3Aj1c" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://github.com/jdey4"><img src="https://avatars.githubusercontent.com/u/52499217?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Jayanta Dey</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=jdey4" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/bvarjavand"><img src="https://avatars.githubusercontent.com/u/8294669?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Bijan Varjavand</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=bvarjavand" title="Code">💻</a></td>
   </tr>
 </table>
 
