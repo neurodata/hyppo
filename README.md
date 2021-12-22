@@ -1,6 +1,6 @@
 # hyppo
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[all-contrib]: https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat 'All Contributors'
+[all-contrib]: https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat 'All Contributors'
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![CircleCI](https://img.shields.io/circleci/build/github/neurodata/hyppo/main?style=flat)](https://app.circleci.com/pipelines/github/neurodata/hyppo?branch=main)
@@ -81,6 +81,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://sampan.me"><img src="https://avatars.githubusercontent.com/u/36676569?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Sambit Panda</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/issues?q=author%3Asampan501" title="Bug reports">🐛</a> <a href="https://github.com/neurodata/hyppo/commits?author=sampan501" title="Code">💻</a> <a href="https://github.com/neurodata/hyppo/commits?author=sampan501" title="Documentation">📖</a> <a href="#ideas-sampan501" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-sampan501" title="Maintenance">🚧</a> <a href="https://github.com/neurodata/hyppo/pulls?q=is%3Apr+reviewed-by%3Asampan501" title="Reviewed Pull Requests">👀</a></td>
     <td align="center"><a href="https://github.com/cshen6"><img src="https://avatars.githubusercontent.com/u/11924683?v=4?s=100" width="100px;" alt=""/><br /><sub><b>cshen6</b></sub></a><br /><a href="#ideas-cshen6" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="http://neurodata.io"><img src="https://avatars.githubusercontent.com/u/41842?v=4?s=100" width="100px;" alt=""/><br /><sub><b>joshua vogelstein</b></sub></a><br /><a href="#fundingFinding-jovo" title="Funding Finding">🔍</a> <a href="#mentoring-jovo" title="Mentoring">🧑‍🏫</a> <a href="#ideas-jovo" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://in.linkedin.com/in/satishpalaniappan/en"><img src="https://avatars.githubusercontent.com/u/10278507?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Satish Palaniappan</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=tpsatish95" title="Code">💻</a> <a href="#ideas-tpsatish95" title="Ideas, Planning, & Feedback">🤔</a></td>
   </tr>
 </table>
 
