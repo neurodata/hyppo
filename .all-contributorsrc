@@ -148,6 +148,17 @@
         "review",
         "doc"
       ]
+    },
+    {
+      "login": "PSSF23",
+      "name": "Haoyin Xu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20309845?v=4",
+      "profile": "https://github.com/PSSF23",
+      "contributions": [
+        "code",
+        "doc",
+        "review"
+      ]
     }
   ],
   "contributorsPerLine": 7,
