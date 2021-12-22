@@ -1,6 +1,6 @@
 # hyppo
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[all-contrib]: https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat 'All Contributors'
+[all-contrib]: https://img.shields.io/badge/all_contributors-8-orange.svg?style=flat 'All Contributors'
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![CircleCI](https://img.shields.io/circleci/build/github/neurodata/hyppo/main?style=flat)](https://app.circleci.com/pipelines/github/neurodata/hyppo?branch=main)
@@ -85,6 +85,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/junhaobearxiong"><img src="https://avatars.githubusercontent.com/u/30681308?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Junhao Xiong</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=junhaobearxiong" title="Code">💻</a> <a href="#ideas-junhaobearxiong" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="http://ericwb.me"><img src="https://avatars.githubusercontent.com/u/8883547?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Eric Bridgeford</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/issues?q=author%3Aebridge2" title="Bug reports">🐛</a> <a href="#ideas-ebridge2" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://github.com/ronakdm"><img src="https://avatars.githubusercontent.com/u/72722942?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ronak D. Mehta</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=ronakdm" title="Code">💻</a> <a href="#ideas-ronakdm" title="Ideas, Planning, & Feedback">🤔</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/j1c"><img src="https://avatars.githubusercontent.com/u/5142539?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Jaewon Chung</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/issues?q=author%3Aj1c" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 
