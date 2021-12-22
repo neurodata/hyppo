@@ -28,6 +28,17 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "jovo",
+      "name": "joshua vogelstein",
+      "avatar_url": "https://avatars.githubusercontent.com/u/41842?v=4",
+      "profile": "http://neurodata.io",
+      "contributions": [
+        "fundingFinding",
+        "mentoring",
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
