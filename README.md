@@ -1,6 +1,6 @@
 # hyppo
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[all-contrib]: https://img.shields.io/badge/all_contributors-14-orange.svg?style=flat 'All Contributors'
+[all-contrib]: https://img.shields.io/badge/all_contributors-15-orange.svg?style=flat 'All Contributors'
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![CircleCI](https://img.shields.io/circleci/build/github/neurodata/hyppo/main?style=flat)](https://app.circleci.com/pipelines/github/neurodata/hyppo?branch=main)
@@ -94,6 +94,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://alyakin314.github.io"><img src="https://avatars.githubusercontent.com/u/25692376?v=4?s=100" width="100px;" alt=""/><br /><sub><b>alyakin314</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=alyakin314" title="Code">💻</a> <a href="#ideas-alyakin314" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://vivekg.dev"><img src="https://avatars.githubusercontent.com/u/29757116?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Vivek Gopalakrishnan</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=v715" title="Code">💻</a></td>
     <td align="center"><a href="https://rflperry.github.io/"><img src="https://avatars.githubusercontent.com/u/13107341?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ronan Perry</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/issues?q=author%3Arflperry" title="Bug reports">🐛</a> <a href="https://github.com/neurodata/hyppo/commits?author=rflperry" title="Code">💻</a> <a href="#ideas-rflperry" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/neurodata/hyppo/pulls?q=is%3Apr+reviewed-by%3Arflperry" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/neurodata/hyppo/commits?author=rflperry" title="Documentation">📖</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/PSSF23"><img src="https://avatars.githubusercontent.com/u/20309845?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Haoyin Xu</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=PSSF23" title="Code">💻</a> <a href="https://github.com/neurodata/hyppo/commits?author=PSSF23" title="Documentation">📖</a> <a href="https://github.com/neurodata/hyppo/pulls?q=is%3Apr+reviewed-by%3APSSF23" title="Reviewed Pull Requests">👀</a></td>
   </tr>
 </table>
 
