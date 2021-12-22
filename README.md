@@ -1,6 +1,6 @@
 # hyppo
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[all-contrib]: https://img.shields.io/badge/all_contributors-22-orange.svg?style=flat 'All Contributors'
+[all-contrib]: https://img.shields.io/badge/all_contributors-23-orange.svg?style=flat 'All Contributors'
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![CircleCI](https://img.shields.io/circleci/build/github/neurodata/hyppo/main?style=flat)](https://app.circleci.com/pipelines/github/neurodata/hyppo?branch=main)
@@ -106,6 +106,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/darsh-patel"><img src="https://avatars.githubusercontent.com/u/70541374?v=4?s=100" width="100px;" alt=""/><br /><sub><b>darsh-patel</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=darsh-patel" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/zdbzdb123123"><img src="https://avatars.githubusercontent.com/u/95720890?v=4?s=100" width="100px;" alt=""/><br /><sub><b>zdbzdb123123</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=zdbzdb123123" title="Code">💻</a></td>
   </tr>
 </table>
 
