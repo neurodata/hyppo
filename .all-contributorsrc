@@ -126,6 +126,15 @@
         "code",
         "ideas"
       ]
+    },
+    {
+      "login": "v715",
+      "name": "Vivek Gopalakrishnan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29757116?v=4",
+      "profile": "https://vivekg.dev",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

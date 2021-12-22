@@ -1,6 +1,6 @@
 # hyppo
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[all-contrib]: https://img.shields.io/badge/all_contributors-12-orange.svg?style=flat 'All Contributors'
+[all-contrib]: https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat 'All Contributors'
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![CircleCI](https://img.shields.io/circleci/build/github/neurodata/hyppo/main?style=flat)](https://app.circleci.com/pipelines/github/neurodata/hyppo?branch=main)
@@ -92,6 +92,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/bvarjavand"><img src="https://avatars.githubusercontent.com/u/8294669?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Bijan Varjavand</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=bvarjavand" title="Code">💻</a></td>
     <td align="center"><a href="https://bdpedigo.github.io/"><img src="https://avatars.githubusercontent.com/u/25714207?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Benjamin Pedigo</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/issues?q=author%3Abdpedigo" title="Bug reports">🐛</a> <a href="https://github.com/neurodata/hyppo/commits?author=bdpedigo" title="Code">💻</a></td>
     <td align="center"><a href="http://alyakin314.github.io"><img src="https://avatars.githubusercontent.com/u/25692376?v=4?s=100" width="100px;" alt=""/><br /><sub><b>alyakin314</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=alyakin314" title="Code">💻</a> <a href="#ideas-alyakin314" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://vivekg.dev"><img src="https://avatars.githubusercontent.com/u/29757116?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Vivek Gopalakrishnan</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=v715" title="Code">💻</a></td>
   </tr>
 </table>
 
