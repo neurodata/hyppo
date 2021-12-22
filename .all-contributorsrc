@@ -195,6 +195,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "najmieh",
+      "name": "Najmieh Sadat Safarabadi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/31998054?v=4",
+      "profile": "https://github.com/najmieh",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
