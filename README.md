@@ -1,6 +1,6 @@
 # hyppo
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[all-contrib]: https://img.shields.io/badge/all_contributors-15-orange.svg?style=flat 'All Contributors'
+[all-contrib]: https://img.shields.io/badge/all_contributors-16-orange.svg?style=flat 'All Contributors'
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![CircleCI](https://img.shields.io/circleci/build/github/neurodata/hyppo/main?style=flat)](https://app.circleci.com/pipelines/github/neurodata/hyppo?branch=main)
@@ -97,6 +97,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/PSSF23"><img src="https://avatars.githubusercontent.com/u/20309845?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Haoyin Xu</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=PSSF23" title="Code">💻</a> <a href="https://github.com/neurodata/hyppo/commits?author=PSSF23" title="Documentation">📖</a> <a href="https://github.com/neurodata/hyppo/pulls?q=is%3Apr+reviewed-by%3APSSF23" title="Reviewed Pull Requests">👀</a></td>
+    <td align="center"><a href="https://github.com/hadasarik"><img src="https://avatars.githubusercontent.com/u/39025628?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Hadas Arik</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=hadasarik" title="Code">💻</a></td>
   </tr>
 </table>
 
