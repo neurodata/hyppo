@@ -1,6 +1,6 @@
 sphinxcontrib-rawfiles==0.1.1
 nbsphinx==0.8.0
-ipython==7.19.0
+ipython==7.31.1
 ipykernel==5.4.3
 sphinx==3.3.0
 pydata-sphinx-theme==0.7.1
