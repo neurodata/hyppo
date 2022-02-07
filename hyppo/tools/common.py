@@ -12,11 +12,11 @@ from sklearn.utils import check_random_state
 # Modified to only use nan_policy 'raise'
 # REF: https://github.com/scipy/scipy/blob/59e6539cf80dc04b16b0f0ab52343381f0a7a2fa/scipy/stats/stats.py#L79
 def contains_nan(a):
-    nan_policy = 'raise'
+    nan_policy = "raise"
     try:
         # Calling np.sum to avoid creating a huge array into memory
         # e.g. np.isnan(a).any()
-        with np.errstate(invalid='ignore'):
+        with np.errstate(invalid="ignore"):
             contains_nan_var = np.isnan(np.sum(a))
     except TypeError:
         # This can happen when attempting to sum things which are not
@@ -27,10 +27,13 @@ def contains_nan(a):
             # Don't know what to do. Fall back to omitting nan values and
             # issue a warning.
             contains_nan_var = False
-            nan_policy = 'omit'
-            warnings.warn("The input array could not be properly "
-                          "checked for nan values. nan values "
-                          "will be ignored.", RuntimeWarning)
+            nan_policy = "omit"
+            warnings.warn(
+                "The input array could not be properly "
+                "checked for nan values. nan values "
+                "will be ignored.",
+                RuntimeWarning,
+            )
 
     if contains_nan_var:
         raise ValueError("The input contains nan values")
