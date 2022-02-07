@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.abspath(".."))
 year = datetime.date.today().year
 project = "hyppo"
 copyright = "2018-{}, NeuroData".format(year)
-authors = u"Sambit Panda"
+authors = "Sambit Panda"
 
 # The short X.Y version
 # Find hyppo version.

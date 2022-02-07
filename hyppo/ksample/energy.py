@@ -115,7 +115,7 @@ class Energy(KSampleTest):
 
         # exact equivalence transformation Dcorr and Energy
         stat = (
-            _dcov(distx, disty, self.bias) * (2 * (n ** 2) * (m ** 2)) / ((n + m) ** 4)
+            _dcov(distx, disty, self.bias) * (2 * (n**2) * (m**2)) / ((n + m) ** 4)
         )
         self.stat = stat
 

@@ -101,10 +101,10 @@ class dHsic(DVariateTest):
         term3 = (2 / n) * np.ones((n,))
         for kern in kerns:
             term1 = np.multiply(term1, kern)
-            term2 = (1 / n ** 2) * term2 * np.sum(kern)
+            term2 = (1 / n**2) * term2 * np.sum(kern)
             term3 = (1 / n) * np.multiply(term3, np.sum(kern, axis=1))
 
-        stat = (1 / n ** 2) * np.sum(term1) + term2 - np.sum(term3)
+        stat = (1 / n**2) * np.sum(term1) + term2 - np.sum(term3)
         self.stat = stat
 
         return stat
