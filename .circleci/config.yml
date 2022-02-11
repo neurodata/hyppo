@@ -5,7 +5,7 @@ orbs:
 
 jobs:
   build-and-test:
-    parallelism: 2
+    parallelism: 16
     docker:
       - image: cimg/python:3.8
     steps:
@@ -16,7 +16,7 @@ jobs:
           name: Run tests
           command: |
             set -e
-            TEST_FILES=$(circleci tests glob "openapi_server/**/test_*.py" | circleci tests split --split-by=timings)
+            TEST_FILES=$(circleci tests glob "hyppo/**/test_*.py" | circleci tests split --split-by=timings)
             mkdir -p test-results
             pytest --verbose --junitxml=test-results/junit.xml $TEST_FILES
       - store_test_results:
