@@ -21,16 +21,14 @@ jobs:
             TEST_FILES=$(circleci tests glob "hyppo/**/test_*.py" | circleci tests split --split-by=timings)
             mkdir -p test-results
             pytest --verbose --junitxml=test-results/junit.xml $TEST_FILES
-      - upload-to-codecov:
-          jobs:
-            - checkout
-            - codecov/upload
       - store_test_results:
           path: test-results
       - store_artifacts:
           path: test-results
+      - codecov/upload:
+          file: "coverage.xml"
 
 workflows:
-  sample:
+  run-tests:
     jobs:
       - build-and-test
