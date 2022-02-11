@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   python: circleci/python@1.2
+  codecov: codecov/codecov@3.1.1
 
 jobs:
   build-and-test:
@@ -20,6 +21,10 @@ jobs:
             TEST_FILES=$(circleci tests glob "hyppo/**/test_*.py" | circleci tests split --split-by=timings)
             mkdir -p test-results
             pytest --verbose --junitxml=test-results/junit.xml $TEST_FILES
+      - upload-to-codecov:
+          jobs:
+            - checkout
+            - codecov/upload
       - store_test_results:
           path: test-results
       - store_artifacts:
