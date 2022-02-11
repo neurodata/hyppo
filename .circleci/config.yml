@@ -16,6 +16,7 @@ jobs:
           name: Run tests
           command: |
             set -e
+            pip install pytest
             TEST_FILES=$(circleci tests glob "hyppo/**/test_*.py" | circleci tests split --split-by=timings)
             mkdir -p test-results
             pytest --verbose --junitxml=test-results/junit.xml $TEST_FILES
