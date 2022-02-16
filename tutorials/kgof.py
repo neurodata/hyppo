@@ -69,7 +69,7 @@ def isogauss_log_den(X):
 
 ########################################################################################
 # This function computes the log of an unnormalized density. This works fine as this test
-# only requires a :math:`nabla_{\mathbf{x}} \log p(\mathbf{x})` which does not depend on 
+# only requires a :math:`\nabla_{\mathbf{x}} \log p(\mathbf{x})` which does not depend on 
 # the normalizer. The gradient :math:`\nabla_{\mathbf{x}} \log p(\mathbf{x})` will be 
 # automatically computed by autograd. In this kgof package, a model :math:`p` can be 
 # specified by implementing the class :class:`hyppo.kgof.density.UnnormalizedDensity`. Implementing
