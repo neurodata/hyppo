@@ -3,8 +3,6 @@ import numpy.testing as testing
 
 from ..fssd import (
     FSSD,
-    FSSDH0SimCovObs,
-    FSSDH0SimCovDraw,
     ustat_h1_mean_variance,
     power_criterion,
     fssd_grid_search_kernel,
@@ -13,6 +11,7 @@ from .._utils import meddistance, fit_gaussian_draw, constrain
 from ..kernel import KGauss
 from ..data import Data
 from ..density import IsotropicNormal
+from ..h0simulator import FSSDH0SimCovObs, FSSDH0SimCovDraw
 
 from numpy.random import default_rng
 
