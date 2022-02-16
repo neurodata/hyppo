@@ -9,7 +9,7 @@ def dist_mat(X, N):
     D = np.zeros((N, N))
     for i in range(N):
         for j in range(N):
-            D[i, j] = LA.norm(X[i, :] - X[j, :]) # L2
+            D[i, j] = LA.norm(X[i] - X[j]) # L2
     return D
 
 def re_centered_dist(D):
@@ -22,6 +22,9 @@ def re_centered_dist(D):
         for j in range(N):
             R[i, j] = D[i, j] - np.mean(D[:, j]) - np.mean(D[i, :]) + np.mean(D)
     return R
+
+def re_centered_dist_u(u, X, N):
+    return  re_centered_dist(dist_mat(X @ u, N))
 
 def dist_cov_sq(R_X, R_Y):
     """
@@ -42,28 +45,34 @@ def dist_cov_sq_grad(u, X, Y, R_X, R_Y):
     """
     def delta(u, i, j):
         #print(f"X shape: {(X[i] - X[j]).T.shape}")
-        #print(f"sign shape: {(np.sign(u.T * (X[i] - X[j]))).shape}")
-        return (X[i] - X[j]).T @ np.sign(u.T * (X[i] - X[j]))
-    N = R_X.shape[0]
+        #print(f"sign shape: {np.sign((X[i] - X[j]) @ u).shape}")
+        return (X[i] - X[j]).T @ np.sign((X[i] - X[j]) @ u)
+    N = R_Y.shape[0]
     grad_sum = 0.
     for i in range(N):
         for j in range(N):
-            grad_sum += R_Y[i, j] * (delta(u, i, j)
-            - delta(u, range(N), j)
-            - delta(u, i, range(N))
-            + delta(u, range(N), range(N)))
-    return (1 / N**2) * grad_sum
+            grad_sum += R_Y[i, j] * (
+                delta(u, i, j)
+                - delta(u, range(N), j)
+                - delta(u, i, range(N))
+                + delta(u, range(N), range(N))
+            )
+    return (1 / N**2) * grad_sum.T
 
-X = np.random.rand(20, 1) # NxM, test with Nx1 vector of N samples
-Y = np.random.rand(15, 1)
-N = 10
-D_X = dist_mat(X, N)
-D_Y = dist_mat(Y, N)
-R_X = re_centered_dist(D_X)
-R_Y = re_centered_dist(D_Y)
-v = dist_cov_sq(R_X, R_Y)
-print(f"v: {v}")
-u = np.random.rand(X.shape[0], 1)
-dv = dist_cov_sq_grad(u, X, Y, R_X, R_Y)
-print(f"dv: {dv}")
-print(f"dv shape: {dv.shape}")
+def clamp_u(u):
+    norm = LA.norm(u)
+    if norm > 1:
+        return  u / norm
+    else:
+        return u
+
+def optim_u_gd(u, X, Y, R_X, R_Y, lr, num_iter):
+    """
+    Gradient ascent for v^2 with respect to u
+    """
+    u_opt = np.copy(u)
+    for _ in range(num_iter):
+        grad = dist_cov_sq_grad(u_opt, X, Y, R_X, R_Y)
+        u_opt += lr * grad # gradient ascent
+        u_opt = clamp_u(u_opt)
+    return u_opt
