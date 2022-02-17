@@ -41,7 +41,7 @@ def dist_cov_sq(R_X, R_Y):
 def dist_cov_sq_grad(u, X, Y, R_X, R_Y):
     """
     Gradient for use in projected stochastic gradient descent optimization
-    Y arg not needed?
+    Some args not needed?
     """
     def delta(u, i, j):
         #print(f"X shape: {(X[i] - X[j]).T.shape}")
@@ -73,6 +73,6 @@ def optim_u_gd(u, X, Y, R_X, R_Y, lr, num_iter):
     u_opt = np.copy(u)
     for _ in range(num_iter):
         grad = dist_cov_sq_grad(u_opt, X, Y, R_X, R_Y)
-        u_opt += lr * grad # gradient ascent
+        u_opt += lr * grad # "+=": gradient ascent
         u_opt = clamp_u(u_opt)
     return u_opt
