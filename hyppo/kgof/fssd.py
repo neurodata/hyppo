@@ -84,7 +84,7 @@ class FSSD(GofTest):
         self.V = V
         self.null_sim = null_sim
 
-    def test(self, dat, return_simulated_stats=False):
+    def test(self, X, return_simulated_stats=False):
         r"""
         Perform the goodness-of-fit test using an FSSD test statistic
         and return values computed in a dictionary.
@@ -101,12 +101,11 @@ class FSSD(GofTest):
         alpha = self.alpha
         null_sim = self.null_sim
         n_simulate = null_sim.n_simulate
-        X = dat.data()
         n = X.shape[0]
         J = self.V.shape[0]
 
-        nfssd, fea_tensor = self.statistic(dat, return_feature_tensor=True)
-        sim_results = null_sim.simulate(self, dat, fea_tensor)
+        nfssd, fea_tensor = self.statistic(X, return_feature_tensor=True)
+        sim_results = null_sim.simulate(self, X, fea_tensor)
         arr_nfssd = sim_results["sim_stats"]
 
         # approximate p-value with the permutations
@@ -123,7 +122,7 @@ class FSSD(GofTest):
             results["sim_stats"] = arr_nfssd
         return results
 
-    def statistic(self, dat, return_feature_tensor=False):
+    def statistic(self, X, return_feature_tensor=False):
         r"""
         Compute the test statistic. The statistic is n*FSSD^2.
 
@@ -135,7 +134,6 @@ class FSSD(GofTest):
         -------
         stat : the test statistic, n*FSSD^2
         """
-        X = dat.data()
         n = X.shape[0]
 
         # n x d x J
@@ -148,7 +146,7 @@ class FSSD(GofTest):
         else:
             return stat
 
-    def get_H1_mean_variance(self, dat):
+    def get_H1_mean_variance(self, X):
         r"""
         Calculate the mean and variance under H1 of the test statistic (divided by
         n).
@@ -162,7 +160,6 @@ class FSSD(GofTest):
         mean : the mean under the alternative hypothesis of the test statistic
         variance : the variance under the alternative hypothesis of the test statistic
         """
-        X = dat.data()
         Xi = self.feature_tensor(X)
         mean, variance = ustat_h1_mean_variance(Xi, return_variance=True)
         return mean, variance
@@ -203,7 +200,7 @@ class FSSD(GofTest):
 
 
 def power_criterion(
-    p, dat, k, test_locs, reg=1e-2, use_unbiased=True, use_2terms=False
+    p, X, k, test_locs, reg=1e-2, use_unbiased=True, use_2terms=False
 ):
     r"""
     Compute the mean and standard deviation of the statistic under H1.
@@ -220,7 +217,6 @@ def power_criterion(
     -------
     obj : mean/sd
     """
-    X = dat.data()
     n = X.shape[0]
     V = test_locs
     fssd = FSSD(p, k, V, null_sim=None)
@@ -336,7 +332,7 @@ def simulate_null_dist(eigs, J, n_simulate=2000, seed=7):
     return fssds
 
 
-def fssd_grid_search_kernel(p, dat, test_locs, list_kernel):
+def fssd_grid_search_kernel(p, X, test_locs, list_kernel):
     r"""
     Linear search for the best kernel in the list that maximizes
     the test power criterion, fixing the test locations to V.
@@ -353,12 +349,11 @@ def fssd_grid_search_kernel(p, dat, test_locs, list_kernel):
     objs : array of test power criteria
     """
     V = test_locs
-    X = dat.data()
     n_cand = len(list_kernel)
     objs = np.zeros(n_cand)
     for i in range(n_cand):
         ki = list_kernel[i]
-        objs[i] = power_criterion(p, dat, ki, test_locs)
+        objs[i] = power_criterion(p, X, ki, test_locs)
         logging.info("(%d), obj: %5.4g, k: %s" % (i, objs[i], str(ki)))
 
     # Widths that come early in the list

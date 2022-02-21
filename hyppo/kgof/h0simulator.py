@@ -34,7 +34,7 @@ class H0Simulator(ABC):
         self.seed = seed
 
     @abstractmethod
-    def simulate(self, gof, dat):
+    def simulate(self, gof, X):
         """
         gof: a GofTest
         dat: a Data (observed data)
@@ -60,7 +60,7 @@ class FSSDH0SimCovObs(H0Simulator):
     def __init__(self, n_simulate=3000, seed=10):
         super(FSSDH0SimCovObs, self).__init__(n_simulate, seed)
 
-    def simulate(self, gof, dat, fea_tensor=None):
+    def simulate(self, gof, X, fea_tensor=None):
         """
         fea_tensor: n x d x J feature matrix
         """
@@ -68,10 +68,9 @@ class FSSDH0SimCovObs(H0Simulator):
         n_simulate = self.n_simulate
         seed = self.seed
         if fea_tensor is None:
-            _, fea_tensor = gof.statistic(dat, return_feature_tensor=True)
+            _, fea_tensor = gof.statistic(X, return_feature_tensor=True)
 
         J = fea_tensor.shape[2]
-        X = dat.data()
         n = X.shape[0]
         # n x d*J
         Tau = fea_tensor.reshape(n, -1)
@@ -103,14 +102,13 @@ class FSSDH0SimCovDraw(H0Simulator):
         super(FSSDH0SimCovDraw, self).__init__(n_simulate, seed)
         self.n_draw = n_draw
 
-    def simulate(self, gof, dat, fea_tensor=None):
+    def simulate(self, gof, fea_tensor=None):
         """
         fea_tensor: n x d x J feature matrix
         This method does not use dat.
 
         From: https://github.com/wittawatj/fsic-test
         """
-        dat = None
         # p = an UnnormalizedDensity
         p = gof.p
         ds = p.get_datasource()
@@ -119,7 +117,7 @@ class FSSDH0SimCovDraw(H0Simulator):
         Xdraw = ds.sample(n=self.n_draw, seed=self.seed)
         _, fea_tensor = gof.statistic(Xdraw, return_feature_tensor=True)
 
-        X = Xdraw.data()
+        X = Xdraw
         J = fea_tensor.shape[2]
         n = self.n_draw
         # n x d*J
