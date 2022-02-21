@@ -37,13 +37,13 @@ class TestFSSD:
 
         rng = default_rng(seed)
         X = rng.standard_normal(size=(n, d)) * np.sqrt(draw_variance) + draw_mean
-        dat = Data(X)
-        dat.dim()
-        dat.sample_size()
-        dat.n()
-        dat.split_tr_te()
-        dat.subsample(n=4)
-        dat.clone()
+        # dat = Data(X)
+        # dat.dim()
+        # dat.sample_size()
+        # dat.n()
+        # dat.split_tr_te()
+        # dat.subsample(n=4)
+        # dat.clone()
 
         # Test
         sig2 = meddistance(X, subsample=1000) ** 2
@@ -55,13 +55,13 @@ class TestFSSD:
         null_sim = FSSDH0SimCovObs(n_simulate=200, seed=3)
         extra_sim = FSSDH0SimCovDraw()
         fssd = FSSD(isonorm, k, V, null_sim=null_sim, alpha=alpha)
-        check_sim = extra_sim.simulate(dat=dat, gof=fssd)
-        power_criterion(p=isonorm, dat=dat, k=k, test_locs=V)
-        fssd_grid_search_kernel(p=isonorm, dat=dat, test_locs=V, list_kernel=list_k)
-        fssd.get_H1_mean_variance(dat=dat)
+        check_sim = extra_sim.simulate(X=X, gof=fssd)
+        power_criterion(p=isonorm, X=X, k=k, test_locs=V)
+        fssd_grid_search_kernel(p=isonorm, X=X, test_locs=V, list_kernel=list_k)
+        fssd.get_H1_mean_variance(X=X)
 
-        tresult = fssd.test(dat, return_simulated_stats=True)
-        dat.__add__(dat)
+        tresult = fssd.test(X, return_simulated_stats=True)
+        # dat.__add__(dat)
 
         # assertions
         testing.assert_almost_equal(tresult["pvalue"], 0, decimal=1)
@@ -83,7 +83,7 @@ class TestFSSD:
         draw_variance = variance + 1
         rng = default_rng(seed)
         X = rng.standard_normal(size=(n, d)) * np.sqrt(draw_variance) + draw_mean
-        dat = Data(X)
+        # dat = Data(X)
 
         # Test
         sig2 = meddistance(X, subsample=1000) ** 2
