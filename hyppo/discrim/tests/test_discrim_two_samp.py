@@ -18,7 +18,7 @@ class TestTwoSample:
         np.random.seed(123456789)
         obs_d1 = 0.5
         obs_d2 = 1.0
-        d1, d2, _ = DiscrimTwoSample().test(x1, x2, y, alt="greater", reps=3)
+        d1, d2, _ = DiscrimTwoSample().test(x1, x2, y, alt="greater", reps=0)
 
         assert_almost_equal(d1, obs_d1, decimal=2)
         assert_almost_equal(d2, obs_d2, decimal=2)
@@ -32,7 +32,7 @@ class TestTwoSample:
         np.random.seed(123456789)
         obs_d1 = 0.5
         obs_d2 = 1.0
-        d1, d2, _ = DiscrimTwoSample().test(x1, x2, y, alt="less", reps=3)
+        d1, d2, _ = DiscrimTwoSample().test(x1, x2, y, alt="less", reps=0)
 
         assert_almost_equal(d1, obs_d1, decimal=2)
         assert_almost_equal(d2, obs_d2, decimal=2)
@@ -47,61 +47,10 @@ class TestTwoSample:
         np.random.seed(123456789)
         obs_d1 = 0.5
         obs_d2 = 1.0
-        d1, d2, _ = DiscrimTwoSample().test(x1, x2, y, alt="neq", reps=3)
+        d1, d2, _ = DiscrimTwoSample().test(x1, x2, y, alt="neq", reps=0)
 
         assert_almost_equal(d1, obs_d1, decimal=2)
         assert_almost_equal(d2, obs_d2, decimal=2)
-
-    def test_rep_greater(self):
-        # test reproducibility when discriminability for x1 is greater
-        # than it is for x2
-        x1 = np.ones((100, 2), dtype=float)
-        x2 = np.concatenate((np.zeros((50, 2)), np.ones((50, 2))), axis=0)
-        y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
-
-        d1, d2, _ = DiscrimTwoSample().test(
-            x1, x2, y, alt="greater", reps=3, random_state=2
-        )
-        d3, d4, _ = DiscrimTwoSample().test(
-            x1, x2, y, alt="greater", reps=3, random_state=2
-        )
-
-        assert d1 == d3
-        assert d2 == d4
-
-    def test_rep_less(self):
-        # test reproducibility when discriminability for x1 is greater
-        # than it is for x2
-        x1 = np.ones((100, 2), dtype=float)
-        x2 = np.concatenate((np.zeros((50, 2)), np.ones((50, 2))), axis=0)
-        y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
-
-        d1, d2, _ = DiscrimTwoSample().test(
-            x1, x2, y, alt="less", reps=3, random_state=3
-        )
-        d3, d4, _ = DiscrimTwoSample().test(
-            x1, x2, y, alt="less", reps=3, random_state=3
-        )
-
-        assert d1 == d3
-        assert d2 == d4
-
-    def test_rep_neq(self):
-        # test reproducibiility when discriminability for x1 is not
-        # equal compared to discriminability for x2
-        x1 = np.ones((100, 2), dtype=float)
-        x2 = np.concatenate((np.zeros((50, 2)), np.ones((50, 2))), axis=0)
-        y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
-
-        d1, d2, _ = DiscrimTwoSample().test(
-            x1, x2, y, alt="neq", reps=3, random_state=4
-        )
-        d3, d4, _ = DiscrimTwoSample().test(
-            x1, x2, y, alt="neq", reps=3, random_state=4
-        )
-
-        assert d1 == d3
-        assert d2 == d4
 
 
 class TestDiscrErrorWarn:
