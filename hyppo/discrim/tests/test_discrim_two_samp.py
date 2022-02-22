@@ -18,7 +18,7 @@ class TestTwoSample:
         np.random.seed(123456789)
         obs_d1 = 0.5
         obs_d2 = 1.0
-        d1, d2, _ = DiscrimTwoSample().test(x1, x2, y, alt="greater", reps=0)
+        d1, d2, _ = DiscrimTwoSample().test(x1, x2, y, alt="greater", reps=3)
 
         assert_almost_equal(d1, obs_d1, decimal=2)
         assert_almost_equal(d2, obs_d2, decimal=2)
@@ -32,7 +32,7 @@ class TestTwoSample:
         np.random.seed(123456789)
         obs_d1 = 0.5
         obs_d2 = 1.0
-        d1, d2, _ = DiscrimTwoSample().test(x1, x2, y, alt="less", reps=0)
+        d1, d2, _ = DiscrimTwoSample().test(x1, x2, y, alt="less", reps=3)
 
         assert_almost_equal(d1, obs_d1, decimal=2)
         assert_almost_equal(d2, obs_d2, decimal=2)
@@ -47,7 +47,7 @@ class TestTwoSample:
         np.random.seed(123456789)
         obs_d1 = 0.5
         obs_d2 = 1.0
-        d1, d2, _ = DiscrimTwoSample().test(x1, x2, y, alt="neq", reps=0)
+        d1, d2, _ = DiscrimTwoSample().test(x1, x2, y, alt="neq", reps=3)
 
         assert_almost_equal(d1, obs_d1, decimal=2)
         assert_almost_equal(d2, obs_d2, decimal=2)
