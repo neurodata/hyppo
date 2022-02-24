@@ -44,9 +44,13 @@ def dist_cov_sq_grad(u, X, Y, R_X, R_Y):
     Some args not needed?
     """
     def delta(u, i, j):
+        sign_term = np.squeeze(np.sign((X[i] - X[j]) @ u))
         #print(f"X shape: {(X[i] - X[j]).T.shape}")
-        #print(f"sign shape: {np.sign((X[i] - X[j]) @ u).shape}")
-        return (X[i] - X[j]).T @ np.sign((X[i] - X[j]) @ u)
+        #print(f"sign term: {sign_term}")
+        if sign_term.shape == ():
+            return (X[i] - X[j]).T * sign_term.item() # singleton to scaler
+        else:
+            return (X[i] - X[j]).T @ sign_term
     N = R_Y.shape[0]
     grad_sum = 0.
     for i in range(N):
