@@ -9,7 +9,7 @@ from ..fssd import (
 )
 from .._utils import meddistance, fit_gaussian_draw, constrain
 from ..kernel import KGauss
-from ..data import Data
+# from ..data import Data
 from ..density import IsotropicNormal
 from ..h0simulator import FSSDH0SimCovObs, FSSDH0SimCovDraw
 
