@@ -97,8 +97,8 @@ t_fast_hhg = timeit.Timer(stmt="HHG().test(x, y, auto=True)", setup=setup_code)
 hhg_time = np.array(t_hhg.timeit(number=1))  # original HHG
 fast_hhg_time = np.array(t_fast_hhg.timeit(number=5)) / 5  # fast HHG
 
-print(u"Original HHG time: {0:.3g}s".format(hhg_time))
-print(u"Fast HHG time: {0:.3g}s".format(fast_hhg_time))
+print("Original HHG time: {0:.3g}s".format(hhg_time))
+print("Fast HHG time: {0:.3g}s".format(fast_hhg_time))
 
 ########################################################################################
 # ------------
@@ -147,10 +147,10 @@ chisq_time = np.array(t_chisq.timeit(number=1000)) / 1000  # fast Dcorr
 fast_perm_time = np.array(t_fast_perm.timeit(number=1))  # permutation Dcorr
 fast_chisq_time = np.array(t_fast_chisq.timeit(number=1000)) / 1000  # fast Dcorr
 
-print(u"Permutation time: {0:.3g}s".format(perm_time))
-print(u"Fast time (chi-square): {0:.3g}s".format(chisq_time))
-print(u"Permutation time (fast statistic): {0:.3g}s".format(fast_perm_time))
-print(u"Fast time (fast statistic chi-square): {0:.3g}s".format(fast_chisq_time))
+print("Permutation time: {0:.3g}s".format(perm_time))
+print("Fast time (chi-square): {0:.3g}s".format(chisq_time))
+print("Permutation time (fast statistic): {0:.3g}s".format(fast_perm_time))
+print("Fast time (fast statistic chi-square): {0:.3g}s".format(fast_chisq_time))
 
 ########################################################################################
 # Look at the time increases when using the fast test!

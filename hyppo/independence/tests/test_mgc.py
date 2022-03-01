@@ -57,8 +57,8 @@ class TestMGCStat(object):
     @pytest.mark.parametrize(
         "sim, obs_stat, obs_pvalue",
         [
-            (linear, 0.97, 1 / 1000),  # test linear simulation
-        ],
+            (linear, 0.97, 1 / 1000),
+        ],  # test linear simulation
     )
     def test_rep(self, sim, obs_stat, obs_pvalue):
         x, y = sim(n=100, p=5)

@@ -1,0 +1,242 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "badgeTemplate": "[all-contrib]: https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg?style=flat 'All Contributors'",
+  "contributors": [
+    {
+      "login": "sampan501",
+      "name": "Sambit Panda",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36676569?v=4",
+      "profile": "http://sampan.me",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "ideas",
+        "maintenance",
+        "review"
+      ]
+    },
+    {
+      "login": "cshen6",
+      "name": "cshen6",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11924683?v=4",
+      "profile": "https://github.com/cshen6",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "jovo",
+      "name": "joshua vogelstein",
+      "avatar_url": "https://avatars.githubusercontent.com/u/41842?v=4",
+      "profile": "http://neurodata.io",
+      "contributions": [
+        "fundingFinding",
+        "mentoring",
+        "ideas"
+      ]
+    },
+    {
+      "login": "tpsatish95",
+      "name": "Satish Palaniappan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10278507?v=4",
+      "profile": "https://in.linkedin.com/in/satishpalaniappan/en",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+    },
+    {
+      "login": "junhaobearxiong",
+      "name": "Junhao Xiong",
+      "avatar_url": "https://avatars.githubusercontent.com/u/30681308?v=4",
+      "profile": "https://github.com/junhaobearxiong",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+    },
+    {
+      "login": "ebridge2",
+      "name": "Eric Bridgeford",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8883547?v=4",
+      "profile": "http://ericwb.me",
+      "contributions": [
+        "bug",
+        "ideas"
+      ]
+    },
+    {
+      "login": "ronakdm",
+      "name": "Ronak D. Mehta",
+      "avatar_url": "https://avatars.githubusercontent.com/u/72722942?v=4",
+      "profile": "https://github.com/ronakdm",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+    },
+    {
+      "login": "j1c",
+      "name": "Jaewon Chung",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5142539?v=4",
+      "profile": "https://github.com/j1c",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "jdey4",
+      "name": "Jayanta Dey",
+      "avatar_url": "https://avatars.githubusercontent.com/u/52499217?v=4",
+      "profile": "https://github.com/jdey4",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "bvarjavand",
+      "name": "Bijan Varjavand",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8294669?v=4",
+      "profile": "https://github.com/bvarjavand",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "bdpedigo",
+      "name": "Benjamin Pedigo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25714207?v=4",
+      "profile": "https://bdpedigo.github.io/",
+      "contributions": [
+        "bug",
+        "code"
+      ]
+    },
+    {
+      "login": "alyakin314",
+      "name": "alyakin314",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25692376?v=4",
+      "profile": "http://alyakin314.github.io",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+    },
+    {
+      "login": "v715",
+      "name": "Vivek Gopalakrishnan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29757116?v=4",
+      "profile": "https://vivekg.dev",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "rflperry",
+      "name": "Ronan Perry",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13107341?v=4",
+      "profile": "https://rflperry.github.io/",
+      "contributions": [
+        "bug",
+        "code",
+        "ideas",
+        "review",
+        "doc"
+      ]
+    },
+    {
+      "login": "PSSF23",
+      "name": "Haoyin Xu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20309845?v=4",
+      "profile": "https://github.com/PSSF23",
+      "contributions": [
+        "code",
+        "doc",
+        "review"
+      ]
+    },
+    {
+      "login": "hadasarik",
+      "name": "Hadas Arik",
+      "avatar_url": "https://avatars.githubusercontent.com/u/39025628?v=4",
+      "profile": "https://github.com/hadasarik",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "kareef928",
+      "name": "kareef928",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51966539?v=4",
+      "profile": "https://github.com/kareef928",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Verathagnus",
+      "name": "Verathagnus",
+      "avatar_url": "https://avatars.githubusercontent.com/u/59093644?v=4",
+      "profile": "https://github.com/Verathagnus",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "dlee0156",
+      "name": "dlee0156",
+      "avatar_url": "https://avatars.githubusercontent.com/u/47963020?v=4",
+      "profile": "https://github.com/dlee0156",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "najmieh",
+      "name": "Najmieh Sadat Safarabadi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/31998054?v=4",
+      "profile": "https://github.com/najmieh",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "TacticalFallacy",
+      "name": "TacticalFallacy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/56208921?v=4",
+      "profile": "https://github.com/TacticalFallacy",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "darsh-patel",
+      "name": "darsh-patel",
+      "avatar_url": "https://avatars.githubusercontent.com/u/70541374?v=4",
+      "profile": "https://github.com/darsh-patel",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "zdbzdb123123",
+      "name": "zdbzdb123123",
+      "avatar_url": "https://avatars.githubusercontent.com/u/95720890?v=4",
+      "profile": "https://github.com/zdbzdb123123",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "hyppo",
+  "projectOwner": "neurodata",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}

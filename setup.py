@@ -6,8 +6,21 @@ from setuptools.command.install import install
 
 PACKAGE_NAME = "hyppo"
 DESCRIPTION = "A comprehensive independence testing package"
-with open("README.rst", "r") as f:
-    LONG_DESCRIPTION = f.read()
+LONG_DESCRIPTION = """
+hyppo (**HYP**othesis Testing in **P**yth**O**n, pronounced "Hippo") is an open-source
+software package for multivariate hypothesis testing. We decided to develop hyppo for
+the following reasons:
+
+* With the increase in the amount of data in many fields, hypothesis testing for high
+dimensional and nonlinear data is important
+* Libraries in R exist, but their interfaces are inconsistent and most are not available
+in Python
+
+hyppo intends to be a comprehensive multivariate hypothesis testing package and runs on
+all major versions of operating systems. It also includes novel tests not found in other
+packages. It is quick to install and free of charge. If you need to use multivariate
+hypothesis testing, be sure to give hyppo a try!"
+"""
 AUTHOR = ("Sambit Panda",)
 AUTHOR_EMAIL = "spanda3@jhu.edu"
 URL = "https://github.com/neurodata/hyppo"
@@ -17,6 +30,7 @@ REQUIRED_PACKAGES = [
     "scipy>=1.4.0",
     "numba>=0.46",
     "scikit-learn>=0.19.1",
+    "autograd>=1.3",
 ]
 
 # Find mgc version.
@@ -56,7 +70,7 @@ setup(
     version=VERSION,
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
-    long_description_content_type="text/x-rst",
+    long_description_content_type="text/markdown",
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     install_requires=REQUIRED_PACKAGES,
