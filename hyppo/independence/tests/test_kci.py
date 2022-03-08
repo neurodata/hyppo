@@ -13,7 +13,7 @@ class TestKCI:
         np.random.seed(123456789)
         x = np.random.choice([0, 1], (100, 2), p=[0.5, 0.5])
         y = np.random.choice([0, 1], (100, 2), p=[0.5, 0.5])
-        stat1, pvalue1 = KCI().statistic(x, y)
+        stat1, pvalue1 = KCI().test(x, y)
 
         assert_almost_equal(stat1, obs_stat, decimal=2)
         assert_almost_equal(pvalue1, obs_pvalue, decimal=2)
@@ -22,8 +22,8 @@ class TestKCI:
     def test_rep(self, n):
         x = np.random.choice([0, 1], (100, 2), p=[0.5, 0.5])
         y = np.random.choice([0, 1], (100, 2), p=[0.5, 0.5])
-        stat1, pvalue1 = KCI().statistic(x, y, random_state=2)
-        stat2, pvalue2 = KCI().statistic(x, y, random_state=2)
+        stat1, pvalue1 = KCI().test(x, y, random_state=2)
+        stat2, pvalue2 = KCI().test(x, y, random_state=2)
 
         assert stat1 == stat2
         assert pvalue1 == pvalue2
