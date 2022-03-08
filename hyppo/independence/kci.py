@@ -11,7 +11,7 @@ class KCI(IndependenceTest):
 
         IndependenceTest.__init__(self, **kwargs)
 
-    def test(self, x, y, width):
+    def test(self, x, y):
         T = len(y)
 
         x = np.array(x)
