@@ -44,7 +44,7 @@ class KCI(IndependenceTest):
         var_appr = 2 * (Kx * Kx) * (Ky * Ky) / T**2
         k_appr = mean_appr**2 / var_appr
         theta_appr = var_appr / mean_appr
-        p_val = 1 - np.mean(gamma.cdf(Stat, k_appr, theta_appr))
+        pvalue = 1 - np.mean(gamma.cdf(Stat, k_appr, theta_appr))
 
         self.stat = Stat
 
