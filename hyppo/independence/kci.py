@@ -28,7 +28,7 @@ class KCI(IndependenceTest):
         else:
             width = 0.3
 
-        theta = 1 / (width ** 2)
+        theta = 1 / (width**2)
 
         H = np.eye(T) - np.ones((T, T)) / T
 
@@ -41,8 +41,8 @@ class KCI(IndependenceTest):
         Stat = np.matmul(Kx * Ky)
 
         mean_appr = (Kx * Ky) / T
-        var_appr = 2 * (Kx * Kx) * (Ky * Ky) / T ** 2
-        k_appr = mean_appr ** 2 / var_appr
+        var_appr = 2 * (Kx * Kx) * (Ky * Ky) / T**2
+        k_appr = mean_appr**2 / var_appr
         theta_appr = var_appr / mean_appr
         p_val = 1 - np.mean(gamma.cdf(Stat, k_appr, theta_appr))
 
