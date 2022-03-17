@@ -98,6 +98,13 @@ def proj_U(X, U, k):
     """
     Project X onto the orthogonal subspace of k dim of U
     """
+    q, _ = LA.qr(U[:, :k])
+    #X_proj = np.sum(X * U[:, :k].T, axis=1) # vectorized dot
+    X_proj = np.zeros_like(X) # looped proj
+    for n in range(X_proj.shape[0]):
+        for k_i in range(k):
+            X_proj[n] = X_proj[n] + (np.dot(X[n], q[:, k_i]) / np.dot(q[:, k_i], q[:, k_i])) * q[:, k_i]
+    return X_proj
 
 def dca(X, Y, lr, epsilon):
     """
@@ -105,7 +112,6 @@ def dca(X, Y, lr, epsilon):
     Single dataset X
     """
     k = 0
-    delta = epsilon + 1
     U = np.zeros_like(X.T) # kmax is num of X features?
     X_proj = np.copy(X)
     R_Y = re_centered_dist(Y)
@@ -115,7 +121,7 @@ def dca(X, Y, lr, epsilon):
         u_opt = optim_u_gd(U[:, k], X_proj, Y, R_X_proj, R_Y, lr, epsilon)
         U[:, k] = u_opt
         if k_test(U, k):
-            X_proj = proj_U(X_proj, U[:, 0:k])
+            X_proj = proj_U(X_proj, U[:, :k])
             k += 1
         else:
             break
