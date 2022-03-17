@@ -66,6 +66,6 @@ class KCI(IndependenceTest):
         theta_appr = var_appr / mean_appr
         pvalue = 1 - np.mean(gamma.cdf(stat, k_appr, theta_appr))
 
-        self.stat = Stat
+        self.stat = stat
 
         return IndependenceTestOutput(stat, pvalue)
