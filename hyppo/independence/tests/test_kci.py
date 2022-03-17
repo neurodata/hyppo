@@ -7,12 +7,12 @@ from .. import KCI
 
 
 class TestKCI:
-    @pytest.mark.parametrize("obs_stat", [0])
-    @pytest.mark.parametrize("obs_pvalue", [1])
+    @pytest.mark.parametrize("n", [100, 200])
+    @pytest.mark.parametrize("obs_stat", [544.69])
+    @pytest.mark.parametrize("obs_pvalue", [0])
     def test_linear_oned(self, obs_stat, obs_pvalue):
         np.random.seed(123456789)
-        x = np.random.choice([0, 1], (100, 2), p=[0.5, 0.5])
-        y = np.random.choice([0, 1], (100, 2), p=[0.5, 0.5])
+        x, y = linear(n, 1)
         stat1, pvalue1 = KCI().test(x, y)
 
         assert_almost_equal(stat1, obs_stat, decimal=2)
@@ -20,8 +20,7 @@ class TestKCI:
 
     @pytest.mark.parametrize("n", [100, 200])
     def test_rep(self, n):
-        x = np.random.choice([0, 1], (100, 2), p=[0.5, 0.5])
-        y = np.random.choice([0, 1], (100, 2), p=[0.5, 0.5])
+        x, y = linear(n, 1)
         stat1, pvalue1 = KCI().test(x, y, random_state=2)
         stat2, pvalue2 = KCI().test(x, y, random_state=2)
 
