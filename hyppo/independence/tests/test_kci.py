@@ -10,7 +10,7 @@ class TestKCI:
     @pytest.mark.parametrize("n", [100, 200])
     @pytest.mark.parametrize("obs_stat", [544.69])
     @pytest.mark.parametrize("obs_pvalue", [0])
-    def test_linear_oned(self, obs_stat, obs_pvalue):
+    def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
         x, y = linear(n, 1)
         stat1, pvalue1 = KCI().test(x, y)
