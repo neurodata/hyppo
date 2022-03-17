@@ -12,15 +12,7 @@ class KCI(IndependenceTest):
         IndependenceTest.__init__(self, **kwargs)
 
     def kernel(self, x, y):
-        theta = 1 / (width**2)
 
-        Kx = 1.0 * RBF(theta).diag(x)
-        Ky = 1.0 * RBF(theta).diag(y)
-
-        return Kx, Ky
-
-
-    def statistic(self, x, y):
         T = len(y)
 
         x = np.array(x)
@@ -37,6 +29,16 @@ class KCI(IndependenceTest):
         else:
             width = 0.3
 
+        theta = 1 / (width**2)
+
+        Kx = 1.0 * RBF(theta).diag(x)
+        Ky = 1.0 * RBF(theta).diag(y)
+
+        return Kx, Ky
+
+    def statistic(self, x, y):
+
+        T = len(y)
 
         H = np.eye(T) - np.ones((T, T)) / T
 
@@ -45,11 +47,13 @@ class KCI(IndependenceTest):
         Kx = np.matmul(np.matmul(H, Kx), H)
         Ky = np.matmul(np.matmul(H, Ky), H)
 
-        stat = np.matmul(Kx * Ky)
+        stat = np.matmul(Kx, Ky)
 
         return stat
 
     def test(self, x, y):
+
+        T = len(y)
 
         Kx, Ky = self.kernel(x, y)
         stat = self.statistic(x, y)
