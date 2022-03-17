@@ -13,6 +13,8 @@ from abc import ABC, abstractmethod
 import autograd
 import autograd.numpy as np
 
+from ..tools import compute_kern, multi_compute_kern
+
 
 class Kernel(ABC):
     """Abstract class for kernels. Inputs to all methods are numpy arrays."""
@@ -162,10 +164,11 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         # (n1, d1) = X.shape
         # (n2, d2) = Y.shape
         # assert d1==d2, 'Dimensions of the two inputs must be the same'
-        sumx2 = np.reshape(np.sum(X ** 2, 1), (-1, 1))
-        sumy2 = np.reshape(np.sum(Y ** 2, 1), (1, -1))
-        D2 = sumx2 - 2 * np.dot(X, Y.T) + sumy2
-        K = np.exp(old_div(-D2, (2.0 * self.sigma2)))
+        # sumx2 = np.reshape(np.sum(X ** 2, 1), (-1, 1))
+        # sumy2 = np.reshape(np.sum(Y ** 2, 1), (1, -1))
+        # D2 = sumx2 - 2 * np.dot(X, Y.T) + sumy2
+        # K = np.exp(old_div(-D2, (2.0 * self.sigma2)))
+        K = compute_kern(x=X, y=Y)
         return K
 
     def gradX_Y(self, X, Y, dim):
@@ -259,10 +262,11 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         -------
         a numpy array with length n
         """
-        (n1, d1) = X.shape
-        (n2, d2) = Y.shape
-        assert n1 == n2, "Two inputs must have the same number of instances"
-        assert d1 == d2, "Two inputs must have the same dimension"
-        D2 = np.sum((X - Y) ** 2, 1)
-        Kvec = np.exp(old_div(-D2, (2.0 * self.sigma2)))
+        # (n1, d1) = X.shape
+        # (n2, d2) = Y.shape
+        # assert n1 == n2, "Two inputs must have the same number of instances"
+        # assert d1 == d2, "Two inputs must have the same dimension"
+        # D2 = np.sum((X - Y) ** 2, 1)
+        # Kvec = np.exp(old_div(-D2, (2.0 * self.sigma2)))
+        Kvec = multi_compute_kern(x=X, y=Y)
         return Kvec
