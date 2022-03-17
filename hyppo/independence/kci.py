@@ -49,7 +49,7 @@ class KCI(IndependenceTest):
 
         return stat
 
-    def test(x, y):
+    def test(self, x, y):
 
         Kx, Ky = self.kernel(x, y)
         stat = self.statistic(x, y)
