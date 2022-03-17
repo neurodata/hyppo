@@ -60,9 +60,9 @@ class KCI(IndependenceTest):
 
         mean_appr = (np.trace(Kx) * np.trace(Ky)) / T
         var_appr = (
-            2 * np.trace(np.matmul(Kx, Kx)) * np.trace(np.matmul(Ky, Ky)) / T ** 2
+            2 * np.trace(np.matmul(Kx, Kx)) * np.trace(np.matmul(Ky, Ky)) / T**2
         )
-        k_appr = mean_appr ** 2 / var_appr
+        k_appr = mean_appr**2 / var_appr
         theta_appr = var_appr / mean_appr
         pvalue = 1 - np.mean(gamma.cdf(stat, k_appr, theta_appr))
 
