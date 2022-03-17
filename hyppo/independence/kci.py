@@ -29,7 +29,7 @@ class KCI(IndependenceTest):
         else:
             width = 0.3
 
-        theta = 1 / (width ** 2)
+        theta = 1 / (width**2)
 
         Kx = 1.0 * RBF(theta).__call__(x, x)
         Ky = 1.0 * RBF(theta).__call__(y, y)
