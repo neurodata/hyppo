@@ -268,7 +268,7 @@ plt.show()
 #    :Cons: - Very slow (requires training a random forest for each permutation)
 #
 # Unlike other tests, there is no ``compute_distance``
-# parameter. Instead, the number of trees can be set explicityly, and the type of
+# parameter. Instead, the number of trees can be set explicitly, and the type of
 # classifier can be set ("classifier" in the case where the return value :math:`y` is
 # categorical, and "regressor" when that is not the case). Check out
 # :class:`sklearn.ensemble.RandomForestClassifier` and
