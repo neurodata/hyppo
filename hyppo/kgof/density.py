@@ -13,7 +13,7 @@ from abc import ABC, abstractmethod
 import autograd
 import autograd.numpy as np
 from .data import DSNormal, DSIsotropicNormal
-import scipy.stats as stats
+import scipy.stats as sp
 
 
 class UnnormalizedDensity(ABC):
@@ -91,7 +91,7 @@ class IsotropicNormal(UnnormalizedDensity):
 
     def log_normalized_den(self, X):
         d = self.dim()
-        return stats.multivariate_normal.logpdf(
+        return sp.multivariate_normal.logpdf(
             X, mean=self.mean, cov=self.variance * np.eye(d)
         )
 
