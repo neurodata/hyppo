@@ -13,7 +13,7 @@ from abc import ABC, abstractmethod
 import autograd
 import autograd.numpy as np
 
-from ..tools import compute_kern, multi_compute_kern
+from ..tools import compute_kern
 
 
 class Kernel(ABC):
@@ -268,5 +268,5 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         # assert d1 == d2, "Two inputs must have the same dimension"
         # D2 = np.sum((X - Y) ** 2, 1)
         # Kvec = np.exp(old_div(-D2, (2.0 * self.sigma2)))
-        Kvec = multi_compute_kern(x=X, y=Y)
+        Kvec = compute_kern(x=X, y=Y)
         return Kvec
