@@ -72,9 +72,9 @@ def optim_u_gd(u, X, R_Y, lr, epsilon):
     """
     Gradient ascent for v^2 with respect to u
     """
-    u_opt = np.copy(u)
     R_X_u = re_centered_dist_u(u, X)
     v = dist_cov_sq(R_Y, R_X_u)
+    u_opt = np.copy(u)
     while True:
         grad = dist_cov_sq_grad(u_opt, X, R_Y)
         u_opt += lr * grad # "+=": gradient ascent
@@ -86,43 +86,54 @@ def optim_u_gd(u, X, R_Y, lr, epsilon):
             break
         else:
             v = v_opt
-    return u_opt
+    return u_opt, v_opt
 
-def k_test():
+def k_test(v, v_opt, k, p=.1):
     """
     Test if U[:, k] is significant with respect to U[:, 1:k-1]
     Permutation test not needed for single dataset X
+    Viable for single dataset?
+    Always fails for low k?
     """
+    if k == 0:
+        return True
+    else:
+        if sum(v_opt > v[:k]) / k > 1 - p: # k is also len(v[:k])
+            return True
+        else:
+            return False
 
 def proj_U(X, U, k):
     """
     Project X onto the orthogonal subspace of k dim of U
     """
     q, _ = LA.qr(U[:, :k])
-    #X_proj = np.sum(X * U[:, :k].T, axis=1) # vectorized dot
+    #X_proj = np.sum(X * U[:, :k+1].T, axis=1) # vectorized dot
     X_proj = np.zeros_like(X) # looped proj
     for n in range(X_proj.shape[0]):
         for k_i in range(k):
             X_proj[n] = X_proj[n] + (np.dot(X[n], q[:, k_i]) / np.dot(q[:, k_i], q[:, k_i])) * q[:, k_i]
     return X_proj
 
-def dca(X, Y, lr, epsilon):
+def dca(X, Y, K=None, lr=1e-1, epsilon=1e-5):
     """
     Perform DCA dimensionality reduction on X
     Single dataset X
+    K is desired dim for reduction of X
     """
     k = 0
-    U = np.zeros_like(X.T) # kmax is num of X features?
+    v = np.zeros(X.shape[1])
+    U = np.zeros_like(X.T)
     X_proj = np.copy(X)
-    R_Y = re_centered_dist(Y)
-    while True:
-        U[:, k] = clamp_u(np.random.rand(X.shape[1], 1))
-        R_X_proj = re_centered_dist(X_proj)
-        u_opt = optim_u_gd(U[:, k], X_proj, Y, R_X_proj, R_Y, lr, epsilon)
-        U[:, k] = u_opt
-        if k_test(U, k):
-            X_proj = proj_U(X_proj, U[:, :k])
-            k += 1
+    D_Y = dist_mat(Y)
+    R_Y = re_centered_dist(D_Y)
+    for k in range(0, K):
+        u_init = clamp_u(np.random.rand(X.shape[1]))
+        u_opt, v_opt = optim_u_gd(u_init, X_proj, R_Y, lr, epsilon)
+        if K is not None or k_test(v, v_opt, k):
+            U[:, k] = u_opt
+            v[k] = v_opt
+            X_proj = proj_U(X_proj, U, k+1) # then inc k, unnecessary if this is last k
         else:
             break
-    return X_proj
+    return U[:, :k+1], v[:k+1]
