@@ -52,7 +52,7 @@ It returns a set of points (features) which indicate where :math:`p` fails to fi
 # reject :math:`H_0`.
 # First construct the log density function for the model
 
-from hyppo.kgof import Data
+from hyppo.kgof import DataSource
 from hyppo.kgof import KGauss
 from hyppo.kgof import IsotropicNormal
 from hyppo.kgof import fit_gaussian_draw, meddistance
@@ -90,12 +90,6 @@ plt.plot(X[0], X[1], 'ko', label='Data from $q$')
 plt.legend()
 
 ########################################################################################
-# All the implemented tests take the data in the form of a :class:`hyppo.kgof.data.Data` object. 
-# This is just an encapsulation of the sample :math:`X`. To construct :class:`data.Data` do the following:
-
-dat = Data(X)
-
-########################################################################################
 # Conduct an FSSD kernel goodness-of-fit test for an isotropic normal density with mean 
 # 0 and variance 1. 
 
@@ -112,6 +106,6 @@ V = fit_gaussian_draw(X, J, seed=seed + 1)
 null_sim = FSSDH0SimCovObs(n_simulate=200, seed=3)
 fssd = FSSD(isonorm, k, V, null_sim=null_sim, alpha=0.01)
 
-tresult = fssd.test(dat, return_simulated_stats=True)
+tresult = fssd.test(X, return_simulated_stats=True)
 tresult
 

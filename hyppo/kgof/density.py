@@ -12,7 +12,7 @@ from past.utils import old_div
 from abc import ABC, abstractmethod
 import autograd
 import autograd.numpy as np
-from .data import DSNormal, DSIsotropicNormal
+from .datasource import DSNormal, DSIsotropicNormal
 import scipy.stats as sp
 
 
@@ -22,7 +22,8 @@ class UnnormalizedDensity(ABC):
     intended to be used to represent a model of the data for goodness-of-fit
     testing.
     """
-
+    # this class contaibns some operations to be computed on unnormalized densities
+    # log of the density, normalized log density, gradients of log density, etc..
     @abstractmethod
     def log_den(self, X):
         """

@@ -9,7 +9,6 @@ from ..fssd import (
 )
 from .._utils import meddistance, fit_gaussian_draw, constrain
 from ..kernel import KGauss
-# from ..data import Data
 from ..density import IsotropicNormal
 from ..h0simulator import FSSDH0SimCovObs, FSSDH0SimCovDraw
 
@@ -37,13 +36,6 @@ class TestFSSD:
 
         rng = default_rng(seed)
         X = rng.standard_normal(size=(n, d)) * np.sqrt(draw_variance) + draw_mean
-        # dat = Data(X)
-        # dat.dim()
-        # dat.sample_size()
-        # dat.n()
-        # dat.split_tr_te()
-        # dat.subsample(n=4)
-        # dat.clone()
 
         # Test
         sig2 = meddistance(X, subsample=1000) ** 2
@@ -83,7 +75,6 @@ class TestFSSD:
         draw_variance = variance + 1
         rng = default_rng(seed)
         X = rng.standard_normal(size=(n, d)) * np.sqrt(draw_variance) + draw_mean
-        # dat = Data(X)
 
         # Test
         sig2 = meddistance(X, subsample=1000) ** 2

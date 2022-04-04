@@ -5,7 +5,7 @@ from scipy.linalg.misc import norm
 
 # from ..data import DSNormal
 from ..density import IsotropicNormal, Normal
-import scipy.stats as stats
+import scipy.stats as sp
 from numpy.random import default_rng
 
 import pytest
@@ -64,12 +64,6 @@ class TestNormal:
         X0 = X - mean
         X0prec = np.dot(X0, prec)
         my_log_dens = old_div(-np.sum(X0prec * X0, 1), 2.0)
-
-        # ds_norm = DSNormal(test_mean, cov)
-        # ds_norm.sample(n=10)
-        # ds_norm.dim()
-        # norm.get_datasource()
-        # norm.dim()
 
         # check correctness
         testing.assert_almost_equal(log_dens, my_log_dens)
