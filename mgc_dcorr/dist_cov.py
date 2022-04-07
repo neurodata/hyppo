@@ -28,9 +28,9 @@ def re_centered_dist_u(u, X):
 
 def dist_cov_sq(R_X, R_Y):
     """
-    Are X and Y same length?
+    Uses re-centered distance covariance matrices
     """
-    N = R_X.shape[0] # if R square and same length
+    N = R_X.shape[0] # R must be square and same length
     v_sum = 0.
     for i in range(N):
         for j in range(N):
@@ -92,8 +92,8 @@ def k_test(v, v_opt, k, p=.1):
     """
     Test if U[:, k] is significant with respect to U[:, 1:k-1]
     Permutation test not needed for single dataset X
-    Viable for single dataset?
-    Always fails for low k?
+    TODO: Viable for single dataset?
+    TODO: Always fails for low k?
     """
     if k == 0:
         return True
