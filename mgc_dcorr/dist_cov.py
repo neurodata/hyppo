@@ -45,10 +45,7 @@ def dist_cov_sq_grad(u, X, R_Y):
         sign_term = np.squeeze(np.sign((X[i] - X[j]) @ u))
         #print(f"X shape: {(X[i] - X[j]).T.shape}")
         #print(f"sign term: {sign_term}")
-        if sign_term.shape == ():
-            return (X[i] - X[j]).T * sign_term.item() # singleton to scaler
-        else:
-            return (X[i] - X[j]).T @ sign_term
+        return np.dot((X[i] - X[j]).T, sign_term)
     N = R_Y.shape[0]
     grad_sum = 0.
     for i in range(N):
@@ -61,12 +58,9 @@ def dist_cov_sq_grad(u, X, R_Y):
             )
     return (1 / N**2) * grad_sum.T
 
-def clamp_u(u):
+def normalize_u(u):
     norm = LA.norm(u)
-    if norm > 1:
-        return  u / norm
-    else:
-        return u
+    return  u / norm
 
 def optim_u_gd(u, X, R_Y, lr, epsilon):
     """
@@ -78,7 +72,7 @@ def optim_u_gd(u, X, R_Y, lr, epsilon):
     while True:
         grad = dist_cov_sq_grad(u_opt, X, R_Y)
         u_opt += lr * grad # "+=": gradient ascent
-        u_opt = clamp_u(u_opt)
+        u_opt = normalize_u(u_opt)
         R_X_u_opt = re_centered_dist_u(u_opt, X)
         v_opt = dist_cov_sq(R_Y, R_X_u_opt)
         delta = LA.norm(v_opt- v)
@@ -128,7 +122,7 @@ def dca(X, Y, K=None, lr=1e-1, epsilon=1e-5):
     D_Y = dist_mat(Y)
     R_Y = re_centered_dist(D_Y)
     for k in range(0, K):
-        u_init = clamp_u(np.random.rand(X.shape[1]))
+        u_init = normalize_u(np.random.rand(X.shape[1]))
         u_opt, v_opt = optim_u_gd(u_init, X_proj, R_Y, lr, epsilon)
         if K is not None or k_test(v, v_opt, k):
             U[:, k] = u_opt
