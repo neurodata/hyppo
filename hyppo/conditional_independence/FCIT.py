@@ -9,10 +9,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import ShuffleSplit
 
-from .base import IndependenceTest, IndependenceTestOutput
+from .base import ConditionalIndependenceTest, ConditionalIndependenceTestOutput
 
 
-class FCIT(IndependenceTest):
+class FCIT(ConditionalIndependenceTest):
 
     def __init__(self, model, cv_grid, num_perm=8, prop_test=0.1, discrete=(False, False)):
 
@@ -21,7 +21,7 @@ class FCIT(IndependenceTest):
         self.num_perm = num_perm
         self.prop_test = prop_test
         self.discrete = discrete
-        IndependenceTest.__init__(self)
+        ConditionalIndependenceTest.__init__(self)
 
 
     def statistic(self, x, y, z):
@@ -95,7 +95,7 @@ class FCIT(IndependenceTest):
 
         stat, pvalue = self.statistic(x, y, z)
 
-        return IndependenceTestOutput(stat, pvalue)
+        return ConditionalIndependenceTestOutput(stat, pvalue)
 
 
 def cross_val(x, y, z, cv_grid, model, prop_test):
