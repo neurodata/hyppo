@@ -81,7 +81,7 @@ class TestFSSD:
         k = KGauss(sig_square)
 
         # random test locations
-        V = fit_gaussian_draw(X, J, seed=seed+1)
+        V = fit_gaussian_draw(X, J, seed=seed + 1)
 
         null_sim = FSSDH0SimCovObs(n_simulate=200, seed=3)
         fssd = FSSD(isonorm, k, V, null_sim=null_sim, alpha=alpha)
