@@ -15,7 +15,7 @@ class TestKGauss:
         rng = default_rng(29)
         X = rng.standard_normal(size=(n, d)) * 3
         k = KGauss(sigma2=1)
-        K = k.eval(X, X) # tests usage of compute_kern
+        K = k.eval(X, X)  # tests usage of compute_kern
 
         testing.assert_almost_equal(K.shape, (n, n))
 
@@ -35,7 +35,7 @@ class TestKGauss:
         k.gradXY_sum(X, Y)
         k.pair_gradX_Y(X, Y)
         k.pair_gradXY_sum(X, Y)
-        k.pair_eval(X, Y) # tests usage of multi_compute_kern
+        k.pair_eval(X, Y)  # tests usage of multi_compute_kern
         # check correctness
         K = k.eval(X, y[np.newaxis, :])
         myG = -K / sigma2 * (X - y)

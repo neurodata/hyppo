@@ -14,6 +14,7 @@ from ._utils import tr_te_indices
 import scipy.stats as sp
 from numpy.random import default_rng
 
+
 class DataSource(ABC):
     """
     A source of data allowing resampling. Subclasses may prefix

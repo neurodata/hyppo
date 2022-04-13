@@ -22,6 +22,7 @@ class UnnormalizedDensity(ABC):
     intended to be used to represent a model of the data for goodness-of-fit
     testing.
     """
+
     # this class contaibns some operations to be computed on unnormalized densities
     # log of the density, normalized log density, gradients of log density, etc..
     @abstractmethod

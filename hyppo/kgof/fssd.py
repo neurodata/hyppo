@@ -199,9 +199,7 @@ class FSSD(GofTest):
         return Xi
 
 
-def power_criterion(
-    p, X, k, test_locs, reg=1e-2, use_unbiased=True, use_2terms=False
-):
+def power_criterion(p, X, k, test_locs, reg=1e-2, use_unbiased=True, use_2terms=False):
     r"""
     Compute the mean and standard deviation of the statistic under H1.
 
