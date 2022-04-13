@@ -125,7 +125,7 @@ def cross_val(x, y, z, cv_grid, model, prop_test):
         x (n_samples, x_dim): Input data array.
         y (n_samples, y_dim): Output data array.
         z (n_samples, z_dim): Optional auxiliary input data.
-        cv_grid (list): List of hyperparameter values to try in CV.
+        cv_grid (dict): List of hyperparameter values to try in CV.
         regressor (sklearn classifier): Which regression model to use.
         prop_test (float): Proportion of validation data to use.
     Returns:
