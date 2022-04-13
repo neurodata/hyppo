@@ -148,6 +148,11 @@ workflows:
           requires:
             - "v3.8"
       - test-module:
+          name: "conditional_independence"
+          module: "conditional_independence"
+          requires:
+            - "v3.8"
+      - test-module:
           name: "tools"
           module: "tools"
           requires:
@@ -158,6 +163,7 @@ workflows:
             - "d_variate"
             - "ksample"
             - "time_series"
+            - "conditional_independence"
             - "discrim"
             - "tools"
           filters:
