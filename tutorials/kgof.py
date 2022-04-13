@@ -61,24 +61,26 @@ import matplotlib.pyplot as plt
 import autograd.numpy as np
 from numpy.random import default_rng
 
+
 def isogauss_log_den(X):
-  mean = np.zeros(2)
-  variance = 1
-  unden = -np.sum((X - mean)**2, 1) / (2.0 * variance)
-  return unden
+    mean = np.zeros(2)
+    variance = 1
+    unden = -np.sum((X - mean) ** 2, 1) / (2.0 * variance)
+    return unden
+
 
 ########################################################################################
 # This function computes the log of an unnormalized density. This works fine as this test
-# only requires a :math:`\nabla_{\mathbf{x}} \log p(\mathbf{x})` which does not depend on 
-# the normalizer. The gradient :math:`\nabla_{\mathbf{x}} \log p(\mathbf{x})` will be 
-# automatically computed by autograd. In this kgof package, a model :math:`p` can be 
+# only requires a :math:`\nabla_{\mathbf{x}} \log p(\mathbf{x})` which does not depend on
+# the normalizer. The gradient :math:`\nabla_{\mathbf{x}} \log p(\mathbf{x})` will be
+# automatically computed by autograd. In this kgof package, a model :math:`p` can be
 # specified by implementing the class :class:`hyppo.kgof.density.UnnormalizedDensity`. Implementing
-# this directly is a bit tedious, however. Construct an :class:`UnnormalizedDensity` which will 
+# this directly is a bit tedious, however. Construct an :class:`UnnormalizedDensity` which will
 # represent a Gaussian model. All the implemented goodness-of-fit tests take this object as input.
 
 # Next, draw a sample from q.
 # Drawing n points from q
-m = 1 # If m = 0, p = q and H_0 is true
+m = 1  # If m = 0, p = q and H_0 is true
 
 seed = 4
 rng = default_rng(seed)
@@ -86,12 +88,12 @@ n = 400
 X = rng.standard_normal(size=(n, 2)) + np.array([m, 0])
 
 # Plot the data from q
-plt.plot(X[0], X[1], 'ko', label='Data from $q$')
+plt.plot(X[0], X[1], "ko", label="Data from $q$")
 plt.legend()
 
 ########################################################################################
-# Conduct an FSSD kernel goodness-of-fit test for an isotropic normal density with mean 
-# 0 and variance 1. 
+# Conduct an FSSD kernel goodness-of-fit test for an isotropic normal density with mean
+# 0 and variance 1.
 
 mean = 0
 variance = 1
@@ -108,4 +110,3 @@ fssd = FSSD(isonorm, k, V, null_sim=null_sim, alpha=0.01)
 
 tresult = fssd.test(X, return_simulated_stats=True)
 tresult
-
