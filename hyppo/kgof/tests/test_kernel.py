@@ -38,10 +38,10 @@ class TestKGauss:
         k.pair_eval(X, Y)  # tests usage of multi_compute_kern
         # check correctness
         K = k.eval(X, y[np.newaxis, :])
-        myG = -K / sigma2 * (X - y)
+        modG = -K / sigma2 * (X - y)
 
-        testing.assert_equal(G.shape, myG.shape)
-        testing.assert_almost_equal(G, myG)
+        testing.assert_equal(G.shape, modG.shape)
+        testing.assert_almost_equal(G, modG)
 
     @pytest.mark.parametrize("n", [11])
     @pytest.mark.parametrize("d", [3, 1])
@@ -52,16 +52,16 @@ class TestKGauss:
         k = KGauss(sigma2=sigma2)
 
         # n x n
-        myG = np.zeros((n, n))
+        modG = np.zeros((n, n))
         K = k.eval(X, X)
         for i in range(n):
             for j in range(n):
                 diffi2 = np.sum((X[i, :] - X[j, :]) ** 2)
                 # myG[i, j] = -diffi2*K[i, j]/(sigma2**2)+ d*K[i, j]/sigma2
-                myG[i, j] = K[i, j] / sigma2 * (d - diffi2 / sigma2)
+                modG[i, j] = K[i, j] / sigma2 * (d - diffi2 / sigma2)
 
         # check correctness
         G = k.gradXY_sum(X, X)
 
-        testing.assert_equal(G.shape, myG.shape)
-        testing.assert_almost_equal(G, myG)
+        testing.assert_equal(G.shape, modG.shape)
+        testing.assert_almost_equal(G, modG)

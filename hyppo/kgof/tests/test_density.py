@@ -39,10 +39,10 @@ class TestIsotropicNormal:
 
         isonorm = IsotropicNormal(mean, variance)
         grad_log = isonorm.grad_log(X)
-        my_grad_log = -(X - mean) / variance
+        mod_grad_log = -(X - mean) / variance
 
         # check correctness
-        testing.assert_almost_equal(grad_log, my_grad_log)
+        testing.assert_almost_equal(grad_log, mod_grad_log)
 
 
 class TestNormal:
@@ -63,7 +63,7 @@ class TestNormal:
         prec = np.dot(np.dot(V, np.diag(old_div(1.0, E))), V.T)
         X0 = X - mean
         X0prec = np.dot(X0, prec)
-        my_log_dens = old_div(-np.sum(X0prec * X0, 1), 2.0)
+        mod_log_dens = old_div(-np.sum(X0prec * X0, 1), 2.0)
 
         # check correctness
-        testing.assert_almost_equal(log_dens, my_log_dens)
+        testing.assert_almost_equal(log_dens, mod_log_dens)

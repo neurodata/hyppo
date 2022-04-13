@@ -77,11 +77,11 @@ class TestFSSD:
         X = rng.standard_normal(size=(n, d)) * np.sqrt(draw_variance) + draw_mean
 
         # Test
-        sig2 = meddistance(X, subsample=1000) ** 2
-        k = KGauss(sig2)
+        sig_square = meddistance(X, subsample=1000) ** 2
+        k = KGauss(sig_square)
 
         # random test locations
-        V = fit_gaussian_draw(X, J, seed=seed + 1)
+        V = fit_gaussian_draw(X, J, seed=seed+1)
 
         null_sim = FSSDH0SimCovObs(n_simulate=200, seed=3)
         fssd = FSSD(isonorm, k, V, null_sim=null_sim, alpha=alpha)
