@@ -30,12 +30,9 @@ def dist_cov_sq(R_X, R_Y):
     """
     Uses re-centered distance covariance matrices
     """
+    v_sum = np.sum(R_X * R_Y)
     N = R_X.shape[0] # R must be square and same length
-    v_sum = 0.
-    for i in range(N):
-        for j in range(N):
-            v_sum += R_X[i, j] * R_Y[i, j]
-    return (1 / N**2) * v_sum
+    return v_sum / N**2
 
 def dist_cov_sq_grad(u, X, R_Y):
     """
@@ -65,12 +62,37 @@ def normalize_u(u):
 def optim_u_gd(u, X, R_Y, lr, epsilon):
     """
     Gradient ascent for v^2 with respect to u
+    TODO: Regularization?
     """
     R_X_u = re_centered_dist_u(u, X)
     v = dist_cov_sq(R_Y, R_X_u)
     u_opt = np.copy(u)
     while True:
         grad = dist_cov_sq_grad(u_opt, X, R_Y)
+        u_opt += lr * grad # "+=": gradient ascent
+        u_opt = normalize_u(u_opt)
+        R_X_u_opt = re_centered_dist_u(u_opt, X)
+        v_opt = dist_cov_sq(R_Y, R_X_u_opt)
+        delta = LA.norm(v_opt- v)
+        if delta <= epsilon:
+            break
+        else:
+            v = v_opt
+    return u_opt, v_opt
+
+def optim_u_gd_stochastic(u, X, R_Y, lr, epsilon):
+    """
+    Stochastic gradient ascent for v^2 with respect to u
+    TODO: Regularization?
+    """
+    sample_ct = X.shape[0]
+    R_X_u = re_centered_dist_u(u, X)
+    v = dist_cov_sq(R_Y, R_X_u)
+    u_opt = np.copy(u)
+    while True:
+        sto_sample = np.random.randint(0, sample_ct)
+        X_sto = X[sto_sample]
+        grad = dist_cov_sq_grad(u_opt, X_sto, R_Y[sto_sample])
         u_opt += lr * grad # "+=": gradient ascent
         u_opt = normalize_u(u_opt)
         R_X_u_opt = re_centered_dist_u(u_opt, X)
