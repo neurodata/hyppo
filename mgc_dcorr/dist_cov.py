@@ -84,15 +84,24 @@ def optim_u_gd(u, X, R_Y, lr, epsilon):
     Gradient ascent for v^2 with respect to u
     TODO: Regularization?
     """
+    R_X_u = re_centered_dist_u(u, X)
+    v = dist_cov_sq(R_Y, R_X_u)
     u_opt = np.copy(u)
+    #iter_ct = 0
     while True:
+        #iter_ct += 1
+        #print(iter_ct)
         grad = dist_cov_sq_grad(u_opt, X, R_Y)
-        delta = lr * grad
-        u_opt += delta # "+=": gradient ascent
+        u_opt += lr * grad # "+=": gradient ascent
         u_opt = normalize_u(u_opt)
-        if np.sum(delta) <= epsilon:
+        R_X_u_opt = re_centered_dist_u(u_opt, X)
+        v_opt = dist_cov_sq(R_Y, R_X_u_opt)
+        delta = np.mean(np.square(v_opt - v)) #MSE
+        if delta <= epsilon:
             break
-    return u_opt
+        else:
+            v = v_opt
+    return u_opt, v_opt
 
 def optim_u_gd_stochastic(u, X, R_Y, lr, epsilon):
     """
@@ -110,7 +119,7 @@ def optim_u_gd_stochastic(u, X, R_Y, lr, epsilon):
         u_opt = normalize_u(u_opt)
         R_X_u_opt = re_centered_dist_u(u_opt, X)
         v_opt = dist_cov_sq(R_Y, R_X_u_opt)
-        delta = LA.norm(v_opt- v)
+        delta = np.mean(np.square(v_opt - v)) #MSE
         if delta <= epsilon:
             break
         else:
@@ -158,10 +167,11 @@ def dca(X, Y, K=None, lr=1e-1, epsilon=1e-5):
     R_Y = re_centered_dist(D_Y)
     for k in range(0, K):
         u_init = normalize_u(np.random.rand(X.shape[1]))
-        u_opt = optim_u_gd(u_init, X_proj, R_Y, lr, epsilon)
-        R_X_u_opt = re_centered_dist_u(u_opt, X)
-        v_opt = dist_cov_sq(R_Y, R_X_u_opt)
-        U[:, k] = u_opt
-        v[k] = v_opt
-        X_proj = proj_U(X_proj, U, k+1) # then inc k, unnecessary if this is last k
+        u_opt, v_opt = optim_u_gd(u_init, X_proj, R_Y, lr, epsilon)
+        if K is not None or k_test(v, v_opt, k):
+            U[:, k] = u_opt
+            v[k] = v_opt
+            X_proj = proj_U(X_proj, U, k+1) # then inc k, unnecessary if this is last k
+        else:
+            break
     return U[:, :k+1], v[:k+1]
