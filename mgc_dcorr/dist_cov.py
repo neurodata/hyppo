@@ -167,7 +167,7 @@ def dca(X, Y, K=None, lr=1e-1, epsilon=1e-5):
     R_Y = re_centered_dist(D_Y)
     for k in range(0, K):
         u_init = normalize_u(np.random.rand(X.shape[1]))
-        u_opt, v_opt = optim_u_gd(u_init, X_proj, R_Y, lr, epsilon)
+        u_opt, v_opt = optim_u_gd_stochastic(u_init, X_proj, R_Y, lr, epsilon)
         if K is not None or k_test(v, v_opt, k):
             U[:, k] = u_opt
             v[k] = v_opt
