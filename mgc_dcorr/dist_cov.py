@@ -36,7 +36,7 @@ def dist_cov_sq(R_X, R_Y):
 
 def dist_cov_sq_grad(u, X, R_Y):
     """
-    Gradient for use in projected stochastic gradient descent optimization
+    Gradient for use in projected gradient descent optimization
     """
     def delta(u, i, j):
         sign_term = np.squeeze(np.sign((X[i] - X[j]) @ u))
@@ -53,6 +53,26 @@ def dist_cov_sq_grad(u, X, R_Y):
                 - delta(u, i, range(N))
                 + delta(u, range(N), range(N))
             )
+    return (1 / N**2) * grad_sum.T
+
+def dist_cov_sq_grad_stochastic(u, X, R_Y, sto_sample):
+    """
+    Gradient for use in projected stochastic gradient descent optimization
+    """
+    def delta(u, i, j):
+        sign_term = np.squeeze(np.sign((X[i] - X[j]) @ u))
+        #print(f"X shape: {(X[i] - X[j]).T.shape}")
+        #print(f"sign term: {sign_term}")
+        return np.dot((X[i] - X[j]).T, sign_term)
+    N = R_Y.shape[0]
+    grad_sum = 0.
+    for j in range(N):
+        grad_sum += R_Y[j] * (
+            delta(u, sto_sample, j)
+            - delta(u, range(N), j)
+            - delta(u, sto_sample, range(N))
+            + delta(u, range(N), range(N))
+        )
     return (1 / N**2) * grad_sum.T
 
 def normalize_u(u):
@@ -91,8 +111,7 @@ def optim_u_gd_stochastic(u, X, R_Y, lr, epsilon):
     u_opt = np.copy(u)
     while True:
         sto_sample = np.random.randint(0, sample_ct)
-        X_sto = X[sto_sample]
-        grad = dist_cov_sq_grad(u_opt, X_sto, R_Y[sto_sample])
+        grad = dist_cov_sq_grad_stochastic(u_opt, X, R_Y[sto_sample], sto_sample) # TODO: rewrite this for single sample?
         u_opt += lr * grad # "+=": gradient ascent
         u_opt = normalize_u(u_opt)
         R_X_u_opt = re_centered_dist_u(u_opt, X)
@@ -145,7 +164,7 @@ def dca(X, Y, K=None, lr=1e-1, epsilon=1e-5):
     R_Y = re_centered_dist(D_Y)
     for k in range(0, K):
         u_init = normalize_u(np.random.rand(X.shape[1]))
-        u_opt, v_opt = optim_u_gd(u_init, X_proj, R_Y, lr, epsilon)
+        u_opt, v_opt = optim_u_gd_stochastic(u_init, X_proj, R_Y, lr, epsilon)
         if K is not None or k_test(v, v_opt, k):
             U[:, k] = u_opt
             v[k] = v_opt
