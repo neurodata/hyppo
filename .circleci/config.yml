@@ -13,7 +13,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v3-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v2-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
@@ -22,7 +22,7 @@ jobs:
             pip install --upgrade pip
             pip install -r dev-requirements.txt
       - save_cache:
-          key: v3-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v2-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
           paths:
             - "venv"
       - run:
@@ -36,11 +36,10 @@ jobs:
         type: string
     docker:
       - image: cimg/python:3.8
-    parallelism: 4
     steps:
       - checkout
       - restore_cache:
-          key: v3-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v2-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
@@ -49,7 +48,7 @@ jobs:
             pip install -r dev-requirements.txt
             pip install -e .
       - save_cache:
-          key: v3-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v2-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
           paths:
             - "venv"
       - run:
@@ -71,11 +70,10 @@ jobs:
   deploy:
     docker:
       - image: cimg/python:3.8
-    parallelism: 4
     steps:
       - checkout
       - restore_cache:
-          key: v3-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v2-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
       - run:
           name: install python dependencies
           command: |
@@ -84,7 +82,7 @@ jobs:
             pip install -r dev-requirements.txt
             pip install -e .
       - save_cache:
-          key: v3-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
+          key: v2-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
           paths:
             - "venv"
       - run:
@@ -108,7 +106,6 @@ jobs:
           command: |
             . venv/bin/activate
             twine upload dist/*
-
 workflows:
   build-test-deploy:
     jobs:
@@ -150,8 +147,8 @@ workflows:
           requires:
             - "v3.8"
       - test-module:
-          name: "kgof"
-          module: "kgof"
+          name: "conditional_independence"
+          module: "conditional_independence"
           requires:
             - "v3.8"
       - test-module:
@@ -165,8 +162,8 @@ workflows:
             - "d_variate"
             - "ksample"
             - "time_series"
+            - "conditional_independence"
             - "discrim"
-            - "kgof"
             - "tools"
           filters:
             tags:
