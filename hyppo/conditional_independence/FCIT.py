@@ -8,35 +8,42 @@ from sklearn.preprocessing import StandardScaler
 
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import ShuffleSplit
+from sklearn.tree import DecisionTreeRegressor
 
 from .base import ConditionalIndependenceTest, ConditionalIndependenceTestOutput
 
 
 class FCIT(ConditionalIndependenceTest):
     r"""
-     Fast Conditional Independence test statistic and p-value
+    Fast Conditional Independence test statistic and p-value
 
-     The Fast Conditional Independence Test is a non-parametric
-     conditional independence test. :footcite:p:`chalupka2018FastConditionalIndependence`.
+    The Fast Conditional Independence Test is a non-parametric
+    conditional independence test. :footcite:p:`chalupka2018FastConditionalIndependence`.
 
-     Parameters
-     ----------
-     model: Sklearn model object
-
-
-     cv_grid: dict
-        Dictionary of parameters to cross-validate over.
-
-     Notes
-     -----
+    Parameters
+    ----------
+    model: Sklearn model object
 
 
-     References
-     ----------
-     .. footbibliography::
-     """
+    cv_grid: dict
+       Dictionary of parameters to cross-validate over.
+
+    Notes
+    -----
+
+
+    References
+    ----------
+    .. footbibliography::
+    """
+
     def __init__(
-        self, model, cv_grid, num_perm=8, prop_test=0.1, discrete=(False, False)
+        self,
+        model=DecisionTreeRegressor(),
+        cv_grid={"min_samples_split": [2, 8, 64, 512, 1e-2, 0.2, 0.4]},
+        num_perm=8,
+        prop_test=0.1,
+        discrete=(False, False),
     ):
 
         self.model = model
@@ -46,7 +53,7 @@ class FCIT(ConditionalIndependenceTest):
         self.discrete = discrete
         ConditionalIndependenceTest.__init__(self)
 
-    def statistic(self, x, y, z):
+    def statistic(self, x, y, z=None):
 
         n_samples = x.shape[0]
         n_test = int(n_samples * self.prop_test)
@@ -98,7 +105,7 @@ class FCIT(ConditionalIndependenceTest):
 
         return t, p_value
 
-    def test(self, x, y, z):
+    def test(self, x, y, z=None):
 
         n_samples = x.shape[0]
 

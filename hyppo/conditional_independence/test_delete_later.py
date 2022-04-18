@@ -1,6 +1,7 @@
 import numpy as np
 from hyppo.conditional_independence import FCIT
 
+from hyppo.tools import rot_ksamp
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.linear_model import LinearRegression
 
@@ -60,3 +61,10 @@ print(FCIT(model=model, cv_grid=cv_grid).test(x1.T, y1.T, z1))
 
 np.random.seed(122)
 print(FCIT(model=model, cv_grid=cv_grid).test(x2.T, y2.T, z2))
+
+
+# np.random.seed(123456789)
+# x, y = rot_ksamp("linear", 1000, 1, k=2)
+
+# np.random.seed(123456789)
+# print(FCIT(model=model, cv_grid=cv_grid).test(x,y))
