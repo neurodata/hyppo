@@ -5,7 +5,7 @@ from hyppo.tools import rot_ksamp
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.linear_model import LinearRegression
 
-dim = 1
+dim = 2
 n = 100000
 np.random.seed(12)
 """
@@ -24,10 +24,12 @@ A -> dim x dim
 A1 = np.random.normal(loc=0, scale=1, size=dim * dim).reshape(dim, dim)
 B1 = np.random.normal(loc=0, scale=1, size=dim * dim).reshape(dim, dim)
 
+#np.random.seed(122)
 x1 = (
     A1 @ z1.T
     + np.random.multivariate_normal(mean=np.zeros(dim), cov=np.eye(dim), size=(n)).T
 )
+#np.random.seed(122)
 y1 = (
     B1 @ z1.T
     + np.random.multivariate_normal(mean=np.zeros(dim), cov=np.eye(dim), size=(n)).T
@@ -41,10 +43,12 @@ z2 = np.random.multivariate_normal(mean=np.zeros(dim), cov=np.eye(dim), size=(n)
 A2 = np.random.normal(loc=0, scale=1, size=dim * dim).reshape(dim, dim)
 B2 = np.random.normal(loc=0, scale=1, size=dim * dim).reshape(dim, dim)
 
+#np.random.seed(122)
 x2 = (
     A2 @ z2.T
     + np.random.multivariate_normal(mean=np.zeros(dim), cov=np.eye(dim), size=(n)).T
 )
+#np.random.seed(122)
 y2 = (
     B2 @ x2
     + np.random.multivariate_normal(mean=np.zeros(dim), cov=np.eye(dim), size=(n)).T

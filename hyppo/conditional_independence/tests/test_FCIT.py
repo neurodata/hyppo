@@ -27,6 +27,7 @@ class TestFCIT:
         "dim, n, obs_stat, obs_pvalue",
         [
             (1, 100000, -0.16024, 0.56139),
+            (2, 100000, -4.59882, 0.99876)
         ],
     )
     def test_null(self, dim, n, obs_stat, obs_pvalue):
@@ -59,6 +60,7 @@ class TestFCIT:
         "dim, n, obs_stat, obs_pvalue",
         [
             (1, 100000, 89.271754, 2.91447597e-12),
+            (2, 100000, 161.35165, 4.63412957e-14),
         ],
     )
     def test_alternative(self, dim, n, obs_stat, obs_pvalue):
