@@ -8,7 +8,7 @@ from .. import KCI
 
 class TestKCI:
     @pytest.mark.parametrize("n", [100, 200])
-    @pytest.mark.parametrize("obs_stat", [544.69])
+    @pytest.mark.parametrize("obs_stat", [126.128])
     @pytest.mark.parametrize("obs_pvalue", [0])
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
@@ -21,8 +21,8 @@ class TestKCI:
     @pytest.mark.parametrize("n", [100, 200])
     def test_rep(self, n):
         x, y = linear(n, 1)
-        stat1, pvalue1 = KCI().test(x, y, random_state=2)
-        stat2, pvalue2 = KCI().test(x, y, random_state=2)
+        stat1, pvalue1 = KCI().test(x, y)
+        stat2, pvalue2 = KCI().test(x, y)
 
         assert stat1 == stat2
         assert pvalue1 == pvalue2
