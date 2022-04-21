@@ -11,7 +11,7 @@ class HHG(KSampleTest):
     """
     def __init__(self, compute_distance="euclidean", mode ="CM", **kwargs):
        self.compute_distance = compute_distance
-       self.mode = "CM"
+       self.mode = mode
        KSampleTest.__init__(self, compute_distance=compute_distance, **kwargs)
        
     def statistic(self, y1, y2):
