@@ -73,8 +73,8 @@ class CCA(IndependenceTest):
 
         # if 1-d, don't calculate the svd
         if varx.size == 1 or vary.size == 1 or covar.size == 1:
-            covar = np.sum(covar ** 2)
-            stat = covar / np.sqrt(np.sum(varx ** 2) * np.sum(vary ** 2))
+            covar = np.sum(covar**2)
+            stat = covar / np.sqrt(np.sum(varx**2) * np.sum(vary**2))
         else:
             covar = np.sum(np.linalg.svd(covar, 1)[1] ** 2)
             stat = covar / np.sqrt(

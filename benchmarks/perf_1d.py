@@ -123,7 +123,7 @@ plot_wall_times()
 # The following shows the code that was used to compute the R test statistics.
 # Certain lines were commented out depending on whether or not they were useful.
 #
-# .. code-block::
+# .. code-block:: R
 #
 #    rm(list=ls())
 #
