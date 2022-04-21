@@ -7,8 +7,8 @@ from .. import KCI
 
 
 class TestKCI:
-    @pytest.mark.parametrize("n", [100, 200])
-    @pytest.mark.parametrize("obs_stat", [126.128])
+    @pytest.mark.parametrize("n", [100])
+    @pytest.mark.parametrize("obs_stat", [544.691])
     @pytest.mark.parametrize("obs_pvalue", [0])
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
