@@ -58,11 +58,16 @@ def dist_mat_diff(X):
     """
     Vector X to distance matrix D
     """
-    N = len(X)
-    D_diff = np.zeros((N, N, N))
+    N = X.shape[0]
+    P = X.shape[1]
+    D_diff = np.zeros((N, N, P))
     for i in range(N):
         for j in range(N):
-            D_diff[i, j] = (X[i] - X[j]) / LA.norm(X[i] - X[j])
+            diff = X[i] - X[j]
+            if (diff == 0).all():
+                D_diff[i, j] = diff
+            else:
+                D_diff[i, j] = diff / LA.norm(X[i] - X[j])
     return D_diff
 
 @njit(parallel=True)
@@ -83,9 +88,27 @@ def re_centered_dist(D):
             + m_mean
     return R
 
-@njit()
+@njit(parallel=True)
+def dist_mat_vec(X):
+    """
+    Vector X to distance matrix D/
+    """
+    N = len(X)
+    D = np.zeros((N, N))
+    for i in range(N):
+        for j in range(N):
+            D[i, j] = X[i] - X[j] # L2
+    return D
+
+#@njit(parallel=True)
 def re_centered_dist_u(u, X):
-    return  re_centered_dist(dist_mat(X @ u))
+    """
+    X @ u is vector, not matrix?
+    """
+    u_X = np.dot(X, u)
+    D_u = dist_mat_vec(u_X)
+    R_u = re_centered_dist(D_u)
+    return  R_u
 
 @njit(parallel=True)
 def dist_cov_sq(R_X, R_Y):
@@ -96,7 +119,7 @@ def dist_cov_sq(R_X, R_Y):
     N = R_X.shape[0] # R must be square and same length
     return v_sum / N**2
 
-@njit(parallel=True)
+#@njit(parallel=True)
 def dist_cov_sq_grad(u, X, R_Y):
     """
     Gradient for use in projected gradient descent optimization
@@ -146,7 +169,7 @@ def normalize_u(u):
     norm = LA.norm(u)
     return  u / norm
 
-@njit(parallel=True)
+#@njit(parallel=True)
 def optim_u_gd(u, X, R_Y, lr, epsilon):
     """
     Gradient ascent for v^2 with respect to u
@@ -160,7 +183,7 @@ def optim_u_gd(u, X, R_Y, lr, epsilon):
         #iter_ct += 1
         #print(iter_ct)
         grad = dist_cov_sq_grad(u_opt, X, R_Y)
-        u_opt += lr * grad # "+=": gradient ascent
+        u_opt = u_opt + lr * grad # "+=": gradient ascent
         u_opt = normalize_u(u_opt)
         R_X_u_opt = re_centered_dist_u(u_opt, X)
         v_opt = dist_cov_sq(R_Y, R_X_u_opt)
