@@ -22,7 +22,7 @@ class FCIT(ConditionalIndependenceTest):
 
     Parameters
     ----------
-    model: Sklearn model object
+    model: Sklearn regressor
 
 
     cv_grid: dict
@@ -54,6 +54,19 @@ class FCIT(ConditionalIndependenceTest):
         ConditionalIndependenceTest.__init__(self)
 
     def statistic(self, x, y, z=None):
+        r"""
+        Calculates the FCIT test statistic.
+
+        Parameters
+        ----------
+        x,y,z : ndarray of float
+            Input data matrices.
+
+        Returns
+        -------
+        stat : float
+            The computed FCIT statistic.
+        """
 
         n_samples = x.shape[0]
         n_test = int(n_samples * self.prop_test)
