@@ -17,18 +17,29 @@ def mean_numba_axis1(A):
     return np.array(res)
 
 @njit(parallel=True)
-def norm_numba_axis0(A):
-    res = []
-    for i in prange(A.shape[0]):
-        res.append(LA.norm(A[:, i]))
-    return np.array(res)
+def mean_numba_axis0_3d(A):
+    N = A.shape[0]
+    res = np.zeros((N, N))
+    for i in prange(N):
+        res[i] = mean_numba_axis1(A[:, i, :])
+    return res
 
 @njit(parallel=True)
-def norm_numba_axis1(A):
-    res = []
-    for i in prange(A.shape[0]):
-        res.append(LA.norm(A[i, :]))
-    return np.array(res)
+def mean_numba_axis1_3d(A):
+    N = A.shape[0]
+    res = np.zeros((N, N))
+    for i in prange(N):
+        res[i] = mean_numba_axis1(A[i, :, :])
+    return res
+
+@njit(parallel=True)
+def mean_numba_m_3d(A):
+    N = A.shape[0]
+    res = np.zeros(N)
+    for i in prange(N):
+        for j in prange(N):
+            res = res + A[i, j, :].mean()
+    return res / N**2
 
 @njit(parallel=True)
 def dist_mat(X):
@@ -45,12 +56,13 @@ def dist_mat(X):
 @njit(parallel=True)
 def dist_mat_diff(X):
     """
+    Vector X to distance matrix D
     """
     N = len(X)
-    D_diff = np.zeros((N, N))
+    D_diff = np.zeros((N, N, N))
     for i in range(N):
         for j in range(N):
-            D_diff[i, j] = X[i] - X[j] # L2 diff
+            D_diff[i, j] = (X[i] - X[j]) / LA.norm(X[i] - X[j])
     return D_diff
 
 @njit(parallel=True)
@@ -89,19 +101,19 @@ def dist_cov_sq_grad(u, X, R_Y):
     """
     Gradient for use in projected gradient descent optimization
     """
-    def delta(u, i, j):
+    def delta(X, u, i, j, N):
         sign_term = np.sign((X[i] - X[j]) @ u)
-        return np.dot((X[i] - X[j]).T, sign_term)
-    D_diff = dist_mat(X)
-    c_mean = mean_numba_axis0(D_diff) / norm_numba_axis0(D_diff)
-    r_mean = mean_numba_axis1(D_diff) / norm_numba_axis1(D_diff)
-    m_mean = np.mean(D_diff) / LA.norm(D_diff)
+        return np.full(N, ((X[i] - X[j]) * sign_term)[0])
+    D_diff = dist_mat_diff(X)
+    c_mean = mean_numba_axis0_3d(D_diff)
+    r_mean = mean_numba_axis1_3d(D_diff)
+    m_mean = mean_numba_m_3d(D_diff)
     N = R_Y.shape[0]
-    grad_sum = 0.
+    grad_sum = np.zeros(N)
     for i in range(N):
         for j in range(N):
             grad_sum = grad_sum + R_Y[i, j] * (
-                delta(u, i, j)
+                delta(X, u, i, j, N)
                 - c_mean[j]
                 - r_mean[i]
                 + m_mean
@@ -227,7 +239,7 @@ def dca(X, Y, K=None, lr=1e-1, epsilon=1e-5):
     R_Y = re_centered_dist(D_Y)
     for k in range(0, K):
         u_init = normalize_u(np.random.rand(X.shape[1]))
-        u_opt, v_opt = optim_u_gd_stochastic(u_init, X_proj, R_Y, lr, epsilon)
+        u_opt, v_opt = optim_u_gd(u_init, X_proj, R_Y, lr, epsilon)
         if K is not None or k_test(v, v_opt, k):
             U[:, k] = u_opt
             v[k] = v_opt
