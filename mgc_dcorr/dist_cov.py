@@ -16,29 +16,34 @@ def mean_numba_axis1(A):
         res.append(A[i, :].mean())
     return np.array(res)
 
+# TODO: 3d should be dim P?
+
 @njit(parallel=True)
 def mean_numba_axis0_3d(A):
     N = A.shape[0]
-    res = np.zeros((N, N))
+    P = A.shape[2]
+    res = np.zeros((N, P))
     for i in prange(N):
-        res[i] = mean_numba_axis1(A[:, i, :])
-    return res
+        res = res + A[i, :, :]
+    return res / N
 
 @njit(parallel=True)
 def mean_numba_axis1_3d(A):
     N = A.shape[0]
-    res = np.zeros((N, N))
+    P = A.shape[2]
+    res = np.zeros((N, P))
     for i in prange(N):
-        res[i] = mean_numba_axis1(A[i, :, :])
-    return res
+        res = res + A[:, i, :]
+    return res / N
 
 @njit(parallel=True)
 def mean_numba_m_3d(A):
     N = A.shape[0]
-    res = np.zeros(N)
+    P = A.shape[2]
+    res = np.zeros(P)
     for i in prange(N):
         for j in prange(N):
-            res = res + A[i, j, :].mean()
+            res = res + A[i, j, :]
     return res / N**2
 
 @njit(parallel=True)
@@ -91,7 +96,9 @@ def re_centered_dist(D):
 @njit(parallel=True)
 def dist_mat_vec(X):
     """
-    Vector X to distance matrix D/
+    Vector X: (u^T X) to distance matrix D
+    For distance matrix of u^T X
+    TODO: Norm of scalar is identity?
     """
     N = len(X)
     D = np.zeros((N, N))
@@ -100,15 +107,43 @@ def dist_mat_vec(X):
             D[i, j] = X[i] - X[j] # L2
     return D
 
-#@njit(parallel=True)
-def re_centered_dist_u(u, X):
+@njit(parallel=True)
+def dist_mat_vec_diff(X):
     """
-    X @ u is vector, not matrix?
+    Vector X: (u^T X) to distance matrix D
+    For distance matrix of u^T X
+    Norm of scalar is identity
+    TODO: Derivative of norm of scalar is 1?
+    """
+    N = X.shape[0]
+    P = 1 # X.shape[1]
+    D_diff = np.zeros((N, N, P))
+    for i in range(N):
+        for j in range(N):
+            diff = X[i] - X[j]
+            if diff == 0: #.all()
+                D_diff[i, j] = diff
+            else:
+                D_diff[i, j] = diff / diff
+    return D_diff
+
+#@njit(parallel=True)
+def dist_mat_u(u, X):
+    """
+    TODO: X @ u is vector, not matrix?
     """
     u_X = np.dot(X, u)
     D_u = dist_mat_vec(u_X)
-    R_u = re_centered_dist(D_u)
-    return  R_u
+    return  D_u
+
+#@njit(parallel=True)
+def dist_mat_u_diff(u, X):
+    """
+    TODO: X @ u is vector, not matrix?
+    """
+    u_X = np.dot(X, u)
+    D_u_diff = dist_mat_vec_diff(u_X)
+    return  D_u_diff
 
 @njit(parallel=True)
 def dist_cov_sq(R_X, R_Y):
@@ -127,12 +162,13 @@ def dist_cov_sq_grad(u, X, R_Y):
     def delta(X, u, i, j, N):
         sign_term = np.sign((X[i] - X[j]) @ u)
         return np.full(N, ((X[i] - X[j]) * sign_term)[0])
-    D_diff = dist_mat_diff(X)
-    c_mean = mean_numba_axis0_3d(D_diff)
-    r_mean = mean_numba_axis1_3d(D_diff)
-    m_mean = mean_numba_m_3d(D_diff)
-    N = R_Y.shape[0]
-    grad_sum = np.zeros(N)
+    D_u_diff = dist_mat_u_diff(u, X)
+    c_mean = mean_numba_axis0_3d(D_u_diff)
+    r_mean = mean_numba_axis1_3d(D_u_diff)
+    m_mean = mean_numba_m_3d(D_u_diff)
+    N = X.shape[0]
+    P = len(u)
+    grad_sum = np.zeros(P)
     for i in range(N):
         for j in range(N):
             grad_sum = grad_sum + R_Y[i, j] * (
@@ -143,7 +179,6 @@ def dist_cov_sq_grad(u, X, R_Y):
             )
     return (1 / N**2) * grad_sum.T
 
-@njit(parallel=True)
 def dist_cov_sq_grad_stochastic(u, X, R_Y, sto_sample):
     """
     Gradient for use in projected stochastic gradient descent optimization
@@ -175,7 +210,8 @@ def optim_u_gd(u, X, R_Y, lr, epsilon):
     Gradient ascent for v^2 with respect to u
     TODO: Regularization?
     """
-    R_X_u = re_centered_dist_u(u, X)
+    D_u = dist_mat_u(u, X)
+    R_X_u = re_centered_dist(D_u)
     v = dist_cov_sq(R_Y, R_X_u)
     u_opt = np.copy(u)
     #iter_ct = 0
@@ -185,7 +221,8 @@ def optim_u_gd(u, X, R_Y, lr, epsilon):
         grad = dist_cov_sq_grad(u_opt, X, R_Y)
         u_opt = u_opt + lr * grad # "+=": gradient ascent
         u_opt = normalize_u(u_opt)
-        R_X_u_opt = re_centered_dist_u(u_opt, X)
+        D_u = dist_mat_u(u_opt, X)
+        R_X_u_opt = re_centered_dist(D_u)
         v_opt = dist_cov_sq(R_Y, R_X_u_opt)
         delta = np.mean(np.square(v_opt - v)) #MSE
         if delta <= epsilon:
@@ -194,7 +231,6 @@ def optim_u_gd(u, X, R_Y, lr, epsilon):
             v = v_opt
     return u_opt, v_opt
 
-@njit(parallel=True)
 def optim_u_gd_stochastic(u, X, R_Y, lr, epsilon):
     """
     Stochastic gradient ascent for v^2 with respect to u
