@@ -2,11 +2,10 @@ import numpy as np
 from numba import jit
 from hyppo.ksample._utils import _CheckInputs
 from hyppo.ksample.base import KSampleTest, KSampleTestOutput
-from scipy.stats import f
 from sklearn.metrics import pairwise_distances
 from scipy.stats import ks_2samp
 
-class FastHHG(KSampleTest):
+class HHG(KSampleTest):
     r"""
     Fast HHG 2-Sample Test
     """
