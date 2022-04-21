@@ -1,4 +1,3 @@
-from ._utils import sim_matrix
 from .kci import KCI
 
 
