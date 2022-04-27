@@ -16,8 +16,6 @@ def mean_numba_axis1(A):
         res.append(A[i, :].mean())
     return np.array(res)
 
-# TODO: 3d should be dim P?
-
 @njit(parallel=True)
 def mean_numba_axis0_3d(A):
     N = A.shape[0]
@@ -127,31 +125,33 @@ def dist_mat_vec_diff(X):
                 D_diff[i, j] = diff / diff
     return D_diff
 
-#@njit(parallel=True)
+@njit(parallel=True)
 def dist_mat_u(u, X):
     """
     TODO: X @ u is vector, not matrix?
     """
-    u_X = np.dot(X, u)
+    u_X = X @ u
     D_u = dist_mat_vec(u_X)
-    return  D_u
+    return D_u
 
-#@njit(parallel=True)
+@njit(parallel=True)
 def dist_mat_u_diff(u, X):
     """
     TODO: X @ u is vector, not matrix?
     """
     u_X = np.dot(X, u)
     D_u_diff = dist_mat_vec_diff(u_X)
-    return  D_u_diff
+    return D_u_diff
 
 @njit(parallel=True)
 def dist_cov_sq(R_X, R_Y):
     """
     Uses re-centered distance covariance matrices
     """
+    print(R_X * R_Y)
     v_sum = np.sum(R_X * R_Y)
     N = R_X.shape[0] # R must be square and same length
+    print(v_sum)
     return v_sum / N**2
 
 #@njit(parallel=True)
@@ -159,9 +159,9 @@ def dist_cov_sq_grad(u, X, R_Y):
     """
     Gradient for use in projected gradient descent optimization
     """
-    def delta(X, u, i, j, N):
+    def delta(X, u, i, j):
         sign_term = np.sign((X[i] - X[j]) @ u)
-        return np.full(N, ((X[i] - X[j]) * sign_term)[0])
+        return (X[i] - X[j]) * sign_term
     D_u_diff = dist_mat_u_diff(u, X)
     c_mean = mean_numba_axis0_3d(D_u_diff)
     r_mean = mean_numba_axis1_3d(D_u_diff)
@@ -172,7 +172,7 @@ def dist_cov_sq_grad(u, X, R_Y):
     for i in range(N):
         for j in range(N):
             grad_sum = grad_sum + R_Y[i, j] * (
-                delta(X, u, i, j, N)
+                delta(X, u, i, j)
                 - c_mean[j]
                 - r_mean[i]
                 + m_mean
@@ -242,7 +242,7 @@ def optim_u_gd_stochastic(u, X, R_Y, lr, epsilon):
     u_opt = np.copy(u)
     while True:
         sto_sample = np.random.randint(0, sample_ct)
-        grad = dist_cov_sq_grad_stochastic(u_opt, X, R_Y[sto_sample], sto_sample) # TODO: rewrite this for single sample?
+        grad = dist_cov_sq_grad_stochastic(u_opt, X, R_Y[sto_sample], sto_sample)
         u_opt += lr * grad # "+=": gradient ascent
         u_opt = normalize_u(u_opt)
         R_X_u_opt = re_centered_dist_u(u_opt, X)
@@ -253,22 +253,6 @@ def optim_u_gd_stochastic(u, X, R_Y, lr, epsilon):
         else:
             v = v_opt
     return u_opt, v_opt
-
-@njit(parallel=True)
-def k_test(v, v_opt, k, p=.1):
-    """
-    Test if U[:, k] is significant with respect to U[:, 1:k-1]
-    Permutation test not needed for single dataset X
-    TODO: Viable for single dataset?
-    TODO: Always fails for low k?
-    """
-    if k == 0:
-        return True
-    else:
-        if sum(v_opt > v[:k]) / k > 1 - p: # k is also len(v[:k])
-            return True
-        else:
-            return False
 
 @njit(parallel=True)
 def proj_U(X, U, k):
