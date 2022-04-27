@@ -5,7 +5,7 @@ from numpy import linalg as LA
 @njit(parallel=True)
 def mean_numba_axis0(A):
     res = []
-    for i in prange(A.shape[0]):
+    for i in prange(A.shape[1]):
         res.append(A[:, i].mean())
     return np.array(res)
 
@@ -102,7 +102,7 @@ def dist_mat_vec(X):
     D = np.zeros((N, N))
     for i in range(N):
         for j in range(N):
-            D[i, j] = X[i] - X[j] # L2
+            D[i, j] = np.abs(X[i] - X[j]) # L2
     return D
 
 @njit(parallel=True)
@@ -148,6 +148,7 @@ def dist_mat_u_diff(u, X):
 @njit(parallel=True)
 def dist_cov_sq(R_X, R_Y):
     """
+    TODO: replace with hyppo implementation
     Uses re-centered distance covariance matrices
     """
     v_sum = np.sum(R_X * R_Y)
@@ -264,7 +265,7 @@ def proj_U(X, U, k):
     X_proj = np.zeros_like(X) # looped proj
     for n in range(X_proj.shape[0]):
         for k_i in range(k):
-            X_proj[n] = X_proj[n] + ((q[:, k_i] @ X[n]) / (q[:, k_i] @ q[:, k_i])) * q[:, k_i]
+            X_proj[n] = X_proj[n] + ((X[n] @ q[:, k_i]) / (q[:, k_i] @ q[:, k_i])) * q[:, k_i]
     return X_proj
 
 @njit(parallel=True)
