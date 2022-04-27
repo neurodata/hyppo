@@ -148,10 +148,8 @@ def dist_cov_sq(R_X, R_Y):
     """
     Uses re-centered distance covariance matrices
     """
-    print(R_X * R_Y)
     v_sum = np.sum(R_X * R_Y)
     N = R_X.shape[0] # R must be square and same length
-    print(v_sum)
     return v_sum / N**2
 
 #@njit(parallel=True)
@@ -204,7 +202,7 @@ def normalize_u(u):
     norm = LA.norm(u)
     return  u / norm
 
-#@njit(parallel=True)
+@njit(parallel=True)
 def optim_u_gd(u, X, R_Y, lr, epsilon):
     """
     Gradient ascent for v^2 with respect to u
