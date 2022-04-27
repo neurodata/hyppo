@@ -108,6 +108,7 @@ def dist_mat_vec(X):
 @njit(parallel=True)
 def dist_mat_vec_diff(X):
     """
+    Not needed, X not X @ u used for diff
     Vector X: (u^T X) to distance matrix D
     For distance matrix of u^T X
     Norm of scalar is identity
@@ -137,9 +138,10 @@ def dist_mat_u(u, X):
 @njit(parallel=True)
 def dist_mat_u_diff(u, X):
     """
+    Not needed, X not X @ u used for grad
     TODO: X @ u is vector, not matrix?
     """
-    u_X = np.dot(X, u)
+    u_X = X @ u
     D_u_diff = dist_mat_vec_diff(u_X)
     return D_u_diff
 
@@ -152,7 +154,7 @@ def dist_cov_sq(R_X, R_Y):
     N = R_X.shape[0] # R must be square and same length
     return v_sum / N**2
 
-#@njit(parallel=True)
+@njit(parallel=True)
 def dist_cov_sq_grad(u, X, R_Y):
     """
     Gradient for use in projected gradient descent optimization
@@ -160,10 +162,10 @@ def dist_cov_sq_grad(u, X, R_Y):
     def delta(X, u, i, j):
         sign_term = np.sign((X[i] - X[j]) @ u)
         return (X[i] - X[j]) * sign_term
-    D_u_diff = dist_mat_u_diff(u, X)
-    c_mean = mean_numba_axis0_3d(D_u_diff)
-    r_mean = mean_numba_axis1_3d(D_u_diff)
-    m_mean = mean_numba_m_3d(D_u_diff)
+    X_diff = dist_mat_diff(X)
+    c_mean = mean_numba_axis0_3d(X_diff)
+    r_mean = mean_numba_axis1_3d(X_diff)
+    m_mean = mean_numba_m_3d(X_diff)
     N = X.shape[0]
     P = len(u)
     grad_sum = np.zeros(P)
@@ -222,7 +224,7 @@ def optim_u_gd(u, X, R_Y, lr, epsilon):
         D_u = dist_mat_u(u_opt, X)
         R_X_u_opt = re_centered_dist(D_u)
         v_opt = dist_cov_sq(R_Y, R_X_u_opt)
-        delta = np.mean(np.square(v_opt - v)) #MSE
+        delta = np.abs(v_opt - v) #MSE
         if delta <= epsilon:
             break
         else:
@@ -262,7 +264,7 @@ def proj_U(X, U, k):
     X_proj = np.zeros_like(X) # looped proj
     for n in range(X_proj.shape[0]):
         for k_i in range(k):
-            X_proj[n] = X_proj[n] + (np.dot(X[n], q[:, k_i]) / np.dot(q[:, k_i], q[:, k_i])) * q[:, k_i]
+            X_proj[n] = X_proj[n] + ((q[:, k_i] @ X[n]) / (q[:, k_i] @ q[:, k_i])) * q[:, k_i]
     return X_proj
 
 @njit(parallel=True)
@@ -281,10 +283,7 @@ def dca(X, Y, K=None, lr=1e-1, epsilon=1e-5):
     for k in range(0, K):
         u_init = normalize_u(np.random.rand(X.shape[1]))
         u_opt, v_opt = optim_u_gd(u_init, X_proj, R_Y, lr, epsilon)
-        if K is not None or k_test(v, v_opt, k):
-            U[:, k] = u_opt
-            v[k] = v_opt
-            X_proj = proj_U(X_proj, U, k+1) # then inc k, unnecessary if this is last k
-        else:
-            break
+        U[:, k] = u_opt
+        v[k] = v_opt
+        X_proj = proj_U(X_proj, U, k+1) # then inc k, unnecessary if this is last k
     return U[:, :k+1], v[:k+1]
