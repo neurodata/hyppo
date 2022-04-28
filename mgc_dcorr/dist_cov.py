@@ -17,34 +17,6 @@ def mean_numba_axis1(A):
     return np.array(res)
 
 @njit(parallel=True)
-def mean_numba_axis0_3d(A):
-    N = A.shape[0]
-    P = A.shape[2]
-    res = np.zeros((N, P))
-    for i in prange(N):
-        res = res + A[i, :, :]
-    return res / N
-
-@njit(parallel=True)
-def mean_numba_axis1_3d(A):
-    N = A.shape[0]
-    P = A.shape[2]
-    res = np.zeros((N, P))
-    for i in prange(N):
-        res = res + A[:, i, :]
-    return res / N
-
-@njit(parallel=True)
-def mean_numba_m_3d(A):
-    N = A.shape[0]
-    P = A.shape[2]
-    res = np.zeros(P)
-    for i in prange(N):
-        for j in prange(N):
-            res = res + A[i, j, :]
-    return res / N**2
-
-@njit(parallel=True)
 def dist_mat(X):
     """
     Vector X to distance matrix D
@@ -55,23 +27,6 @@ def dist_mat(X):
         for j in range(N):
             D[i, j] = LA.norm(X[i] - X[j]) # L2
     return D
-
-@njit(parallel=True)
-def dist_mat_diff(X):
-    """
-    Vector X to distance matrix D
-    """
-    N = X.shape[0]
-    P = X.shape[1]
-    D_diff = np.zeros((N, N, P))
-    for i in range(N):
-        for j in range(N):
-            diff = X[i] - X[j]
-            if (diff == 0).all():
-                D_diff[i, j] = diff
-            else:
-                D_diff[i, j] = diff / LA.norm(X[i] - X[j])
-    return D_diff
 
 @njit(parallel=True)
 def re_centered_dist(D):
@@ -163,20 +118,32 @@ def dist_cov_sq_grad(u, X, R_Y):
     def delta(X, u, i, j):
         sign_term = np.sign((X[i] - X[j]) @ u)
         return (X[i] - X[j]) * sign_term
-    X_diff = dist_mat_diff(X)
-    c_mean = mean_numba_axis0_3d(X_diff)
-    r_mean = mean_numba_axis1_3d(X_diff)
-    m_mean = mean_numba_m_3d(X_diff)
+    def delta_axis0(X):
+        N = X.shape[0]
+        P = X.shape[1]
+        res = np.zeros((N, P))
+        for i in range(N):
+            sign_term = np.sign((X - X[i]) @ u)
+            res[i] = (X - X[i]).T @ sign_term
+        return res
+    def delta_axis1(X):
+        N = X.shape[0]
+        P = X.shape[1]
+        res = np.zeros((N, P))
+        for i in range(N):
+            sign_term = np.sign((X[i] - X) @ u)
+            res[i] = (X[i] - X).T @ sign_term
+        return res
+    c_delta = delta_axis0(X)
+    r_delta = delta_axis1(X)
     N = X.shape[0]
-    P = len(u)
     grad_sum = np.zeros(P)
     for i in range(N):
         for j in range(N):
             grad_sum = grad_sum + R_Y[i, j] * (
                 delta(X, u, i, j)
-                - c_mean[j]
-                - r_mean[i]
-                + m_mean
+                - c_delta[j]
+                - r_delta[i]
             )
     return (1 / N**2) * grad_sum.T
 
