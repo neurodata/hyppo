@@ -5,6 +5,7 @@ from hyppo.ksample._utils import _CheckInputs
 from sklearn.metrics import pairwise_distances
 from scipy.stats import ks_2samp
 
+
 class HHG(KSampleTest):
     r"""
     HHG 2-Sample test statistic.
@@ -43,10 +44,11 @@ class HHG(KSampleTest):
     ----------
     .. footbibliography::
     """
+
     def __init__(self, compute_distance="euclidean", **kwargs):
-       self.compute_distance = compute_distance
-       KSampleTest.__init__(self, compute_distance=compute_distance, **kwargs)
-       
+        self.compute_distance = compute_distance
+        KSampleTest.__init__(self, compute_distance=compute_distance, **kwargs)
+
     def statistic(self, x, y):
         """
         x,y : ndarray of float
@@ -60,12 +62,12 @@ class HHG(KSampleTest):
         stat : float
             The computed HHG statistic. Rejects if less than or equal to :math:`\alpha`
         """
-        xy = np.concatenate((x,y), axis=0)
+        xy = np.concatenate((x, y), axis=0)
         distxy = _centerpoint_dist(xy, self.compute_distance, 1)
-        distx = distxy[:,0:len(x)]
-        disty = distxy[:,len(x):len(x)+len(y)]
-        pvalues = _distance_score(distx,disty)
-        stat = min(pvalues)*len(pvalues)
+        distx = distxy[:, 0 : len(x)]
+        disty = distxy[:, len(x) : len(x) + len(y)]
+        pvalues = _distance_score(distx, disty)
+        stat = min(pvalues) * len(pvalues)
         self.stat = stat
         return stat
 
@@ -82,32 +84,33 @@ class HHG(KSampleTest):
         stat : float
             The computed HHG statistic. Rejects if less than or equal to :math:`\alpha`
         """
-        check_input = _CheckInputs(
-            inputs=[x, y],
-        )
+        check_input = _CheckInputs(inputs=[x, y],)
         x, y = check_input()
-        
-        xy = np.concatenate((x,y), axis=0)
+
+        xy = np.concatenate((x, y), axis=0)
         distxy = _centerpoint_dist(xy, self.compute_distance, 1)
-        distx = distxy[:,0:len(x)]
-        disty = distxy[:,len(x):len(x)+len(x)]
-        pvalues = _distance_score(distx,disty)
-        stat = min(pvalues)*len(pvalues)
+        distx = distxy[:, 0 : len(x)]
+        disty = distxy[:, len(x) : len(x) + len(x)]
+        pvalues = _distance_score(distx, disty)
+        stat = min(pvalues) * len(pvalues)
         return stat
-    
+
+
 def _centerpoint_dist(xy, metric, workers=1, **kwargs):
     """Gives pairwise distances - each row corresponds to center-point distances
     where one sample point is the center point"""
     distxy = pairwise_distances(xy, metric=metric, n_jobs=workers, **kwargs)
     return distxy
 
+
 def _distance_score(distx, disty):
     dist1, dist2 = _extract_distance(distx, disty)
     pvalues = []
     for i in range(len(distx)):
-        stat, pvalue = ks_2samp(dist1[i],dist2[i])
+        stat, pvalue = ks_2samp(dist1[i], dist2[i])
         pvalues.append(pvalue)
     return pvalues
+
 
 @jit(nopython=True)
 def _extract_distance(distx, disty):
@@ -115,8 +118,8 @@ def _extract_distance(distx, disty):
     dist1 = []
     dist2 = []
     for i in range(len(distx)):
-        distancex = np.delete(distx[i],0)
-        distancey = np.delete(disty[i],0)
+        distancex = np.delete(distx[i], 0)
+        distancey = np.delete(disty[i], 0)
         distancex = distancex.reshape(-1)
         distancey = distancey.reshape(-1)
         dist1.append(distancex)
