@@ -37,8 +37,8 @@ class HHG(KSampleTest):
     To achieve better power, the above process is repeated with each sample point 
     :math:`x_i` and :math:`y_i` as center points. The resultant :math:`n+m` p-values
     are then pooled for use in the Bonferroni test of the global null hypothesis.
-    The final HHG statistic is :math:`(n+m)*min(p-values)`. 
-    To reject, the statistic must be less than or equal to :math:`\alpha`
+    The HHG statistic is the KS stat associated with the smallest p-value from the pool,
+    while the HHG p-value is the smallest p-value multipled by the number of sample points.
     
     References
     ----------
@@ -66,10 +66,11 @@ class HHG(KSampleTest):
         distxy = _centerpoint_dist(xy, self.compute_distance, 1)
         distx = distxy[:, 0 : len(x)]
         disty = distxy[:, len(x) : len(x) + len(y)]
-        pvalues = _distance_score(distx, disty)
-        stat = min(pvalues) * len(pvalues)
-        self.stat = stat
-        return stat
+        stats,pvalues = _distance_score(distx, disty)
+        minP = min(pvalues)
+        minstat = stats[pvalues.index(minP)]
+        self.stat = minstat
+        return self.stat
 
     def test(self, x, y):
         """
@@ -82,7 +83,9 @@ class HHG(KSampleTest):
         Returns
         -------
         stat : float
-            The computed HHG statistic. Rejects if less than or equal to :math:`\alpha`
+            The computed HHG statistic
+        pvalue : float
+            The computed HHG pvalue
         """
         check_input = _CheckInputs(inputs=[x, y],)
         x, y = check_input()
@@ -91,9 +94,11 @@ class HHG(KSampleTest):
         distxy = _centerpoint_dist(xy, self.compute_distance, 1)
         distx = distxy[:, 0 : len(x)]
         disty = distxy[:, len(x) : len(x) + len(x)]
-        pvalues = _distance_score(distx, disty)
-        stat = min(pvalues) * len(pvalues)
-        return stat
+        stats,pvalues = _distance_score(distx, disty)
+        minP = min(pvalues)
+        minstat = stats[pvalues.index(minP)]
+        pvalue = minP * len(pvalues)
+        return minstat, pvalue
 
 
 def _centerpoint_dist(xy, metric, workers=1, **kwargs):
@@ -105,11 +110,13 @@ def _centerpoint_dist(xy, metric, workers=1, **kwargs):
 
 def _distance_score(distx, disty):
     dist1, dist2 = _extract_distance(distx, disty)
+    stats = []
     pvalues = []
     for i in range(len(distx)):
         stat, pvalue = ks_2samp(dist1[i], dist2[i])
+        stats.append(stat)
         pvalues.append(pvalue)
-    return pvalues
+    return stats,pvalues
 
 
 @jit(nopython=True)
