@@ -3,6 +3,83 @@ import numpy as np
 from numpy import linalg as LA
 
 @njit(parallel=True)
+def mean_numba_axis0(A):
+    res = []
+    for i in prange(A.shape[1]):
+        res.append(A[:, i].mean())
+    return np.array(res)
+
+@njit(parallel=True)
+def mean_numba_axis1(A):
+    res = []
+    for i in prange(A.shape[0]):
+        res.append(A[i, :].mean())
+    return np.array(res)
+
+@njit(parallel=True)
+def dist_mat(X):
+    """
+    Vector X to distance matrix D
+    """
+    N = len(X)
+    D = np.zeros((N, N))
+    for i in range(N):
+        for j in range(N):
+            D[i, j] = LA.norm(X[i] - X[j]) # L2
+    return D
+
+@njit(parallel=True)
+def dist_mat_vec(X):
+    """
+    Vector X: (u^T X) to distance matrix D
+    For distance matrix of u^T X
+    TODO: Norm of scalar is identity?
+    """
+    N = len(X)
+    D = np.zeros((N, N))
+    for i in range(N):
+        for j in range(N):
+            D[i, j] = np.abs(X[i] - X[j]) # L2
+    return D
+
+@njit(parallel=True)
+def dist_mat_u(u, X):
+    """
+    TODO: X @ u is vector, not matrix?
+    """
+    u_X = X @ u
+    D_u = dist_mat_vec(u_X)
+    return D_u
+
+@njit(parallel=True)
+def re_centered_dist(D):
+    """
+    Distance matrix D to re-centered distance matrix R
+    """
+    c_mean = mean_numba_axis0(D)
+    r_mean = mean_numba_axis1(D)
+    m_mean = np.mean(D)
+    N = D.shape[0] # D should be square NxN, where N is len(X)
+    R = np.zeros_like(D)
+    for i in range(N):
+        for j in range(N):
+            R[i, j] = D[i, j]
+            - c_mean[j]
+            - r_mean[i]
+            + m_mean
+    return R
+
+@njit(parallel=True)
+def dist_cov_sq(R_X, R_Y):
+    """
+    TODO: replace with hyppo implementation
+    Uses re-centered distance covariance matrices
+    """
+    v_sum = np.sum(R_X * R_Y)
+    N = R_X.shape[0] # R must be square and same length
+    return v_sum / N**2
+
+@njit(parallel=True)
 def proj_U(X, U, k):
     """
     Project X onto the orthogonal subspace of k dim of U
@@ -45,64 +122,6 @@ def dca(X, Y, K):
     return U[:, :k+1], v[:k+1]
 
 @njit(parallel=True)
-def mean_numba_axis0(A):
-    res = []
-    for i in prange(A.shape[1]):
-        res.append(A[:, i].mean())
-    return np.array(res)
-
-@njit(parallel=True)
-def mean_numba_axis1(A):
-    res = []
-    for i in prange(A.shape[0]):
-        res.append(A[i, :].mean())
-    return np.array(res)
-
-@njit(parallel=True)
-def dist_mat(X):
-    """
-    Vector X to distance matrix D
-    """
-    N = len(X)
-    D = np.zeros((N, N))
-    for i in range(N):
-        for j in range(N):
-            D[i, j] = LA.norm(X[i] - X[j]) # L2
-    return D
-
-@njit(parallel=True)
-def re_centered_dist(D):
-    """
-    Distance matrix D to re-centered distance matrix R
-    """
-    c_mean = mean_numba_axis0(D)
-    r_mean = mean_numba_axis1(D)
-    m_mean = np.mean(D)
-    N = D.shape[0] # D should be square NxN, where N is len(X)
-    R = np.zeros_like(D)
-    for i in range(N):
-        for j in range(N):
-            R[i, j] = D[i, j]
-            - c_mean[j]
-            - r_mean[i]
-            + m_mean
-    return R
-
-@njit(parallel=True)
-def dist_mat_vec(X):
-    """
-    Vector X: (u^T X) to distance matrix D
-    For distance matrix of u^T X
-    TODO: Norm of scalar is identity?
-    """
-    N = len(X)
-    D = np.zeros((N, N))
-    for i in range(N):
-        for j in range(N):
-            D[i, j] = np.abs(X[i] - X[j]) # L2
-    return D
-
-@njit(parallel=True)
 def dist_mat_vec_diff(X):
     """
     Not needed, X not X @ u used for diff
@@ -124,15 +143,6 @@ def dist_mat_vec_diff(X):
     return D_diff
 
 @njit(parallel=True)
-def dist_mat_u(u, X):
-    """
-    TODO: X @ u is vector, not matrix?
-    """
-    u_X = X @ u
-    D_u = dist_mat_vec(u_X)
-    return D_u
-
-@njit(parallel=True)
 def dist_mat_u_diff(u, X):
     """
     Not needed, X not X @ u used for grad
@@ -141,16 +151,6 @@ def dist_mat_u_diff(u, X):
     u_X = X @ u
     D_u_diff = dist_mat_vec_diff(u_X)
     return D_u_diff
-
-@njit(parallel=True)
-def dist_cov_sq(R_X, R_Y):
-    """
-    TODO: replace with hyppo implementation
-    Uses re-centered distance covariance matrices
-    """
-    v_sum = np.sum(R_X * R_Y)
-    N = R_X.shape[0] # R must be square and same length
-    return v_sum / N**2
 
 @njit(parallel=True)
 def dist_cov_sq_grad(u, X, R_Y):
@@ -266,7 +266,7 @@ def optim_u_gd_stochastic(u, X, R_Y, lr, epsilon):
     return u_opt, v_opt
 
 @njit(parallel=True)
-def dca_grad_learn(X, Y, K, lr=1e-1, epsilon=1e-5): # TODO: update name in nb
+def dca_grad_learn(X, Y, K, lr=1e-1, epsilon=1e-5):
     """
     Perform DCA dimensionality reduction on X
     Single dataset X
