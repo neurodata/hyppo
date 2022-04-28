@@ -188,7 +188,7 @@ def optim_u_gd(u, X, R_Y, lr, epsilon):
         #iter_ct += 1
         #print(iter_ct)
         grad = dist_cov_sq_grad(u_opt, X, R_Y)
-        u_opt = u_opt + lr * grad # "+=": gradient ascent
+        u_opt = u_opt - lr * grad # "+=": gradient ascent
         u_opt = normalize_u(u_opt)
         D_u = dist_mat_u(u_opt, X)
         R_X_u_opt = re_centered_dist(D_u)
