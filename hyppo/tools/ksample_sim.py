@@ -36,7 +36,7 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
         ]:
             for i in range(rot_shape):
                 mat = np.random.normal(size=(rot_shape, 1))
-                mat = mat / np.sqrt(np.sum(mat ** 2))
+                mat = mat / np.sqrt(np.sum(mat**2))
                 if i == 0:
                     rot = mat
                 else:
