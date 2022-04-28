@@ -33,11 +33,11 @@ def re_centered_dist(D):
     """
     Distance matrix D to re-centered distance matrix R
     """
-    N = D.shape[0] # D should be square NxN, where N is len(X)
-    R = np.zeros_like(D)
     c_mean = mean_numba_axis0(D)
     r_mean = mean_numba_axis1(D)
     m_mean = np.mean(D)
+    N = D.shape[0] # D should be square NxN, where N is len(X)
+    R = np.zeros_like(D)
     for i in range(N):
         for j in range(N):
             R[i, j] = D[i, j]
@@ -137,6 +137,7 @@ def dist_cov_sq_grad(u, X, R_Y):
     c_delta = delta_axis0(X)
     r_delta = delta_axis1(X)
     N = X.shape[0]
+    P = X.shape[1]
     grad_sum = np.zeros(P)
     for i in range(N):
         for j in range(N):
