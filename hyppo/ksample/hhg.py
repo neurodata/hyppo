@@ -1,24 +1,70 @@
 import numpy as np
 from numba import jit
+from hyppo.ksample.base import KSampleTest
 from hyppo.ksample._utils import _CheckInputs
-from hyppo.ksample.base import KSampleTest, KSampleTestOutput
 from sklearn.metrics import pairwise_distances
 from scipy.stats import ks_2samp
 
 class HHG(KSampleTest):
     r"""
-    Fast HHG 2-Sample Test: 
+    HHG 2-Sample test statistic.
+    
+    This is a 2-sample multivariate test based on univariate test statistics.
+    It inherits the computational complexity from the unvariate tests to achieve
+    faster speeds than classic multivariate tests.
+    The univariate test used is the Kolmogorov-Smirnov 2-sample test.
+    :footcite:p:`hellerMultivariateTestsOfAssociation2016`.
+    
+    Notes
+    -----
+    The statistic can be derived as follows:
+    :footcite:p:`hellerMultivariateTestsOfAssociation2016`.
+    
+    Let :math:`x`, :math:`y` be :math:`(n, p)`, :math:`(m, p)` samples of random variables
+    :math:`X` and :math:`Y \in \R^p` . Let there be a center point
+    :math:`\in \R^p`. 
+    For every sample :math:`i`, calculate the distances from the center point
+    in :math:`x` and :math:`y` and denote this as :math:`d_x(x_i)`
+    and :math:`d_y(y_i)`. This will create a 1D collection of distances for each
+    sample group.
+    
+    Then apply the KS 2-sample test on these center-point distances. This classic test
+    compares the empirical distribution function of the two samples and takes
+    the supremum of the difference between them. See Notes under scipy.stats.ks_2samp
+    for more details.
+    
+    To achieve better power, the above process is repeated with each sample point 
+    :math:`x_i` and :math:`y_i` as center points. The resultant :math:`n+m` p-values
+    are then pooled for use in the Bonferroni test of the global null hypothesis.
+    The final HHG statistic is :math:`(n+m)*min(p-values)`. 
+    To reject, the statistic must be less than or equal to :math:`\alpha`
+    
+    References
+    ----------
+    .. footbibliography::
     """
     def __init__(self, compute_distance="euclidean", **kwargs):
        self.compute_distance = compute_distance
        KSampleTest.__init__(self, compute_distance=compute_distance, **kwargs)
        
-    def statistic(self, y1, y2):
-        y = np.concatenate((y1,y2), axis=0)
-        disty = _centerpoint_dist(y, self.compute_distance, 1)
-        disty1 = disty[:,0:len(y1)]
-        disty2 = disty[:,len(y1):len(y2)+len(y1)]
-        pvalues = _distance_score(disty1,disty2)
+    def statistic(self, x, y):
+        """
+        x,y : ndarray of float
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            dimensions. That is, the shapes must be ``(n, p)`` and ``(m, p)`` where
+            `n` and  are the number of samples and `p` is the number of
+            dimensions.
+            
+        Returns
+        -------
+        stat : float
+            The computed HHG statistic. Rejects if less than or equal to :math:`\alpha`
+        """
+        xy = np.concatenate((x,y), axis=0)
+        distxy = _centerpoint_dist(xy, self.compute_distance, 1)
+        distx = distxy[:,0:len(x)]
+        disty = distxy[:,len(x):len(x)+len(y)]
+        pvalues = _distance_score(distx,disty)
         stat = min(pvalues)*len(pvalues)
         self.stat = stat
         return stat
@@ -28,8 +74,13 @@ class HHG(KSampleTest):
         x,y : ndarray of float
             Input data matrices. ``y1`` and ``y2`` must have the same number of
             dimensions. That is, the shapes must be ``(n, p)`` and ``(m, p)`` where
-            `n` is the number of samples and `p` and `q` are the number of
+            `n` and  are the number of samples and `p` is the number of
             dimensions.
+            
+        Returns
+        -------
+        stat : float
+            The computed HHG statistic. Rejects if less than or equal to :math:`\alpha`
         """
         check_input = _CheckInputs(
             inputs=[x, y],
@@ -45,8 +96,10 @@ class HHG(KSampleTest):
         return stat
     
 def _centerpoint_dist(xy, metric, workers=1, **kwargs):
-    disty = pairwise_distances(xy, metric=metric, n_jobs=workers, **kwargs)
-    return disty
+    """Gives pairwise distances - each row corresponds to center-point distances
+    where one sample point is the center point"""
+    distxy = pairwise_distances(xy, metric=metric, n_jobs=workers, **kwargs)
+    return distxy
 
 def _distance_score(distx, disty):
     dist1, dist2 = _extract_distance(distx, disty)
@@ -57,14 +110,15 @@ def _distance_score(distx, disty):
     return pvalues
 
 @jit(nopython=True)
-def _extract_distance(disty1, disty2):
+def _extract_distance(distx, disty):
+    """Process distance arrays into list of distances"""
     dist1 = []
     dist2 = []
-    for i in range(len(disty1)):
-        distancey1 = np.delete(disty1[i],0)
-        distancey2 = np.delete(disty2[i],0)
-        distancey1 = distancey1.reshape(-1)
-        distancey2 = distancey2.reshape(-1)
-        dist1.append(distancey1)
-        dist2.append(distancey2)
+    for i in range(len(distx)):
+        distancex = np.delete(distx[i],0)
+        distancey = np.delete(disty[i],0)
+        distancex = distancex.reshape(-1)
+        distancey = distancey.reshape(-1)
+        dist1.append(distancex)
+        dist2.append(distancey)
     return dist1, dist2
