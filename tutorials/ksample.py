@@ -240,5 +240,14 @@ print("5 degrees of freedom (stat, pval):\n", stat1, pval1)
 print("10 degrees of freedom (stat, pval):\n", stat2, pval2)
 
 ########################################################################################
+# Univariate-Based Test
+# --------------------------------------------
+# The **Heller Heller Gorfine (HHG) 2-Sample Test** is a non-parametric two-sample 
+# statistical test. This 
+# 
+#
+#
+
+########################################################################################
 # .. _[1]: https://link.springer.com/article/10.1007/s10182-020-00378-1
 # .. _[2]: https://arxiv.org/abs/1910.08883
