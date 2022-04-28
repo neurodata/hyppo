@@ -100,7 +100,7 @@ class DISCO(KSampleTest):
 
         Parameters
         ----------
-        *args : ndarray
+        *args : ndarray of float
             Variable length input data matrices. All inputs must have the same
             number of samples and dimensions. That is, the shapes must be `(n, p)`
             where `n` are the number of samples and `p` is
@@ -135,7 +135,7 @@ class DISCO(KSampleTest):
 
         Parameters
         ----------
-        *args : ndarray
+        *args : ndarray of float
             Variable length input data matrices. All inputs must have the same
             number of samples and dimensions. That is, the shapes must be `(n, p)`
             where `n` is the number of samples and `p` is

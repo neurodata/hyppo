@@ -1,161 +1,34 @@
 version: 2.1
 
 orbs:
+  python: circleci/python@1.2
   codecov: codecov/codecov@3.1.1
 
 jobs:
-  build:
-    parameters:
-      version:
-        type: string
-    docker:
-      - image: cimg/python:<< parameters.version >>
-    steps:
-      - checkout
-      - restore_cache:
-          key: v2-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
-      - run:
-          name: install python dependencies
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install --upgrade pip
-            pip install -r dev-requirements.txt
-      - save_cache:
-          key: v2-<< parameters.version >>-min-dependency-cache-{{ checksum "dev-requirements.txt" }}
-          paths:
-            - "venv"
-      - run:
-          name: test if package installs
-          command: |
-            . venv/bin/activate
-            python3 setup.py install
-  test-module:
-    parameters:
-      module:
-        type: string
+  build-and-test:
+    parallelism: 16
     docker:
       - image: cimg/python:3.8
     steps:
       - checkout
-      - restore_cache:
-          key: v2-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
+      - python/install-packages:
+          pkg-manager: pip
       - run:
-          name: install python dependencies
+          name: Run tests
           command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r dev-requirements.txt
-            pip install -e .
-      - save_cache:
-          key: v2-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
-          paths:
-            - "venv"
-      - run:
-          name: run code linting
-          command: |
-            . venv/bin/activate
-            black --check --diff ./hyppo/<< parameters.module >>
-      - run:
-          name: run tests and coverage
-          command: |
-            . venv/bin/activate
-            pytest --junitxml=test-reports/junit.xml --cov-report=xml --cov=hyppo/<< parameters.module >> hyppo/<< parameters.module >>
+            set -e
+            pip install pytest pytest-cov
+            TEST_FILES=$(circleci tests glob "hyppo/**/test_*.py" | circleci tests split --split-by=timings)
+            mkdir -p test-results
+            pytest --verbose --junitxml=test-results/junit.xml --cov-report=xml --cov=hyppo $TEST_FILES
       - store_test_results:
-          path: test-reports
+          path: test-results
       - store_artifacts:
-          path: test-reports
+          path: test-results
       - codecov/upload:
           file: "coverage.xml"
-  deploy:
-    docker:
-      - image: cimg/python:3.8
-    steps:
-      - checkout
-      - restore_cache:
-          key: v2-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
-      - run:
-          name: install python dependencies
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r dev-requirements.txt
-            pip install -e .
-      - save_cache:
-          key: v2-3.8-dependency-cache-{{ checksum "dev-requirements.txt" }}
-          paths:
-            - "venv"
-      - run:
-          name: verify git tag vs. version
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            python setup.py verify
-      - run:
-          name: init .pypirc
-          command: |
-            echo -e "[pypi]" >> ~/.pypirc
-            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
-            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
-      - run:
-          name: create packages
-          command: |
-            python setup.py sdist
-      - run:
-          name: upload to pypi
-          command: |
-            . venv/bin/activate
-            twine upload dist/*
 
 workflows:
-  build-test-deploy:
+  run-tests:
     jobs:
-      - build:
-          name: "v3.6"
-          version: "3.6"
-      - build:
-          name: "v3.7"
-          version: "3.7"
-      - build:
-          name: "v3.8"
-          version: "3.8"
-      - build:
-          name: "v3.9"
-          version: "3.9"
-      - test-module:
-          name: "independence"
-          module: "independence"
-          requires:
-            - "v3.8"
-      - test-module:
-          name: "ksample"
-          module: "ksample"
-          requires:
-            - "v3.8"
-      - test-module:
-          name: "time_series"
-          module: "time_series"
-          requires:
-            - "v3.8"
-      - test-module:
-          name: "discrim"
-          module: "discrim"
-          requires:
-            - "v3.8"
-      - test-module:
-          name: "tools"
-          module: "tools"
-          requires:
-            - "v3.8"
-      - deploy:
-          requires:
-            - "independence"
-            - "ksample"
-            - "time_series"
-            - "discrim"
-            - "tools"
-          filters:
-            tags:
-              only: /[0-9]+(\.[0-9]+)*/
-            branches:
-              ignore: /.*/
+      - build-and-test

@@ -21,6 +21,21 @@ Independence
    HHG
    CCA
    RV
+   FriedmanRafsky
+
+
+
+.. automodule:: hyppo.d_variate
+
+.. currentmodule:: hyppo.d_variate
+
+*D*-Variate
+-------------
+
+.. autosummary::
+    :toctree: generated/
+
+    dHsic
 
 
 
@@ -40,7 +55,8 @@ Independence
    DISCO
    MANOVA
    Hotelling
-
+   SmoothCFTest
+   MeanEmbeddingTest
 
 
 .. automodule:: hyppo.time_series
@@ -70,6 +86,20 @@ Discriminability
 
    DiscrimOneSample
    DiscrimTwoSample
+
+
+
+.. automodule:: hyppo.kgof
+
+.. currentmodule:: hyppo.kgof
+
+Kernel Goodness-of-Fit
+-----------------------
+
+.. autosummary::
+   :toctree: generated/
+
+   FSSD
 
 
 
@@ -129,7 +159,6 @@ Time-Series Simulations
    ts_sim
 
 
-
 .. automodule:: hyppo
 
 .. currentmodule:: hyppo
@@ -143,11 +172,14 @@ Miscellaneous
    independence.sim_matrix
    ksample.k_sample_transform
    tools.compute_kern
+   tools.multi_compute_kern
    tools.compute_dist
    tools.perm_test
+   tools.multi_perm_test
    tools.chi2_approx
    tools.power
-
+   ksample.smoothCF.smooth_cf_distance
+   ksample.mean_embedding.mean_embed_distance
 
 
 Base Classes
@@ -157,6 +189,8 @@ Base Classes
    :toctree: generated/
 
    independence.base.IndependenceTest
+   d_variate.base.DVariateTest
    ksample.base.KSampleTest
    time_series.base.TimeSeriesTest
    discrim.base.DiscriminabilityTest
+   kgof.base.GofTest

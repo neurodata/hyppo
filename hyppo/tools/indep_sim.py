@@ -72,7 +72,7 @@ def linear(n, p, noise=False, low=-1, high=1):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -119,7 +119,7 @@ def exponential(n, p, noise=False, low=0, high=3):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -174,7 +174,7 @@ def cubic(n, p, noise=False, low=-1, high=1, cubs=[-12, 48, 128], scale=1 / 3):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -195,9 +195,9 @@ def cubic(n, p, noise=False, low=-1, high=1, cubs=[-12, 48, 128], scale=1 / 3):
 
     x_coeffs = x @ coeffs - scale
     y = (
-        cubs[2] * x_coeffs ** 3
-        + cubs[1] * x_coeffs ** 2
-        + cubs[0] * x_coeffs ** 3
+        cubs[2] * x_coeffs**3
+        + cubs[1] * x_coeffs**2
+        + cubs[0] * x_coeffs**3
         + 80 * noise * eps
     )
 
@@ -230,7 +230,7 @@ def joint_normal(n, p, noise=False):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -285,7 +285,7 @@ def step(n, p, noise=False, low=-1, high=1):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -336,7 +336,7 @@ def quadratic(n, p, noise=False, low=-1, high=1):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -354,7 +354,7 @@ def quadratic(n, p, noise=False, low=-1, high=1):
     eps = _calc_eps(n)
 
     x_coeffs = x @ coeffs
-    y = x_coeffs ** 2 + 0.5 * noise * eps
+    y = x_coeffs**2 + 0.5 * noise * eps
 
     return x, y
 
@@ -387,7 +387,7 @@ def w_shaped(n, p, noise=False, low=-1, high=1):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -407,7 +407,7 @@ def w_shaped(n, p, noise=False, low=-1, high=1):
 
     x_coeffs = x @ coeffs
     u_coeffs = u @ coeffs
-    y = 4 * ((x_coeffs ** 2 - 0.5) ** 2 + u_coeffs / 500) + 0.5 * noise * eps
+    y = 4 * ((x_coeffs**2 - 0.5) ** 2 + u_coeffs / 500) + 0.5 * noise * eps
 
     return x, y
 
@@ -440,7 +440,7 @@ def spiral(n, p, noise=False, low=0, high=5):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -499,7 +499,7 @@ def uncorrelated_bernoulli(n, p, noise=False, prob=0.5):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -550,7 +550,7 @@ def logarithmic(n, p, noise=False):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -565,7 +565,7 @@ def logarithmic(n, p, noise=False):
     x = np.random.multivariate_normal(np.zeros(p), sig, size=n)
     eps = _calc_eps(n)
 
-    y = np.log(x ** 2) + 3 * noise * eps
+    y = np.log(x**2) + 3 * noise * eps
 
     return x, y
 
@@ -596,7 +596,7 @@ def fourth_root(n, p, noise=False, low=-1, high=1):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -675,7 +675,7 @@ def sin_four_pi(n, p, noise=False, low=-1, high=1):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -711,7 +711,7 @@ def sin_sixteen_pi(n, p, noise=False, low=-1, high=1):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -770,7 +770,7 @@ def square(n, p, noise=False, low=-1, high=1):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -806,7 +806,7 @@ def two_parabolas(n, p, noise=False, low=-1, high=1, prob=0.5):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, 1)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -826,7 +826,7 @@ def two_parabolas(n, p, noise=False, low=-1, high=1, prob=0.5):
     rand_noise = _random_uniform(n, p, low=0, high=1)
 
     x_coeffs = x @ coeffs
-    y = (x_coeffs ** 2 + 2 * noise * rand_noise) * (u - 0.5)
+    y = (x_coeffs**2 + 2 * noise * rand_noise) * (u - 0.5)
 
     return x, y
 
@@ -893,7 +893,7 @@ def circle(n, p, noise=False, low=-1, high=1):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -932,7 +932,7 @@ def ellipse(n, p, noise=False, low=-1, high=1):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -969,7 +969,7 @@ def diamond(n, p, noise=False, low=-1, high=1):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -998,7 +998,7 @@ def multiplicative_noise(n, p):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -1040,7 +1040,7 @@ def multimodal_independence(n, p, prob=0.5, sep1=3, sep2=2):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices. ``x` and ``y`` have shapes ``(n, p)`` and ``(n, p)``
         where `n` is the number of samples and `p` is the number of
         dimensions.
@@ -1110,7 +1110,7 @@ def indep_sim(sim, n, p, **kwargs):
 
     Returns
     -------
-    x,y : ndarray
+    x,y : ndarray of float
         Simulated data matrices.
     """
     if sim not in SIMULATIONS.keys():

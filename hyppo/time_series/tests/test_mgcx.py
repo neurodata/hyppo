@@ -44,7 +44,7 @@ class TestMGCXStat:
     def test_optimal_scale_nonlinear(self):
         n = 7
         x = np.arange(n)
-        y = x ** 2
+        y = x**2
         mgcx_dict = MGCX().test(x, y, reps=100)[2]
         opt_scale = mgcx_dict["opt_scale"]
         assert_array_less(opt_scale[0], n)
@@ -64,7 +64,7 @@ class TestMGCXStat:
     def test_rep_nonlinear(self):
         n = 7
         x = np.arange(n)
-        y = x ** 2
+        y = x**2
         mgcx_dict = MGCX().test(x, y, reps=100, random_state=2)[2]
         opt_scale = mgcx_dict["opt_scale"]
         mgcx_dict2 = MGCX().test(x, y, reps=100, random_state=2)[2]

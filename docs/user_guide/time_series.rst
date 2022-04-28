@@ -1,0 +1,1 @@
+.. include:: ../tutorials/time_series.rst
