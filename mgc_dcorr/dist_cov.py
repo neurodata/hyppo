@@ -3,6 +3,48 @@ import numpy as np
 from numpy import linalg as LA
 
 @njit(parallel=True)
+def proj_U(X, U, k):
+    """
+    Project X onto the orthogonal subspace of k dim of U
+    """
+    q, _ = LA.qr(U[:, :k])
+    #X_proj = np.sum(X * U[:, :k+1].T, axis=1) # vectorized dot
+    X_proj = np.zeros_like(X) # looped proj
+    for n in range(X_proj.shape[0]):
+        for k_i in range(k):
+            X_proj[n] = X_proj[n] + ((X[n] @ q[:, k_i]) / (q[:, k_i] @ q[:, k_i])) * q[:, k_i]
+    return X_proj
+
+@njit(parallel=True)
+def dca(X, Y, K):
+    """
+    Perform DCA dimensionality reduction on X
+    Single dataset X
+    K is desired dim for reduction of X
+    """
+    # N = X.shape[0]
+    P = X.shape[1]
+    k = 0
+    v = np.zeros(X.shape[1])
+    U = np.zeros_like(X.T)
+    X_proj = np.copy(X)
+    D_Y = dist_mat(Y)
+    R_Y = re_centered_dist(D_Y)
+    for k in range(0, K):
+        v_feat = np.zeros(P)
+        for i in range(P):
+            u = X[:, i]
+            D_u = dist_mat_u(u, X)
+            R_X_u = re_centered_dist(D_u)
+            v_feat[i] = dist_cov_sq(R_Y, R_X_u)
+        idx_max = np.argmax(v_feat)
+        u_opt = X[:, idx_max]
+        U[:, k] = u_opt
+        v[k] = v_feat[idx_max]
+        X_proj = proj_U(X_proj, U, k+1) # then inc k, unnecessary if this is last k
+    return U[:, :k+1], v[:k+1]
+
+@njit(parallel=True)
 def mean_numba_axis0(A):
     res = []
     for i in prange(A.shape[1]):
@@ -224,24 +266,12 @@ def optim_u_gd_stochastic(u, X, R_Y, lr, epsilon):
     return u_opt, v_opt
 
 @njit(parallel=True)
-def proj_U(X, U, k):
-    """
-    Project X onto the orthogonal subspace of k dim of U
-    """
-    q, _ = LA.qr(U[:, :k])
-    #X_proj = np.sum(X * U[:, :k+1].T, axis=1) # vectorized dot
-    X_proj = np.zeros_like(X) # looped proj
-    for n in range(X_proj.shape[0]):
-        for k_i in range(k):
-            X_proj[n] = X_proj[n] + ((X[n] @ q[:, k_i]) / (q[:, k_i] @ q[:, k_i])) * q[:, k_i]
-    return X_proj
-
-@njit(parallel=True)
-def dca(X, Y, K=None, lr=1e-1, epsilon=1e-5):
+def dca_grad_learn(X, Y, K, lr=1e-1, epsilon=1e-5): # TODO: update name in nb
     """
     Perform DCA dimensionality reduction on X
     Single dataset X
     K is desired dim for reduction of X
+    Use gradient ascent approach to learn representation U
     """
     k = 0
     v = np.zeros(X.shape[1])
