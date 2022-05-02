@@ -24,8 +24,8 @@ sys.path.insert(0, os.path.abspath(".."))
 # General information about the project
 year = datetime.date.today().year
 project = "hyppo"
-copyright = "2018-{}, ".format(year)
-authors = u"Sambit Panda"
+copyright = "2018-{}, NeuroData".format(year)
+authors = "Sambit Panda"
 
 # The short X.Y version
 # Find hyppo version.
@@ -50,9 +50,8 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     "sphinx_gallery.gen_gallery",
-    "recommonmark",
-    "sphinx_rtd_theme_ext_color_contrast",
     "sphinxcontrib.bibtex",
+    "myst_parser",
 ]
 
 bibtex_bibfiles = ["refs.bib"]
@@ -93,7 +92,6 @@ napoleon_use_ivar = True
 
 
 # uncomment line 55
-import sphinx_gallery
 from sphinx_gallery.sorting import FileNameSortKey
 
 sphinx_gallery_conf = {
@@ -115,6 +113,10 @@ sphinx_gallery_conf = {
     "reference_url": {"hyppo": None},
 }
 
+html_css_files = [
+    "css/custom.css",
+]
+
 # -- sphinx.ext.autodoc
 # autoclass_content = "both"
 # autodoc_default_flags = ["members", "inherited-members"]
@@ -134,7 +136,11 @@ plot_include_source = True
 plot_formats = ["png"]
 
 # -- sphinx options ----------------------------------------------------------
-source_suffix = ".rst"
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".txt": "markdown",
+    ".md": "markdown",
+}
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints"]
 master_doc = "index"
 source_encoding = "utf-8"
@@ -151,49 +157,37 @@ html_show_sourcelink = False
 html_show_sphinx = True
 html_show_copyright = True
 
+import warnings
+
+warnings.filterwarnings("ignore", category=UserWarning)
+
 pygments_style = "sphinx"
 smartquotes = False
 
-# Use RTD Theme
-import sphinx_rtd_theme
-
-html_theme = "sphinx_rtd_theme"
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme = "pydata_sphinx_theme"
 html_theme_options = {
-    "collapse_navigation": True,
-    "navigation_depth": 4,
+    "icon_links_label": "Quick Links",
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/neurodata/hyppo",
+            "icon": "fab fa-github-square",
+        },
+        {
+            "name": "Paper",
+            "url": "https://arxiv.org/abs/1907.02088",
+            "icon": "fas fa-book",
+        },
+        {
+            "name": "NeuroData",
+            "url": "https://neurodata.io/",
+            "icon": "fas fa-brain",
+        },
+    ],
+    "use_edit_page_button": True,
 }
 
 html_context = {
-    "menu_links_name": "Useful Links",
-    "menu_links": [
-        (
-            '<i class="fa fa-external-link-square fa-fw"></i> Neurodata',
-            "https://neurodata.io/",
-        ),
-        (
-            '<i class="fa fa-users fa-fw"></i> Contributing',
-            "https://github.com/neurodata/hyppo/blob/main/CONTRIBUTING.md",
-        ),
-        (
-            '<i class="fa fa-gavel fa-fw"></i> Code of Conduct',
-            "https://neurodata.io/about/codeofconduct/",
-        ),
-        (
-            '<i class="fa fa-exclamation-circle fa-fw"></i> Issue Tracker',
-            "https://github.com/neurodata/hyppo/issues",
-        ),
-        (
-            '<i class="fa fa-github fa-fw"></i> Source Code',
-            "https://github.com/neurodata/hyppo",
-        ),
-    ],
-    # Enable the "Edit in GitHub link within the header of each page.
-    "display_github": True,
-    # Set the following variables to generate the resulting github URL for each page.
-    # Format Template: https://{{ github_host|default("github.com") }}/{{ github_user }}
-    # /{{ github_repo }}/blob/{{ github_version }}{{ conf_py_path }}{{ pagename }}
-    # {{ suffix }}
     "github_user": "neurodata",
     "github_repo": "hyppo",
     "github_version": "main",
@@ -206,21 +200,6 @@ html_context = {
         )
     ),
 }
-
-
-html_css_files = [
-    "custom.css",
-]
-
-# Custom sidebar templates, must be a dictionary that maps document names
-# to template names.
-#
-# The default sidebars (for documents that don't match any pattern) are
-# defined by theme itself.  Builtin themes are using these templates by
-# default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
-# 'searchbox.html']``.
-#
-# html_sidebars = {}
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
@@ -290,27 +269,19 @@ epub_title = project
 epub_exclude_files = ["search.html"]
 
 
+# -- Other -------------------------------------------------------------------
+
+
 def setup(app):
     # to hide/show the prompt in code examples:
     app.add_js_file("js/copybutton.js")
 
 
-# -- Jupyter Notebook --------------------------------------------------------
+# -- Accessibility -----------------------------------------------------------
 
+language = "en"
+extensions += ["sphinx_sitemap"]
 
-# def all_but_ipynb(dir, contents):
-#     result = []
-#     for c in contents:
-#         if os.path.isfile(os.path.join(dir, c)) and (not c.endswith(".ipynb")):
-#             result += [c]
-#     return result
-
-
-# shutil.rmtree(
-#     os.path.join(PROJECT_PATH, "..", "docs/tutorials/benchmarks"), ignore_errors=True
-# )
-# shutil.copytree(
-#     os.path.join(PROJECT_PATH, "..", "benchmarks"),
-#     os.path.join(PROJECT_PATH, "..", "docs/tutorials/benchmarks"),
-#     ignore=all_but_ipynb,
-# )
+html_baseurl = os.environ.get("SPHINX_HTML_BASE_URL", "https://127.0.0.1:8000/")
+sitemap_locales = [None]
+sitemap_url_scheme = "{link}"

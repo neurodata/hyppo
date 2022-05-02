@@ -4,7 +4,7 @@
 
 This project welcomes contributions and suggestions and has adopted the [Neurodata Code of Conduct](https://neurodata.io/about/codeofconduct/).
 
-# Issue Submission (Bug or Feature)
+## Issue Submission (Bug or Feature)
 
 We use GitHub issues to track all bugs and feature requests; feel free to open an issue if you have found a bug or wish
 to see a feature implemented. Please also feel free to tag one of the core
@@ -23,7 +23,7 @@ It is recommended to check that your issue complies with the following rules bef
 - If you are submitting a bug report, we strongly encourage you to follow the guidelines in
   [How to create an actionable bug report](#how-to-create-an-actionable-bug-report)
 
-## How to create an actionable bug report
+### How to create an actionable bug report
 
 When you submit an issue to [Github](https://github.com/neurodata/hyppo/issues), please do your best to
 follow these guidelines! This will make it a lot faster for us to respond to your issue.
@@ -52,9 +52,9 @@ follow these guidelines! This will make it a lot faster for us to respond to you
   [Creating and highlighting code blocks](https://help.github.com/articles/creating-and-highlighting-code-blocks)
   for more details.
 
-# Contributing Code
+## Contributing Code
 
-## Git workflow
+### Git workflow
 
 The preferred workflow for contributing to hyppo is to fork the main repository on GitHub, clone, and develop on a
 branch. Steps:
@@ -65,14 +65,14 @@ branch. Steps:
 
 2. Clone your fork of the hyppo repo from your GitHub account to your local disk:
 
-   ```bash
+   ```sh
    git clone git@github.com:YourGithubAccount/hyppo.git
    cd hyppo
    ```
 
 3. Create a feature branch to hold your development changes:
 
-   ```bash
+   ```sh
    git checkout -b my-feature
    ```
 
@@ -81,17 +81,18 @@ branch. Steps:
 
 4. Develop the feature on your feature branch. Add changed files using `git add` and then `git commit` files:
 
-   ```bash
+   ```sh
    git add modified_files
    git commit
    ```
 
    After making all local changes, you will want to push your changes to your fork:
-   ```bash
+
+   ```sh
    git push -u origin my-feature
    ```
 
-## Pull Request Checklist
+### Pull Request Checklist
 
 We recommended that your contribution complies with the following rules before you submit a pull request:
 
@@ -109,29 +110,35 @@ We recommended that your contribution complies with the following rules before y
   correct computation/outputs.
 - All code should be automatically formatted by `black`. You can run this formatter by calling:
 
-  ```bash
+  ```sh
   pip install black
   black path/to/your_module.py
   ```
+
 - Ensure all tests are passing locally using `pytest`. Install the necessary
   packages by:
 
-  ```bash
+  ```sh
   pip install pytest pytest-cov
   pytest
   ```
+
 - If you are proposing adding a new module, make sure you are inheriting from the appropriate base class. See
   [the documentation](https://hyppo.neurodata.io/api/index.html#base-classes) for the appropriate class.
 
-# Guidelines
+### All Contributors Bot
 
-## Coding Guidelines
+For all your hard work, please add yourself using the All Contributors bot. Follow instruction [here](https://allcontributors.org/docs/en/bot/usage).
+
+## Guidelines
+
+### Coding Guidelines
 
 Uniformly formatted code makes it easier to share code ownership. hyppo package closely follows the official
 Python guidelines detailed in [PEP8](https://www.python.org/dev/peps/pep-0008/) that detail how code should be
 formatted and indented. Please read it and follow it.
 
-## Docstring Guidelines
+### Docstring Guidelines
 
 Properly formatted docstrings are required for documentation generation by Sphinx. The hyppo package closely
 follows the numpydoc guidelines. Please read and follow the

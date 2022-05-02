@@ -5,6 +5,8 @@ from numpy.testing import assert_almost_equal, assert_raises, assert_warns
 
 from .. import DiscrimTwoSample
 
+# TODO: timeout CircleCI, make discrim faster
+
 
 class TestTwoSample:
     def test_greater(self):
