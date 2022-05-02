@@ -49,7 +49,7 @@ class TestFSSD:
         null_sim = FSSDH0SimCovObs(n_simulate=200, seed=3)
         extra_sim = FSSDH0SimCovDraw()
         fssd = FSSD(isonorm, k, V, null_sim=null_sim, alpha=alpha)
-        check_sim = extra_sim.simulate(X=X, gof=fssd)
+        check_sim = extra_sim.simulate(gof=fssd)
         power_criterion(p=isonorm, X=X, k=k, test_locs=V)
         fssd_grid_search_kernel(p=isonorm, X=X, test_locs=V, list_kernel=list_k)
         fssd.get_H1_mean_variance(X=X)
