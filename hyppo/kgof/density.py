@@ -12,8 +12,8 @@ from past.utils import old_div
 from abc import ABC, abstractmethod
 import autograd
 import autograd.numpy as np
-from .data import DSNormal, DSIsotropicNormal
-import scipy.stats as stats
+from .datasource import DSNormal, DSIsotropicNormal
+import scipy.stats as sp
 
 
 class UnnormalizedDensity(ABC):
@@ -23,6 +23,8 @@ class UnnormalizedDensity(ABC):
     testing.
     """
 
+    # this class contaibns some operations to be computed on unnormalized densities
+    # log of the density, normalized log density, gradients of log density, etc..
     @abstractmethod
     def log_den(self, X):
         """
@@ -91,7 +93,7 @@ class IsotropicNormal(UnnormalizedDensity):
 
     def log_normalized_den(self, X):
         d = self.dim()
-        return stats.multivariate_normal.logpdf(
+        return sp.multivariate_normal.logpdf(
             X, mean=self.mean, cov=self.variance * np.eye(d)
         )
 

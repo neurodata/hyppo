@@ -3,9 +3,9 @@ from numpy import testing
 from past.utils import old_div
 from scipy.linalg.misc import norm
 
-from ..data import DSNormal
+# from ..data import DSNormal
 from ..density import IsotropicNormal, Normal
-import scipy.stats as stats
+import scipy.stats as sp
 from numpy.random import default_rng
 
 import pytest
@@ -39,10 +39,10 @@ class TestIsotropicNormal:
 
         isonorm = IsotropicNormal(mean, variance)
         grad_log = isonorm.grad_log(X)
-        my_grad_log = -(X - mean) / variance
+        mod_grad_log = -(X - mean) / variance
 
         # check correctness
-        testing.assert_almost_equal(grad_log, my_grad_log)
+        testing.assert_almost_equal(grad_log, mod_grad_log)
 
 
 class TestNormal:
@@ -63,13 +63,7 @@ class TestNormal:
         prec = np.dot(np.dot(V, np.diag(old_div(1.0, E))), V.T)
         X0 = X - mean
         X0prec = np.dot(X0, prec)
-        my_log_dens = old_div(-np.sum(X0prec * X0, 1), 2.0)
-
-        ds_norm = DSNormal(test_mean, cov)
-        ds_norm.sample(n=10)
-        ds_norm.dim()
-        norm.get_datasource()
-        norm.dim()
+        mod_log_dens = old_div(-np.sum(X0prec * X0, 1), 2.0)
 
         # check correctness
-        testing.assert_almost_equal(log_dens, my_log_dens)
+        testing.assert_almost_equal(log_dens, mod_log_dens)
