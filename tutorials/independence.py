@@ -97,8 +97,8 @@ t_fast_hhg = timeit.Timer(stmt="HHG().test(x, y, auto=True)", setup=setup_code)
 hhg_time = np.array(t_hhg.timeit(number=1))  # original HHG
 fast_hhg_time = np.array(t_fast_hhg.timeit(number=5)) / 5  # fast HHG
 
-print(u"Original HHG time: {0:.3g}s".format(hhg_time))
-print(u"Fast HHG time: {0:.3g}s".format(fast_hhg_time))
+print("Original HHG time: {0:.3g}s".format(hhg_time))
+print("Fast HHG time: {0:.3g}s".format(fast_hhg_time))
 
 ########################################################################################
 # ------------
@@ -147,10 +147,10 @@ chisq_time = np.array(t_chisq.timeit(number=1000)) / 1000  # fast Dcorr
 fast_perm_time = np.array(t_fast_perm.timeit(number=1))  # permutation Dcorr
 fast_chisq_time = np.array(t_fast_chisq.timeit(number=1000)) / 1000  # fast Dcorr
 
-print(u"Permutation time: {0:.3g}s".format(perm_time))
-print(u"Fast time (chi-square): {0:.3g}s".format(chisq_time))
-print(u"Permutation time (fast statistic): {0:.3g}s".format(fast_perm_time))
-print(u"Fast time (fast statistic chi-square): {0:.3g}s".format(fast_chisq_time))
+print("Permutation time: {0:.3g}s".format(perm_time))
+print("Fast time (chi-square): {0:.3g}s".format(chisq_time))
+print("Permutation time (fast statistic): {0:.3g}s".format(fast_perm_time))
+print("Fast time (fast statistic chi-square): {0:.3g}s".format(fast_chisq_time))
 
 ########################################################################################
 # Look at the time increases when using the fast test!
@@ -333,6 +333,45 @@ plt.show()
 # test to be run. All the parameters from the above tests can also be modified, and see
 # the relevant section of reference documentation in :mod:`hyppo.independence` for more
 # information.
+# These tests runs like :ref:`any other test<general indep>`.
+
+########################################################################################
+# Friedman Rafsky Test for Randomness
+# --------------------------------------------
+#
+# This notebook will introduce the usage of the Friedman Rafsky test, a multivariate
+# extension of the Wald-Wolfowitz runs test to test for randomness between two multivariate
+# samples. More specifically, the function tests whether two multivariate samples were
+# independently drawn from the same distribution.
+#
+# The question proposed in 'Multivariate Generalizations of the Wald-Wolfowitz and Smirnov Two-Sample Tests'
+# is that of how to extend the univariate Wald-Wolfowitz runs test to a multivariate setting.
+#
+# The univariate Wald-Wolfowitz runs test is a non-parametric statistical test that checks a randomness hypothesis
+# for a two-valued data sequence. More specifically, it can be used to test the hypothesis that the elements of a sequence
+# are mutually independent. For a data sequence with identifiers of two groups,
+# say: :math:`X , Y` we begin by sorting the combined data set
+# :math: `W` in numerical ascending order. The number of runs is then defined by the number
+# of maximal, non-empty segments of the sequence consisting of adjacent and equal elements.
+# So if we designate every :math:`X = +,  Y = -` an example assortment of the 15 element long sequence
+# of both sets could be given as :math:`+++----++---+++` which contains 5 runs, 3 of which positive and 2 of which negative.
+# By randomly permuting the labels of our data a large number of times, we can compare our true number of runs to that of the
+# random permutations to determine the test statistic and p-value.
+#
+# For extension to the multivariate case, we determine a neighbor not by proximity in numerical order,
+# but instead by euclidean distance between each point. The data is then 'sorted' via a calculation of
+# the minimum spanning tree in which each point is connected to each other point with edge weight equal
+# to that of the euclidean distance between the two points. The number of runs is then determined by severing
+# each edge of the MST for which the points connected do not belong to the same family. Similarly to the univariate
+# case, the labels associated with each node are then permuted randomly a large number of times, we can
+# compare our number of true runs to the random distribution of runs to determine the multivariate test
+# statistic and p-value.
+#
+# As such, we see that this set of data contains 3 such runs, and again by randomizing the
+# labels of each data point we can determine the test statistic and p-value for the hypothesis
+# that to determine the randomness of our combined sample.
+# It's worth noting that X and Y have the same number of samples, just that they posess the same number of multivariate
+# features. Lastly, labels for X and Y need not be 0 and 1, they just need be consistent across samples.
 # These tests runs like :ref:`any other test<general indep>`.
 #
 # .. _[1]: https://link.springer.com/article/10.1007/s10182-020-00378-1

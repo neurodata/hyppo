@@ -3,15 +3,42 @@ import warnings
 import numpy as np
 from joblib import Parallel, delayed
 from scipy.stats.distributions import chi2
-from scipy.stats.stats import _contains_nan
 from sklearn.metrics import pairwise_distances
 from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.utils import check_random_state
 
 
-def contains_nan(a):  # from scipy
-    """Check if inputs contains NaNs"""
-    return _contains_nan(a, nan_policy="raise")
+# Explicitly copying private function from scipy 1.7.3
+# Modified to only use nan_policy 'raise'
+# REF: https://github.com/scipy/scipy/blob/59e6539cf80dc04b16b0f0ab52343381f0a7a2fa/scipy/stats/stats.py#L79
+def contains_nan(a):
+    nan_policy = "raise"
+    try:
+        # Calling np.sum to avoid creating a huge array into memory
+        # e.g. np.isnan(a).any()
+        with np.errstate(invalid="ignore"):
+            contains_nan_var = np.isnan(np.sum(a))
+    except TypeError:
+        # This can happen when attempting to sum things which are not
+        # numbers (e.g. as in the function `mode`). Try an alternative method:
+        try:
+            contains_nan_var = np.nan in set(a.ravel())
+        except TypeError:
+            # Don't know what to do. Fall back to omitting nan values and
+            # issue a warning.
+            contains_nan_var = False
+            nan_policy = "omit"
+            warnings.warn(
+                "The input array could not be properly "
+                "checked for nan values. nan values "
+                "will be ignored.",
+                RuntimeWarning,
+            )
+
+    if contains_nan_var:
+        raise ValueError("The input contains nan values")
+
+    return contains_nan_var, nan_policy
 
 
 def check_ndarray_xy(x, y):

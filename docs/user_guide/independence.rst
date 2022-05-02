@@ -1,0 +1,1 @@
+.. include:: ../tutorials/independence.rst

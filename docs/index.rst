@@ -1,13 +1,9 @@
 ..  -*- coding: utf-8 -*-
 
-hyppo
-********
-
-.. include:: ../README.rst
-    :start-after: placeholder-for-doc-index
+.. include:: ../README.md
+    :parser: myst_parser.sphinx_
 
 .. toctree::
-    :maxdepth: 2
     :hidden:
     :caption: Getting Started
 
@@ -36,5 +32,5 @@ hyppo
     :caption: Reference Docs
 
     api/index.rst
-    news.rst
-    license.rst
+    changelog/index.rst
+    development/index.rst
