@@ -168,7 +168,7 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         # sumy2 = np.reshape(np.sum(Y ** 2, 1), (1, -1))
         # D2 = sumx2 - 2 * np.dot(X, Y.T) + sumy2
         # K = np.exp(old_div(-D2, (2.0 * self.sigma2)))
-        K = compute_kern(x=X, y=Y)
+        K = compute_kern(x=X._value, y=Y)
         return K
 
     def gradX_Y(self, X, Y, dim):
@@ -268,5 +268,5 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         # assert d1 == d2, "Two inputs must have the same dimension"
         # D2 = np.sum((X - Y) ** 2, 1)
         # Kvec = np.exp(old_div(-D2, (2.0 * self.sigma2)))
-        Kvec = compute_kern(x=X, y=Y)
+        Kvec = compute_kern(x=X._value, y=Y)
         return Kvec
