@@ -8,8 +8,7 @@ from past.utils import old_div
 
 from abc import ABC, abstractmethod
 import autograd.numpy as np
-from ._utils import tr_te_indices
-import scipy.stats as sp
+import scipy.stats as stats
 from numpy.random import default_rng
 
 
@@ -76,7 +75,7 @@ class DSNormal(DataSource):
 
     def sample(self, n, seed=3):
         rng = default_rng(seed)
-        mvn = sp.multivariate_normal(self.mean, self.cov)
+        mvn = stats.multivariate_normal(self.mean, self.cov)
         X = mvn.rvs(size=n)
         if len(X.shape) == 1:
             # This can happen if d=1

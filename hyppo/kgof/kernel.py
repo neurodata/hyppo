@@ -165,7 +165,6 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         sumy2 = np.reshape(np.sum(Y**2, 1), (1, -1))
         D2 = sumx2 - 2 * np.dot(X, Y.T) + sumy2
         K = np.exp(old_div(-D2, (2.0 * self.sigma2)))
-        # K = compute_kern(x=X._value, y=Y)
         return K
 
     def gradX_Y(self, X, Y, dim):
@@ -178,7 +177,6 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         sigma2 = self.sigma2
         K = self.eval(X, Y)
         Diff = X[:, [dim]] - Y[:, [dim]].T
-        # Diff = np.reshape(X[:, dim], (-1, 1)) - np.reshape(Y[:, dim], (1, -1))
         G = -K * Diff / sigma2
         return G
 

@@ -11,7 +11,7 @@ from abc import ABC, abstractmethod
 import autograd
 import autograd.numpy as np
 from .datasource import DSNormal, DSIsotropicNormal
-import scipy.stats as sp
+import scipy.stats as stats
 
 
 class UnnormalizedDensity(ABC):
@@ -91,7 +91,7 @@ class IsotropicNormal(UnnormalizedDensity):
 
     def log_normalized_den(self, X):
         d = self.dim()
-        return sp.multivariate_normal.logpdf(
+        return stats.multivariate_normal.logpdf(
             X, mean=self.mean, cov=self.variance * np.eye(d)
         )
 
@@ -121,7 +121,6 @@ class Normal(UnnormalizedDensity):
             raise ValueError("covariance matrix is not full rank.")
         # The precision matrix
         self.prec = np.dot(np.dot(V, np.diag(old_div(1.0, E))), V.T)
-        # print self.prec
 
     def log_den(self, X):
         mean = self.mean

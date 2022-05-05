@@ -35,7 +35,7 @@ class TestKGauss:
         k.gradXY_sum(X, Y)
         k.pair_gradX_Y(X, Y)
         k.pair_gradXY_sum(X, Y)
-        k.pair_eval(X, Y)  # tests usage of multi_compute_kern
+        k.pair_eval(X, Y)
         # check correctness
         K = k.eval(X, y[np.newaxis, :])
         modG = -K / sigma2 * (X - y)

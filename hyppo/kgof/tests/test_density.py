@@ -36,8 +36,8 @@ class TestIsotropicNormal:
         variance = 1.2
         mean = rng.standard_normal(size=d) + 1
         X = rng.random(size=(n, d)) - 2
-        cov = np.cov(mean)
-
+        cov = rng.random(size=(d, d)) + 1
+        
         norm = Normal(mean, cov)
         isonorm = IsotropicNormal(mean, variance)
         grad_log = isonorm.grad_log(X)
