@@ -13,6 +13,7 @@ import scipy
 import scipy.stats as stats
 from numpy.random import default_rng
 
+
 class H0Simulator(ABC):
     """
     An abstract class representing a simulator to draw samples from the
@@ -127,6 +128,7 @@ class FSSDH0SimCovDraw(H0Simulator):
 
         arr_nfssd, eigs = list_simulate_spectral(cov, J, n_simulate, seed=self.seed)
         return {"sim_stats": arr_nfssd}
+
 
 class FSSD(GofTest):
     r"""

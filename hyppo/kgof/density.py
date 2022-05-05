@@ -1,8 +1,6 @@
 """
 Module containing implementations of some unnormalized probability density 
 functions.
-Contains overlapping functionality with sims that exist in numpy.
-Module will be refactored to remove dependencies on this object.
 """
 from __future__ import division
 

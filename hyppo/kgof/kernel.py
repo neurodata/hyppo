@@ -1,8 +1,5 @@
 """
 Module containing kernel related classes
-Contains overlapping functionality with sims that exist in 
-hyppo.tools.common.compute_kern.
-Module will be refactored to remove dependencies on this object.
 """
 from __future__ import division
 
@@ -163,9 +160,9 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         """
         (n1, d1) = X.shape
         (n2, d2) = Y.shape
-        assert d1==d2, 'Dimensions of the two inputs must be the same'
-        sumx2 = np.reshape(np.sum(X ** 2, 1), (-1, 1))
-        sumy2 = np.reshape(np.sum(Y ** 2, 1), (1, -1))
+        assert d1 == d2, "Dimensions of the two inputs must be the same"
+        sumx2 = np.reshape(np.sum(X**2, 1), (-1, 1))
+        sumy2 = np.reshape(np.sum(Y**2, 1), (1, -1))
         D2 = sumx2 - 2 * np.dot(X, Y.T) + sumy2
         K = np.exp(old_div(-D2, (2.0 * self.sigma2)))
         # K = compute_kern(x=X._value, y=Y)
