@@ -39,7 +39,10 @@ class TestIsotropicNormal:
         cov = rng.standard_normal(size=(d, d)) + 1
         
         norm = Normal(mean, cov)
+        norm.log_den(X)
+        norm.dim()
         ds_norm = DSNormal(mean, cov)
+        ds_norm.dim()
         isonorm = IsotropicNormal(mean, variance)
         grad_log = isonorm.grad_log(X)
         mod_grad_log = -(X - mean) / variance
