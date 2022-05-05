@@ -53,11 +53,14 @@ class TestNormal:
         cov = np.array([[1.1, 1.2], [1.1, 1.2]])
         mean = rng.standard_normal(size=(n, d))
         X = rng.random(size=(n, d)) + 1
-
+        
         test_mean = np.ones(2)
         test_cov = np.array([[1.1, 1.2], [1.1, 1.2]])
 
         norm = Normal(mean, cov)
+        ds_norm = DSNormal(mean, cov)
+        ds_norm.sample(1)
+        ds_norm.dim()
         log_dens = norm.log_den(X)
         E, V = np.linalg.eigh(cov)
         prec = np.dot(np.dot(V, np.diag(old_div(1.0, E))), V.T)
