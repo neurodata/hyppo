@@ -73,11 +73,11 @@ class DSNormal(DataSource):
         assert mean.shape[0] == cov.shape[0]
         assert cov.shape[0] == cov.shape[1]
 
-    """def sample(self, n, seed=3):
+    def sample(self, n, seed=3):
         rng = default_rng(seed)
         mvn = stats.multivariate_normal(self.mean, self.cov)
         X = mvn.rvs(size=n)
         if len(X.shape) == 1:
             # This can happen if d=1
             X = X[:, np.newaxis]
-        return X"""
+        return X
