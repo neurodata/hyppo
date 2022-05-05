@@ -3,8 +3,8 @@ from numpy import testing
 from past.utils import old_div
 from scipy.linalg.misc import norm
 
-# from ..data import DSNormal
 from ..density import IsotropicNormal, Normal
+from ..datasource import DSNormal
 import scipy.stats as sp
 from numpy.random import default_rng
 
@@ -37,8 +37,9 @@ class TestIsotropicNormal:
         mean = rng.standard_normal(size=d) + 1
         X = rng.random(size=(n, d)) - 2
         cov = rng.random(size=(d, d)) + 1
-        
+
         norm = Normal(mean, cov)
+        DSNormal(mean, cov)
         isonorm = IsotropicNormal(mean, variance)
         grad_log = isonorm.grad_log(X)
         mod_grad_log = -(X - mean) / variance

@@ -224,7 +224,10 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         """
         (n1, d1) = X.shape
         (n2, d2) = Y.shape
-        assert d1 == d2, "Dimensions of the two inputs must be the same"
+        try:
+            d1 == d2
+        except ValueError:
+            raise ValueError("Dimensions of the two inputs must be the same")
         d = d1
         sigma2 = self.sigma2
         D2 = np.sum(X**2, 1)[:, np.newaxis] - 2 * np.dot(X, Y.T) + np.sum(Y**2, 1)
@@ -259,9 +262,14 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         """
         (n1, d1) = X.shape
         (n2, d2) = Y.shape
-        assert n1 == n2, "Two inputs must have the same number of instances"
-        assert d1 == d2, "Two inputs must have the same dimension"
+        try:
+            n1 == n2
+        except ValueError:
+            raise ValueError("Two inputs must have the same number of instances")
+        try:
+            d1 == d2
+        except ValueError:
+            raise ValueError("Two inputs must have the same dimension")
         D2 = np.sum((X - Y) ** 2, 1)
         Kvec = np.exp(old_div(-D2, (2.0 * self.sigma2)))
-        # Kvec = compute_kern(x=X._value, y=Y)
         return Kvec
