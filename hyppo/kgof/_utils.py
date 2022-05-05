@@ -92,7 +92,7 @@ def fit_gaussian_draw(X, J, seed=28, reg=1e-7, eig_pow=1.0):
     evals = np.maximum(0, np.real(evals))
     assert np.all(np.isfinite(evals))
     evecs = np.real(evecs)
-    shrunk_cov = evecs.dot(np.diag(evals**eig_pow)).dot(evecs.T) + reg * np.eye(d)
+    shrunk_cov = evecs.dot(np.diag(evals ** eig_pow)).dot(evecs.T) + reg * np.eye(d)
     V = rng.multivariate_normal(mean_x, shrunk_cov, J)
     return V
 

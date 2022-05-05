@@ -378,7 +378,7 @@ def _fast_1d_dcov(x, y, bias=False):  # pragma: no cover
     ) + (si[-1] - 2 * si)
 
     if bias:
-        denom = [n**2, n**3, n**4]
+        denom = [n ** 2, n ** 3, n ** 4]
     else:
         denom = [n * (n - 3), n * (n - 3) * (n - 2), n * (n - 3) * (n - 2) * (n - 1)]
 
@@ -404,7 +404,7 @@ def _dcov(distx, disty, bias=False, only_dcov=True):  # pragma: no cover
     if only_dcov:
         N = distx.shape[0]
         if bias:
-            stat = 1 / (N**2) * stat
+            stat = 1 / (N ** 2) * stat
         else:
             stat = 1 / (N * (N - 3)) * stat
 

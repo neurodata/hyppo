@@ -10,7 +10,6 @@ from .rv import RV
 from .friedman_rafsky import FriedmanRafsky
 
 
-
 __all__ = [s for s in dir()]  # add imported tests to __all__
 
 

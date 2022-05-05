@@ -112,7 +112,7 @@ class MMD(KSampleTest):
                 x,
                 y,
             )
-            * (2 * (n**2) * (m**2))
+            * (2 * (n ** 2) * (m ** 2))
             / ((n + m) ** 4)
         )
         self.stat = stat

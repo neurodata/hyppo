@@ -185,7 +185,7 @@ class TestHelper:
                 l1, (n - 1, n + 1), (l1.itemsize * (n + 1), l1.itemsize)
             )[:, 1:]
         )
-        gamma = 1.0 / (2 * (med**2))
+        gamma = 1.0 / (2 * (med ** 2))
 
         kernx = pairwise_kernels(x, x, metric="rbf", gamma=gamma)
         kerny = pairwise_kernels(y, y, metric="rbf", gamma=gamma)
@@ -230,7 +230,7 @@ class TestHelper:
                 l1, (n - 1, n + 1), (l1.itemsize * (n + 1), l1.itemsize)
             )[:, 1:]
         )
-        gamma = 1.0 / (2 * (med**2))
+        gamma = 1.0 / (2 * (med ** 2))
 
         kernx = pairwise_kernels(x, x, metric="rbf", gamma=gamma)
         kerny = pairwise_kernels(y, y, metric="rbf", gamma=gamma)

@@ -381,7 +381,7 @@ def ustat_h1_mean_variance(fea_tensor, return_variance=True, use_unbiased=True):
     Tau = np.reshape(Xi, [n, d * J])
     if use_unbiased:
         t1 = np.sum(np.mean(Tau, 0) ** 2) * (old_div(n, float(n - 1)))
-        t2 = old_div(np.sum(np.mean(Tau**2, 0)), float(n - 1))
+        t2 = old_div(np.sum(np.mean(Tau ** 2, 0)), float(n - 1))
         # stat is the mean
         stat = t1 - t2
     else:
@@ -393,7 +393,7 @@ def ustat_h1_mean_variance(fea_tensor, return_variance=True, use_unbiased=True):
     # compute the variance
     # mu: d*J vector
     mu = np.mean(Tau, 0)
-    variance = 4 * np.mean(np.dot(Tau, mu) ** 2) - 4 * np.sum(mu**2) ** 2
+    variance = 4 * np.mean(np.dot(Tau, mu) ** 2) - 4 * np.sum(mu ** 2) ** 2
     return stat, variance
 
 

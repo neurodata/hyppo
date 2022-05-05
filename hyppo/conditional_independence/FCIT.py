@@ -18,19 +18,35 @@ class FCIT(ConditionalIndependenceTest):
     Fast Conditional Independence test statistic and p-value
 
     The Fast Conditional Independence Test is a non-parametric
-    conditional independence test. :footcite:p:`chalupka2018FastConditionalIndependence`.
+    conditional independence test :footcite:p:`chalupka2018FastConditionalIndependence`.
 
     Parameters
     ----------
     model: Sklearn regressor
-
-
+        Regressor used to predict input data :math: `Y`
     cv_grid: dict
-       Dictionary of parameters to cross-validate over.
-
+       Dictionary of parameters to cross-validate over when training regressor.
+    num_perm: int
+        Number of data permutations to estimate the p-value from marginal stats.
+    prop_test: float
+        Proportion of data to evaluate test stat on.
+    discrete: tuple of string
+        Whether :math: `X` or :math: `Y` are discrete
     Notes
     -----
-
+    The motivation for the test rests on the assumption that if :math: `X \not\!\perp\!\!\!\perp Y \mid Z`,
+    then :math: `Y` should be more accurately predicted by using both
+    :math: `X` and :math: `Z` as covariates as opposed to only using
+    :math: `Z` as a covariate. Likewise, if :math: `X \perp \!\!\! \perp Y \mid Z`,
+    then :math: `Y` should be predicted just as accurately by solely
+    using :math: `X` or soley using :math: `Z`:footcite:p:`chalupka2018FastConditionalIndependence`.
+    Thus, the test works by using a regressor (the default is decision tree) to
+    to predict input :math: `Y` using both :math: `X` and :math: `Z` and using
+    only :math: `Z` :footcite:p:`chalupka2018FastConditionalIndependence`. Then,
+    accuracy of both predictions are measured via mean-squared error (MSE).
+    :math: `X \perp \!\!\! \perp Y \mid Z` if and only if MSE of the algorithm
+    using both :math: `X` and :math: `Z` is not smaller than the MSE of the
+    algorithm trained using only :math: `Z` :footcite:p:`chalupka2018FastConditionalIndependence`.
 
     References
     ----------
@@ -65,7 +81,7 @@ class FCIT(ConditionalIndependenceTest):
         Returns
         -------
         stat : float
-            The computed FCIT statistic.
+            The computed FCIT test statistic.
         """
 
         n_samples = x.shape[0]
@@ -119,6 +135,40 @@ class FCIT(ConditionalIndependenceTest):
         return t, p_value
 
     def test(self, x, y, z=None):
+        r"""
+        Calculates the FCIT test statistic and p-value.
+
+        Parameters
+        ----------
+        x,y,z : ndarray of float
+            Input data matrices.
+
+        Returns
+        -------
+        stat : float
+            The computed FCIT statistic.
+        pvalue : float
+            The computed FCIT p-value.
+
+        Examples
+        --------
+        >>> import numpy as np
+        >>> from hyppo.conditional_independence import FCIT
+        >>> from sklearn.tree import DecisionTreeRegressor
+        >>> np.random.seed(1234)
+        >>> dim = 2
+        >>> n = 100000
+        >>> z1 = np.random.multivariate_normal(mean=np.zeros(dim), cov=np.eye(dim), size=(n))
+        >>> A1 = np.random.normal(loc=0, scale=1, size=dim * dim).reshape(dim, dim)
+        >>> B1 = np.random.normal(loc=0, scale=1, size=dim * dim).reshape(dim, dim)
+        >>> x1 = (A1 @ z1.T + np.random.multivariate_normal(mean=np.zeros(dim), cov=np.eye(dim), size=(n)).T)
+        >>> y1 = (B1 @ z1.T + np.random.multivariate_normal(mean=np.zeros(dim), cov=np.eye(dim), size=(n)).T)
+        >>> model = DecisionTreeRegressor()
+        >>> cv_grid = {"min_samples_split": [2, 8, 64, 512, 1e-2, 0.2, 0.4]}
+        >>> stat, pvalue = FCIT(model=model, cv_grid=cv_grid).test(x1.T, y1.T, z1)
+        >>> '%.2f, %.3f' % (stat, pvalue)
+        '-3.59, 0.995'
+        """
 
         n_samples = x.shape[0]
 
@@ -138,18 +188,9 @@ class FCIT(ConditionalIndependenceTest):
 
 
 def cross_val(x, y, z, cv_grid, model, prop_test):
-    """Choose the best decision tree hyperparameters by
-    cross-validation. The hyperparameter to optimize is min_samples_split
-    (see sklearn's DecisionTreeRegressor).
-    Args:
-        x (n_samples, x_dim): Input data array.
-        y (n_samples, y_dim): Output data array.
-        z (n_samples, z_dim): Optional auxiliary input data.
-        cv_grid (dict): List of hyperparameter values to try in CV.
-        regressor (sklearn classifier): Which regression model to use.
-        prop_test (float): Proportion of validation data to use.
-    Returns:
-        DecisionTreeRegressor with the best hyperparameter setting.
+    """
+    Choose the regression hyperparameters by
+    cross-validation.
     """
 
     splitter = ShuffleSplit(n_splits=3, test_size=prop_test)
@@ -160,14 +201,7 @@ def cross_val(x, y, z, cv_grid, model, prop_test):
 
 
 def interleave(x, z, seed=None):
-    """Interleave x and z dimension-wise.
-    Args:
-        x (n_samples, x_dim) array.
-        z (n_samples, z_dim) array.
-    Returns
-        An array of shape (n_samples, x_dim + z_dim) in which
-            the columns of x and z are interleaved at random.
-    """
+    """Interleave x and z dimension-wise."""
     state = np.random.get_state()
     np.random.seed(seed or int(time.time()))
     total_ids = np.random.permutation(x.shape[1] + z.shape[1])
@@ -181,13 +215,7 @@ def interleave(x, z, seed=None):
 def obtain_error(data_and_i):
     """
     A function used for multithreaded computation of the fcit test statistic.
-    data['x']: First variable.
-    data['y']: Second variable.
-    data['z']: Conditioning variable.
-    data['data_permutation']: Permuted indices of the data.
-    data['perm_ids']: Permutation for the bootstrap.
-    data['n_test']: Number of test points.
-    data['clf']: Decision tree regressor.
+    Calculates MSE error for both trained regressors.
     """
     data, i = data_and_i
     x = data["x"]

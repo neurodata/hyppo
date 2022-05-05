@@ -25,10 +25,7 @@ class TestFCIT:
 
     @pytest.mark.parametrize(
         "dim, n, obs_stat, obs_pvalue",
-        [
-            (1, 100000, -0.16024, 0.56139),
-            (2, 100000, -4.59882, 0.99876)
-        ],
+        [(1, 100000, -0.16024, 0.56139), (2, 100000, -4.59882, 0.99876)],
     )
     def test_null(self, dim, n, obs_stat, obs_pvalue):
         np.random.seed(12)

@@ -162,8 +162,8 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         # (n1, d1) = X.shape
         # (n2, d2) = Y.shape
         # assert d1==d2, 'Dimensions of the two inputs must be the same'
-        sumx2 = np.reshape(np.sum(X**2, 1), (-1, 1))
-        sumy2 = np.reshape(np.sum(Y**2, 1), (1, -1))
+        sumx2 = np.reshape(np.sum(X ** 2, 1), (-1, 1))
+        sumy2 = np.reshape(np.sum(Y ** 2, 1), (1, -1))
         D2 = sumx2 - 2 * np.dot(X, Y.T) + sumy2
         K = np.exp(old_div(-D2, (2.0 * self.sigma2)))
         return K
@@ -229,7 +229,7 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         assert d1 == d2, "Dimensions of the two inputs must be the same"
         d = d1
         sigma2 = self.sigma2
-        D2 = np.sum(X**2, 1)[:, np.newaxis] - 2 * np.dot(X, Y.T) + np.sum(Y**2, 1)
+        D2 = np.sum(X ** 2, 1)[:, np.newaxis] - 2 * np.dot(X, Y.T) + np.sum(Y ** 2, 1)
         K = np.exp(old_div(-D2, (2.0 * sigma2)))
         G = K / sigma2 * (d - old_div(D2, sigma2))
         return G
