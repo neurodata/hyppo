@@ -59,7 +59,7 @@ class TestNormal:
 
         norm = Normal(mean, cov)
         ds_norm = DSNormal(mean, cov)
-        ds_norm.sample(1)
+        norm.dim()
         ds_norm.dim()
         log_dens = norm.log_den(X)
         E, V = np.linalg.eigh(cov)
