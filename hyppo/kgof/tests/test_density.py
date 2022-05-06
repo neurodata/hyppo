@@ -67,7 +67,6 @@ class TestNormal:
 
         ds_norm = DSNormal(test_mean, cov)
         ds_norm.sample(n=10)
-        ds_norm.dim()
         norm.get_datasource()
         norm.dim()
 
