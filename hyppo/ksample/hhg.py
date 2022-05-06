@@ -60,7 +60,7 @@ class HHG(KSampleTest):
         Returns
         -------
         stat : float
-            The computed HHG statistic. Rejects if less than or equal to :math:`\alpha`
+            The computed KS test statistic associated with the lowest p-value.
         """
         xy = np.concatenate((x, y), axis=0)
         distxy = _centerpoint_dist(xy, self.compute_distance, 1)
@@ -77,15 +77,16 @@ class HHG(KSampleTest):
         x,y : ndarray of float
             Input data matrices. ``y1`` and ``y2`` must have the same number of
             dimensions. That is, the shapes must be ``(n, p)`` and ``(m, p)`` where
-            `n` and  are the number of samples and `p` is the number of
+            `n` and `m` are the number of samples and `p` is the number of
             dimensions.
             
         Returns
         -------
         stat : float
-            The computed HHG statistic
+            The computed KS test statistic associated with the lowest p-value.
         pvalue : float
-            The computed HHG pvalue
+            The computed HHG pvalue. Equivalent to the lowest p-value multiplied by the total number
+            of samples.
         """
         check_input = _CheckInputs(inputs=[x, y],)
         x, y = check_input()
