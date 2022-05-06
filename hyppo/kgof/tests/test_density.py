@@ -3,7 +3,7 @@ from numpy import testing
 from past.utils import old_div
 from scipy.linalg.misc import norm
 
-from ..datasource import DSNormal
+from ..datasource import DSNormal, DSIsotropicNormal
 from ..density import IsotropicNormal, Normal
 import scipy.stats as stats
 from numpy.random import default_rng
@@ -21,8 +21,10 @@ class TestIsotropicNormal:
         X = rng.random(size=(n, d)) + 1
 
         isonorm = IsotropicNormal(mean, variance)
+        ds_isonorm = DSIsotropicNormal(mean, variance)
         isonorm.log_normalized_den(X)
         isonorm.dim()
+        ds_isonorm.dim()
         log_dens = isonorm.log_den(X)
         my_log_dens = -np.sum((X - mean) ** 2, 1) / (2.0 * variance)
 
