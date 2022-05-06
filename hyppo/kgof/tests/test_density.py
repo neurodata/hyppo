@@ -24,7 +24,6 @@ class TestIsotropicNormal:
         ds_isonorm = DSIsotropicNormal(mean, variance)
         isonorm.log_normalized_den(X)
         isonorm.dim()
-        ds_isonorm.dim()
         log_dens = isonorm.log_den(X)
         my_log_dens = -np.sum((X - mean) ** 2, 1) / (2.0 * variance)
 
