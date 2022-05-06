@@ -24,15 +24,6 @@ class DataSource(ABC):
         the input (n, seed)."""
         raise NotImplementedError()
 
-    def dim(self):
-        """
-        Return the dimension of the data.  If possible, subclasses should
-        override this. Determining the dimension by sampling may not be
-        efficient, especially if the sampling relies on MCMC.
-        """
-        dat = self.sample(n=1, seed=3)
-        return dat.dim()
-
 
 class DSIsotropicNormal(DataSource):
     """
