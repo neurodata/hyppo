@@ -76,7 +76,6 @@ class FSSDH0SimCovObs(H0Simulator):
         # Make sure it is a matrix i.e, np.cov returns a scalar when Tau is
         # 1d.
         cov = np.cov(Tau.T) + np.zeros((1, 1))
-        # cov = Tau.T.dot(Tau/n)
 
         arr_nfssd, eigs = list_simulate_spectral(cov, J, n_simulate, seed=self.seed)
         return {"sim_stats": arr_nfssd}

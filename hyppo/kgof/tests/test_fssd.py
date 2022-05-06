@@ -89,6 +89,9 @@ class TestFSSD:
 
         u_mean, u_variance = ustat_h1_mean_variance(fea_tensor)
 
+        random_sim = FSSDH0SimCovObs()
+        random_sim.simulate(gof=fssd, X=X)
+
         # assertions
         testing.assert_almost_equal(u_variance, 1, decimal=1)
         # should reject H0
