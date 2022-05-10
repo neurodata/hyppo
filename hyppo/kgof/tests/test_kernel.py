@@ -57,10 +57,9 @@ class TestKGauss:
         for i in range(n):
             for j in range(n):
                 diffi2 = np.sum((X[i, :] - X[j, :]) ** 2)
-                # myG[i, j] = -diffi2*K[i, j]/(sigma2**2)+ d*K[i, j]/sigma2
                 modG[i, j] = K[i, j] / sigma2 * (d - diffi2 / sigma2)
 
-        # check correctness
+        # check correctness of function that calculates sum of the gradient across x_i and y_i in Y
         G = k.gradXY_sum(X, X)
 
         testing.assert_equal(G.shape, modG.shape)
