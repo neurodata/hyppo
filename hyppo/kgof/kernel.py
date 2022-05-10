@@ -1,5 +1,8 @@
 """
 Module containing kernel related classes
+
+TODO: Replace kernel evaluation with compute_kern found in hyppo.common.tools by reducing
+dependencies on autograd.numpy
 """
 from __future__ import division
 
