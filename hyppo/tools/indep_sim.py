@@ -195,9 +195,9 @@ def cubic(n, p, noise=False, low=-1, high=1, cubs=[-12, 48, 128], scale=1 / 3):
 
     x_coeffs = x @ coeffs - scale
     y = (
-        cubs[2] * x_coeffs ** 3
-        + cubs[1] * x_coeffs ** 2
-        + cubs[0] * x_coeffs ** 3
+        cubs[2] * x_coeffs**3
+        + cubs[1] * x_coeffs**2
+        + cubs[0] * x_coeffs**3
         + 80 * noise * eps
     )
 
@@ -354,7 +354,7 @@ def quadratic(n, p, noise=False, low=-1, high=1):
     eps = _calc_eps(n)
 
     x_coeffs = x @ coeffs
-    y = x_coeffs ** 2 + 0.5 * noise * eps
+    y = x_coeffs**2 + 0.5 * noise * eps
 
     return x, y
 
@@ -407,7 +407,7 @@ def w_shaped(n, p, noise=False, low=-1, high=1):
 
     x_coeffs = x @ coeffs
     u_coeffs = u @ coeffs
-    y = 4 * ((x_coeffs ** 2 - 0.5) ** 2 + u_coeffs / 500) + 0.5 * noise * eps
+    y = 4 * ((x_coeffs**2 - 0.5) ** 2 + u_coeffs / 500) + 0.5 * noise * eps
 
     return x, y
 
@@ -565,7 +565,7 @@ def logarithmic(n, p, noise=False):
     x = np.random.multivariate_normal(np.zeros(p), sig, size=n)
     eps = _calc_eps(n)
 
-    y = np.log(x ** 2) + 3 * noise * eps
+    y = np.log(x**2) + 3 * noise * eps
 
     return x, y
 
@@ -826,7 +826,7 @@ def two_parabolas(n, p, noise=False, low=-1, high=1, prob=0.5):
     rand_noise = _random_uniform(n, p, low=0, high=1)
 
     x_coeffs = x @ coeffs
-    y = (x_coeffs ** 2 + 2 * noise * rand_noise) * (u - 0.5)
+    y = (x_coeffs**2 + 2 * noise * rand_noise) * (u - 0.5)
 
     return x, y
 

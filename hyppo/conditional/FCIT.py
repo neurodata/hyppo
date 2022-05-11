@@ -23,7 +23,7 @@ class FCIT(ConditionalIndependenceTest):
     Parameters
     ----------
     model: Sklearn regressor
-        Regressor used to predict input data :math: `Y`
+        Regressor used to predict input data :math:`Y`
     cv_grid: dict
        Dictionary of parameters to cross-validate over when training regressor.
     num_perm: int
@@ -31,22 +31,22 @@ class FCIT(ConditionalIndependenceTest):
     prop_test: float
         Proportion of data to evaluate test stat on.
     discrete: tuple of string
-        Whether :math: `X` or :math: `Y` are discrete
+        Whether :math:`X` or :math:`Y` are discrete
     Notes
     -----
-    The motivation for the test rests on the assumption that if :math: `X \not\!\perp\!\!\!\perp Y \mid Z`,
-    then :math: `Y` should be more accurately predicted by using both
-    :math: `X` and :math: `Z` as covariates as opposed to only using
-    :math: `Z` as a covariate. Likewise, if :math: `X \perp \!\!\! \perp Y \mid Z`,
-    then :math: `Y` should be predicted just as accurately by solely
-    using :math: `X` or soley using :math: `Z`:footcite:p:`chalupka2018FastConditionalIndependence`.
+    The motivation for the test rests on the assumption that if :math:`X \not\!\perp\!\!\!\perp Y \mid Z`,
+    then :math:`Y` should be more accurately predicted by using both
+    :math:`X` and :math:`Z` as covariates as opposed to only using
+    :math:`Z` as a covariate. Likewise, if :math:`X \perp \!\!\! \perp Y \mid Z`,
+    then :math:`Y` should be predicted just as accurately by solely
+    using :math:`X` or soley using :math:`Z` :footcite:p:`chalupka2018FastConditionalIndependence`.
     Thus, the test works by using a regressor (the default is decision tree) to
-    to predict input :math: `Y` using both :math: `X` and :math: `Z` and using
-    only :math: `Z` :footcite:p:`chalupka2018FastConditionalIndependence`. Then,
+    to predict input :math:`Y` using both :math:`X` and :math:`Z` and using
+    only :math:`Z` :footcite:p:`chalupka2018FastConditionalIndependence`. Then,
     accuracy of both predictions are measured via mean-squared error (MSE).
-    :math: `X \perp \!\!\! \perp Y \mid Z` if and only if MSE of the algorithm
-    using both :math: `X` and :math: `Z` is not smaller than the MSE of the
-    algorithm trained using only :math: `Z` :footcite:p:`chalupka2018FastConditionalIndependence`.
+    :math:`X \perp \!\!\! \perp Y \mid Z` if and only if MSE of the algorithm
+    using both :math:`X` and :math:`Z` is not smaller than the MSE of the
+    algorithm trained using only :math:`Z` :footcite:p:`chalupka2018FastConditionalIndependence`.
 
     References
     ----------

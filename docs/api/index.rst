@@ -87,9 +87,9 @@ Discriminability
    DiscrimOneSample
    DiscrimTwoSample
 
-.. automodule:: hyppo.conditional_independence
+.. automodule:: hyppo.conditional
 
-.. currentmodule:: hyppo.conditional_independence
+.. currentmodule:: hyppo.conditioal
 
 
 Conditional Independence

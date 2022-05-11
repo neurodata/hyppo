@@ -3,7 +3,7 @@ import pytest
 from numpy.testing import assert_almost_equal
 
 from hyppo.tools import rot_ksamp
-from hyppo.conditional_independence import FCIT
+from hyppo.conditional import FCIT
 
 
 class TestFCIT:

@@ -5,6 +5,6 @@ import hyppo.time_series
 import hyppo.kgof
 import hyppo.tools
 import hyppo.d_variate
-import hyppo.conditional_independence
+import hyppo.conditional
 
 __version__ = "0.3.2"
