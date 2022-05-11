@@ -50,24 +50,6 @@ def meddistance(X, subsample=None, mean_on_fail=True):
         return meddistance(X[ind, :], None, mean_on_fail)
 
 
-def tr_te_indices(n, tr_proportion, seed=9282):
-    r"""
-    Get two logical vectors for indexing train/test points.
-
-    From: https://github.com/wittawatj/fsic-test
-    """
-    rand_state = np.random.get_state()
-    rng = default_rng(seed)
-
-    Itr = np.zeros(n, dtype=bool)
-    tr_ind = rng.choice(n, int(tr_proportion * n), replace=False)
-    Itr[tr_ind] = True
-    Ite = np.logical_not(Itr)
-
-    np.random.set_state(rand_state)
-    return (Itr, Ite)
-
-
 def fit_gaussian_draw(X, J, seed=28, reg=1e-7, eig_pow=1.0):
     r"""
     Fit a multivariate normal to the data X (n x d) and draw J points
