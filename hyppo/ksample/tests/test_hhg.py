@@ -24,9 +24,9 @@ class TestHHG:
     def test_rep(self, n):
         np.random.seed(123456789)
         x, y = rot_ksamp("linear", n, 1, k=2, noise=False)
-        MPstat1 = HHG().test(x, y)
-        MPstat2 = HHG().test(x, y)
-
+        MPstat1 = HHG().statistic(x, y)
+        MPstat2 = HHG().statistic(x, y)
+        
         assert MPstat1 == MPstat2
 
 
