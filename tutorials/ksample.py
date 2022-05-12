@@ -261,9 +261,9 @@ from hyppo.ksample import HHG
 
 np.random.seed(1234)
 
-HHGsims = rot_ksamp("linear", n=100, p=1, k=2, degree=[60, -60], noise=True)
+x, y = rot_ksamp("linear", n=100, p=1, k=2, noise=False)
 
-stat, pvalue = HHG.test(*HHGsims)
+stat, pvalue = HHG().test(x, y)
 print(stat, pvalue)
 
 
