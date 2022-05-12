@@ -66,7 +66,7 @@ class HHG(KSampleTest):
         distxy = _centerpoint_dist(xy, self.compute_distance, 1)
         distx = distxy[:, 0 : len(x)]
         disty = distxy[:, len(x) : len(x) + len(y)]
-        stats,pvalues = _distance_score(distx, disty)
+        stats, pvalues = _distance_score(distx, disty)
         minP = min(pvalues)
         minstat = stats[pvalues.index(minP)]
         self.stat = minstat
@@ -95,7 +95,7 @@ class HHG(KSampleTest):
         distxy = _centerpoint_dist(xy, self.compute_distance, 1)
         distx = distxy[:, 0 : len(x)]
         disty = distxy[:, len(x) : len(x) + len(x)]
-        stats,pvalues = _distance_score(distx, disty)
+        stats, pvalues = _distance_score(distx, disty)
         minP = min(pvalues)
         minstat = stats[pvalues.index(minP)]
         pvalue = minP * len(pvalues)
@@ -117,7 +117,7 @@ def _distance_score(distx, disty):
         stat, pvalue = ks_2samp(dist1[i], dist2[i])
         stats.append(stat)
         pvalues.append(pvalue)
-    return stats,pvalues
+    return stats, pvalues
 
 
 @jit(nopython=True)
