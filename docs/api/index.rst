@@ -93,7 +93,7 @@ Discriminability
 
 
 Conditional Independence
-_________________________
+-------------------------
 
 .. autosummary::
     :toctree: generated/

@@ -91,7 +91,7 @@ class FCIT(ConditionalIndependenceTest):
             np.random.permutation(x.shape[0]) for i in range(self.num_perm)
         ]
 
-        clf = cross_val(x, y, z, self.cv_grid, self.model, prop_test=self.prop_test)
+        clf = _cross_val(x, y, z, self.cv_grid, self.model, prop_test=self.prop_test)
         datadict = {
             "x": x,
             "y": y,
@@ -103,7 +103,7 @@ class FCIT(ConditionalIndependenceTest):
         }
         d1_stats = np.array(
             joblib.Parallel(n_jobs=-1, max_nbytes=100e6)(
-                joblib.delayed(obtain_error)((datadict, i))
+                joblib.delayed(_obtain_error)((datadict, i))
                 for i in range(self.num_perm)
             )
         )
@@ -113,7 +113,7 @@ class FCIT(ConditionalIndependenceTest):
         else:
             x_indep_y = np.empty([x.shape[0], 0])
 
-        clf = cross_val(
+        clf = _cross_val(
             x_indep_y, y, z, self.cv_grid, self.model, prop_test=self.prop_test
         )
 
@@ -121,18 +121,14 @@ class FCIT(ConditionalIndependenceTest):
         datadict["x"] = x_indep_y
         d0_stats = np.array(
             joblib.Parallel(n_jobs=-1, max_nbytes=100e6)(
-                joblib.delayed(obtain_error)((datadict, i))
+                joblib.delayed(_obtain_error)((datadict, i))
                 for i in range(self.num_perm)
             )
         )
 
-        t, p_value = ttest_1samp(d0_stats / d1_stats, 1)
-        if t < 0:
-            p_value = 1 - p_value / 2
-        else:
-            p_value = p_value / 2
+        stat, two_sided = ttest_1samp(d0_stats / d1_stats, 1)
 
-        return t, p_value
+        return stat, two_sided
 
     def test(self, x, y, z=None):
         r"""
@@ -153,7 +149,7 @@ class FCIT(ConditionalIndependenceTest):
         Examples
         --------
         >>> import numpy as np
-        >>> from hyppo.conditional_independence import FCIT
+        >>> from hyppo.conditional import FCIT
         >>> from sklearn.tree import DecisionTreeRegressor
         >>> np.random.seed(1234)
         >>> dim = 2
@@ -182,12 +178,17 @@ class FCIT(ConditionalIndependenceTest):
 
         y = StandardScaler().fit_transform(y)
 
-        stat, pvalue = self.statistic(x, y, z)
+        stat, two_sided = self.statistic(x, y, z)
+
+        if stat < 0:
+            pvalue = 1 - two_sided / 2
+        else:
+            pvalue = two_sided / 2
 
         return ConditionalIndependenceTestOutput(stat, pvalue)
 
 
-def cross_val(x, y, z, cv_grid, model, prop_test):
+def _cross_val(x, y, z, cv_grid, model, prop_test):
     """
     Choose the regression hyperparameters by
     cross-validation.
@@ -195,12 +196,12 @@ def cross_val(x, y, z, cv_grid, model, prop_test):
 
     splitter = ShuffleSplit(n_splits=3, test_size=prop_test)
     cv = GridSearchCV(estimator=model, cv=splitter, param_grid=cv_grid, n_jobs=-1)
-    cv.fit(interleave(x, z), y)
+    cv.fit(_interleave(x, z), y)
 
     return type(model)(**cv.best_params_)
 
 
-def interleave(x, z, seed=None):
+def _interleave(x, z, seed=None):
     """Interleave x and z dimension-wise."""
     state = np.random.get_state()
     np.random.seed(seed or int(time.time()))
@@ -212,7 +213,7 @@ def interleave(x, z, seed=None):
     return out
 
 
-def obtain_error(data_and_i):
+def _obtain_error(data_and_i):
     """
     A function used for multithreaded computation of the fcit test statistic.
     Calculates MSE error for both trained regressors.
@@ -229,7 +230,7 @@ def obtain_error(data_and_i):
     n_test = data["n_test"]
     clf = data["clf"]
 
-    x_z = interleave(x[perm_ids], z, seed=i)
+    x_z = _interleave(x[perm_ids], z, seed=i)
 
     clf.fit(x_z[data_permutation][n_test:], y[data_permutation][n_test:])
     return mse(
