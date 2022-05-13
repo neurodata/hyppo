@@ -42,7 +42,8 @@ class KSampleHHG(KSampleTest):
         where ``x`` is the data matrix for which pairwise distances are
         calculated and ``**kwargs`` are extra arguements to send to your custom
         
-    
+     **kwargs
+         Arbitrary keyword arguments for ``compute_distance``.
     
     Notes
     -----
