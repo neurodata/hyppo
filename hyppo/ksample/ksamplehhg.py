@@ -1,4 +1,5 @@
 import numpy as np
+from numba import jit
 from hyppo.ksample.base import KSampleTest
 from hyppo.ksample._utils import _CheckInputs
 from sklearn.metrics import pairwise_distances
@@ -105,6 +106,18 @@ def _centerpoint_dist(xy, metric, workers=1, **kwargs):
 
 
 def _distance_score(distx, disty):
+    dist1, dist2 = _group_distances(distx,disty)
+    stats = []
+    pvalues = []
+    for i in range(len(distx)):
+        stat, pvalue = ks_2samp(dist1[i], dist2[i])
+        stats.append(stat)
+        pvalues.append(pvalue)
+    return stats, pvalues
+
+@jit(nopython=True)
+def _group_distances(distx,disty):
+    dist1, dist2 = _group_distances(distx,disty)
     dist1 = []
     dist2 = []
     for i in range(len(distx)):
@@ -114,10 +127,4 @@ def _distance_score(distx, disty):
         distancey = distancey.reshape(-1)
         dist1.append(distancex)
         dist2.append(distancey)
-    stats = []
-    pvalues = []
-    for i in range(len(distx)):
-        stat, pvalue = ks_2samp(dist1[i], dist2[i])
-        stats.append(stat)
-        pvalues.append(pvalue)
-    return stats, pvalues
+    return dist1, dist2
