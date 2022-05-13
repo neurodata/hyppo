@@ -1,5 +1,4 @@
 import numpy as np
-from numba import jit
 from hyppo.ksample.base import KSampleTest
 from hyppo.ksample._utils import _CheckInputs
 from sklearn.metrics import pairwise_distances
@@ -68,14 +67,15 @@ class KSampleHHG(KSampleTest):
         disty = distxy[:, len(x) : len(x) + len(y)]
         stats, pvalues = _distance_score(distx, disty)
         minP = min(pvalues)
-        minstat = stats[pvalues.index(minP)]
-        self.stat = minstat
+        stat = stats[pvalues.index(minP)]
+        self.minP = minP
+        self.stat = stat
         return self.stat
 
     def test(self, x, y):
         """
         x,y : ndarray of float
-            Input data matrices. ``y1`` and ``y2`` must have the same number of
+            Input data matrices. ``x`` and ``y`` must have the same number of
             dimensions. That is, the shapes must be ``(n, p)`` and ``(m, p)`` where
             `n` and `m` are the number of samples and `p` is the number of
             dimensions.
@@ -90,16 +90,11 @@ class KSampleHHG(KSampleTest):
         """
         check_input = _CheckInputs(inputs=[x, y],)
         x, y = check_input()
+        N = len(x) + len(y)
 
-        xy = np.concatenate((x, y), axis=0)
-        distxy = _centerpoint_dist(xy, self.compute_distance, 1)
-        distx = distxy[:, 0 : len(x)]
-        disty = distxy[:, len(x) : len(x) + len(x)]
-        stats, pvalues = _distance_score(distx, disty)
-        minP = min(pvalues)
-        minstat = stats[pvalues.index(minP)]
-        pvalue = minP * len(pvalues)
-        return minstat, pvalue
+        stat = self.statistic(x,y)
+        pvalue = self.minP*N
+        return stat, pvalue
 
 
 def _centerpoint_dist(xy, metric, workers=1, **kwargs):
