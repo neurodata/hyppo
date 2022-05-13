@@ -5,7 +5,7 @@ from .hotelling import Hotelling
 from .ksamp import KSample
 from .manova import MANOVA
 from .mmd import MMD
-from .hhg import KSampleHHG
+from .ksamplehhg import KSampleHHG
 
 from .smoothCF import SmoothCFTest, smooth_cf_distance
 from .mean_embedding import MeanEmbeddingTest, mean_embed_distance
