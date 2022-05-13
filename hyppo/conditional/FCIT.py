@@ -82,6 +82,8 @@ class FCIT(ConditionalIndependenceTest):
         -------
         stat : float
             The computed FCIT test statistic.
+        two_sided: float
+            Two-sided p-value associated with test statistic
         """
 
         n_samples = x.shape[0]

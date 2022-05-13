@@ -32,7 +32,7 @@ Now, let's look at unique properties of some of the tests in :mod:`hyppo.conditi
 # Fast Conditional Independence Test (FCIT)
 # ---------------------------------------------
 #
-# The **Fast Conditional Independence Test (CCA)** is a non-parametric conditional
+# The **Fast Conditional Independence Test (FCIT)** is a non-parametric conditional
 # independence test. The test is based on a weak assumption that if the conditional
 # independence alternative hypothesis is true, then prediction of the independent
 # variable with only the conditioning variable should be just as accurate as
