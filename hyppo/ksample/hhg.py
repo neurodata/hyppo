@@ -6,7 +6,7 @@ from sklearn.metrics import pairwise_distances
 from scipy.stats import ks_2samp
 
 
-class HHG(KSampleTest):
+class KSampleHHG(KSampleTest):
     r"""
     HHG 2-Sample test statistic.
     

@@ -249,7 +249,7 @@ print("10 degrees of freedom (stat, pval):\n", stat2, pval2)
 # point z. The univariate test used is the Kolmogorov-Smirnov 2-sample Test, which looks
 # at the largest absolute deviation between the cumulative distribution functions of
 # the samples.
-# More info can found at :class:`hyppo.ksample.HHG`.
+# More info can found at :class:`hyppo.ksample.KSampleHHG`.
 #
 # .. note::
 #
@@ -257,13 +257,13 @@ print("10 degrees of freedom (stat, pval):\n", stat2, pval2)
 #    :Cons: - Lower power than more computationally complex algorithms
 #           - Inherits the assumptions of the KS univariate test
 
-from hyppo.ksample import HHG
+from hyppo.ksample import KSampleHHG
 
 np.random.seed(1234)
 
 x, y = rot_ksamp("linear", n=100, p=1, k=2, noise=False)
 
-stat, pvalue = HHG().test(x, y)
+stat, pvalue = KSampleHHG().test(x, y)
 print(stat, pvalue)
 
 
