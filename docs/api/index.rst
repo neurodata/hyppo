@@ -89,8 +89,7 @@ Discriminability
 
 .. automodule:: hyppo.conditional
 
-.. currentmodule:: hyppo.conditioal
-
+.. currentmodule:: hyppo.conditional
 
 Conditional Independence
 -------------------------
