@@ -16,6 +16,34 @@ class KSampleHHG(KSampleTest):
     The univariate test used is the Kolmogorov-Smirnov 2-sample test.
     :footcite:p:`hellerMultivariateTestsOfAssociation2016`.
     
+    Parameters
+    ----------
+    compute_distance : str, callable, or None, default: "euclidean"
+        A function that computes the distance among the samples within each
+        data matrix.
+        Valid strings for ``compute_distance`` are, as defined in
+        :func:`sklearn.metrics.pairwise_distances`,
+
+            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
+              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
+              :mod:`scipy.spatial.distance` for details
+              on these metrics.
+            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
+              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
+              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
+              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
+              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
+              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
+              details on these metrics.
+
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
+        matrices. To call a custom function, either create the distance matrix
+        before-hand or create a function of the form ``metric(x, **kwargs)``
+        where ``x`` is the data matrix for which pairwise distances are
+        calculated and ``**kwargs`` are extra arguements to send to your custom
+        
+    
+    
     Notes
     -----
     The statistic can be derived as follows:
@@ -51,6 +79,10 @@ class KSampleHHG(KSampleTest):
 
     def statistic(self, x, y):
         """
+        Calculates K-Sample HHG test statistic.
+        
+        Parameters
+        ----------
         x,y : ndarray of float
             Input data matrices. ``x`` and ``y`` must have the same number of
             dimensions. That is, the shapes must be ``(n, p)`` and ``(m, p)`` where
@@ -75,6 +107,10 @@ class KSampleHHG(KSampleTest):
 
     def test(self, x, y):
         """
+        Calculates K-Sample HHG test statistic and p-value.
+        
+        Parameters
+        ----------
         x,y : ndarray of float
             Input data matrices. ``x`` and ``y`` must have the same number of
             dimensions. That is, the shapes must be ``(n, p)`` and ``(m, p)`` where
@@ -115,7 +151,7 @@ def _distance_score(distx, disty):
         pvalues.append(pvalue)
     return stats, pvalues
 
-@jit(nopython=True)
+@jit(nopython=True, cache=True)
 def _group_distances(distx,disty):
     dist1, dist2 = _group_distances(distx,disty)
     dist1 = []
