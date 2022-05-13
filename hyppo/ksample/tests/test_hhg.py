@@ -26,7 +26,7 @@ class TestKSampleHHG:
         x, y = rot_ksamp("linear", n, 1, k=2, noise=False)
         MPstat1 = KSampleHHG().statistic(x, y)
         MPstat2 = KSampleHHG().statistic(x, y)
-        
+
         assert MPstat1 == MPstat2
 
 

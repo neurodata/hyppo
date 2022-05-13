@@ -130,8 +130,8 @@ class KSampleHHG(KSampleTest):
         x, y = check_input()
         N = len(x) + len(y)
 
-        stat = self.statistic(x,y)
-        pvalue = self.minP*N
+        stat = self.statistic(x, y)
+        pvalue = self.minP * N
         return stat, pvalue
 
 
@@ -143,7 +143,7 @@ def _centerpoint_dist(xy, metric, workers=1, **kwargs):
 
 
 def _distance_score(distx, disty):
-    dist1, dist2 = _group_distances(distx,disty)
+    dist1, dist2 = _group_distances(distx, disty)
     stats = []
     pvalues = []
     for i in range(len(distx)):
@@ -152,9 +152,10 @@ def _distance_score(distx, disty):
         pvalues.append(pvalue)
     return stats, pvalues
 
+
 @jit(nopython=True, cache=True)
-def _group_distances(distx,disty):
-    dist1, dist2 = _group_distances(distx,disty)
+def _group_distances(distx, disty):
+    dist1, dist2 = _group_distances(distx, disty)
     dist1 = []
     dist2 = []
     for i in range(len(distx)):
