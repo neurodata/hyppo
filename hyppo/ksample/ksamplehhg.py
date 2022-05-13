@@ -154,7 +154,7 @@ def _distance_score(distx, disty):
 
 
 @jit(nopython=True, cache=True)
-def _group_distances(distx, disty):
+def _group_distances(distx, disty):  # pragma: no cover
     dist1 = []
     dist2 = []
     for i in range(len(distx)):
