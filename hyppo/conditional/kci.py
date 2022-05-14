@@ -3,13 +3,13 @@ from scipy.stats import gamma
 from sklearn.gaussian_process import GaussianProcessClassifier
 from sklearn.gaussian_process.kernels import RBF
 
-from .base import IndependenceTest, IndependenceTestOutput
+from .base import ConditionalIndependenceTest, ConditionalIndependenceTestOutput
 
 
 class KCI(IndependenceTest):
     def __init__(self, **kwargs):
 
-        IndependenceTest.__init__(self, **kwargs)
+        ConditionalIndependenceTest.__init__(self, **kwargs)
 
     def kernel(self, x, y):
 
@@ -68,4 +68,4 @@ class KCI(IndependenceTest):
 
         self.stat = stat
 
-        return IndependenceTestOutput(stat, pvalue)
+        return ConditionalIndependenceTestOutput(stat, pvalue)
