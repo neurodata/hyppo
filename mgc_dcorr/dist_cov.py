@@ -33,7 +33,6 @@ def dist_mat_vec(X):
     """
     Vector X: (u^T X) to distance matrix D
     For distance matrix of u^T X
-    TODO: Norm of scalar is identity?
     """
     N = len(X)
     D = np.zeros((N, N))
@@ -45,7 +44,7 @@ def dist_mat_vec(X):
 @njit(parallel=True)
 def dist_mat_u(u, X):
     """
-    TODO: X @ u is vector, not matrix?
+    Compute distance matrix of the vector u^T X
     """
     u_X = X @ u
     D_u = dist_mat_vec(u_X)
@@ -101,25 +100,15 @@ def dca(X, Y, K):
     """
     # N = X.shape[0]
     P = X.shape[1]
-    k = 0
-    v = np.zeros(X.shape[1])
-    U = np.zeros_like(X.T)
-    X_proj = np.copy(X)
     D_Y = dist_mat(Y)
     R_Y = re_centered_dist(D_Y)
-    for k in range(0, K):
-        v_feat = np.zeros(P)
-        for i in range(P):
-            u = X[:, i]
-            D_u = dist_mat_u(u, X)
-            R_X_u = re_centered_dist(D_u)
-            v_feat[i] = dist_cov_sq(R_Y, R_X_u)
-        idx_max = np.argmax(v_feat)
-        u_opt = X[:, idx_max]
-        U[:, k] = u_opt
-        v[k] = v_feat[idx_max]
-        X_proj = proj_U(X_proj, U, k+1) # then inc k, unnecessary if this is last k
-    return U[:, :k+1], v[:k+1]
+    v_feat = np.zeros(P)
+    for i in range(P):
+        D_u = dist_mat_vec(X[:, i])
+        R_X_u = re_centered_dist(D_u)
+        v_feat[i] = dist_cov_sq(R_Y, R_X_u)
+    min_idx = np.argsort(v_feat)
+    return X[:, min_idx[-K:]]
 
 @njit(parallel=True)
 def dist_mat_vec_diff(X):
