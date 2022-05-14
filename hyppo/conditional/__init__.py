@@ -5,7 +5,7 @@ from .FCIT import FCIT
 __all__ = [s for s in dir()]  # add imported tests to __all__
 
 
-INDEP_TESTS = {
+COND_INDEP_TESTS = {
     "kci": KCI,
     "fcit":FCIT
 }
