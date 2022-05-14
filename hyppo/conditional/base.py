@@ -56,6 +56,7 @@ class ConditionalIndependenceTest(ABC):
     def statistic(self, x, y):
         r"""
         Calculates the independence test statistic.
+
         Parameters
         ----------
         x,y : ndarray of float
@@ -79,6 +80,7 @@ class ConditionalIndependenceTest(ABC):
     ):
         r"""
         Calculates the independence test statistic and p-value.
+
         Parameters
         ----------
         x,y : ndarray of float
