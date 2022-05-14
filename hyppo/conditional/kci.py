@@ -7,6 +7,17 @@ from .base import ConditionalIndependenceTest, ConditionalIndependenceTestOutput
 
 
 class KCI(IndependenceTest):
+    r"""
+    Kernel Conditional Independence Test Statistic and P-Value.
+    This is a conditional indpendence test utilizing a radial basis 
+    function to calculate the kernels of two datasets. The trace
+    of the normalized matrix product is then calculated to extract the test 
+    statistic. A Gaussian distribution is then utilized to calculate
+    the p-value given the statistic and approximate mean and variance
+    of the trace values of the independent kernel matrices.
+    This test is consistent against similar tests..
+    """
+
     def __init__(self, **kwargs):
 
         ConditionalIndependenceTest.__init__(self, **kwargs)
