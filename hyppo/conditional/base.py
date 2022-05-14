@@ -112,6 +112,7 @@ class ConditionalIndependenceTest(ABC):
             block, samples are exchangeable. Blocks of samples from the same
             partition are also exchangeable between one another. If a column
             value is negative, that block is fixed and cannot be exchanged.
+
         Returns
         -------
         stat : float
