@@ -11,7 +11,7 @@ class KCI(IndependenceTest):
 
         ConditionalIndependenceTest.__init__(self, **kwargs)
 
-    def kernel(self, x, y):
+    def compute_kern(self, x, y):
 
         T = len(y)
 
@@ -42,7 +42,7 @@ class KCI(IndependenceTest):
 
         H = np.eye(T) - np.ones((T, T)) / T
 
-        Kx, Ky = self.kernel(x, y)
+        Kx, Ky = self.compute_kern(x, y)
 
         Kx = np.matmul(np.matmul(H, Kx), H)
         Ky = np.matmul(np.matmul(H, Ky), H)
@@ -55,7 +55,7 @@ class KCI(IndependenceTest):
 
         T = len(y)
 
-        Kx, Ky = self.kernel(x, y)
+        Kx, Ky = self.compute_kern(x, y)
         stat = self.statistic(x, y)
 
         mean_appr = (np.trace(Kx) * np.trace(Ky)) / T
