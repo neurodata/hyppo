@@ -55,10 +55,10 @@ class KCI(IndependenceTest):
 
         Kx, Ky = self.compute_kern(x, y)
 
-        Kx = np.matmul(np.matmul(H, Kx), H)
-        Ky = np.matmul(np.matmul(H, Ky), H)
+        Kx = H @ Kx) @ H
+        Ky = (H @ Ky) @ H
 
-        stat = np.trace(np.matmul(Kx, Ky))
+        stat = np.trace(Kx @ Ky)
 
         return stat
 
@@ -71,7 +71,7 @@ class KCI(IndependenceTest):
 
         mean_appr = (np.trace(Kx) * np.trace(Ky)) / T
         var_appr = (
-            2 * np.trace(np.matmul(Kx, Kx)) * np.trace(np.matmul(Ky, Ky)) / T**2
+            2 * np.trace(Kx @ Kx) * np.trace(Ky @ Ky) / T**2
         )
         k_appr = mean_appr**2 / var_appr
         theta_appr = var_appr / mean_appr
