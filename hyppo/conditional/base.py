@@ -4,14 +4,15 @@ from typing import NamedTuple
 from ..tools import perm_test
 
 
-class IndependenceTestOutput(NamedTuple):
+class ConditionalIndependenceTestOutput(NamedTuple):
     stat: float
     pvalue: float
 
 
-class IndependenceTest(ABC):
+class ConditionalIndependenceTest(ABC):
     r"""
-    A base class for an independence test.
+    A base class for a conditional independence test.
+
     Parameters
     ----------
     compute_distance : str, callable, or None, default: "euclidean" or "gaussian"
@@ -133,4 +134,4 @@ class IndependenceTest(ABC):
         self.pvalue = pvalue
         self.null_dist = null_dist
 
-        return IndependenceTestOutput(stat, pvalue)
+        return ConditionalIndependenceTestOutput(stat, pvalue)
