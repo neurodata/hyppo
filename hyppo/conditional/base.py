@@ -79,7 +79,7 @@ class ConditionalIndependenceTest(ABC):
         random_state=None,
     ):
         r"""
-        Calculates the independence test statistic and p-value.
+        Calculates the conditional independence test statistic and p-value.
 
         Parameters
         ----------
