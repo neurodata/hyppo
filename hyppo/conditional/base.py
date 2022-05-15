@@ -10,6 +10,7 @@ class ConditionalIndependenceTestOutput(NamedTuple):
 class ConditionalIndependenceTest(ABC):
     """
     A base class for a conditional independence test.
+
     """
 
     def __init__(self):
@@ -19,10 +20,12 @@ class ConditionalIndependenceTest(ABC):
     def statistic(self, x, y, z):
         r"""
         Calculates the conditional independence test statistic.
+
         Parameters
         ----------
         x,y,z : ndarray of float
             Input data matrices.
+
         Returns
         -------
         stat : float
@@ -33,10 +36,12 @@ class ConditionalIndependenceTest(ABC):
     def test(self, x, y, z):
         r"""
         Calculates the conditional independence test statistic and p-value.
+
         Parameters
         ----------
         x,y,z : ndarray of float
             Input data matrices.
+
         Returns
         -------
         stat : float
