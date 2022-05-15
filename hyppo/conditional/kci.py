@@ -6,7 +6,7 @@ from sklearn.gaussian_process.kernels import RBF
 from .base import ConditionalIndependenceTest, ConditionalIndependenceTestOutput
 
 
-class KCI(IndependenceTest):
+class KCI(ConditionalIndependenceTest):
     r"""
     Kernel Conditional Independence Test Statistic and P-Value.
     This is a conditional indpendence test utilizing a radial basis 
