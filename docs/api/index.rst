@@ -87,6 +87,17 @@ Discriminability
    DiscrimOneSample
    DiscrimTwoSample
 
+.. automodule:: hyppo.conditional
+
+.. currentmodule:: hyppo.conditional
+
+Conditional Independence
+-------------------------
+
+.. autosummary::
+    :toctree: generated/
+
+    FCIT
 
 
 .. automodule:: hyppo.kgof

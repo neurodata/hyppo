@@ -44,7 +44,7 @@ class GofTest(ABC):
         self.alpha = alpha
 
     @abstractmethod
-    def test(self, dat):
+    def test(self, X):
         """
         Perform the goodness-of-fit test and return values
         computed in a dictionary.
@@ -66,7 +66,7 @@ class GofTest(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def statistic(self, dat):
+    def statistic(self, X):
         r"""
         Calculates the goodness-of-fit test statistic.
 
