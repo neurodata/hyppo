@@ -179,26 +179,6 @@ def dist_cov_sq_grad(u, X, R_Y):
             )
     return (1 / N**2) * grad_sum.T
 
-def dist_cov_sq_grad_stochastic(u, X, R_Y, sto_sample):
-    """
-    Gradient for use in projected stochastic gradient descent optimization
-    """
-    def delta(u, i, j):
-        sign_term = np.squeeze(np.sign((X[i] - X[j]) @ u))
-        #print(f"X shape: {(X[i] - X[j]).T.shape}")
-        #print(f"sign term: {sign_term}")
-        return np.dot((X[i] - X[j]).T, sign_term)
-    N = R_Y.shape[0]
-    grad_sum = 0.
-    for j in range(N):
-        grad_sum += R_Y[j] * (
-            delta(u, sto_sample, j)
-            - delta(u, range(N), j)
-            - delta(u, sto_sample, range(N))
-            + delta(u, range(N), range(N))
-        )
-    return (1 / N**2) * grad_sum.T
-
 @njit(parallel=True)
 def normalize_u(u):
     norm = LA.norm(u)
@@ -225,33 +205,9 @@ def optim_u_gd(u, X, R_Y, lr, epsilon):
         R_X_u_opt = re_centered_dist(D_u)
         v_opt = dist_cov_sq(R_Y, R_X_u_opt)
         delta = np.abs(v_opt - v) #MSE
+        v = v_opt
         if delta <= epsilon:
             break
-        else:
-            v = v_opt
-    return u_opt, v_opt
-
-def optim_u_gd_stochastic(u, X, R_Y, lr, epsilon):
-    """
-    Stochastic gradient ascent for v^2 with respect to u
-    TODO: Regularization?
-    """
-    sample_ct = X.shape[0]
-    R_X_u = re_centered_dist_u(u, X)
-    v = dist_cov_sq(R_Y, R_X_u)
-    u_opt = np.copy(u)
-    while True:
-        sto_sample = np.random.randint(0, sample_ct)
-        grad = dist_cov_sq_grad_stochastic(u_opt, X, R_Y[sto_sample], sto_sample)
-        u_opt += lr * grad # "+=": gradient ascent
-        u_opt = normalize_u(u_opt)
-        R_X_u_opt = re_centered_dist_u(u_opt, X)
-        v_opt = dist_cov_sq(R_Y, R_X_u_opt)
-        delta = np.mean(np.square(v_opt - v)) #MSE
-        if delta <= epsilon:
-            break
-        else:
-            v = v_opt
     return u_opt, v_opt
 
 @njit(parallel=True)
