@@ -55,7 +55,7 @@ class KCI(IndependenceTest):
 
         Kx, Ky = self.compute_kern(x, y)
 
-        Kx = H @ Kx) @ H
+        Kx = (H @ Kx) @ H
         Ky = (H @ Ky) @ H
 
         stat = np.trace(Kx @ Ky)
