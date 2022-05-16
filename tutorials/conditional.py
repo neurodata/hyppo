@@ -86,6 +86,7 @@ print("p-value: ", pvalue)
 #
 # Below is a linear example where we fail to reject the null hypothesis:
 
+import numpy as np
 from hyppo.conditional import KCI
 from hyppo.tools import linear
 np.random.seed(123456789)
