@@ -98,6 +98,7 @@ Conditional Independence
     :toctree: generated/
 
     FCIT
+    KCI
 
 
 .. automodule:: hyppo.kgof
