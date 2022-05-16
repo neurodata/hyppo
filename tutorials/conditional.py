@@ -66,3 +66,21 @@ cv_grid = {"min_samples_split": [2, 8, 64, 512, 1e-2, 0.2, 0.4]}
 stat, pvalue = FCIT(model=model, cv_grid=cv_grid).test(x1.T, y1.T, z1)
 print("Statistc: ", stat)
 print("p-value: ", pvalue)
+
+########################################################################################
+# Kernel Conditional Independence Test (KCI)
+# ---------------------------------------------
+#
+# The Kernel Conditional Independence Test (KCI) is a conditional independence test
+# that works based on calculating the RBF kernels of distinct samples of data.
+# The respective kernels are then normalized and multiplied together to determine
+# the test statistic via the trace of the matrix product. The test then employs
+# a gamma approximation based on the mean and variance of the independent
+# sample kernel values to determine the p-value of the test.
+# More details can be found in :class:`hyppo.conditional.kci
+#
+# .. note::
+#
+#    :Pros: - Very fast on high-dimensional data due to simplicity and approximation
+#    :Cons: - Dispute in literature as to ideal theta value, loss of accuracy on very large datasets
+#
