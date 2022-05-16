@@ -57,6 +57,7 @@ Independence
    Hotelling
    SmoothCFTest
    MeanEmbeddingTest
+   KSampleHHG
 
 
 .. automodule:: hyppo.time_series
