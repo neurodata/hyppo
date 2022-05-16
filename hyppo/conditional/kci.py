@@ -92,6 +92,16 @@ class KCI(ConditionalIndependenceTest):
             The computed Kernel Conditional Independence statistic.
         pvalue : float
             The computed Kernel Conditional Independence p-value.
+
+        Example
+        --------
+        >>> from hyppo.conditional import KCI
+        >>> from hyppo.tools.indep_sim import linear
+        >>> np.random.seed(123456789)
+        >>> x, y = linear(n, 1)
+        >>> stat, pvalue = KCI().test(x, y)
+        >>> print("Statistic: ", stat)
+        >>> print("p-value: ", pvalue)
         """
 
         T = len(y)
