@@ -74,7 +74,7 @@ class KCI(ConditionalIndependenceTest):
         return stat
 
     def test(self, x, y):
-         r"""
+        r"""
         Calculates the Kernel Conditional Independence test statistic and p-value.
         Parameters
         ----------
