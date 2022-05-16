@@ -62,6 +62,7 @@ def re_centered_dist(D):
 @njit(parallel=True)
 def dist_cov_sq(R_X, R_Y):
     """
+    Compute squared distance covariance
     Uses re-centered distance covariance matrices
     """
     v_sum = np.sum(R_X * R_Y)
