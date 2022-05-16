@@ -20,8 +20,8 @@ class KCI(ConditionalIndependenceTest):
     Notes
     -----
     Let :math:`x` be a combined sample of :math:`(n, p)` sample
-    of random variables :math:`X` and let :math:`y` be a :math:`(m, p)`
-    alternate sample of random variables :math:`Y`. We can then generate
+    of random variables :math:`X` and let :math:`y` be a :math:`(n, 1)`
+    labels of sample classes :math:`Y`. We can then generate
     :math:`Kx` and :math:`Ky` kernel matrices for each of the respective
     samples. Normalizing, multiplying, and taking the trace of these
     kernel matrices gives the resulting test statistic.
@@ -80,8 +80,8 @@ class KCI(ConditionalIndependenceTest):
         ----------
         x,y : ndarray of float
             Input data matrices. ``x`` and ``y`` must have the same number of
-            columns. That is, the shapes must be ``(n, p)`` and ``(m, p)`` where
-            `n` and `m` are the dimensions of samples and `p` is the number of
+            columns. That is, the shapes must be ``(n, p)`` and ``(n, 1)`` where
+            `n` is the dimension of samples and `p` is the number of
             dimensions.
 
         Returns
