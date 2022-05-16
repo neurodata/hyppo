@@ -16,6 +16,17 @@ class KCI(ConditionalIndependenceTest):
     the p-value given the statistic and approximate mean and variance
     of the trace values of the independent kernel matrices.
     This test is consistent against similar tests..
+
+    Notes
+    -----
+    Let :math:`x` be a combined sample of :math:`(n, p)` sample
+    of random variables :math:`X` and let :math:`y` be a :math:`(m, p)`
+    alternate sample of random variables :math:`Y`. We can then generate
+    :math:`Kx` and :math:`Ky` kernel matrices for each of the respective
+    samples. Normalizing, multiplying, and taking the trace of these
+    kernel matrices gives the resulting test statistic.
+    The p-value and null distribution for the corrected statistic are calculated a
+    gamma distribution approximation.
     """
 
     def __init__(self, **kwargs):
@@ -63,6 +74,23 @@ class KCI(ConditionalIndependenceTest):
         return stat
 
     def test(self, x, y):
+         r"""
+        Calculates the Kernel Conditional Independence test statistic and p-value.
+        Parameters
+        ----------
+        x,y : ndarray of float
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            columns. That is, the shapes must be ``(n, p)`` and ``(m, p)`` where
+            `n` and `m` are the dimensions of samples and `p` is the number of
+            dimensions.
+
+        Returns
+        -------
+        stat : float
+            The computed Kernel Conditional Independence statistic.
+        pvalue : float
+            The computed Kernel Conditional Independence p-value.
+        """
 
         T = len(y)
 
