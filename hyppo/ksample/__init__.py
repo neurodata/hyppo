@@ -22,5 +22,5 @@ KSAMP_TESTS = {
     "mmd": MMD,
     "smoothCF": SmoothCFTest,
     "mean_embedding": MeanEmbeddingTest,
-    "hhg": KSampleHHG,
+    "ksamplehhg": KSampleHHG,
 }

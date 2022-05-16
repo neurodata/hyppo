@@ -128,7 +128,7 @@ class KSampleHHG(KSampleTest):
         """
         check_input = _CheckInputs(inputs=[x, y],)
         x, y = check_input()
-        N = len(x) + len(y)
+        N = x.shape[0] + y.shape[0]
 
         stat = self.statistic(x, y)
         pvalue = self.minP * N
