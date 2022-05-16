@@ -90,7 +90,7 @@ import numpy as np
 from hyppo.conditional import KCI
 from hyppo.tools import linear
 np.random.seed(123456789)
-x, y = linear(n, 1)
+x, y = linear(100, 1)
 stat, pvalue = KCI().test(x, y)
 print("Statistic: ", stat)
 print("p-value: ", pvalue)
