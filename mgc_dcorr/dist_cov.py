@@ -62,7 +62,6 @@ def re_centered_dist(D):
 @njit(parallel=True)
 def dist_cov_sq(R_X, R_Y):
     """
-    TODO: replace with hyppo implementation
     Uses re-centered distance covariance matrices
     """
     v_sum = np.sum(R_X * R_Y)
@@ -76,7 +75,6 @@ def dca(X, Y, K):
     Single dataset X
     K is desired dim for reduction of X
     """
-    # N = X.shape[0]
     P = X.shape[1]
     D_Y = dist_mat(Y)
     R_Y = re_centered_dist(D_Y)
@@ -87,37 +85,6 @@ def dca(X, Y, K):
         v_feat[i] = dist_cov_sq(R_Y, R_X_u)
     min_idx = np.argsort(v_feat)
     return X[:, min_idx[-K:]]
-
-@njit(parallel=True)
-def dist_mat_vec_diff(X):
-    """
-    Not needed, X not X @ u used for diff
-    Vector X: (u^T X) to distance matrix D
-    For distance matrix of u^T X
-    Norm of scalar is identity
-    TODO: Derivative of norm of scalar is 1?
-    """
-    N = X.shape[0]
-    P = 1 # X.shape[1]
-    D_diff = np.zeros((N, N, P))
-    for i in range(N):
-        for j in range(N):
-            diff = X[i] - X[j]
-            if diff == 0: #.all()
-                D_diff[i, j] = diff
-            else:
-                D_diff[i, j] = diff / diff
-    return D_diff
-
-@njit(parallel=True)
-def dist_mat_u_diff(u, X):
-    """
-    Not needed, X not X @ u used for grad
-    TODO: X @ u is vector, not matrix?
-    """
-    u_X = X @ u
-    D_u_diff = dist_mat_vec_diff(u_X)
-    return D_u_diff
 
 @njit(parallel=True)
 def dist_cov_sq_grad(u, X, R_Y):
@@ -175,23 +142,19 @@ def dist_mat_u(u, X):
 def optim_u_gd(u, X, R_Y, lr, epsilon):
     """
     Gradient ascent for v^2 with respect to u
-    TODO: Regularization?
     """
     D_u = dist_mat_u(u, X)
     R_X_u = re_centered_dist(D_u)
     v = dist_cov_sq(R_Y, R_X_u)
     u_opt = np.copy(u)
-    #iter_ct = 0
     while True:
-        #iter_ct += 1
-        #print(iter_ct)
         grad = dist_cov_sq_grad(u_opt, X, R_Y)
         u_opt = u_opt - lr * grad # "+=": gradient ascent
         u_opt = normalize_u(u_opt)
         D_u = dist_mat_u(u_opt, X)
         R_X_u_opt = re_centered_dist(D_u)
         v_opt = dist_cov_sq(R_Y, R_X_u_opt)
-        delta = np.abs(v_opt - v) #MSE
+        delta = np.abs(v_opt - v) # MSE
         v = v_opt
         if delta <= epsilon:
             break
@@ -203,11 +166,11 @@ def proj_U(X, U, k):
     Project X onto the orthogonal subspace of k dim of U
     """
     q, _ = LA.qr(U[:, :k])
-    #X_proj = np.sum(X * U[:, :k+1].T, axis=1) # vectorized dot
     X_proj = np.zeros_like(X) # looped proj
     for n in range(X_proj.shape[0]):
         for k_i in range(k):
-            X_proj[n] = X_proj[n] + ((X[n] @ q[:, k_i]) / (q[:, k_i] @ q[:, k_i])) * q[:, k_i]
+            X_proj[n] = X_proj[n]
+            + ((X[n] @ q[:, k_i]) / (q[:, k_i] @ q[:, k_i])) * q[:, k_i]
     return X_proj
 
 @njit(parallel=True)
@@ -229,5 +192,5 @@ def dca_grad_learn(X, Y, K, lr=1e-1, epsilon=1e-5):
         u_opt, v_opt = optim_u_gd(u_init, X_proj, R_Y, lr, epsilon)
         U[:, k] = u_opt
         v[k] = v_opt
-        X_proj = proj_U(X_proj, U, k+1) # then inc k, unnecessary if this is last k
+        X_proj = proj_U(X_proj, U, k+1) # inc k
     return U[:, :k+1], v[:k+1]
