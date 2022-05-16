@@ -42,15 +42,6 @@ def dist_mat_vec(X):
     return D
 
 @njit(parallel=True)
-def dist_mat_u(u, X):
-    """
-    Compute distance matrix of the vector u^T X
-    """
-    u_X = X @ u
-    D_u = dist_mat_vec(u_X)
-    return D_u
-
-@njit(parallel=True)
 def re_centered_dist(D):
     """
     Distance matrix D to re-centered distance matrix R
@@ -77,19 +68,6 @@ def dist_cov_sq(R_X, R_Y):
     v_sum = np.sum(R_X * R_Y)
     N = R_X.shape[0] # R must be square and same length
     return v_sum / N**2
-
-@njit(parallel=True)
-def proj_U(X, U, k):
-    """
-    Project X onto the orthogonal subspace of k dim of U
-    """
-    q, _ = LA.qr(U[:, :k])
-    #X_proj = np.sum(X * U[:, :k+1].T, axis=1) # vectorized dot
-    X_proj = np.zeros_like(X) # looped proj
-    for n in range(X_proj.shape[0]):
-        for k_i in range(k):
-            X_proj[n] = X_proj[n] + ((X[n] @ q[:, k_i]) / (q[:, k_i] @ q[:, k_i])) * q[:, k_i]
-    return X_proj
 
 @njit(parallel=True)
 def dca(X, Y, K):
@@ -185,6 +163,15 @@ def normalize_u(u):
     return  u / norm
 
 @njit(parallel=True)
+def dist_mat_u(u, X):
+    """
+    Compute distance matrix of the vector u^T X
+    """
+    u_X = X @ u
+    D_u = dist_mat_vec(u_X)
+    return D_u
+
+@njit(parallel=True)
 def optim_u_gd(u, X, R_Y, lr, epsilon):
     """
     Gradient ascent for v^2 with respect to u
@@ -209,6 +196,19 @@ def optim_u_gd(u, X, R_Y, lr, epsilon):
         if delta <= epsilon:
             break
     return u_opt, v_opt
+
+@njit(parallel=True)
+def proj_U(X, U, k):
+    """
+    Project X onto the orthogonal subspace of k dim of U
+    """
+    q, _ = LA.qr(U[:, :k])
+    #X_proj = np.sum(X * U[:, :k+1].T, axis=1) # vectorized dot
+    X_proj = np.zeros_like(X) # looped proj
+    for n in range(X_proj.shape[0]):
+        for k_i in range(k):
+            X_proj[n] = X_proj[n] + ((X[n] @ q[:, k_i]) / (q[:, k_i] @ q[:, k_i])) * q[:, k_i]
+    return X_proj
 
 @njit(parallel=True)
 def dca_grad_learn(X, Y, K, lr=1e-1, epsilon=1e-5):
