@@ -64,7 +64,7 @@ y1 = (B1 @ z1.T + np.random.multivariate_normal(mean=np.zeros(dim), cov=np.eye(d
 model = DecisionTreeRegressor()
 cv_grid = {"min_samples_split": [2, 8, 64, 512, 1e-2, 0.2, 0.4]}
 stat, pvalue = FCIT(model=model, cv_grid=cv_grid).test(x1.T, y1.T, z1)
-print("Statistc: ", stat)
+print("Statistic: ", stat)
 print("p-value: ", pvalue)
 
 ########################################################################################
@@ -90,5 +90,5 @@ from hyppo.tools.indep_sim import linear
 np.random.seed(123456789)
 x, y = linear(n, 1)
 stat, pvalue = KCI().test(x, y)
-print("Statistc: ", stat)
+print("Statistic: ", stat)
 print("p-value: ", pvalue)
