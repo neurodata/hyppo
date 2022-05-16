@@ -83,4 +83,11 @@ print("p-value: ", pvalue)
 #
 #    :Pros: - Very fast on high-dimensional data due to simplicity and approximation
 #    :Cons: - Dispute in literature as to ideal theta value, loss of accuracy on very large datasets
-#
+# Below is a linear example where we fail to reject the null hypothesis:
+
+from hyppo.conditional import kci
+np.random.seed(123456789)
+x, y = linear(n, 1)
+stat, pvalue = KCI().test(x, y)
+print("Statistc: ", stat)
+print("p-value: ", pvalue)
