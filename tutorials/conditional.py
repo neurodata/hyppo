@@ -85,10 +85,13 @@ print("p-value: ", pvalue)
 #    :Cons: - Dispute in literature as to ideal theta value, loss of accuracy on very large datasets
 # Below is a linear example where we fail to reject the null hypothesis:
 
+setup_code = """
 from hyppo.conditional import KCI
 from hyppo.tools import linear
 np.random.seed(123456789)
 x, y = linear(n, 1)
+"""
+
 stat, pvalue = KCI().test(x, y)
 print("Statistic: ", stat)
 print("p-value: ", pvalue)
