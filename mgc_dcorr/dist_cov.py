@@ -130,7 +130,7 @@ def normalize_u(u):
     norm = LA.norm(u)
     return  u / norm
 
-@njit(parallel=True)
+@njit
 def dist_mat_u(u, X):
     """
     Compute distance matrix of the vector u^T X
@@ -161,7 +161,7 @@ def optim_u_gd(u, X, R_Y, lr, epsilon):
             break
     return u_opt, v_opt
 
-@njit(parallel=True)
+@njit
 def proj_U(X, U, k):
     """
     Project X onto the orthogonal subspace of k dim of U
@@ -170,8 +170,9 @@ def proj_U(X, U, k):
     X_proj = np.zeros_like(X) # looped proj
     for n in range(X_proj.shape[0]):
         for k_i in range(k):
+            q_vec = q[:, k_i].copy()
             X_proj[n] = X_proj[n]
-            + ((X[n] @ q[:, k_i]) / (q[:, k_i] @ q[:, k_i])) * q[:, k_i]
+            + ((X[n] @ q_vec) / (q_vec @ q_vec)) * q_vec
     return X_proj
 
 @njit(parallel=True)
@@ -182,7 +183,6 @@ def dca_grad_learn(X, Y, K, lr=1e-1, epsilon=1e-5):
     K is desired dim for reduction of X
     Use gradient ascent approach to learn representation U
     """
-    k = 0
     v = np.zeros(X.shape[1])
     U = np.zeros_like(X.T)
     X_proj = np.copy(X)
