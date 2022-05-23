@@ -3,194 +3,234 @@
 API Reference
 =============
 
-.. automodule:: hyppo.independence
-
-.. currentmodule:: hyppo.independence
-
-Independence
--------------
-
-.. autosummary::
-   :toctree: generated/
-
-   MaxMargin
-   KMERF
-   MGC
-   Dcorr
-   Hsic
-   HHG
-   CCA
-   RV
-   FriedmanRafsky
-
-
-
 .. automodule:: hyppo.d_variate
+    :no-members:
+    :no-inherited-members:
 
-.. currentmodule:: hyppo.d_variate
-
-*D*-Variate
--------------
-
-.. autosummary::
-    :toctree: generated/
-
-    dHsic
-
-
-
-.. automodule:: hyppo.ksample
-
-.. currentmodule:: hyppo.ksample
-
-*K*-Sample
--------------
+:mod:`hyppo.d_variate`: *D*-Variate Independence tests
+-----------------------------------------------------
+.. currentmodule:: hyppo
 
 .. autosummary::
+   :nosignatures:
    :toctree: generated/
+   :template: class.rst
 
-   KSample
-   Energy
-   MMD
-   DISCO
-   MANOVA
-   Hotelling
-   SmoothCFTest
-   MeanEmbeddingTest
-
-
-.. automodule:: hyppo.time_series
-
-.. currentmodule:: hyppo.time_series
-
-Time-Series
--------------
-
-.. autosummary::
-   :toctree: generated/
-
-   MGCX
-   DcorrX
-
-
+   d_variate.dHsic
 
 .. automodule:: hyppo.discrim
+    :no-members:
+    :no-inherited-members:
 
-.. currentmodule:: hyppo.discrim
+:mod:`hyppo.discrim`: Discriminability tests
+---------------------------------------------------------
+.. currentmodule:: hyppo
 
-Discriminability
------------------
+.. autosummary::
+   :nosignatures:
+   :toctree: generated/
+   :template: class.rst
+
+   discrim.DiscrimOneSample
+   discrim.DiscrimTwoSample
+
+.. automodule:: hyppo.independence
+    :no-members:
+    :no-inherited-members:
+
+:mod:`hyppo.independence`: Independence tests
+----------------------------------------------
+
+Classes
+^^^^^^^^^^^^^^^
+.. currentmodule:: hyppo
+
+.. autosummary::
+   :nosignatures:
+   :toctree: generated/
+   :template: class.rst
+
+   independence.CCA
+   independence.Dcorr
+   independence.FriedmanRafsky
+   independence.HHG
+   independence.Hsic
+   independence.KMERF
+   independence.MaxMargin
+   independence.MGC
+   independence.RV
+
+Functions
+^^^^^^^^^^^^^^^
+.. currentmodule:: hyppo
 
 .. autosummary::
    :toctree: generated/
+   :template: function.rst
 
-   DiscrimOneSample
-   DiscrimTwoSample
-
-
+   independence.sim_matrix
 
 .. automodule:: hyppo.kgof
+    :no-members:
+    :no-inherited-members:
 
-.. currentmodule:: hyppo.kgof
+:mod:`hyppo.kgof`: Kernel Goodness-of-Fit tests
+---------------------------------------------------------
+.. currentmodule:: hyppo
 
-Kernel Goodness-of-Fit
------------------------
+.. autosummary::
+   :nosignatures:
+   :toctree: generated/
+   :template: class.rst
+
+   kgof.FSSD
+
+.. automodule:: hyppo.ksample
+    :no-members:
+    :no-inherited-members:
+
+:mod:`hyppo.ksample`: *K*-Sample tests
+----------------------------------------------
+
+Classes
+^^^^^^^^^^^^^^^
+.. currentmodule:: hyppo
+
+.. autosummary::
+   :nosignatures:
+   :toctree: generated/
+   :template: class.rst
+
+   ksample.DISCO
+   ksample.Energy
+   ksample.Hotelling
+   ksample.KSample
+   ksample.MANOVA
+   ksample.MeanEmbeddingTest
+   ksample.MMD
+   ksample.SmoothCFTest
+
+Functions
+^^^^^^^^^^^^^^^
+.. currentmodule:: hyppo
 
 .. autosummary::
    :toctree: generated/
+   :template: function.rst
 
-   FSSD
+   ksample.k_sample_transform
+   ksample.mean_embedding.mean_embed_distance
+   ksample.smoothCF.smooth_cf_distance
 
+.. automodule:: hyppo.time_series
+    :no-members:
+    :no-inherited-members:
 
+:mod:`hyppo.time_series`: Time Series Independence tests
+---------------------------------------------------------
+.. currentmodule:: hyppo
+
+.. autosummary::
+   :nosignatures:
+   :toctree: generated/
+   :template: class.rst
+
+   time_series.DcorrX
+   time_series.MGCX
 
 .. automodule:: hyppo.tools
+    :no-members:
+    :no-inherited-members:
 
-.. currentmodule:: hyppo.tools
+:mod:`hyppo.tools`: Base Classes and Utilities
+----------------------------------------------
+
+Base Classes
+^^^^^^^^^^^^^^^
+.. currentmodule:: hyppo
+
+.. autosummary::
+   :nosignatures:
+   :toctree: generated/
+   :template: class.rst
+
+   d_variate.base.DVariateTest
+   discrim.base.DiscriminabilityTest
+   independence.base.IndependenceTest
+   kgof.base.GofTest
+   ksample.base.KSampleTest
+   time_series.base.TimeSeriesTest
+
+Functions
+^^^^^^^^^^^^^^^
+.. currentmodule:: hyppo
+
+.. autosummary::
+   :toctree: generated/
+   :template: function.rst
+
+   tools.chi2_approx
+   tools.compute_dist
+   tools.compute_kern
+   tools.multi_compute_kern
+   tools.multi_perm_test
+   tools.perm_test
+   tools.power
 
 Simulations
--------------
+^^^^^^^^^^^^^^^
 
 Independence Simulations
 """"""""""""""""""""""""
-
-.. autosummary::
-   :toctree: generated/
-
-   linear
-   exponential
-   cubic
-   joint_normal
-   step
-   quadratic
-   w_shaped
-   spiral
-   uncorrelated_bernoulli
-   logarithmic
-   fourth_root
-   sin_four_pi
-   sin_sixteen_pi
-   square
-   two_parabolas
-   circle
-   ellipse
-   diamond
-   multiplicative_noise
-   multimodal_independence
-   indep_sim
-
-*K*-Sample Simulations
-""""""""""""""""""""""""
-
-.. autosummary::
-   :toctree: generated/
-
-   rot_ksamp
-   gaussian_3samp
-
-Time-Series Simulations
-""""""""""""""""""""""""
-
-.. autosummary::
-   :toctree: generated/
-
-   indep_ar
-   cross_corr_ar
-   nonlinear_process
-   ts_sim
-
-
-.. automodule:: hyppo
-
 .. currentmodule:: hyppo
 
-Miscellaneous
------------------
+.. autosummary::
+   :toctree: generated/
+   :template: function.rst
+
+   tools.circle
+   tools.cubic
+   tools.diamond
+   tools.ellipse
+   tools.exponential
+   tools.fourth_root
+   tools.indep_sim
+   tools.joint_normal
+   tools.linear
+   tools.logarithmic
+   tools.multimodal_independence
+   tools.multiplicative_noise
+   tools.quadratic
+   tools.sin_four_pi
+   tools.sin_sixteen_pi
+   tools.spiral
+   tools.square
+   tools.step
+   tools.two_parabolas
+   tools.uncorrelated_bernoulli
+   tools.w_shaped
+
+*K*-Sample Simulations
+""""""""""""""""""""""""""""""""""""
+.. currentmodule:: hyppo
 
 .. autosummary::
    :toctree: generated/
+   :template: function.rst
 
-   independence.sim_matrix
-   ksample.k_sample_transform
-   tools.compute_kern
-   tools.multi_compute_kern
-   tools.compute_dist
-   tools.perm_test
-   tools.multi_perm_test
-   tools.chi2_approx
-   tools.power
-   ksample.smoothCF.smooth_cf_distance
-   ksample.mean_embedding.mean_embed_distance
+   tools.ksamp_sim
+   tools.rot_ksamp
+   tools.gaussian_3samp
 
-
-Base Classes
--------------
+Time-Series Simulations
+""""""""""""""""""""""""""""""""""""
+.. currentmodule:: hyppo
 
 .. autosummary::
    :toctree: generated/
+   :template: function.rst
 
-   independence.base.IndependenceTest
-   d_variate.base.DVariateTest
-   ksample.base.KSampleTest
-   time_series.base.TimeSeriesTest
-   discrim.base.DiscriminabilityTest
-   kgof.base.GofTest
+   tools.indep_ar
+   tools.cross_corr_ar
+   tools.nonlinear_process
+   tools.ts_sim
