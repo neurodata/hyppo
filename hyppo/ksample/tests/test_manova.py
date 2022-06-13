@@ -3,7 +3,7 @@ import pytest
 from numpy.testing import assert_almost_equal, assert_raises
 
 from ...tools import power, rot_ksamp
-from .. import MANOVA
+from .. import MANOVA, Hotelling
 
 
 class TestManova:
@@ -14,10 +14,22 @@ class TestManova:
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
         x, y = rot_ksamp("linear", n, 1, k=2, noise=False)
-        stat, pvalue = MANOVA().test(x, y)
+        results = MANOVA().test(x, y)
 
-        assert_almost_equal(stat, obs_stat, decimal=1)
-        assert_almost_equal(pvalue, obs_pvalue, decimal=1)
+        assert_almost_equal(results["Pillai's trace"]["statistic"], obs_stat, decimal=1)
+        assert_almost_equal(results["Pillai's trace"]["p-value"], obs_pvalue, decimal=1)
+
+    def test_twosample_manova(self):
+        rng = np.random.default_rng(123456789)
+        n = 1000
+        p = 20
+        x1 = rng.standard_normal((n, p))
+        x2 = rng.standard_normal((n, p))
+        _, pvalue_hotelling = Hotelling().test(x1, x2)
+        results_manova = MANOVA().test(x1, x2)
+        assert_almost_equal(
+            pvalue_hotelling, results_manova["Pillai's trace"]["p-value"], decimal=4
+        )
 
 
 class TestManovaErrorWarn:

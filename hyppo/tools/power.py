@@ -3,7 +3,7 @@ from math import ceil
 import numpy as np
 
 from ..independence import INDEP_TESTS
-from ..ksample import KSAMP_TESTS, KSample, k_sample_transform
+from ..ksample import KSAMP_TESTS, KSample, k_sample_transform, MANOVA
 from ..d_variate import MULTI_TESTS
 from .indep_sim import indep_sim
 from .ksample_sim import gaussian_3samp, rot_ksamp
@@ -94,7 +94,12 @@ def _nonperm_pval(test, sim_type, **kwargs):
     Generates fast  permutation pvalues
     """
     sims = _sim_gen(sim_type=sim_type, **kwargs)
-    pvalue = test.test(*sims)[1]
+
+    results = test.test(*sims)
+    if type(test).__name__ == "MANOVA":
+        pvalue = results["Pillai's trace"]["p-value"]
+    else:
+        pvalue = results[1]
 
     return pvalue
 

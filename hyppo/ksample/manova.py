@@ -3,7 +3,7 @@ from numba import jit
 from scipy.stats import f
 
 from ._utils import _CheckInputs
-from .base import KSampleTest, KSampleTestOutput
+from .base import KSampleTest
 
 
 class MANOVA(KSampleTest):
@@ -60,24 +60,8 @@ class MANOVA(KSampleTest):
     :footcite:p:`everittMonteCarloInvestigation1979`
     has shown that there are
     minimal differences in statistical power among these statistics.
-    Let :math:`\lambda_1, \lambda_2, \ldots, \lambda_s` refer to the eigenvalues of
-    :math:`W^{-1} B`. Here :math:`s = \min(\nu_{B}, p)` is the minimum between the
-    degrees of freedom of :math:`B`, :math:`\nu_{B}` and :math:`p`. So, the PBT
-    MANOVA test statistic can be written as,
-
-    .. math::
-
-       \mathrm{MANOVA}_{n_1, \ldots, n_k} (x, y) = \sum_{i=1}^s
-       \frac{\lambda_i}{1 + \lambda_i} = \mathrm{tr} (B (B + W)^{-1})
-
-    The p-value analytically by using the F statitic. In the case of PBT, given
-    :math:`m = (|p - \nu_{B}| - 1) / 2` and :math:`r = (\nu_{W} - p - 1) / 2`, this is:
-
-    .. math::
-
-       F_{s(2m + s + 1), s(2r + s + 1)} = \frac{(2r + s + 1)
-       \mathrm{MANOVA}_{n_1, n_2} (x, y)}{(2m + s + 1) (s -
-       \mathrm{MANOVA}_{n_1, n_2} (x, y))}
+    More information about the specific statistics and how the p-values are calculated
+    are described at this reference :footcite:p:`SASHelpCenter`.
 
     References
     ----------
@@ -85,7 +69,170 @@ class MANOVA(KSampleTest):
     """
 
     def __init__(self):
+        self.MANOVA_STATS = {
+            "Wilks' lambda": self._wilks_lambda,
+            "Pillai's trace": self._pillai_bartlett,
+            "Hotelling-Lawley trace": self._hotelling_lawley,
+            "Roy's greatest root": self._roy_max_root,
+        }
         KSampleTest.__init__(self)
+
+    def _wilks_lambda(self, only_stat=False, **kwargs):
+        r"""
+        Calulates the Wilks' lambda test and F statistic.
+
+        Parameters
+        ----------
+        only_stat : bool
+            Whether to only compute the test statistic.
+        **kwargs
+            Arbitrary keyword arguments for F statistic computation.
+
+        Returns
+        -------
+        stat : float
+            The computed Wilks' lambda statistic.
+        F : float, optional
+            The computed F statistic.
+        df : tuple of floats, optional
+            The degree of freedom for the test.
+        """
+        p, q, v, s = kwargs["p"], kwargs["q"], kwargs["v"], kwargs["s"]
+        stat = np.linalg.det(self.E) / np.linalg.det(self.T)
+
+        results = stat
+        if not only_stat:
+            r = v - (p - q + 1) / 2
+            u = (p * q - 2) / 4
+            if (p**2 + q**2 - 5) > 0:
+                t = np.sqrt((p**2 * q**2 - 4) / (p**2 + q**2 - 5))
+            else:
+                t = 1
+            num = r * t - 2 * u
+            denom = p * q
+            F = (num / denom) * (s - stat ** (1 / t)) / (stat ** (1 / t))
+            df = (s * denom, s * num)
+            results = (stat, F, df)
+
+        return results
+
+    def _hotelling_lawley(self, only_stat=False, **kwargs):
+        r"""
+        Calulates the Hotelling-Lawley Trace test statistic.
+
+        Parameters
+        ----------
+        only_stat : bool, optional
+            Whether to only compute the test statistic.
+        **kwargs
+            Arbitrary keyword arguments for F statistic computation.
+
+        Returns
+        -------
+        stat : float
+            The computed Hotelling-Lawley Trace statistic.
+        F : float, optional
+            The computed F statistic.
+        df : tuple of floats, optional
+            The degree of freedom for the test.
+        """
+        p, q, n, m, s = kwargs["p"], kwargs["q"], kwargs["n"], kwargs["m"], kwargs["s"]
+        stat = np.trace(self.H @ np.linalg.inv(self.E))
+
+        results = stat
+        if not only_stat:
+            if n > 0:
+                b = (p + 2 * n) * (q + 2 * n) / (2 * (2 * n + 1) * (n - 1))
+                c = (2 + (p * q + 2) / (b - 1)) / (2 * n)
+                num = 4 + (p * q + 2) / (b - 1)
+                denom = p * q
+                F = (num / denom) * (stat / c)
+                df = (denom, num)
+            else:
+                num = 2 * (s * n + 1)
+                denom = s * (2 * m + s + 1)
+                F = (num / denom) * (stat / s)
+                df = (denom, num)
+            results = (stat, F, df)
+
+        return results
+
+    def _pillai_bartlett(self, only_stat=False, **kwargs):
+        r"""
+        Calulates the Pillai-Bartlett Trace test and F statistic.
+
+        Parameters
+        ----------
+        only_stat : bool, optional
+            Whether to only compute the test statistic.
+        **kwargs
+            Arbitrary keyword arguments for F statistic computation.
+
+        Returns
+        -------
+        stat : float
+            The computed Pillai-Bartlett Trace statistic.
+        F : float, optional
+            The computed F statistic.
+        df : tuple of floats, optional
+            The degree of freedom for the test.
+        """
+        n, m, s = kwargs["n"], kwargs["m"], kwargs["s"]
+        stat = np.trace(self.H @ np.linalg.inv(self.T))
+
+        results = stat
+        if not only_stat:
+            num = 2 * n + s + 1
+            denom = 2 * m + s + 1
+            F = (num / denom) * stat / (s - stat)
+            df = (s * denom, s * num)
+            results = (stat, F, df)
+
+        return results
+
+    def _roy_max_root(self, only_stat=False, **kwargs):
+        r"""
+        Calulates the Roy's Maximum Root test statistic.
+
+        Parameters
+        ----------
+        only_stat : bool, optional
+            Whether to only compute the test statistic.
+        **kwargs
+            Arbitrary keyword arguments for F statistic computation.
+
+        Returns
+        -------
+        stat : float
+            The computed Roy's Maximum Root statistic.
+        F : float, optional
+            The computed F statistic.
+        df : tuple of floats, optional
+            The degree of freedom for the test.
+        """
+        p, q, v = kwargs["p"], kwargs["q"], kwargs["v"]
+        stat = np.linalg.eigvals(self.H @ np.linalg.inv(self.E)).real.max()
+        print(stat)
+
+        results = stat
+        if not only_stat:
+            r = np.max([p, q])
+            num = v - r + q
+            denom = r
+            F = (num / denom) * stat
+            df = (denom, num)
+            results = (stat, F, df)
+
+        return results
+
+    def _compute_scss(self, *args):
+        """Compute sum of squares hypothesis, error, and total."""
+        p = args[0].shape[1]
+        cmean = tuple(i.mean(axis=0).reshape(-1, 1) for i in args)
+        gmean = np.vstack(args).mean(axis=0).reshape(-1, 1)
+        self.E = _compute_e(args, p, cmean)
+        self.H = _compute_h(args, p, cmean, gmean)
+        self.T = self.H + self.E
 
     def statistic(self, *args):
         r"""
@@ -101,20 +248,28 @@ class MANOVA(KSampleTest):
 
         Returns
         -------
-        stat : float
-            The computed MANOVA statistic.
-        """
-        cmean = tuple(i.mean(axis=0) for i in args)
-        gmean = np.vstack(args).mean(axis=0)
-        W = _compute_w(args, cmean)
-        B = _compute_b(args, cmean, gmean)
+        stat : dict of float
+            The computed MANOVA statistic. Contains the following keys:
 
-        stat = np.trace(B @ np.linalg.pinv(B + W))
+                - Wilks' lambda: float
+                    The Wilks' lambda test statistic
+                - Pillai's trace: float
+                    The Pillai-Bartlett trace test statistic
+                - Hotelling-Lawley trace: float
+                    The Hotelling-Lawley trace test statistic
+                - Roy's greatest root: float
+                    The Roy's maximum root test statistic
+        """
+        self._compute_scss(*args)
+
+        stat = {}
+        for key, value in self.MANOVA_STATS.items():
+            stat[key] = value(only_stat=True)
         self.stat = stat
 
         return stat
 
-    def test(self, *args):
+    def test(self, *args, summary=False):
         r"""
         Calculates the MANOVA test statistic and p-value.
 
@@ -125,13 +280,37 @@ class MANOVA(KSampleTest):
             number of dimensions. That is, the shapes must be `(n, p)` and
             `(m, p)`, ... where `n`, `m`, ... are the number of samples and `p` is
             the number of dimensions.
+        summary : bool, optional
+            Whether to view the results in a summary table.
 
         Returns
         -------
-        stat : float
-            The computed MANOVA statistic.
-        pvalue : float
-            The computed MANOVA p-value.
+        results : dict of dict
+            The computed MANOVA statistic. Contains the following keys:
+
+                - Wilks' lambda : dict of float
+                    The Wilks' lambda test results.
+                - Pillai's trace : dict of float
+                    The Pillai-Bartlett test results.
+                - Hotelling-Lawley trace : dict of float
+                    The Hotelling-Lawley trace test results.
+                - Roy's greatest root : dict of float
+                    The Roy's maximum root test test results.
+
+            Each of these tests have the following keys:
+
+                - statistic : float
+                    The test statistic.
+                - num df : float
+                    The degrees of freedom for the numerator.
+                - denom df : float
+                    The degrees of freedom for the denominator.
+                - f statistic : float
+                    The F statistic for the test.
+                - p-value : float
+                    The p-value approximated via the F-distribution.
+        summary
+            A summary table for the test statistics, p-values, and degrees of freedom.
 
         Examples
         --------
@@ -149,51 +328,80 @@ class MANOVA(KSampleTest):
         )
         inputs = check_input()
 
+        self._compute_scss(*args)
         N = np.sum([i.shape[0] for i in inputs])
         p = inputs[0].shape[1]
-        nu_w = N - len(inputs)
+        v = N - len(inputs)
 
-        if nu_w < p:
+        if v < p:
             raise ValueError("Test cannot be run, degree of freedoms is off")
 
-        stat = self.statistic(*inputs)
-        nu_b = len(inputs) - 1
-        s = np.min([p, nu_b])
-        m = (np.abs(p - nu_b) - 1) / 2
-        n = (nu_w - p - 1) / 2
-        num = 2 * n + s + 1
-        denom = 2 * m + s + 1
-        pvalue = f.sf(num / denom * stat / (s - stat), s * denom, s * num)
-        self.stat = stat
-        self.pvalue = pvalue
-        self.null_dist = None
+        q = len(inputs) - 1
+        kwargs = {
+            "p": p,
+            "q": q,
+            "v": v,
+            "s": np.min([p, q]),
+            "m": (np.abs(p - q) - 1) / 2,
+            "n": (v - p - 1) / 2,
+        }
+        results = {}
+        for key, value in self.MANOVA_STATS.items():
+            results[key] = list(value(only_stat=False, **kwargs))
+            pvalue = f.sf(results[key][1], results[key][2][0], results[key][2][1])
+            results[key].append(pvalue)
 
-        return KSampleTestOutput(stat, pvalue)
+        test_results = results.copy()
+        for key, value in results.items():
+            test_results[key] = {
+                "statistic": value[0],
+                "num df": value[2][0],
+                "denom df": value[2][1],
+                "f statistic": value[1],
+                "p-value": value[3],
+            }
+        self.test_results = test_results
+
+        if summary:
+            header = "{:<25} {:<10} {:<10} {:<10} {:<10} {:<10}".format(
+                "Criterion", "Statistic", "DF Num", "DF Denom", "F", "P-Value"
+            )
+            print(header)
+            print("-" * len(header))
+
+            for key, value in test_results.items():
+                print(
+                    "{:<25} {:<10.4f} {:<10.4f} {:<10.4f} {:<10.4f} {:<10.4f}".format(
+                        key, *value.values()
+                    )
+                )
+
+        # return dictionary, not tuple
+        return test_results
 
 
 @jit(nopython=True, cache=True)
-def _compute_w(inputs, cmean):  # pragma: no cover
+def _compute_e(inputs, p, cmean):  # pragma: no cover
     """Calculate the W matrix"""
-
-    p = list(inputs)[0].shape[1]
-    W = np.zeros((p, p))
+    E = np.zeros((p, p))
 
     for i in range(len(inputs)):
-        for j in range(inputs[i].shape[0]):
-            W += (inputs[i][j, :] - cmean[i]) @ (inputs[i][j, :] - cmean[i]).T
+        n_i = inputs[i].shape[0]
+        for j in range(n_i):
+            E += (inputs[i][j, :].reshape(-1, 1) - cmean[i]) @ (
+                inputs[i][j, :].reshape(-1, 1) - cmean[i]
+            ).T
 
-    return W
+    return E
 
 
 @jit(nopython=True, cache=True)
-def _compute_b(inputs, cmean, gmean):  # pragma: no cover
+def _compute_h(inputs, p, cmean, gmean):  # pragma: no cover
     """Calculate the B matrix"""
-
-    p = list(inputs)[0].shape[1]
-    B = np.zeros((p, p))
+    H = np.zeros((p, p))
 
     for i in range(len(inputs)):
-        n = inputs[i].shape[0]
-        B += n * (cmean[i] - gmean) @ (cmean[i] - gmean).T
+        n_i = inputs[i].shape[0]
+        H += n_i * (cmean[i] - gmean) @ (cmean[i] - gmean).T
 
-    return B
+    return H
