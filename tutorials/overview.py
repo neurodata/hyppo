@@ -25,8 +25,8 @@ Before we get started, here are a few of the conventions we use within hyppo:
   method exists that just returns the test statistic.
 * All functions and classes accept :class:`numpy.ndarray` as inputs. Optional inputs
   vary between tests within the package.
-* Input data matrices have the shape ``(n, p)`` where `n` is the number of sample and
-  `p` is the number of dimensinos (or features)
+* Input data matrices have the shape ``(n, p)`` where `n` is the number of samples and
+  `p` is the number of dimensions (or features)
 
 The Library
 -----------
