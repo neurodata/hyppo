@@ -69,7 +69,7 @@ class FriedmanRafsky(IndependenceTest):
 
     def statistic(self, x, y):
         r"""
-        Helper function that calculates the Friedman Rafksy test statistic.
+        Helper function that calculates the Friedman Rafksy test statistic. 
 
         Parameters
         ----------
@@ -83,7 +83,7 @@ class FriedmanRafsky(IndependenceTest):
         Returns
         -------
         stat : float
-            The computed Friedman Rafsky statistic. 
+            The computed Friedman Rafsky statistic. A value between ``2`` and ``n``.
         """
         x = np.transpose(x)
         labels = np.transpose(y)
@@ -102,7 +102,7 @@ class FriedmanRafsky(IndependenceTest):
         random_state=None,
     ):
         r"""
-        Calculates the Friedman Rafsky test statistic and p-value. A value between ``2`` and ``n``.
+        Calculates the Friedman Rafsky test statistic and p-value. 
 
         Parameters
         ----------
