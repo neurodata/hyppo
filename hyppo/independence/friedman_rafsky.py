@@ -83,7 +83,7 @@ class FriedmanRafsky(IndependenceTest):
         Returns
         -------
         stat : float
-            The computed Friedman Rafsky statistic.
+            The computed Friedman Rafsky statistic. 
         """
         x = np.transpose(x)
         labels = np.transpose(y)
@@ -102,7 +102,7 @@ class FriedmanRafsky(IndependenceTest):
         random_state=None,
     ):
         r"""
-        Calculates the Friedman Rafsky test statistic and p-value.
+        Calculates the Friedman Rafsky test statistic and p-value. A value between ``2`` and ``n``.
 
         Parameters
         ----------
