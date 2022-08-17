@@ -5,19 +5,19 @@ from numba import jit
 from scipy._lib._util import MapWrapper
 
 from ._utils import _CheckInputs
-from .base import DiscriminabilityTest
+from .base import PopDiscriminabilityTest
 from sklearn.utils import check_random_state
 
 
-class DiscrimTwoSampleTestOutput(NamedTuple):
+class PopDiscrimTwoSampleTestOutput(NamedTuple):
     d1: float
     d2: float
     pvalue: float
 
 
-class DiscrimTwoSample(DiscriminabilityTest):
+class PopDiscrimTwoSample(PopDiscriminabilityTest):
     r"""
-    Two Sample Discriminability test statistic and p-value.
+    Two Sample Population Discriminability test statistic and p-value.
 
     Two sample test measures whether the discriminability is different for
     one dataset compared to another. More details can be described in `[1]`_.
@@ -47,7 +47,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
     def __init__(self, is_dist=False, remove_isolates=True):
         self.is_distance = is_dist
         self.remove_isolates = remove_isolates
-        DiscriminabilityTest.__init__(self)
+        PopDiscriminabilityTest.__init__(self)
 
     def statistic(self, x, y):
         """
@@ -67,7 +67,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
         stat : float
             The computed two sample discriminability statistic.
         """
-        stat = super(DiscrimTwoSample, self).statistic(x, y)
+        stat = super(PopDiscrimTwoSample, self).statistic(x, y)
 
         return stat
 
@@ -112,11 +112,11 @@ class DiscrimTwoSample(DiscriminabilityTest):
         Examples
         --------
         >>> import numpy as np
-        >>> from hyppo.discrim import DiscrimTwoSample
+        >>> from hyppo.discrim import PopDiscrimTwoSample
         >>> x1 = np.ones((100,2), dtype=float)
         >>> x2 = np.concatenate([np.zeros((50, 2)), np.ones((50, 2))], axis=0)
         >>> y = np.concatenate([np.zeros(50), np.ones(50)], axis=0)
-        >>> discrim1, discrim2, pvalue = DiscrimTwoSample().test(x1, x2, y)
+        >>> discrim1, discrim2, pvalue = PopDiscrimTwoSample().test(x1, x2, y)
         >>> '%.1f, %.1f, %.2f' % (discrim1, discrim2, pvalue)
         '0.5, 1.0, 0.00'
         """
@@ -159,7 +159,7 @@ class DiscrimTwoSample(DiscriminabilityTest):
 
         self.pvalue = pvalue
 
-        return DiscrimTwoSampleTestOutput(self.d1, self.d2, self.pvalue)
+        return PopDiscrimTwoSampleTestOutput(self.d1, self.d2, self.pvalue)
 
     def _get_convex_comb(self, x, random_state=None):  # pragma: no cover
         """Get random convex combination of input x."""

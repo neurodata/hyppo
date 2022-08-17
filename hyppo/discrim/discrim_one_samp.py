@@ -3,19 +3,19 @@ from typing import NamedTuple
 import numpy as np
 from scipy._lib._util import MapWrapper
 from ._utils import _CheckInputs
-from .base import DiscriminabilityTest
+from .base import PopDiscriminabilityTest
 from sklearn.utils import check_random_state
 
 
-class DiscrimOneSampleTestOutput(NamedTuple):
+class PopDiscrimOneSampleTestOutput(NamedTuple):
     stat: float
     pvalue: float
 
 
-class DiscrimOneSample(DiscriminabilityTest):
+class PopDiscrimOneSample(PopDiscriminabilityTest):
     r"""
 
-    One Sample Discriminability test statistic and p-value.
+    One Sample Population Discriminability test statistic and p-value.
 
     Discriminability index is a measure of whether a data acquisition and
     preprocessing pipeline is more discriminable among different subjects.
@@ -48,7 +48,7 @@ class DiscrimOneSample(DiscriminabilityTest):
         # set is_distance to true if compute_distance is None
         self.is_distance = is_dist
         self.remove_isolates = remove_isolates
-        DiscriminabilityTest.__init__(self)
+        PopDiscriminabilityTest.__init__(self)
 
     def statistic(self, x, y):
         """
@@ -68,13 +68,13 @@ class DiscrimOneSample(DiscriminabilityTest):
         stat : float
             The computed two sample discriminability statistic.
         """
-        stat = super(DiscrimOneSample, self).statistic(x, y)
+        stat = super(PopDiscrimOneSample, self).statistic(x, y)
 
         return stat
 
     def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
-        Calculates the test statistic and p-value for Discriminability one sample test.
+        Calculates the test statistic and p-value for PopDiscriminability one sample test.
 
         Parameters
         ----------
@@ -103,10 +103,10 @@ class DiscrimOneSample(DiscriminabilityTest):
         Examples
         --------
         >>> import numpy as np
-        >>> from hyppo.discrim import DiscrimOneSample
+        >>> from hyppo.discrim import PopDiscrimOneSample
         >>> x = np.concatenate([np.zeros((50, 2)), np.ones((50, 2))], axis=0)
         >>> y = np.concatenate([np.zeros(50), np.ones(50)], axis=0)
-        >>> '%.1f, %.2f' % DiscrimOneSample().test(x, y) # doctest: +SKIP
+        >>> '%.1f, %.2f' % PopDiscrimOneSample().test(x, y) # doctest: +SKIP
         '1.0, 0.00'
         """
 
@@ -136,7 +136,7 @@ class DiscrimOneSample(DiscriminabilityTest):
 
         self.pvalue_ = pvalue
 
-        return DiscrimOneSampleTestOutput(stat, pvalue)
+        return PopDiscrimOneSampleTestOutput(stat, pvalue)
 
     def _perm_stat(self, index, random_state=None):  # pragma: no cover
         r"""
