@@ -374,4 +374,6 @@ plt.show()
 # multivariate features. Lastly, labels for X and Y need not be 0 and 1, they just need be consistent across samples.
 # These tests runs like :ref:`any other test<general indep>`.
 #
+# Test statistic range: :math:`[2, m+n]`
+#
 # .. _[1]: https://link.springer.com/article/10.1007/s10182-020-00378-1
