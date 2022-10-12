@@ -206,7 +206,7 @@ class Dcorr(IndependenceTest):
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
 
-        In addition, the inputs can be distance matrices. Using this 
+        In addition, the inputs can be distance matrices. Using this is the
         same as before, except the ``compute_distance`` parameter must be set
         to ``None``.
 
