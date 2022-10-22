@@ -64,6 +64,13 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
     return x_rot, y_rot
 
 
+def _normalize(x, y):
+    """Normalize input data matricies."""
+    x[:, 0] = x[:, 0] / np.max(np.abs(x[:, 0]))
+    y[:, 0] = y[:, 0] / np.max(np.abs(y[:, 0]))
+    return x, y
+
+
 def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
     r"""
     Rotates input simulations to produce a `k`-sample simulation.
@@ -135,6 +142,88 @@ def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
                 np.hstack(_2samp_rotate(sim, x, y, p, degree=deg, pow_type=pow_type))
                 for deg in degree
             ]
+
+    return sims
+
+
+def trans_ksamp(sim, n, p, k=2, noise=True, trans=0.3, pow_type="samp", **kwargs):
+    r"""
+    Rotates input simulations to produce a `k`-sample simulation.
+
+    Parameters
+    ----------
+    sim : str
+        The name of the simulation (from the :mod:`hyppo.tools` module) that is to be
+        rotated.
+    n : int
+        The number of samples desired by ``sim`` (>= 5).
+    p : int
+        The number of dimensions desired by ``sim`` (>= 1).
+    k : int, default: 2
+        The number of groups to simulate.
+    noise : bool, default: True
+        Whether or not to include noise in the simulation.
+    trans : float or list of float, default: 0.3
+        Amount to translate the input simulation by (in first dimension).
+        The list must be the same size as ``k - 1``.
+    pow_type : "samp", "dim", default: "samp"
+        Simulation type, (increasing sample size or dimension).
+    **kwargs
+        Additional keyword arguments for the independence simulation.
+
+    Returns
+    -------
+    sims : list of ndarray
+        Rotated data matrices. ``sims`` is a list of arrays of shape ``(n, p+1)``
+        or ``(n, 2p)`` depending on the independence simulation. Here, `n`
+        is the number of samples and `p` is the number of dimensions.
+    """
+    if sim not in SIMULATIONS.keys():
+        raise ValueError(
+            "Not valid simulation, must be one of {}".format(SIMULATIONS.keys())
+        )
+
+    if (k - 1) > 1:
+        if type(trans) is list:
+            if (k - 1) != len(trans):
+                raise ValueError(
+                    "k={}, so length of trans must be {}, got {}".format(
+                        k, k - 1, len(trans)
+                    )
+                )
+        else:
+            if (k - 1) != 1:
+                raise ValueError(
+                    "k={}, so trans must be list of length {}, got {}".format(
+                        k, k - 1, type(trans)
+                    )
+                )
+
+    if sim == "multimodal_independence":
+        sims = [np.hstack(SIMULATIONS[sim](n, p, **kwargs)) for _ in range(k)]
+    else:
+        if sim != "multiplicative_noise":
+            kwargs["noise"] = noise
+        x, y = SIMULATIONS[sim](n, p, **kwargs)
+        x, y = _normalize(x, y)
+        if (k - 1) == 1:
+            x_trans, y_trans = _2samp_rotate(sim, x, y, p, degree=90, pow_type=pow_type)
+            x_trans[:, 0] += trans
+            y_trans[:, 0] = y_trans[:, -1]
+            sims = [
+                np.hstack([x, y]),
+                np.hstack([x_trans, y_trans]),
+            ]
+        else:
+            sims = [[x, y]]
+            for i in len(trans):
+                x_trans, y_trans = _2samp_rotate(
+                    sim, x, y, p, degree=90, pow_type=pow_type
+                )
+                x_trans[:, 0] += trans[i]
+                y_trans[:, 0] = y_trans[:, -1]
+                sims.append([x_trans, y_trans])
+            sims = [np.hstack(sim) for sim in sims]
 
     return sims
 
