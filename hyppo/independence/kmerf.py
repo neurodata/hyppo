@@ -130,10 +130,8 @@ class KMERF(IndependenceTest):
         stat = _dcorr(distx, disty, bias=False, is_fast=False)
         self.stat = stat
 
-        # get normalalized feature importances
-        importances = self.clf.feature_importances_
-        importances -= np.min(importances)
-        self.importances = importances / np.max(importances)
+        # get feature importances from gini-based random forest
+        self.importances = self.clf.feature_importances_
 
         return stat
 
