@@ -32,7 +32,6 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
             "spiral",
             "uncorrelated_bernoulli",
             "fourth_root",
-            "circle",
         ]:
             for i in range(rot_shape):
                 mat = np.random.normal(size=(rot_shape, 1))
