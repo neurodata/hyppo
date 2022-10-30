@@ -1,9 +1,17 @@
 import random
+from typing import NamedTuple
+
 from numba import jit
 import numpy as np
 
-from .base import IndependenceTest, IndependenceTestOutput
+from .base import IndependenceTest
 from ..tools import perm_test
+
+
+class FRTestOutput(NamedTuple):
+    stat: float
+    pvalue: float
+    uncor_stat: dict
 
 
 class FriedmanRafsky(IndependenceTest):
@@ -35,41 +43,19 @@ class FriedmanRafsky(IndependenceTest):
 
     The p-value and null distribution for the corrected statistic are calculated via
     a permutation test using :meth:`hyppo.tools.perm_test`.
+
+    References
+    ----------
+    .. footbibliography::
     """
 
     def __init__(self, **kwargs):
 
         IndependenceTest.__init__(self, **kwargs)
 
-    def _num_runs(self, labels, MST_connections):
-        r"""
-        Helper function to determine number of independent
-        'runs' from MST connections.
-
-        Parameters
-        ----------
-        labels : ndarry of float
-            Lables corresponding to respective classes of samples.
-        MST_connections: list of int
-            List containing pairs of points connected in final MST.
-
-        Returns
-        -------
-        run_count : int
-            Number of runs after severing all such edges with nodes of
-            differing class labels.
-        """
-        run_count = 1
-
-        for x in MST_connections:
-            if labels[x[0]] != labels[x[1]]:
-                run_count += 1
-
-        return run_count
-
     def statistic(self, x, y):
         r"""
-        Helper function that calculates the Friedman Rafksy test statistic. 
+        Helper function that calculates the Friedman Rafksy test statistic.
 
         Parameters
         ----------
@@ -83,13 +69,14 @@ class FriedmanRafsky(IndependenceTest):
         Returns
         -------
         stat : float
-            The computed Friedman Rafsky statistic. A value between ``2`` and ``n``.
+            The computed (uncorrected) Friedman Rafsky statistic. A value between
+            ``2`` and ``n``.
         """
         x = np.transpose(x)
         labels = np.transpose(y)
 
         MST_connections = MST(x, labels)
-        stat = self._num_runs(labels, MST_connections)
+        stat = _num_runs(labels, MST_connections)
 
         return stat
 
@@ -102,7 +89,7 @@ class FriedmanRafsky(IndependenceTest):
         random_state=None,
     ):
         r"""
-        Calculates the Friedman Rafsky test statistic and p-value. 
+        Calculates the Friedman Rafsky test statistic and p-value.
 
         Parameters
         ----------
@@ -125,12 +112,13 @@ class FriedmanRafsky(IndependenceTest):
         Returns
         -------
         stat : float
-            The computed Friedman Rafsky statistic.
+            The computed (corrected) Friedman Rafsky statistic.
         pvalue : float
             The computed Friedman Rafsky p-value.
+        uncor_stat : float
+            The computed (uncorrected) Friedman Rafsky statistic.
         """
-
-        stat, pvalue, null_dist = perm_test(
+        uncor_stat, pvalue, null_dist = perm_test(
             self.statistic,
             x,
             y,
@@ -139,10 +127,38 @@ class FriedmanRafsky(IndependenceTest):
             is_distsim=False,
             random_state=random_state,
         )
-        stat = (stat - np.mean(null_dist)) / np.std(null_dist)
+        self.uncor_stat = uncor_stat
+        stat = (uncor_stat - np.mean(null_dist)) / np.std(null_dist)
         self.stat = stat
 
-        return IndependenceTestOutput(stat, pvalue)
+        return FRTestOutput(stat, pvalue, uncor_stat)
+
+
+def _num_runs(labels, MST_connections):
+    r"""
+    Helper function to determine number of independent
+    'runs' from MST connections.
+
+    Parameters
+    ----------
+    labels : ndarry of float
+        Lables corresponding to respective classes of samples.
+    MST_connections: list of int
+        List containing pairs of points connected in final MST.
+
+    Returns
+    -------
+    run_count : int
+        Number of runs after severing all such edges with nodes of
+        differing class labels.
+    """
+    run_count = 1
+
+    for x in MST_connections:
+        if labels[x[0]] != labels[x[1]]:
+            run_count += 1
+
+    return run_count
 
 
 @jit(nopython=True, cache=True)  # pragma: no cover
