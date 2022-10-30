@@ -17,7 +17,7 @@ class TestFriedmanRafskyStat:
         num_rows, num_cols = x.shape
         y = np.random.choice([0, 1], num_rows, p=[0.5, 0.5])
         y = np.transpose(y)
-        stat1, pvalue1 = FriedmanRafsky().test(x, y)
+        stat1, pvalue1, _ = FriedmanRafsky().test(x, y)
         stat2 = FriedmanRafsky().statistic(x, y)
 
         assert_almost_equal(stat1, obs_stat, decimal=2)
@@ -30,8 +30,8 @@ class TestFriedmanRafskyStat:
         num_rows, num_cols = x.shape
         y = np.random.choice([0, 1], num_rows, p=[0.5, 0.5])
         y = np.transpose(y)
-        stat1, pvalue1 = FriedmanRafsky().test(x, y, random_state=2)
-        stat2, pvalue2 = FriedmanRafsky().test(x, y, random_state=2)
+        stat1, pvalue1, _ = FriedmanRafsky().test(x, y, random_state=2)
+        stat2, pvalue2, _ = FriedmanRafsky().test(x, y, random_state=2)
 
         assert stat1 == stat2
         assert pvalue1 == pvalue2
