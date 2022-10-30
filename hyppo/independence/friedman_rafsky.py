@@ -118,7 +118,8 @@ class FriedmanRafsky(IndependenceTest):
         uncor_stat : float
             The computed (uncorrected) Friedman Rafsky statistic.
         """
-        uncor_stat, pvalue, null_dist = super(FriedmanRafsky, self).test(
+        uncor_stat, pvalue, null_dist = perm_test(
+            self.statistic,
             x,
             y,
             reps,
