@@ -9,7 +9,7 @@ from ._utils import _CheckInputs
 from .base import IndependenceTest
 
 
-class MGCestOutput(NamedTuple):
+class MGCTestOutput(NamedTuple):
     stat: float
     pvalue: float
     mgc_dict: dict
@@ -259,4 +259,4 @@ class MGC(IndependenceTest):
         )
         self.mgc_dict = mgc_dict
 
-        return MGCestOutput(stat, pvalue, mgc_dict)
+        return MGCTestOutput(stat, pvalue, mgc_dict)
