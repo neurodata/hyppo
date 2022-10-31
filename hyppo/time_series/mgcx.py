@@ -55,6 +55,9 @@ class MGCX(TimeSeriesTest):
 
     Notes
     -----
+    .. note::
+       This algorithm is currently a pre-print on arXiv.
+
     The statistic can be derived as follows
     :footcite:p:`mehtaIndependenceTestingMultivariate2020`:
 
