@@ -17,6 +17,7 @@ class FRTestOutput(NamedTuple):
 class FriedmanRafsky(IndependenceTest):
     r"""
     Friedman-Rafksy (FR) test statistic and p-value.
+
     This is a multivariate extension of the Wald-Wolfowitz
     runs test for randomness. The normal concept of a 'run'
     is replaced by a minimum spanning tree (MST) calculated between
