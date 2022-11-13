@@ -19,7 +19,7 @@ Conventions
 
 Before we get started, here are a few of the conventions we use within hyppo:
 
-* All tests are releagted to a single class, and all classes have a :func:`test` method.
+* All tests are relegated to a single class, and all classes have a :func:`test` method.
   This method returns a test statistic and p-value, as well as other informative
   outputs depending on the test. **We recommend using this method**, though a statistic
   method exists that just returns the test statistic.
