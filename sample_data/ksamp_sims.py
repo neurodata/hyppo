@@ -90,7 +90,6 @@ def plot_sims(k=2, degree=DEGREE):
     plt.subplots_adjust(hspace=0.75)
 
 
-# run the created function for the simultions for 2 sample and 3 sample
-# and run for the guassian simulations
+# run the created function for the simulations for 2 sample and 3 sample
 plot_sims(k=2, degree=DEGREE[0])
 plot_sims(k=3, degree=DEGREE)

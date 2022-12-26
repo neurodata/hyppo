@@ -27,7 +27,7 @@ SIMULATIONS = [
 ]
 
 
-# make a function to plot the guassian simulations
+# make a function to plot the time series simulations
 def plot_time_series_sims():
     """Plot simulations"""
     fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(17, 12))
