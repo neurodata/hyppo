@@ -1,4 +1,5 @@
 from .common import *
+from .conditional_indep_sim import *
 from .indep_sim import *
 from .ksample_sim import *
 from .power import *
