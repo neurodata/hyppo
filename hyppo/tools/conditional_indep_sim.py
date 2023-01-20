@@ -3,7 +3,7 @@ import numpy as np
 from .indep_sim import _CheckInputs
 
 
-def independent_normal(n):
+def conditional_independent_normal(n):
     r"""
     Conditionally independent normal distributions
 
@@ -32,7 +32,7 @@ def independent_normal(n):
     return x, y, z
 
 
-def independent_binomial(n, p):
+def conditional_independent_binomial(n, p):
     r"""
     Conditionally independent binomial distributions
 
@@ -60,7 +60,7 @@ def independent_binomial(n, p):
     return x, y, z
 
 
-def independent_normal_nonlinear(n):
+def conditional_independent_normal_nonlinear(n):
     r"""
     Conditionally independent normal distributions
 

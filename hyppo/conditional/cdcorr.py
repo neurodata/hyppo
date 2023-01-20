@@ -4,6 +4,8 @@ from sklearn.metrics.pairwise import pairwise_kernels
 
 from ..tools import check_perm_blocks_dim, compute_dist
 
+from scipy.spatial.distance import pdist, squareform
+
 # from ._utils import _CheckInputs
 from .base import ConditionalIndependenceTest, ConditionalIndependenceTestOutput
 
@@ -12,14 +14,18 @@ class CDcorr(ConditionalIndependenceTest):
     r"""
     Conditional Distance Correlation (CDcorr) test statistic and p-value.
 
+
+    Reference
+    ---------
+    D.W. Scott, “Multivariate Density Estimation: Theory, Practice, and Visualization”, John Wiley & Sons, New York, Chicester, 1992.
     """
 
-    def __init__(self, compute_distance="euclidean", bandwith=None, **kwargs):
+    def __init__(self, compute_distance="euclidean", bandwidth=None, **kwargs):
         r"""
         bandwith :
         """
         self.compute_distance = compute_distance
-        self.bandwith = bandwith
+        self.bandwidth = bandwidth
 
         # set is_distance to true if compute_distance is None
         self.is_distance = False
@@ -28,15 +34,26 @@ class CDcorr(ConditionalIndependenceTest):
         ConditionalIndependenceTest.__init__(self)
 
     def compute_kern(self, data):
-        d = data.shape[1]
+        n, d = data.shape
+
+        if self.bandwidth is None:
+            # Assumes independent variables
+            # Scott's rule of thumb
+            factor = np.power(n, (-1.0 / (d + 4)))
+            stds = np.std(data, axis=0, ddof=1)
+            self.bandwidth_ = factor * stds
+        elif isinstance(self.bandwidth, (int, float)):
+            self.bandwidth_ = np.repeat(self.bandwidth, d)
 
         # Compute constants
-        denom = np.power(2 * np.pi, d / 2.0) * np.power(self.bandwith, d / 2)
-        constant = 1 / denom
-        gamma = 1 / (self.bandwith * 2)
+        denom = np.power(2 * np.pi, d / 2) * np.power(self.bandwidth_.prod(), 0.5)
 
-        kern = pairwise_kernels(data, metric="rbf", gamma=gamma) * constant
-        return kern
+        sim_mat = pdist(data, "sqeuclidean", w=1 / self.bandwidth_)
+        sim_mat = squareform(-0.5 * sim_mat)
+        np.exp(sim_mat, sim_mat)
+        sim_mat /= denom
+
+        return sim_mat
 
     def statistic(self, x, y, z):
         distx = x
@@ -45,9 +62,11 @@ class CDcorr(ConditionalIndependenceTest):
 
         if not self.is_distance:
             distx, disty = compute_dist(
-                x, y, metric=self.compute_distance, **self.kwargs
+                x,
+                y,
+                metric=self.compute_distance,
             )
-            distz = self.compute_kern()
+            distz = self.compute_kern(z)
 
         stat = _cdcorr(distx, disty, distz)
         self.stat = stat
