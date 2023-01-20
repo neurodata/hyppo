@@ -41,14 +41,16 @@ class CDcorr(ConditionalIndependenceTest):
             # Scott's rule of thumb
             factor = np.power(n, (-1.0 / (d + 4)))
             stds = np.std(data, axis=0, ddof=1)
-            self.bandwidth_ = factor * stds
+            bandwidth_ = factor * stds
         elif isinstance(self.bandwidth, (int, float)):
-            self.bandwidth_ = np.repeat(self.bandwidth, d)
+            bandwidth_ = np.repeat(self.bandwidth, d)
+        else:
+            bandwidth_ = self.bandwidth
 
         # Compute constants
-        denom = np.power(2 * np.pi, d / 2) * np.power(self.bandwidth_.prod(), 0.5)
+        denom = np.power(2 * np.pi, d / 2) * np.power(bandwidth_.prod(), 0.5)
 
-        sim_mat = pdist(data, "sqeuclidean", w=1 / self.bandwidth_)
+        sim_mat = pdist(data, "sqeuclidean", w=1 / bandwidth_**2)
         sim_mat = squareform(-0.5 * sim_mat)
         np.exp(sim_mat, sim_mat)
         sim_mat /= denom
@@ -111,9 +113,9 @@ def _cdcov(distx, disty, distz):
         cdy = _weighted_center_distmat(disty, distz[i])
         cdcov[i] = (cdx * cdy * r * r.T).sum() / r.sum() ** 2
 
-    cdcov *= 12 * np.power(distz.mean(axis=0), 4)
+    # cdcov *= 12 * np.power(distz.mean(axis=0), 4)
 
-    return cdcov.mean()
+    return cdcov
 
 
 def _cdcorr(distx, disty, distz):
@@ -122,11 +124,12 @@ def _cdcorr(distx, disty, distz):
     covar = _cdcov(distx, disty, distz)
 
     # stat is 0 with negative variances (would make denominator undefined)
-    if varx <= 0 or vary <= 0:
-        stat = 0
-
-    # calculate generalized test statistic
-    else:
-        stat = covar / np.real(np.sqrt(varx * vary))
+    denom = varx * vary
+    non_positives = denom <= 0
+    if np.any(non_positives):
+        denom[non_positives] = 0
+    stat = np.divide(
+        covar, np.sqrt(denom), out=np.zeros_like(covar), where=np.invert(non_positives)
+    )
 
     return stat
