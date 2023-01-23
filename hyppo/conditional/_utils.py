@@ -56,7 +56,7 @@ class _CheckInputs:
         nx, _ = self.x.shape
         ny, _ = self.y.shape
         nz, _ = self.z.shape
-        if np.all(np.array([nx, ny, nz]) == nx):
+        if not np.all(np.array([nx, ny, nz]) == nx):
             raise ValueError(
                 "Shape mismatch, x, y and z must have shape "
                 + "[n, p], [n, q] and [n, r]."

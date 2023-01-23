@@ -66,7 +66,7 @@ def convert_xy_float64(x, y):
     return x, y
 
 
-def convert_xyz_float64(x, y):
+def convert_xyz_float64(x, y, z):
     """Convert x or y or z to np.float64 (if not already done)"""
     # convert x and y to floats
     x = np.asarray(x).astype(np.float64)
