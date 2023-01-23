@@ -14,7 +14,7 @@ class TestOneSample:
         np.random.seed(123456789)
         obs_stat = 0.5
         obs_p = 1.0
-        stat, p = DiscrimOneSample().test(x, y, reps=10)
+        stat, p, _ = DiscrimOneSample().test(x, y, reps=10)
 
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(p, obs_p, decimal=2)
@@ -27,7 +27,7 @@ class TestOneSample:
         np.random.seed(123456789)
         obs_stat = 1.0
         obs_p = 0.0909090909090909
-        stat, p = DiscrimOneSample().test(x, y, reps=10)
+        stat, p, _ = DiscrimOneSample().test(x, y, reps=10)
 
         assert_almost_equal(stat, obs_stat, decimal=3)
         assert_almost_equal(p, obs_p, decimal=3)
