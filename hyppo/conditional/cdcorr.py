@@ -1,12 +1,10 @@
-import numpy as np
-from joblib import Parallel, delayed
-from numba import jit
-from scipy.spatial.distance import pdist, squareform
-from sklearn.utils import check_random_state
-
-from ..tools import perm_test, compute_dist
-
 from functools import partial
+
+import numpy as np
+from scipy.spatial.distance import pdist, squareform
+
+from ..tools import compute_dist, perm_test
+from ._utils import _CheckInputs
 
 # from ._utils import _CheckInputs
 from .base import ConditionalIndependenceTest, ConditionalIndependenceTestOutput
@@ -91,6 +89,14 @@ class CDcorr(ConditionalIndependenceTest):
         workers=1,
         random_state=None,
     ):
+        check_input = _CheckInputs(
+            x,
+            y,
+            z,
+            reps=reps,
+        )
+        x, y, z = check_input()
+
         if not self.is_distance:
             x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
             z = self._compute_kern(z)

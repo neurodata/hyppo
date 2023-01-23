@@ -47,6 +47,16 @@ def check_ndarray_xy(x, y):
         raise TypeError("x and y must be ndarrays")
 
 
+def check_ndarray_xyz(x, y, z):
+    """Check if x or y is an ndarray of float"""
+    if (
+        not isinstance(x, np.ndarray)
+        or not isinstance(y, np.ndarray)
+        or not isinstance(z, np.ndarray)
+    ):
+        raise TypeError("x, y, and z must be ndarrays")
+
+
 def convert_xy_float64(x, y):
     """Convert x or y to np.float64 (if not already done)"""
     # convert x and y to floats
@@ -54,6 +64,16 @@ def convert_xy_float64(x, y):
     y = np.asarray(y).astype(np.float64)
 
     return x, y
+
+
+def convert_xyz_float64(x, y):
+    """Convert x or y or z to np.float64 (if not already done)"""
+    # convert x and y to floats
+    x = np.asarray(x).astype(np.float64)
+    y = np.asarray(y).astype(np.float64)
+    z = np.asarray(z).astype(np.float64)
+
+    return x, y, z
 
 
 def check_reps(reps):
