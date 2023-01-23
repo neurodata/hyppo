@@ -481,20 +481,25 @@ class _PermGroups(object):
 
 
 # p-value computation
-def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None, random_state=None):
+def _perm_stat(
+    calc_stat, x, y, z=None, is_distsim=True, permuter=None, random_state=None
+):
     """Permute the test statistic"""
     rng = check_random_state(random_state)
     if permuter is None:
         order = rng.permutation(y.shape[0])
     else:
-        order = permuter(rng)
+        order = permuter(rng=rng)
 
     if is_distsim:
         permy = y[order][:, order]
     else:
         permy = y[order]
 
-    perm_stat = calc_stat(x, permy)
+    if z is not None:
+        perm_stat = calc_stat(x, permy, z)
+    else:
+        perm_stat = calc_stat(x, permy)
 
     return perm_stat
 
@@ -503,11 +508,13 @@ def perm_test(
     calc_stat,
     x,
     y,
+    z=None,
     reps=1000,
     workers=1,
     is_distsim=True,
     perm_blocks=None,
     random_state=None,
+    permuter=None,
 ):
     """
     Permutation test for the p-value of a nonparametric test.
@@ -521,13 +528,14 @@ def perm_test(
     ----------
     calc_stat : callable
         The method used to calculate the test statistic (must use hyppo API).
-    x,y : ndarray of float
-        Input data matrices. ``x`` and ``y`` must have the same number of
-        samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
-        `n` is the number of samples and `p` and `q` are the number of
+    x,y,z : ndarray of float
+        Input data matrices. ``x``, ``y`` and ``z`` must have the same number of
+        samples. That is, the shapes must be ``(n, p)``, ``(n, q)``, ``(n, r)``where
+        `n` is the number of samples and `p`, `q` , and `r` are the number of
         dimensions. Alternatively, ``x`` and ``y`` can be distance or similarity
-        matrices,
-        where the shapes must both be ``(n, n)``.
+        matrices, and ``z`` must be a similarity matrix where the shapes
+        must be ``(n, n)``. ``z`` is an optional matrix only used for conditional
+        independence testing.
     reps : int, default: 1000
         The number of replications used to estimate the null distribution
         when using the permutation test used to calculate the p-value.
@@ -545,6 +553,9 @@ def perm_test(
         test, samples within the same final leaf node are exchangeable
         and blocks of samples with a common parent node are exchangeable. If a
         column value is negative, the resulting block is unexchangeable.
+    permuter : callable
+        TODO: write description
+
     Returns
     -------
     stat : float
@@ -554,8 +565,11 @@ def perm_test(
     null_dist : list of float
         The approximated null distribution of shape ``(reps,)``.
     """
+    data_args = [x, y]
+    if z is not None:
+        data_args.append(z)
     # calculate observed test statistic
-    stat = calc_stat(x, y)
+    stat = calc_stat(*data_args)
 
     # make RandomState seeded array
     if random_state is not None:
@@ -567,12 +581,13 @@ def perm_test(
         random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
 
     # calculate null distribution
-    permuter = _PermGroups(y, perm_blocks)
+    if not callable(permuter):
+        permuter = _PermGroups(y, perm_blocks)
 
     null_dist = np.array(
         Parallel(n_jobs=workers)(
             [
-                delayed(_perm_stat)(calc_stat, x, y, is_distsim, permuter, rng)
+                delayed(_perm_stat)(calc_stat, *data_args, is_distsim, permuter, rng)
                 for rng in random_state
             ]
         )

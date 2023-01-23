@@ -1,10 +1,12 @@
 import numpy as np
+from joblib import Parallel, delayed
 from numba import jit
-from sklearn.metrics.pairwise import pairwise_kernels
-
-from ..tools import check_perm_blocks_dim, compute_dist
-
 from scipy.spatial.distance import pdist, squareform
+from sklearn.utils import check_random_state
+
+from ..tools import perm_test, compute_dist
+
+from functools import partial
 
 # from ._utils import _CheckInputs
 from .base import ConditionalIndependenceTest, ConditionalIndependenceTestOutput
@@ -31,9 +33,10 @@ class CDcorr(ConditionalIndependenceTest):
         self.is_distance = False
         if not compute_distance:
             self.is_distance = True
-        ConditionalIndependenceTest.__init__(self)
 
-    def compute_kern(self, data):
+        ConditionalIndependenceTest.__init__(self, **kwargs)
+
+    def _compute_kern(self, data):
         n, d = data.shape
 
         if self.bandwidth is None:
@@ -42,6 +45,8 @@ class CDcorr(ConditionalIndependenceTest):
             factor = np.power(n, (-1.0 / (d + 4)))
             stds = np.std(data, axis=0, ddof=1)
             bandwidth_ = factor * stds
+
+            # TODO Implement silverman's rule of thumb
         elif isinstance(self.bandwidth, (int, float)):
             bandwidth_ = np.repeat(self.bandwidth, d)
         else:
@@ -50,7 +55,9 @@ class CDcorr(ConditionalIndependenceTest):
         # Compute constants
         denom = np.power(2 * np.pi, d / 2) * np.power(bandwidth_.prod(), 0.5)
 
-        sim_mat = pdist(data, "sqeuclidean", w=1 / bandwidth_**2)
+        sim_mat = pdist(
+            data, "sqeuclidean", w=1 / bandwidth_**2
+        )  # Section 4.2 equation
         sim_mat = squareform(-0.5 * sim_mat)
         np.exp(sim_mat, sim_mat)
         sim_mat /= denom
@@ -68,9 +75,9 @@ class CDcorr(ConditionalIndependenceTest):
                 y,
                 metric=self.compute_distance,
             )
-            distz = self.compute_kern(z)
+            distz = self._compute_kern(z)
 
-        stat = _cdcorr(distx, disty, distz)
+        stat = _cdcov(distx, disty, distz).mean()
         self.stat = stat
 
         return stat
@@ -82,15 +89,45 @@ class CDcorr(ConditionalIndependenceTest):
         z,
         reps=1000,
         workers=1,
-        auto=True,
-        perm_blocks=None,
         random_state=None,
     ):
+        if not self.is_distance:
+            x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
+            z = self._compute_kern(z)
+
+            self.is_distance = True
+
+        stat, pvalue, null_dist = perm_test(
+            self.statistic,
+            x,
+            y,
+            z,
+            reps=reps,
+            workers=workers,
+            is_distsim=self.is_distance,
+            random_state=random_state,
+            permuter=partial(self._permuter, probs=z),
+        )
+        self.stat = stat
+        self.pvalue = pvalue
+        self.null_dist = null_dist
 
         return ConditionalIndependenceTestOutput(stat, pvalue)
 
+    def _permuter(self, probs, rng, axis=1):
+        """
+        Weighted sampling with replacement
+        """
+        n = probs.shape[1 - axis]
+        sums = probs.sum(axis=1, keepdims=True)
+        idx = ((probs / sums).cumsum(axis=1) > rng.rand(n)[:, None]).argmax(axis=1)
+
+        return idx
+
 
 def _weighted_center_distmat(distx, weights):
+    """Centers the distance matrices"""
+
     n = distx.shape[0]
 
     scl = np.sum(weights)
@@ -113,7 +150,7 @@ def _cdcov(distx, disty, distz):
         cdy = _weighted_center_distmat(disty, distz[i])
         cdcov[i] = (cdx * cdy * r * r.T).sum() / r.sum() ** 2
 
-    # cdcov *= 12 * np.power(distz.mean(axis=0), 4)
+    cdcov *= 12 * np.power(distz.mean(axis=0), 4)
 
     return cdcov
 
