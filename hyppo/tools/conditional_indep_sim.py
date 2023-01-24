@@ -255,12 +255,83 @@ def example9(n, p=4, random_state=None):
 
     x = z_i[:, :p]
     x[:, -1] += z_i[:, p]
-
     y = z_i.sum(axis=1)
-
     z = z_i[:, p]
 
     return x, y, z
+
+
+def example10(n, random_state=None):
+    """
+    Example 10 from :footcite:p:`wang2015conditional`
+    :math:`(X, Y, Z) \in \mathbb{R}^10 \times \mathbb{R}^2 \times \mathbb{R}`:
+
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation (>= 5).
+
+    Returns
+    -------
+    x,y,z : ndarray of float
+        Simulated data matrices. ``x`` and ``y``, and ``z`` have shapes
+        ``(n, 1)`` where `n` is the number of samples and `1` is the
+        number of dimensions.
+
+    References
+    ----------
+    .. footbibliography::
+    """
+    check_in = _CheckInputs(n, p=1)
+    check_in()
+
+    rng = check_random_state(random_state)
+
+    z = rng.standard_t(df=1, size=(13, n))
+
+    x = z[:11]
+    x[9] += z[10]
+    y1 = z[0] * z[1] + z[2] * z[3] + z[4] * z[10] + z[11]
+    y2 = z[5] * z[6] + z[7] * z[8] + z[9] * z[10] + z[12]
+    y = np.array([y1, y2])
+    z = z[10]
+
+    return x.T, y.T, z
+
+
+def example11(n, random_state=None):
+    """
+    Example 11 from :footcite:p:`wang2015conditional`
+    :math:`(X, Y, Z) \in \mathbb{R}^4 \times \mathbb{R}^2 \times \mathbb{R}^2`:
+
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation (>= 5).
+
+    Returns
+    -------
+    x,y,z : ndarray of float
+        Simulated data matrices. ``x`` and ``y``, and ``z`` have shapes
+        ``(n, 1)`` where `n` is the number of samples and `1` is the
+        number of dimensions.
+
+    References
+    ----------
+    .. footbibliography::
+    """
+    check_in = _CheckInputs(n, p=1)
+    check_in()
+
+    rng = check_random_state(random_state)
+
+    x = rng.standard_t(df=2, size=(4, n))
+    y1 = np.sin(x[0]) + np.cos(x[1]) + x[2] ** 2 + x[3] ** 2
+    y2 = x[0] ** 2 + x[1] ** 2 + x[2] + x[3]
+    y = np.array([y1, y2])
+    z = x[:2]
+
+    return x.T, y.T, z.T
 
 
 COND_SIMS = {}
