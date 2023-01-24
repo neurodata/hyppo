@@ -10,7 +10,7 @@ from .base import ConditionalIndependenceTest, ConditionalIndependenceTestOutput
 
 class CDcorr(ConditionalIndependenceTest):
     r"""
-    Conditional Distance Correlation (CDcorr) test statistic and p-value.
+    Conditional Distance Covariance/Correlation (CDcov/CDcorr) test statistic and p-value.
 
     CDcorr is a measure of dependence between two paired random matrices
     given a third random matrix of not necessarily equal dimensions :footcite:p:`wang2015conditional`.
@@ -88,7 +88,7 @@ class CDcorr(ConditionalIndependenceTest):
 
     def statistic(self, x, y, z):
         r"""
-        Helper function that calculates the Dcorr test statistic.
+        Helper function that calculates the CDcov/CDcorr test statistic.
 
         Parameters
         ----------
@@ -103,7 +103,7 @@ class CDcorr(ConditionalIndependenceTest):
         Returns
         -------
         stat : float
-            The computed Dcorr statistic.
+            The computed CDcov/CDcorr statistic.
         """
         distx = x
         disty = y
@@ -135,7 +135,7 @@ class CDcorr(ConditionalIndependenceTest):
         random_state=None,
     ):
         r"""
-        Calculates the Dcorr test statistic and p-value.
+        Calculates the CDcov/CDcorr test statistic and p-value.
 
         Parameters
         ----------
@@ -159,9 +159,9 @@ class CDcorr(ConditionalIndependenceTest):
         Returns
         -------
         stat : float
-            The computed CDcorr statistic.
+            The computed CDcov/CDcorr statistic.
         pvalue : float
-            The computed CDcorr p-value.
+            The computed CDcov/CDcorr p-value.
         """
         check_input = _CheckInputs(
             x,
