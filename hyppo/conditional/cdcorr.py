@@ -68,10 +68,16 @@ class CDcorr(ConditionalIndependenceTest):
 
         # Check bandwidth input
         if bandwidth is not None:
-            if isinstance(bandwidth, (int, float, np.ndarray, str)):
+            if not isinstance(bandwidth, (int, float, np.ndarray, str)):
                 raise ValueError(
                     "`bandwidth` should be 'scott', 'silverman', a scalar or 1d-array."
                 )
+            if isinstance(bandwidth, str):
+                if bandwidth.lower() not in ["scott", "silverman"]:
+                    raise ValueError(
+                        f"`bandwidth` must be either 'scott' or 'silverman' not '{bandwidth}'"
+                    )
+                self.bandwidth = bandwidth.lower()
 
         # set is_distance to true if compute_distance is None
         self.is_distance = False
@@ -191,24 +197,20 @@ class CDcorr(ConditionalIndependenceTest):
     def _compute_kern(self, data):
         n, d = data.shape
 
-        if self.bandwidth is None:
-            # Assumes independent variables
-            # Scott's rule of thumb
+        if isinstance(self.bandwidth, (int, float)):
+            bandwidth_ = np.repeat(self.bandwidth, d)
+        elif isinstance(self.bandwidth, np.ndarray):
+            if not d == self.bandwidth.size:
+                raise ValueError(f"`bandwidth` must be of length {d}.")
+            bandwidth_ = self.bandwidth
+        elif self.bandwidth is None or self.bandwidth == "scott":
             factor = np.power(n, (-1.0 / (d + 4)))
             stds = np.std(data, axis=0, ddof=1)
             bandwidth_ = factor * stds
-
-            # TODO Implement silverman's rule of thumb
-
-            if "silverman":
-                factor = (n * (d + 2) / 4.0) ** (-1.0 / (d + 4))
-                stds = np.std(data, axis=0, ddof=1)
-                bandwidth_ = factor * stds
-
-        elif isinstance(self.bandwidth, (int, float)):
-            bandwidth_ = np.repeat(self.bandwidth, d)
-        else:
-            bandwidth_ = self.bandwidth
+        elif self.bandwidth == "silverman":
+            factor = (n * (d + 2) / 4.0) ** (-1.0 / (d + 4))
+            stds = np.std(data, axis=0, ddof=1)
+            bandwidth_ = factor * stds
 
         # Compute constants
         denom = np.power(2 * np.pi, d / 2) * np.power(bandwidth_.prod(), 0.5)
