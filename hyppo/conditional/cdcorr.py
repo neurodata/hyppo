@@ -245,7 +245,7 @@ class CDcorr(ConditionalIndependenceTest):
 
         n = probs.shape[1 - axis]
         sums = probs.sum(axis=1, keepdims=True)
-        idx = ((probs / sums).cumsum(axis=1) > rng.rand(n)[:, None]).argmax(axis=1)
+        idx = ((probs / sums).cumsum(axis=1) > rng.random(n)[:, None]).argmax(axis=1)
 
         return idx
 
