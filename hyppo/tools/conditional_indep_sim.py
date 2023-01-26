@@ -427,6 +427,7 @@ def correlated_t_nonlinear(n, p=4, random_state=None):
 
 COND_SIMULATIONS = {
     "independent_normal": independent_normal,
+    "independent_normal_nonlinear": independent_normal_nonlinear,
     "independent_lognormal": independent_lognormal,
     "independent_binomial": independent_binomial,
     "correlated_normal": correlated_normal,
