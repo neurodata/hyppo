@@ -6,17 +6,18 @@ from ..tools import check_ndarray_xyz, check_reps, contains_nan, convert_xyz_flo
 class _CheckInputs:
     """Checks inputs for all independence tests"""
 
-    def __init__(self, x, y, z, reps=None):
+    def __init__(self, x, y, z, reps=None, max_dims=None):
         self.x = x
         self.y = y
         self.z = z
         self.reps = reps
+        self.max_dims = max_dims
 
     def __call__(self):
         check_ndarray_xyz(self.x, self.y, self.z)
         contains_nan(self.x)
         contains_nan(self.y)
-        self.x, self.y, self.z = self.check_dim_xyz()
+        self.x, self.y, self.z = self.check_dim_xyz(max_dims=self.max_dims)
         self.x, self.y, self.z = convert_xyz_float64(self.x, self.y, self.z)
         self._check_min_samples()
         self._check_variance()
@@ -26,8 +27,8 @@ class _CheckInputs:
 
         return self.x, self.y, self.z
 
-    def check_dim_xyz(self):
-        """Convert x and y to proper dimensions"""
+    def check_dim_xyz(self, max_dims):
+        """Check and convert x and y to proper dimensions"""
         if self.x.ndim == 1:
             self.x = self.x[:, np.newaxis]
         elif self.x.ndim != 2:
@@ -46,6 +47,14 @@ class _CheckInputs:
             raise ValueError(
                 "Expected a 2-D array `z`, found shape " "{}".format(self.z.shape)
             )
+
+        if not max_dims:
+            _, dx = self.x.shape
+            _, dy = self.y.shape
+            _, dz = self.z.shape
+
+            if np.any(np.array([dx, dy, dz]) > 1):
+                raise ValueError("x, y, z must have be univariate and have shape [n,1]")
 
         self._check_nd_indeptest()
 
