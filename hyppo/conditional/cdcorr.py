@@ -108,12 +108,7 @@ class CDcorr(ConditionalIndependenceTest):
         stat : float
             The computed CDcov/CDcorr statistic.
         """
-        check_input = _CheckInputs(
-            x,
-            y,
-            z,
-            reps=None,
-        )
+        check_input = _CheckInputs(x, y, z)
         x, y, z = check_input()
 
         if not self.is_distance:
@@ -174,12 +169,7 @@ class CDcorr(ConditionalIndependenceTest):
         pvalue : float
             The computed CDcov/CDcorr p-value.
         """
-        check_input = _CheckInputs(
-            x,
-            y,
-            z,
-            reps=reps,
-        )
+        check_input = _CheckInputs(x, y, z, reps=reps)
         x, y, z = check_input()
 
         if not self.is_distance:

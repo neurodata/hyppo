@@ -4,7 +4,7 @@ from sklearn.utils import check_random_state
 from .indep_sim import _CheckInputs
 
 
-def independent_normal(n, p=1, random_state=None):
+def indep_normal(n, p=1, random_state=None):
     r"""
     Conditionally independent normal distributions
     :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}`:
@@ -40,7 +40,7 @@ def independent_normal(n, p=1, random_state=None):
     return x, y, z
 
 
-def independent_lognormal(n, p=1, random_state=None):
+def indep_lognormal(n, p=1, random_state=None):
     r"""
     Conditionally independent normal distributions
     :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}`:
@@ -64,12 +64,12 @@ def independent_lognormal(n, p=1, random_state=None):
     check_in = _CheckInputs(n, p=p)
     check_in()
 
-    x, y, z = np.exp(independent_normal(n, p, random_state))
+    x, y, z = np.exp(indep_normal(n, p, random_state))
 
     return x, y, z
 
 
-def independent_normal_nonlinear(n, p=1, random_state=None):
+def indep_normal_nonlinear(n, p=1, random_state=None):
     r"""
     Conditionally independent normal distributions.
     :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}`:
@@ -113,7 +113,7 @@ def independent_normal_nonlinear(n, p=1, random_state=None):
     return x, y, z
 
 
-def independent_binomial(n, p=1, random_state=None):
+def indep_binomial(n, p=1, random_state=None):
     r"""
     Conditionally independent binomial distributions.
 
@@ -426,10 +426,10 @@ def correlated_t_nonlinear(n, p=4, random_state=None):
 
 
 COND_SIMULATIONS = {
-    "independent_normal": independent_normal,
-    "independent_normal_nonlinear": independent_normal_nonlinear,
-    "independent_lognormal": independent_lognormal,
-    "independent_binomial": independent_binomial,
+    "independent_normal": indep_normal,
+    "independent_normal_nonlinear": indep_normal_nonlinear,
+    "independent_lognormal": indep_lognormal,
+    "independent_binomial": indep_binomial,
     "correlated_normal": correlated_normal,
     "correlated_lognormal": correlated_lognormal,
     "correlated_binomial": correlated_binomial,
