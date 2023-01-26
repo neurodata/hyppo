@@ -472,4 +472,13 @@ def condi_indep_sim(sim, n, p, random_state=None, **kwargs):
     else:
         sim = COND_SIMULATIONS[sim]
 
-    return sim(n, p, random_state, **kwargs)
+    x, y, z = sim(n, p, random_state, **kwargs)
+
+    if x.ndim == 1:
+        x = x[:, np.newaxis]
+    if y.ndim == 1:
+        y = y[:, np.newaxis]
+    if z.ndim == 1:
+        z = z[:, np.newaxis]
+
+    return x, y, z
