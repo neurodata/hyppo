@@ -86,6 +86,9 @@ class CDcorr(ConditionalIndependenceTest):
 
         ConditionalIndependenceTest.__init__(self, **kwargs)
 
+    def __repr__(self):
+        return "CDcorr"
+
     def statistic(self, x, y, z):
         r"""
         Helper function that calculates the CDcov/CDcorr test statistic.
@@ -105,9 +108,13 @@ class CDcorr(ConditionalIndependenceTest):
         stat : float
             The computed CDcov/CDcorr statistic.
         """
-        distx = x
-        disty = y
-        distz = z
+        check_input = _CheckInputs(
+            x,
+            y,
+            z,
+            reps=None,
+        )
+        x, y, z = check_input()
 
         if not self.is_distance:
             distx, disty = compute_dist(
@@ -115,7 +122,11 @@ class CDcorr(ConditionalIndependenceTest):
                 y,
                 metric=self.compute_distance,
             )
-            distz = self._compute_kern(z, self.bandwidth)
+            distz = self._compute_kde(z)
+        else:
+            distx = x
+            disty = y
+            distz = z
 
         if self.use_cov:
             stat = _cdcov(distx, disty, distz).mean()
@@ -173,7 +184,7 @@ class CDcorr(ConditionalIndependenceTest):
 
         if not self.is_distance:
             x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
-            z = self._compute_kern(z)
+            z = self._compute_kde(z)
 
             self.is_distance = True
 
@@ -186,7 +197,7 @@ class CDcorr(ConditionalIndependenceTest):
             workers=workers,
             is_distsim=self.is_distance,
             random_state=random_state,
-            permuter=partial(_permuter, probs=z),
+            permuter=partial(self._permuter, probs=z),
         )
         self.stat = stat
         self.pvalue = pvalue
@@ -194,7 +205,7 @@ class CDcorr(ConditionalIndependenceTest):
 
         return ConditionalIndependenceTestOutput(stat, pvalue)
 
-    def _compute_kern(self, data):
+    def _compute_kde(self, data):
         n, d = data.shape
 
         if isinstance(self.bandwidth, (int, float)):
@@ -225,16 +236,18 @@ class CDcorr(ConditionalIndependenceTest):
 
         return sim_mat
 
+    def _permuter(self, probs, rng=None, axis=1):
+        """
+        Weighted sampling with replacement
+        """
+        if rng is None:
+            rng = np.random.default_rng()
 
-def _permuter(probs, rng, axis=1):
-    """
-    Weighted sampling with replacement
-    """
-    n = probs.shape[1 - axis]
-    sums = probs.sum(axis=1, keepdims=True)
-    idx = ((probs / sums).cumsum(axis=1) > rng.rand(n)[:, None]).argmax(axis=1)
+        n = probs.shape[1 - axis]
+        sums = probs.sum(axis=1, keepdims=True)
+        idx = ((probs / sums).cumsum(axis=1) > rng.rand(n)[:, None]).argmax(axis=1)
 
-    return idx
+        return idx
 
 
 def _weighted_center_distmat(distx, weights):
