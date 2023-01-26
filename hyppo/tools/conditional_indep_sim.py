@@ -153,8 +153,8 @@ def independent_binomial(n, p=1, random_state=None):
     size = (n, 1)
 
     z = rng.binomial(10, 0.5, size=(n, p))
-    x = rng.binomial(10, 0.5, size=size) + z.sum(axis=1)
-    y = rng.binomial(10, 0.5, size=size) + z.sum(axis=1)
+    x = rng.binomial(10, 0.5, size=size) + z.sum(axis=1, keepdims=True)
+    y = rng.binomial(10, 0.5, size=size) + z.sum(axis=1, keepdims=True)
 
     return x, y, z
 
