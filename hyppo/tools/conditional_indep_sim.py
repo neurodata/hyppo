@@ -64,7 +64,13 @@ def indep_lognormal(n, p=1, random_state=None):
     check_in = _CheckInputs(n, p=p)
     check_in()
 
-    x, y, z = np.exp(indep_normal(n, p, random_state))
+    rng = check_random_state(random_state)
+
+    mean = np.array([0, 0, 0])
+    cov = np.eye(3)
+
+    x, y, z = rng.multivariate_normal(mean, cov, size=n).T
+    x = np.exp(x)
 
     return x, y, z
 
