@@ -185,10 +185,12 @@ def _pdcov(distx, disty, distz):
     cov_yz = np.sum(disty * distz)
     var_z = np.sum(distz * distz)
 
-    proj_xz = distx - (cov_xz / var_z) * distz
-    proj_yz = disty - (cov_yz / var_z) * distz
-
-    stat = np.sum(proj_xz * proj_yz) / denom
+    if var_z == 0:
+        stat = 0
+    else:
+        proj_xz = distx - (cov_xz / var_z) * distz
+        proj_yz = disty - (cov_yz / var_z) * distz
+        stat = np.sum(proj_xz * proj_yz) / denom
 
     return stat
 
