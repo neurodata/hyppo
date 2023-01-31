@@ -310,7 +310,8 @@ def correlated_lognormal(n, p=1, random_state=None):
     check_in = _CheckInputs(n, p=p)
     check_in()
 
-    x, y, z = np.exp(correlated_normal(n, p, random_state))
+    x, y, z = correlated_normal(n, p, random_state)
+    x = np.exp(x)
 
     return x, y, z
 
