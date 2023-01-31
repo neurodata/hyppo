@@ -48,7 +48,7 @@ class _CheckInputs:
                 "Expected a 2-D array `z`, found shape " "{}".format(self.z.shape)
             )
 
-        if not max_dims:
+        if max_dims is not None:
             _, dx = self.x.shape
             _, dy = self.y.shape
             _, dz = self.z.shape

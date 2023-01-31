@@ -92,29 +92,31 @@ def check_reps(reps):
         warnings.warn(msg, RuntimeWarning)
 
 
-def _check_distmat(x, y):
-    """Check if x and y are distance matrices."""
-    if (
-        not np.allclose(x, x.T)
-        or not np.allclose(y, y.T)
-        or not np.all((x.diagonal() == 0))
-        or not np.all((y.diagonal() == 0))
-    ):
-        raise ValueError(
-            "x and y must be distance matrices, {is_sym} symmetric and "
-            "{zero_diag} zeros along the diagonal".format(
-                is_sym="x is not"
-                if not np.array_equal(x, x.T)
-                else "y is not"
-                if not np.array_equal(y, y.T)
-                else "both are",
-                zero_diag="x doesn't have"
-                if not np.all((x.diagonal() == 0))
-                else "y doesn't have"
-                if not np.all((y.diagonal() == 0))
-                else "both have",
-            )
-        )
+def _check_distmat(x, y, z=None):
+    """Check if x, y, and z are distance matrices."""
+    if z is None:
+        data = (x, y)
+    else:
+        data = (x, y, z)
+
+    check_sym = np.array([not np.allclose(arr, arr.T) for arr in data])
+    check_diag = np.array([not np.all((arr.diagonal() == 0)) for arr in data])
+
+    if np.any(check_sym) or np.any(check_diag):
+        labs = np.array(["x", "y", "z"])
+        inputs = "x and y" if z is None else "x, y and z"
+
+        if np.any(check_sym):
+            names = ", ".join(labs[check_sym])
+            verb = "is" if check_sym.sum() == 1 else "are"
+            sym_msg = f"{names} {verb} not symmetric."
+        if np.any(check_diag):
+            names = ", ".join(labs[check_diag])
+            verb = "does not" if check_diag.sum() == 1 else "do not"
+            diag_msg = f"{names} {verb} have zeros along the diagonal."
+
+        msg = f"{inputs} must be distance matrices. {sym_msg} {diag_msg}"
+        raise ValueError(msg)
 
 
 def _check_kernmat(x, y):
@@ -301,18 +303,19 @@ def multi_compute_kern(*args, metric="gaussian", workers=1, **kwargs):
     return sim_matrices
 
 
-def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
+def compute_dist(x, y, z=None, metric="euclidean", workers=1, **kwargs):
     """
     Distance matrices for the inputs.
 
     Parameters
     ----------
-    x,y : ndarray of float
-        Input data matrices. ``x`` and ``y`` must have the same number of
-        samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
-        `n` is the number of samples and `p` and `q` are the number of
-        dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
-        where the shapes must both be ``(n, n)``.
+    x,y,z : ndarray of float
+        Input data matrices. ``x``, ``y`` and ``z`` must have the same number
+        of samples. That is, the shapes must be ``(n, p)``, ``(n, q)`` and
+        ``(n, r)`` where `n` is the number of samples and `p`, `q`, and `r`
+        are the number of dimensions. Alternatively, ``x``, ``y`` and ``z``
+        can be distance matrices where the shapes must be ``(n, n)``. ``z``
+        is an optional ndarray.
     metric : str, callable, or None, default: "euclidean"
         A function that computes the distance among the samples within each
         data matrix.
@@ -331,8 +334,8 @@ def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
               ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
               details on these metrics.
 
-        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
-        matrices. To call a custom function, either create the distance matrix
+        Set to ``None`` or ``"precomputed"`` if ``x``, ``y``, and ``z`` are already
+        distance matrices. To call a custom function, either create the distance matrix
         before-hand or create a function of the form ``metric(x, **kwargs)``
         where ``x`` is the data matrix for which pairwise distances are
         calculated and ``**kwargs`` are extra arguements to send to your custom
@@ -347,21 +350,34 @@ def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
 
     Returns
     -------
-    distx, disty : ndarray of float
-        Distance matrices based on the metric provided by the user.
+    distx, disty, distz : ndarray of float
+        Distance matrices based on the metric provided by the user. ``distz`` is
+        only returned if ``z`` is provided.
     """
     if not metric:
         metric = "precomputed"
     if callable(metric):
         distx = metric(x, **kwargs)
         disty = metric(y, **kwargs)
+        distz = None if z is None else metric(z, **kwargs)
         _check_distmat(
-            distx, disty
+            distx,
+            disty,
+            distz,
         )  # verify whether matrix is correct, built into sklearn func
     else:
         distx = pairwise_distances(x, metric=metric, n_jobs=workers, **kwargs)
         disty = pairwise_distances(y, metric=metric, n_jobs=workers, **kwargs)
-    return distx, disty
+        distz = (
+            None
+            if z is None
+            else pairwise_distances(z, metric=metric, n_jobs=workers, **kwargs)
+        )
+
+    if z is None:
+        return distx, disty
+    else:
+        return distx, disty, distz
 
 
 def check_perm_blocks(perm_blocks):

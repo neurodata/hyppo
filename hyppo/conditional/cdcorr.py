@@ -8,7 +8,7 @@ from ._utils import _CheckInputs
 from .base import ConditionalIndependenceTest, ConditionalIndependenceTestOutput
 
 
-class CDcorr(ConditionalIndependenceTest):
+class ConditionalDcorr(ConditionalIndependenceTest):
     r"""
     Conditional Distance Covariance/Correlation (CDcov/CDcorr) test statistic and p-value.
 
@@ -87,7 +87,7 @@ class CDcorr(ConditionalIndependenceTest):
         ConditionalIndependenceTest.__init__(self, **kwargs)
 
     def __repr__(self):
-        return "CDcorr"
+        return "ConditionalDcorr"
 
     def statistic(self, x, y, z):
         r"""
