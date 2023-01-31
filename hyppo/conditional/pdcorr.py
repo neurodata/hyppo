@@ -1,9 +1,8 @@
 import numpy as np
 from numba import jit
 
-
+from ..independence.dcorr import _center_distmat
 from ..tools import compute_dist, perm_test
-from ..independence.dcorr import _center_distmat, _dcov, Dcorr
 from ._utils import _CheckInputs
 from .base import ConditionalIndependenceTest, ConditionalIndependenceTestOutput
 
@@ -13,7 +12,7 @@ class PartialDcorr(ConditionalIndependenceTest):
     Partial Distance Covariance/Correlation (PDcov/PDcorr) test statistic and p-value.
 
     CDcorr is a measure of dependence between two paired random matrices
-    given a third random matrix of not necessarily equal dimensions :footcite:p:`wang2015conditional`.
+    given a third random matrix of not necessarily equal dimensions :footcite:p:`szekelyPartialDistanceCorrelation2014a`.
     The coefficient is 0 if and only if the matrices are independent given
     third matrix.
 

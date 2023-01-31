@@ -101,7 +101,7 @@ def _conditional_perm_stat(test, sim_type, **kwargs):
         perm_stat = test.statistic(x, permy, z)
     else:
         permy = np.random.permutation(y)
-        perm_stat = test.statistic(x, permy)
+        perm_stat = test.statistic(x, permy, z)
 
     return obs_stat, perm_stat
 
