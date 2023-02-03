@@ -17,6 +17,7 @@ class _CheckInputs:
         check_ndarray_xyz(self.x, self.y, self.z)
         contains_nan(self.x)
         contains_nan(self.y)
+        contains_nan(self.z)
         self.x, self.y, self.z = self.check_dim_xyz(max_dims=self.max_dims)
         self.x, self.y, self.z = convert_xyz_float64(self.x, self.y, self.z)
         self._check_min_samples()
@@ -53,8 +54,10 @@ class _CheckInputs:
             _, dy = self.y.shape
             _, dz = self.z.shape
 
-            if np.any(np.array([dx, dy, dz]) > 1):
-                raise ValueError("x, y, z must have be univariate and have shape [n,1]")
+            if np.any(np.array([dx, dy, dz]) > max_dims):
+                raise ValueError(
+                    f"x, y, z must have be univariate and have shape [n,{max_dims}]"
+                )
 
         self._check_nd_indeptest()
 
