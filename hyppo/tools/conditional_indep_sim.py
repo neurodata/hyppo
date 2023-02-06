@@ -6,6 +6,121 @@ from .indep_sim import _CheckInputs
 
 def indep_normal(n, p=1, random_state=None):
     r"""
+    Independent standard normal distributions.
+
+    :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}`:
+
+    .. math::
+        X, Y, Z &\sim N(0, 1)
+
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation (>= 5).
+    p : int
+        Ignored.
+
+    Returns
+    -------
+    x,y,z : ndarray of float
+        Simulated data matrices. ``x``, ``y``, and ``z`` have shapes
+        ``(n, 1)`` where `n` is the number of samples and `3` is the
+        number of dimensions.
+
+    References
+    ----------
+    .. footbibliography::
+    """
+    check_in = _CheckInputs(n, p=p)
+    check_in()
+
+    rng = check_random_state(random_state)
+
+    mean = np.array([0, 0, 0])
+    cov = np.eye(3)
+
+    x, y, z = rng.multivariate_normal(mean, cov, size=n).T
+
+    return x, y, z
+
+
+def indep_lognormal(n, p=1, random_state=None):
+    r"""
+    Independent lognormal and normal distributions.
+
+    :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}`:
+    .. math::
+        X &\sim \text{log} N(0, 1)\\
+        Y, Z &\sim N(0, 1)
+
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation (>= 5).
+
+    Returns
+    -------
+    x,y,z : ndarray of float
+        Simulated data matrices. ``x``, ``y``, and ``z`` have shapes
+        ``(n, 1)`` where `n` is the number of samples and `3` is the
+        number of dimensions.
+
+    References
+    ----------
+    .. footbibliography::
+    """
+    check_in = _CheckInputs(n, p=p)
+    check_in()
+
+    x, y, z = indep_lognormal(n=n, p=p, random_state=random_state)
+    x = np.exp(x)
+
+    return x, y, z
+
+
+def indep_binomial(n, p=1, random_state=None):
+    r"""
+    Independent binomial distributions.
+
+    :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}^p`:
+    .. math::
+        X, Y, Z_i &\sim \text{Binom}(10, 0.5) \\
+        Z &= (Z_1, Z_2, \ldots, Z_p)
+
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation (>= 5).
+    p : int
+        The number of dimensions for conditioning variable ``Z``.
+
+    Returns
+    -------
+    x,y,z : ndarray of float
+        Simulated data matrices. ``x`` and ``y``, and ``z`` have shapes
+        ``(n, 1)`` where `n` is the number of samples and `1` is the
+        number of dimensions.
+
+    References
+    ----------
+    .. footbibliography::
+    """
+    check_in = _CheckInputs(n, p=p)
+    check_in()
+
+    rng = check_random_state(random_state)
+
+    size = (n, 1)
+
+    z = rng.binomial(10, 0.5, size=(n, p))
+    x = rng.binomial(10, 0.5, size=size)
+    y = rng.binomial(10, 0.5, size=size)
+
+    return x, y, z
+
+
+def cond_indep_normal(n, p=1, random_state=None):
+    r"""
     Conditionally independent normal distributions
     :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}`:
 
@@ -20,7 +135,7 @@ def indep_normal(n, p=1, random_state=None):
     -------
     x,y,z : ndarray of float
         Simulated data matrices. ``x``, ``y``, and ``z`` have shapes
-        ``(n, 3)`` where `n` is the number of samples and `3` is the
+        ``(n, 1)`` where `n` is the number of samples and `3` is the
         number of dimensions.
 
     References
@@ -40,21 +155,23 @@ def indep_normal(n, p=1, random_state=None):
     return x, y, z
 
 
-def indep_lognormal(n, p=1, random_state=None):
+def cond_indep_lognormal(n, p=1, random_state=None):
     r"""
-    Conditionally independent normal distributions
+    Conditionally independent lognormal and normal distributions
     :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}`:
 
     Parameters
     ----------
     n : int
         The number of samples desired by the simulation (>= 5).
+    p : int
+        Ignored.
 
     Returns
     -------
     x,y,z : ndarray of float
         Simulated data matrices. ``x``, ``y``, and ``z`` have shapes
-        ``(n, 3)`` where `n` is the number of samples and `3` is the
+        ``(n, 1)`` where `n` is the number of samples and `3` is the
         number of dimensions.
 
     References
@@ -67,7 +184,7 @@ def indep_lognormal(n, p=1, random_state=None):
     rng = check_random_state(random_state)
 
     mean = np.array([0, 0, 0])
-    cov = np.eye(3)
+    cov = np.array([[1, 0.36, 0.6], [0.36, 1, 0.6], [0.6, 0.6, 1]])
 
     x, y, z = rng.multivariate_normal(mean, cov, size=n).T
     x = np.exp(x)
@@ -75,7 +192,7 @@ def indep_lognormal(n, p=1, random_state=None):
     return x, y, z
 
 
-def indep_normal_nonlinear(n, p=1, random_state=None):
+def cond_indep_normal_nonlinear(n, p=1, random_state=None):
     r"""
     Conditionally independent normal distributions.
     :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}`:
@@ -119,7 +236,7 @@ def indep_normal_nonlinear(n, p=1, random_state=None):
     return x, y, z
 
 
-def indep_binomial(n, p=1, random_state=None):
+def cond_indep_binomial(n, p=1, random_state=None):
     r"""
     Conditionally independent binomial distributions.
 
@@ -434,9 +551,12 @@ def correlated_t_nonlinear(n, p=4, random_state=None):
 
 COND_SIMULATIONS = {
     "independent_normal": indep_normal,
-    "independent_normal_nonlinear": indep_normal_nonlinear,
     "independent_lognormal": indep_lognormal,
     "independent_binomial": indep_binomial,
+    "cond_independent_normal": cond_indep_normal,
+    "cond_independent_lognormal": cond_indep_lognormal,
+    "cond_independent_binomial": cond_indep_binomial,
+    "cond_independent_normal_nonlinear": cond_indep_normal_nonlinear,
     "correlated_normal": correlated_normal,
     "correlated_lognormal": correlated_lognormal,
     "correlated_binomial": correlated_binomial,

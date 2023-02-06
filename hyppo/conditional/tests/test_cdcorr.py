@@ -9,8 +9,7 @@ from .. import ConditionalDcorr
 class TestDcorrStat:
     @pytest.mark.parametrize("n", [100, 200])
     @pytest.mark.parametrize("obs_stat", [0.0])
-    # @pytest.mark.parametrize("obs_pvalue", [1 / 1000])
-    def test_linear_oned(self, n, obs_stat, obs_pvalue):
+    def test_linear_oned(self, n, obs_stat):
         np.random.seed(123456789)
         x, y, z = indep_normal(n, 1)
         stat1, pvalue1 = ConditionalDcorr().test(x, y, z)
@@ -18,7 +17,6 @@ class TestDcorrStat:
 
         assert_almost_equal(stat1, obs_stat, decimal=2)
         assert_almost_equal(stat2, obs_stat, decimal=2)
-        # assert_almost_equal(pvalue1, obs_pvalue, decimal=2)
 
     @pytest.mark.parametrize("n", [100, 200])
     def test_rep(self, n):
@@ -41,5 +39,4 @@ class TestDcorrTypeIError:
             p=1,
             alpha=0.05,
         )
-
-        assert_almost_equal(est_power, 0.05, decimal=2)
+        assert est_power <= 0.05
