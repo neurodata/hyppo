@@ -96,24 +96,28 @@ def _check_distmat(x, y, z=None):
     """Check if x, y, and z are distance matrices."""
     if z is None:
         data = (x, y)
+        labs = np.array(["x", "y"])
     else:
         data = (x, y, z)
+        labs = np.array(["x", "y", "z"])
 
     check_sym = np.array([not np.allclose(arr, arr.T) for arr in data])
     check_diag = np.array([not np.all((arr.diagonal() == 0)) for arr in data])
 
     if np.any(check_sym) or np.any(check_diag):
-        labs = np.array(["x", "y", "z"])
         inputs = "x and y" if z is None else "x, y and z"
-
         if np.any(check_sym):
             names = ", ".join(labs[check_sym])
             verb = "is" if check_sym.sum() == 1 else "are"
             sym_msg = f"{names} {verb} not symmetric."
+        else:
+            sym_msg = ""
         if np.any(check_diag):
             names = ", ".join(labs[check_diag])
             verb = "does not" if check_diag.sum() == 1 else "do not"
             diag_msg = f"{names} {verb} have zeros along the diagonal."
+        else:
+            diag_msg = ""
 
         msg = f"{inputs} must be distance matrices. {sym_msg} {diag_msg}"
         raise ValueError(msg)
@@ -506,8 +510,7 @@ class _PermGroups(object):
             self.perm_tree = _PermTree(perm_blocks)
 
     def __call__(self, rng=None):
-        if rng is None:
-            rng = np.random
+        rng = check_random_state(rng)
         if self.perm_tree is None:
             order = rng.permutation(self.n)
         else:
@@ -589,8 +592,9 @@ def perm_test(
         test, samples within the same final leaf node are exchangeable
         and blocks of samples with a common parent node are exchangeable. If a
         column value is negative, the resulting block is unexchangeable.
-    permuter : callable
-        TODO: write description
+    permuter : callable, default: None
+        Defines a custom permutation function. If None, the default permutation
+        without resampling will be performed.
 
     Returns
     -------
@@ -601,11 +605,12 @@ def perm_test(
     null_dist : list of float
         The approximated null distribution of shape ``(reps,)``.
     """
-    data_args = [x, y]
-    if z is not None:
-        data_args.append(z)
+
     # calculate observed test statistic
-    stat = calc_stat(*data_args)
+    if z is None:
+        stat = calc_stat(x, y)
+    else:
+        stat = calc_stat(x, y, z)
 
     # make RandomState seeded array
     if random_state is not None:
@@ -623,7 +628,7 @@ def perm_test(
     null_dist = np.array(
         Parallel(n_jobs=workers)(
             [
-                delayed(_perm_stat)(calc_stat, *data_args, is_distsim, permuter, rng)
+                delayed(_perm_stat)(calc_stat, x, y, z, is_distsim, permuter, rng)
                 for rng in random_state
             ]
         )
