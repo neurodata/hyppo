@@ -398,7 +398,7 @@ def correlated_normal_nonliear(n, p=1, random_state=None):
     y3 = y2 + np.tanh(y2 / 3)
 
     x = x3 + np.cosh(eps)
-    y = y3 + np.cosh(eps)
+    y = y3 + np.cosh(eps**2)
 
     return x, y, z
 
