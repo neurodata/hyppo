@@ -353,7 +353,7 @@ def correlated_normal(n, p=1, random_state=None):
     rng = check_random_state(random_state)
 
     mean = np.array([0, 0, 0])
-    cov = np.array([[1, 0.5, 0.5], [0.5, 1, 0.5], [0.5, 0.5, 1]])
+    cov = np.array([[1, 0.7, 0.6], [0.7, 1, 0.6], [0.6, 0.6, 1]])
 
     x, y, z = rng.multivariate_normal(mean, cov, size=n).T
 
