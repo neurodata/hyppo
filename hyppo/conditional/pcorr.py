@@ -10,6 +10,9 @@ class PartialCorr(ConditionalIndependenceTest):
     r"""
     Conditional Pearson's correlation test.
 
+    Partial correlation is a measure of the association between two univariate
+    variables given a third univariate variable.
+
     Parameters
     ----------
     compute_distance : str, callable, or None, default: "euclidean"
@@ -36,9 +39,6 @@ class PartialCorr(ConditionalIndependenceTest):
         where ``x`` is the data matrix for which pairwise distances are
         calculated and ``**kwargs`` are extra arguements to send to your custom
         function.
-    use_cov : bool,
-        If `True`, then the statistic will compute the covariance rather than the
-        correlation.
     bandwith : str, scalar, 1d-array
         The method used to calculate the bandwidth used for kernel density estimate of
         the conditional matrix. This can be ‘scott’, ‘silverman’, a scalar constant or a
@@ -46,6 +46,16 @@ class PartialCorr(ConditionalIndependenceTest):
         If None (default), ‘scott’ is used.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
+
+    Notes
+    -----
+    The statistic is computed as follows:
+
+    ..math::
+        r_{x, y ; z} = \frac{\rho_{xy} - \rho_{xz} \rho_{yz}}{\sqrt{(1 - \rho_{xz}^2)(1 - \rho_{yz}^2)}}
+
+    where :math:`\rho_{xy}` is the Pearson correlation coefficient between :math:`x` and
+    :math:`y`. The partial correlation test is implemented as a t-test footcite:p:`legendre2000`:.
 
     References
     ----------
@@ -72,7 +82,7 @@ class PartialCorr(ConditionalIndependenceTest):
         Returns
         -------
         stat : float
-            The computed CDcov/CDcorr statistic.
+            The computed partial correlation test statistic.
         """
         check_input = _CheckInputs(x, y, z, max_dims=1)
         x, y, z = check_input()
@@ -80,9 +90,12 @@ class PartialCorr(ConditionalIndependenceTest):
         corr = np.corrcoef(np.hstack([x, y, z]), rowvar=False)
         cov_xy, cov_xz, cov_yz = corr[np.triu_indices_from(corr, k=1)]
 
-        stat = (cov_xy - cov_xz * cov_yz) / np.sqrt(
-            (1 - cov_xz**2) * (1 - cov_yz**2)
-        )
+        if cov_xz <= 0 or cov_yz <= 0:
+            stat = 0
+        else:
+            stat = (cov_xy - cov_xz * cov_yz) / np.sqrt(
+                (1 - cov_xz**2) * (1 - cov_yz**2)
+            )
 
         self.stat = stat
         return stat
@@ -115,7 +128,7 @@ class PartialCorr(ConditionalIndependenceTest):
             The number of cores to parallelize the p-value computation over.
             Supply ``-1`` to use all cores available to the Process.
         auto : bool, default: True
-            #TODO Finish
+            If True, the p-value is computed by t-distribution approximation.
             Parameters ``reps`` and ``workers`` are irrelevant in this case.
             Otherwise, :class:`hyppo.tools.perm_test` will be run.
         perm_blocks : None or ndarray, default: None
@@ -133,9 +146,9 @@ class PartialCorr(ConditionalIndependenceTest):
         Returns
         -------
         stat : float
-            The computed CDcov/CDcorr statistic.
+            The computed partial correlation test statistic.
         pvalue : float
-            The computed CDcov/CDcorr p-value.
+            The computed partial correlation test p-value.
         """
         check_input = _CheckInputs(x, y, z, reps=reps, max_dims=1)
         x, y, z = check_input()

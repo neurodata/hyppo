@@ -11,10 +11,8 @@ class PartialDcorr(ConditionalIndependenceTest):
     r"""
     Partial Distance Covariance/Correlation (PDcov/PDcorr) test statistic and p-value.
 
-    CDcorr is a measure of dependence between two paired random matrices
+    PDcorr is a measure of dependence between two paired random matrices
     given a third random matrix of not necessarily equal dimensions :footcite:p:`szekelyPartialDistanceCorrelation2014a`.
-    The coefficient is 0 if and only if the matrices are independent given
-    third matrix.
 
     Parameters
     ----------
@@ -47,6 +45,34 @@ class PartialDcorr(ConditionalIndependenceTest):
         correlation.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
+
+    Notes
+    -----
+    The statistic can be derived as follows:
+
+    Let :math:`x`, :math:`y`, and :math:`z` be :math:`(n, p)` samples of random
+    variables :math:`X`, :math:`Y` and :math:`Z`. Let :math:`D^x` be the :math:`n \times n`
+    distance matrix of :math:`x`, :math:`D^y` be the :math:`n \times n` be
+    the distance matrix of :math:`y`, and :math:`D^z` be the :math:`n \times n` distance
+    matrix of :math:`z`. Let :math:`C^x`, :math:`C^y`, and :math:`C^z` be the unbiased centered
+    distance matrices (see :class:`hyppo.independence.Dcorr` for more details). The
+    partial distance covariance is defined as
+
+    .. math::
+        \mathrm{PDcov}_n (x, y; z) &= \frac{1}{n(n-3)} \sum_{i\neq j}^n \left(P_{z^\perp}(x)\right)_{i,j} \left(P_{z^\perp}(y)\right)_{i,j}
+    where
+    .. math::
+        P_{z^\perp}(x) &= C^x - \frac{(C^x\cdot C^z)}{ C^z \cdot C^z) C^z
+    is the orthogonal proejction of :math:`C^x` onto the subspace orthogonal to :math:`C^z`. The partial distance correlation is defined as
+
+    .. math::
+        \mathrm{PDcorr}_n (x, y; z) &= \frac{P_{z^\perp}(x)\cdot P_{z^\perp}(y)}{\abs{P_{z^\perp}(x)}\abs{P_{z^\perp}(y)}}
+
+    Equivalently, the partial distance correlation can be also defined as
+
+    .. math::
+        \mathrm{CDcorr}_n (x, y; z) &=  \frac{R_{xy} - R_{xz} R_{yz}}{\sqrt{(1 - R_{xz}^2)(1 - R_{yz}^2)}}
+    where :math:`R_{xy}` is the unbiased distance correlation between :math:`x` and :math:`y`.
 
     References
     ----------
@@ -143,9 +169,9 @@ class PartialDcorr(ConditionalIndependenceTest):
         Returns
         -------
         stat : float
-            The computed CDcov/CDcorr statistic.
+            The computed PDcov/PDcorr statistic.
         pvalue : float
-            The computed CDcov/CDcorr p-value.
+            The computed PDcov/PDcorr p-value.
         """
         check_input = _CheckInputs(x, y, z, reps=reps)
         x, y, z = check_input()

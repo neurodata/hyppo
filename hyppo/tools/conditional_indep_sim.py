@@ -23,9 +23,7 @@ def indep_normal(n, p=1, random_state=None):
     Returns
     -------
     x,y,z : ndarray of float
-        Simulated data matrices. ``x``, ``y``, and ``z`` have shapes
-        ``(n, 1)`` where `n` is the number of samples and `3` is the
-        number of dimensions.
+        Simulated data matrices. ``x``, ``y``, and ``z``.
 
     References
     ----------
@@ -61,9 +59,7 @@ def indep_lognormal(n, p=1, random_state=None):
     Returns
     -------
     x,y,z : ndarray of float
-        Simulated data matrices. ``x``, ``y``, and ``z`` have shapes
-        ``(n, 1)`` where `n` is the number of samples and `3` is the
-        number of dimensions.
+        Simulated data matrices. ``x``, ``y``, and ``z``.
 
     References
     ----------
@@ -72,7 +68,7 @@ def indep_lognormal(n, p=1, random_state=None):
     check_in = _CheckInputs(n, p=p)
     check_in()
 
-    x, y, z = indep_lognormal(n=n, p=p, random_state=random_state)
+    x, y, z = indep_normal(n=n, p=p, random_state=random_state)
     x = np.exp(x)
 
     return x, y, z
@@ -97,9 +93,7 @@ def indep_binomial(n, p=1, random_state=None):
     Returns
     -------
     x,y,z : ndarray of float
-        Simulated data matrices. ``x`` and ``y``, and ``z`` have shapes
-        ``(n, 1)`` where `n` is the number of samples and `1` is the
-        number of dimensions.
+        Simulated data matrices. ``x`` and ``y``, and ``z``.
 
     References
     ----------
@@ -121,8 +115,24 @@ def indep_binomial(n, p=1, random_state=None):
 
 def cond_indep_normal(n, p=1, random_state=None):
     r"""
-    Conditionally independent normal distributions
+    Conditionally independent normal distributions.
+
     :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}`:
+    .. math::
+        \mu &= (0, 0, 0)\\
+        \Sigma &= \begin{bmatrix}
+        1 & 0.36 & 0.6 \\
+        0.36 & 1 & 0.6 \\
+        0.6 & 0.6 & 1
+        \end{bmatrix}\\
+        (X, Y, Z) &\sim MVN(\mu, \Sigma)
+
+    The conditional covariance matrix is given by:
+    .. math::
+        \Sigma(X, Y | Z) &= \begin{bmatrix}
+        0.64 & 0\\
+        0 & 0.64
+        \end{bmatrix}
 
     Parameters
     ----------
@@ -134,9 +144,7 @@ def cond_indep_normal(n, p=1, random_state=None):
     Returns
     -------
     x,y,z : ndarray of float
-        Simulated data matrices. ``x``, ``y``, and ``z`` have shapes
-        ``(n, 1)`` where `n` is the number of samples and `3` is the
-        number of dimensions.
+        Simulated data matrices. ``x``, ``y``, and ``z``.
 
     References
     ----------
@@ -157,7 +165,8 @@ def cond_indep_normal(n, p=1, random_state=None):
 
 def cond_indep_lognormal(n, p=1, random_state=None):
     r"""
-    Conditionally independent lognormal and normal distributions
+    Conditionally independent lognormal and normal distributions.
+
     :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}`:
 
     Parameters
@@ -170,9 +179,7 @@ def cond_indep_lognormal(n, p=1, random_state=None):
     Returns
     -------
     x,y,z : ndarray of float
-        Simulated data matrices. ``x``, ``y``, and ``z`` have shapes
-        ``(n, 1)`` where `n` is the number of samples and `3` is the
-        number of dimensions.
+        Simulated data matrices. ``x``, ``y``, and ``z``.
 
     References
     ----------
@@ -194,10 +201,17 @@ def cond_indep_lognormal(n, p=1, random_state=None):
 
 def cond_indep_normal_nonlinear(n, p=1, random_state=None):
     r"""
-    Conditionally independent normal distributions.
-    :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}`:
+    Conditionally independent normal distributions. Example 3 from :footcite:p:`wang2015conditional`.
 
-    Example 3 from :footcite:p:`wang2015conditional`.
+    :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}`:
+    .. math::
+        X_1, Y_1, Z &\sim N(0, 1) \\
+        Z_1 &= 0.5 \left( \frac{Z^3}{7} + \frac{Z}{2} \right) \\
+        Z_2 &= \frac{Z^3}{2} + \frac{Z}{3} \\
+        X_2 &= Z_1 + \tanh(X_1) \\
+        X &= X_2 + \frac{X_2^3}{3}\\
+        Y_2 &= Z_2 + Y_1 \\
+        Y &= Y_2 + \frac{Y_2^3}{3}
 
     Parameters
     ----------
@@ -207,9 +221,7 @@ def cond_indep_normal_nonlinear(n, p=1, random_state=None):
     Returns
     -------
     x,y,z : ndarray of float
-        Simulated data matrices. ``x``, ``y``, and ``z`` have shapes
-        ``(n, 3)`` where `n` is the number of samples and `3` is the
-        number of dimensions.
+        Simulated data matrices. ``x``, ``y``, and ``z``.
 
     References
     ----------
@@ -260,9 +272,7 @@ def cond_indep_binomial(n, p=1, random_state=None):
     Returns
     -------
     x,y,z : ndarray of float
-        Simulated data matrices. ``x`` and ``y``, and ``z`` have shapes
-        ``(n, 1)`` where `n` is the number of samples and `1` is the
-        number of dimensions.
+        Simulated data matrices. ``x``, ``y``, and ``z``.
 
     References
     ----------
@@ -284,7 +294,7 @@ def cond_indep_binomial(n, p=1, random_state=None):
 
 def correlated_binomial(n, p=1, random_state=None):
     r"""
-    Dependent binomial distributions.
+    Conditionally dependent binomial distributions. Examples 6 from:footcite:p:`wang2015conditional`.
 
     :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}`:
 
@@ -293,7 +303,6 @@ def correlated_binomial(n, p=1, random_state=None):
         X &= X_1 + Z \\
         Y &= (X_1 - 5)^4 + Z
 
-    Examples 6 from :footcite:p:`wang2015conditional`.
 
     Parameters
     ----------
@@ -305,9 +314,7 @@ def correlated_binomial(n, p=1, random_state=None):
     Returns
     -------
     x,y,z : ndarray of float
-        Simulated data matrices. ``x`` and ``y``, and ``z`` have shapes
-        ``(n, 1)`` where `n` is the number of samples and `1` is the
-        number of dimensions.
+        Simulated data matrices. ``x``, ``y``, and ``z``.
 
     References
     ----------
@@ -328,8 +335,24 @@ def correlated_binomial(n, p=1, random_state=None):
 
 def correlated_normal(n, p=1, random_state=None):
     """
-    Example 4 from :footcite:p:`szekelyPartialDistanceCorrelation2014a`
+    Conditionally dependent normal distributions. Example 5 from :footcite:p:`wang2015conditional`
+
     :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}`:
+    .. math::
+        \mu &= (0, 0, 0)\\
+        \Sigma &= \begin{bmatrix}
+        1 & 0.7 & 0.6\\
+        0.7 & 1 & 0.6\\
+        0.6 & 0.6 & 1
+        \end{bmatrix}\\
+        (X, Y, Z) &\sim MVN(\mu, \Sigma)
+
+    The conditional covariance matrix is given by:
+    .. math::
+        \Sigma(X, Y | Z) &= \begin{bmatrix}
+        0.64 & 0.34\\
+        0.34 & 0.64
+        \end{bmatrix}
 
     Parameters
     ----------
@@ -339,9 +362,7 @@ def correlated_normal(n, p=1, random_state=None):
     Returns
     -------
     x,y,z : ndarray of float
-        Simulated data matrices. ``x`` and ``y``, and ``z`` have shapes
-        ``(n, 1)`` where `n` is the number of samples and `1` is the
-        number of dimensions.
+        Simulated data matrices. ``x``, ``y``, and ``z``.
 
     References
     ----------
@@ -362,8 +383,20 @@ def correlated_normal(n, p=1, random_state=None):
 
 def correlated_normal_nonliear(n, p=1, random_state=None):
     """
+    Conditionally dependent normal distributions with nonlinear dependence.
     Example 7 from :footcite:p:`wang2015conditional`
+
     :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}`:
+    .. math::
+        X_1, Y_1, Z, \epsilon &\sim N(0, 1) \\
+        Z_1 &= 0.5(Z^3/7 + Z/2) \\
+        Z_2 &= (Z^3/2 + Z)/3 \\
+        X_2 &= Z_1 + \tanh(X_1) \\
+        X_3 &= X_2 + X_2^3 / 3 \\
+        Y_2 &= Z_2 + Y_1\\
+        Y_3 &= Y_2 + \tanh(Y_2 / 3) \\
+        X &= X_3 + \cosh\epsilon \\
+        Y &= Y_3 + \cosh\epsilon^2
 
     Parameters
     ----------
@@ -373,9 +406,7 @@ def correlated_normal_nonliear(n, p=1, random_state=None):
     Returns
     -------
     x,y,z : ndarray of float
-        Simulated data matrices. ``x`` and ``y``, and ``z`` have shapes
-        ``(n, 1)`` where `n` is the number of samples and `1` is the
-        number of dimensions.
+        Simulated data matrices. ``x``, ``y``, and ``z``.
 
     References
     ----------
@@ -416,9 +447,7 @@ def correlated_lognormal(n, p=1, random_state=None):
     Returns
     -------
     x,y,z : ndarray of float
-        Simulated data matrices. ``x`` and ``y``, and ``z`` have shapes
-        ``(n, 1)`` where `n` is the number of samples and `1` is the
-        number of dimensions.
+        Simulated data matrices. ``x``, ``y``, and ``z``.
 
     References
     ----------
@@ -435,9 +464,10 @@ def correlated_lognormal(n, p=1, random_state=None):
 
 def correlated_t_linear(n, p=4, random_state=None):
     """
+    Conditionally dependent t-distributed data with linear dependence.
     Example 9 from :footcite:p:`wang2015conditional`
-    :math:`(X, Y, Z) \in \mathbb{R}^p \times \mathbb{R} \times \mathbb{R}`:
 
+    :math:`(X, Y, Z) \in \mathbb{R}^p \times \mathbb{R} \times \mathbb{R}`:
     .. math::
         Z_1, Z_2, \cdots, Z_p, Z_{p+1}, Z_{p+2}  &\sim t(1)\\
         X &= (Z_1, Z_2, Z_{p-1}, Z_p + Z_{p+1})\\
@@ -449,13 +479,13 @@ def correlated_t_linear(n, p=4, random_state=None):
     ----------
     n : int
         The number of samples desired by the simulation (>= 5).
+    p : int
+        The number of dimentions for variable ``x``.
 
     Returns
     -------
     x,y,z : ndarray of float
-        Simulated data matrices. ``x`` and ``y``, and ``z`` have shapes
-        ``(n, 1)`` where `n` is the number of samples and `1` is the
-        number of dimensions.
+        Simulated data matrices. ``x``, ``y``, and ``z``.
 
     References
     ----------
@@ -478,8 +508,17 @@ def correlated_t_linear(n, p=4, random_state=None):
 
 def correlated_t_quadratic(n, p=10, random_state=None):
     """
+    Conditionally dependent t-distributed data with quadratic dependence.
     Example 10 from :footcite:p:`wang2015conditional`
+
     :math:`(X, Y, Z) \in \mathbb{R}^10 \times \mathbb{R}^2 \times \mathbb{R}`:
+    .. math::
+        Z_1, Z_2, \cdots, Z_{13}  &\sim t(1)\\
+        X_i &= Z_i, i = 1, 2, \cdots, 9\\
+        X_{10} &= Z_{10} + Z_{11}\\
+        Y_1 &= Z_1 Z_2 + Z_3 Z_4 + Z_5 Z_{11} + Z_{12}\\
+        Y_2 &= Z_6 Z_7 + Z_8 Z_9 + Z_{10} Z_{11} + Z_{13}\\
+        Z &= Z_{11}
 
     Parameters
     ----------
@@ -489,9 +528,7 @@ def correlated_t_quadratic(n, p=10, random_state=None):
     Returns
     -------
     x,y,z : ndarray of float
-        Simulated data matrices. ``x`` and ``y``, and ``z`` have shapes
-        ``(n, 1)`` where `n` is the number of samples and `1` is the
-        number of dimensions.
+        Simulated data matrices. ``x``, ``y``, and ``z``.
 
     References
     ----------
@@ -516,8 +553,17 @@ def correlated_t_quadratic(n, p=10, random_state=None):
 
 def correlated_t_nonlinear(n, p=4, random_state=None):
     """
+    Conditionally dependent t-distributed data with nonlinear dependence.
     Example 11 from :footcite:p:`wang2015conditional`
+
     :math:`(X, Y, Z) \in \mathbb{R}^4 \times \mathbb{R}^2 \times \mathbb{R}^2`:
+    .. math::
+        Z_1, \ldots, Z_4 &\sim t(2)\\
+        Y_1 &= \sin(Z_1) + \cos(Z_2) + Z_3^2 + Z_4^2\\
+        Y_2 &= Z_1^2 + Z_2^2 + Z_3 + Z_4\\
+        X &= (Z_1, Z_2, Z_3, Z_4)\\
+        Y &= (Y_1, Y_2)\\
+        Z &= (Z_1, Z_2)
 
     Parameters
     ----------
@@ -527,9 +573,7 @@ def correlated_t_nonlinear(n, p=4, random_state=None):
     Returns
     -------
     x,y,z : ndarray of float
-        Simulated data matrices. ``x`` and ``y``, and ``z`` have shapes
-        ``(n, 1)`` where `n` is the number of samples and `1` is the
-        number of dimensions.
+        Simulated data matrices. ``x``, ``y``, and ``z``.
 
     References
     ----------
@@ -540,13 +584,12 @@ def correlated_t_nonlinear(n, p=4, random_state=None):
 
     rng = check_random_state(random_state)
 
-    x = rng.standard_t(df=2, size=(4, n))
-    y1 = np.sin(x[0]) + np.cos(x[1]) + x[2] ** 2 + x[3] ** 2
-    y2 = x[0] ** 2 + x[1] ** 2 + x[2] + x[3]
+    z = rng.standard_t(df=2, size=(4, n))
+    y1 = np.sin(z[0]) + np.cos(z[1]) + z[2] ** 2 + z[3] ** 2
+    y2 = z[0] ** 2 + z[1] ** 2 + z[2] + z[3]
     y = np.array([y1, y2])
-    z = x[:2]
 
-    return x.T, y.T, z.T
+    return z.T, y.T, z[:2].T
 
 
 COND_SIMULATIONS = {

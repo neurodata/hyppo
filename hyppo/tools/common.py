@@ -594,7 +594,7 @@ def perm_test(
         column value is negative, the resulting block is unexchangeable.
     permuter : callable, default: None
         Defines a custom permutation function. If None, the default permutation
-        without resampling will be performed.
+        test is used.
 
     Returns
     -------
