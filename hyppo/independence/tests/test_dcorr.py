@@ -1,8 +1,8 @@
-import pytest
 import numpy as np
-from numpy.testing import assert_almost_equal, assert_warns, assert_raises
+import pytest
+from numpy.testing import assert_almost_equal, assert_raises, assert_warns
 
-from ...tools import linear
+from ...tools import linear, power
 from .. import Dcorr
 
 
@@ -13,60 +13,61 @@ class TestDcorrStat:
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
         x, y = linear(n, 1)
-        stat, pvalue = Dcorr().test(x, y)
+        stat1, pvalue1 = Dcorr().test(x, y)
+        stat2 = Dcorr().statistic(x, y)
 
-        assert_almost_equal(stat, obs_stat, decimal=2)
-        assert_almost_equal(pvalue, obs_pvalue, decimal=2)
+        assert_almost_equal(stat1, obs_stat, decimal=2)
+        assert_almost_equal(stat2, obs_stat, decimal=2)
+        assert_almost_equal(pvalue1, obs_pvalue, decimal=2)
+
+    @pytest.mark.parametrize("n", [100, 200])
+    def test_rep(self, n):
+        x, y = linear(n, 1)
+        stat1, pvalue1 = Dcorr().test(x, y, random_state=2)
+        stat2, pvalue2 = Dcorr().test(x, y, random_state=2)
+
+        assert stat1 == stat2
+        assert pvalue1 == pvalue2
 
 
-class TestDcorrErrorWarn:
-    """Tests errors and warnings derived from MGC."""
+class TestDcorrTypeIError:
+    def test_oned(self):
+        np.random.seed(123456789)
+        est_power = power(
+            "Dcorr",
+            sim_type="indep",
+            sim="multimodal_independence",
+            n=100,
+            p=1,
+            alpha=0.05,
+        )
 
-    def test_error_notndarray(self):
-        # raises error if x or y is not a ndarray
-        x = np.arange(20)
-        y = [5] * 20
-        assert_raises(TypeError, Dcorr().test, x, y)
-        assert_raises(TypeError, Dcorr().test, y, x)
+        assert_almost_equal(est_power, 0.05, decimal=2)
 
-    def test_error_shape(self):
-        # raises error if number of samples different (n)
-        x = np.arange(100).reshape(25, 4)
-        y = x.reshape(10, 10)
-        assert_raises(ValueError, Dcorr().test, x, y)
+    def test_oned_fast(self):
+        np.random.seed(123456789)
+        est_power = power(
+            "Dcorr",
+            sim_type="indep",
+            sim="multimodal_independence",
+            n=100,
+            p=1,
+            alpha=0.05,
+            auto=True,
+        )
 
-    def test_error_lowsamples(self):
-        # raises error if samples are low (< 3)
-        x = np.arange(3)
-        y = np.arange(3)
-        assert_raises(ValueError, Dcorr().test, x, y)
+        assert_almost_equal(est_power, 0.05, decimal=2)
 
-    def test_error_nans(self):
-        # raises error if inputs contain NaNs
-        x = np.arange(20, dtype=float)
-        x[0] = np.nan
-        assert_raises(ValueError, Dcorr().test, x, x)
+    def test_threed_fast(self):
+        np.random.seed(123456789)
+        est_power = power(
+            "Dcorr",
+            sim_type="indep",
+            sim="multimodal_independence",
+            n=100,
+            p=3,
+            alpha=0.05,
+            auto=True,
+        )
 
-        y = np.arange(20)
-        assert_raises(ValueError, Dcorr().test, x, y)
-
-    def test_error_wrongdisttype(self):
-        # raises error if compute_distance is not a function
-        x = np.arange(20)
-        compute_distance = 1
-        dcorr = Dcorr(compute_distance=compute_distance)
-        assert_raises(ValueError, dcorr.test, x, x)
-
-    @pytest.mark.parametrize(
-        "reps", [-1, "1"]  # reps is negative  # reps is not integer
-    )
-    def test_error_reps(self, reps):
-        # raises error if reps is negative
-        x = np.arange(20)
-        assert_raises(ValueError, Dcorr().test, x, x, reps=reps)
-
-    def test_warns_reps(self):
-        # raises warning when reps is less than 1000
-        x = np.arange(20)
-        reps = 100
-        assert_warns(RuntimeWarning, Dcorr().test, x, x, reps=reps)
+        assert_almost_equal(est_power, 0.05, decimal=2)

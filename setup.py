@@ -1,12 +1,26 @@
 import os
 import sys
-from setuptools import setup, find_packages
-from sys import platform
+
+from setuptools import find_packages, setup
+from setuptools.command.install import install
 
 PACKAGE_NAME = "hyppo"
 DESCRIPTION = "A comprehensive independence testing package"
-with open("README.md", "r") as f:
-    LONG_DESCRIPTION = f.read()
+LONG_DESCRIPTION = """
+hyppo (**HYP**othesis Testing in **P**yth**O**n, pronounced "Hippo") is an open-source
+software package for multivariate hypothesis testing. We decided to develop hyppo for
+the following reasons:
+
+* With the increase in the amount of data in many fields, hypothesis testing for high
+dimensional and nonlinear data is important
+* Libraries in R exist, but their interfaces are inconsistent and most are not available
+in Python
+
+hyppo intends to be a comprehensive multivariate hypothesis testing package and runs on
+all major versions of operating systems. It also includes novel tests not found in other
+packages. It is quick to install and free of charge. If you need to use multivariate
+hypothesis testing, be sure to give hyppo a try!"
+"""
 AUTHOR = ("Sambit Panda",)
 AUTHOR_EMAIL = "spanda3@jhu.edu"
 URL = "https://github.com/neurodata/hyppo"
@@ -16,6 +30,7 @@ REQUIRED_PACKAGES = [
     "scipy>=1.4.0",
     "numba>=0.46",
     "scikit-learn>=0.19.1",
+    "autograd>=1.3",
 ]
 
 # Find mgc version.
@@ -33,6 +48,23 @@ def check_python_version():
 
 check_python_version()
 
+
+class VerifyVersionCommand(install):
+    """Custom command to verify that the git tag matches our version"""
+
+    description = "verify that the git tag matches our version"
+
+    def run(self):
+        tag = os.getenv("CIRCLE_TAG")
+        version = "v{}".format(VERSION)
+
+        if tag != version:
+            info = "Git tag: {0} does not match the version of this app: {1}".format(
+                tag, version
+            )
+            sys.exit(info)
+
+
 setup(
     name=PACKAGE_NAME,
     version=VERSION,
@@ -43,18 +75,22 @@ setup(
     author_email=AUTHOR_EMAIL,
     install_requires=REQUIRED_PACKAGES,
     url=URL,
-    license="Apache 2.0",
+    license="MIT",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Science/Research",
         "Topic :: Scientific/Engineering :: Mathematics",
-        "License :: OSI Approved :: Apache Software License",
+        "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
     packages=find_packages(),
     include_package_data=True,
     test_suite="tests",
+    cmdclass={
+        "verify": VerifyVersionCommand,
+    },
 )

@@ -2,48 +2,31 @@ import numpy as np
 
 
 class _CheckInputs:
-    """ Check if additional arguments are correct """
+    """Check if additional arguments are correct"""
 
     def __init__(self, n):
         self.n = n
 
-    def __call__(self, *args):
+    def __call__(self, **kwargs):
         if type(self.n) is not int:
-            raise ValueError("n must be int")
+            raise ValueError("Expected n of type int, got {}".format(type(self.n)))
 
         if self.n < 5:
-            raise ValueError("n must be greater than or equal to 5")
+            raise ValueError("n must be >= 5, got {}".format(self.n))
 
-        for arg in args:
-            if arg[1] is float and type(arg[0]) is int:
+        for key, value in kwargs.items():
+            if value[1] is float and type(value[0]) is int:
                 continue
-            if type(arg[0]) is not arg[1]:
-                raise ValueError("Incorrect input variable type")
+            if type(value[0]) is not value[1]:
+                raise ValueError(
+                    "Expected {} type {} got {}".format(key, value[1], type(value[0]))
+                )
 
 
 def indep_ar(n, lag=1, phi=0.5, sigma=1):
     r"""
-    Simulates two independent, stationary, autoregressive time series.
+    2 independent, stationary, autoregressive time series simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    lag : float, optional (default: 1)
-        The maximum time lag considered between `x` and `y`.
-    phi : float, optional  (default: 0.5)
-        The AR coefficient.
-    sigma : float, optional  (default: 1)
-        The variance of the noise.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n,)` and `(n,)`
-        where `n` is the number of samples.
-
-    Notes
-    -----
     :math:`X_t` and :math:`Y_t` are univarite AR(``1ag``) with
     :math:`\phi = 0.5` for both series. Noise follows
     :math:`\mathcal{N}(0, \sigma)`. With lag (1), this is
@@ -55,20 +38,30 @@ def indep_ar(n, lag=1, phi=0.5, sigma=1):
         \begin{bmatrix} X_{t - 1} \\ Y_{t - 1} \end{bmatrix} +
         \begin{bmatrix} \epsilon_t \\ \eta_t \end{bmatrix}
 
-    Examples
-    --------
-    >>> from hyppo.tools import indep_ar
-    >>> x, y = indep_ar(100)
-    >>> print(x.shape, y.shape)
-    (100,) (100,)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation (>= 3).
+    lag : float, default: 1
+        The maximum time lag considered between ``x`` and ``y``.
+    phi : float, default: 0.5
+        The AR coefficient.
+    sigma : float, default: 1
+        The variance of the noise.
+
+    Returns
+    -------
+    x,y : ndarray of float
+        Simulated data matrices. ``x`` and ``y`` have shape ``(n,)``
+        where `n` is the number of samples.
     """
-    extra_args = [
-        (lag, float),
-        (phi, float),
-        (sigma, float),
-    ]
+    extra_args = {
+        "lag": (lag, float),
+        "phi": (phi, float),
+        "sigma": (sigma, float),
+    }
     check_in = _CheckInputs(n)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     epsilons = np.random.normal(0, sigma, n)
     etas = np.random.normal(0, sigma, n)
@@ -86,27 +79,8 @@ def indep_ar(n, lag=1, phi=0.5, sigma=1):
 
 def cross_corr_ar(n, lag=1, phi=0.5, sigma=1):
     r"""
-    Simulates two linearly dependent time series.
+    2 linearly dependent time series simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    lag : float, optional (default: 1)
-        The maximum time lag considered between `x` and `y`.
-    phi : float, optional  (default: 0.5)
-        The AR coefficient.
-    sigma : float, optional  (default: 1)
-        The variance of the noise.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n,)` and `(n,)`
-        where `n` is the number of samples.
-
-    Notes
-    -----
     :math:`X_t` and :math:`Y_t` are together a bivariate univarite AR(``1ag``) with
     :math:`\phi = \begin{bmatrix} 0 & 0.5 \\ 0.5 & 0 \end{bmatrix}` for both series.
     Noise follows :math:`\mathcal{N}(0, \sigma)`. With lag (1), this is
@@ -118,20 +92,30 @@ def cross_corr_ar(n, lag=1, phi=0.5, sigma=1):
         \begin{bmatrix} X_{t - 1} \\ Y_{t - 1} \end{bmatrix} +
         \begin{bmatrix} \epsilon_t \\ \eta_t \end{bmatrix}
 
-    Examples
-    --------
-    >>> from hyppo.tools import cross_corr_ar
-    >>> x, y = cross_corr_ar(100)
-    >>> print(x.shape, y.shape)
-    (100,) (100,)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation (>= 3).
+    lag : float, default: 1
+        The maximum time lag considered between ``x`` and ``y``.
+    phi : float, default: 0.5
+        The AR coefficient.
+    sigma : float, default: 1
+        The variance of the noise.
+
+    Returns
+    -------
+    x,y : ndarray of float
+        Simulated data matrices. ``x`` and ``y`` have shape ``(n,)``
+        where `n` is the number of samples.
     """
-    extra_args = [
-        (lag, float),
-        (phi, float),
-        (sigma, float),
-    ]
+    extra_args = {
+        "lag": (lag, float),
+        "phi": (phi, float),
+        "sigma": (sigma, float),
+    }
     check_in = _CheckInputs(n)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     epsilons = np.random.normal(0, sigma, n)
     etas = np.random.normal(0, sigma, n)
@@ -148,27 +132,8 @@ def cross_corr_ar(n, lag=1, phi=0.5, sigma=1):
 
 def nonlinear_process(n, lag=1, phi=1, sigma=1):
     r"""
-    Simulates two nonlinearly dependent time series.
+    2 nonlinearly dependent time series simulation.
 
-    Parameters
-    ----------
-    n : int
-        The number of samples desired by the simulation.
-    lag : float, optional (default: 1)
-        The maximum time lag considered between `x` and `y`.
-    phi : float, optional  (default: 1)
-        The AR coefficient.
-    sigma : float, optional  (default: 1)
-        The variance of the noise.
-
-    Returns
-    -------
-    x, y : ndarray
-        Simulated data matrices. `x` and `y` have shapes `(n,)` and `(n,)`
-        where `n` is the number of samples.
-
-    Notes
-    -----
     :math:`X_t` and :math:`Y_t` are together a bivariate nonlinear process.
     Noise follows :math:`\mathcal{N}(0, \sigma)`. With lag (1), this is
 
@@ -177,20 +142,30 @@ def nonlinear_process(n, lag=1, phi=1, sigma=1):
         \begin{bmatrix} X_t \\ Y_t \end{bmatrix} =
         \begin{bmatrix} \phi \epsilon_t Y_{t - 1} \\ \eta_t \end{bmatrix}
 
-    Examples
-    --------
-    >>> from hyppo.tools import cross_corr_ar
-    >>> x, y = cross_corr_ar(100)
-    >>> print(x.shape, y.shape)
-    (100,) (100,)
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation (>= 3).
+    lag : float, default: 1
+        The maximum time lag considered between `x` and `y`.
+    phi : float, default: 1
+        The AR coefficient.
+    sigma : float, default: 1
+        The variance of the noise.
+
+    Returns
+    -------
+    x,y : ndarray of float
+        Simulated data matrices. ``x`` and ``y`` have shape ``(n,)``
+        where `n` is the number of samples.
     """
-    extra_args = [
-        (lag, float),
-        (phi, float),
-        (sigma, float),
-    ]
+    extra_args = {
+        "lag": (lag, float),
+        "phi": (phi, float),
+        "sigma": (sigma, float),
+    }
     check_in = _CheckInputs(n)
-    check_in(*extra_args)
+    check_in(**extra_args)
 
     epsilons = np.random.normal(0, sigma, n)
     etas = np.random.normal(0, sigma, n)
@@ -202,3 +177,42 @@ def nonlinear_process(n, lag=1, phi=1, sigma=1):
         x[t] = phi * epsilons[t] * y[t - lag]
 
     return x, y
+
+
+TS_SIMS = {
+    "indep_ar": indep_ar,
+    "cross_corr_ar": cross_corr_ar,
+    "nonlinear_process": nonlinear_process,
+}
+
+
+def ts_sim(sim, n, **kwargs):
+    r"""
+    Time-series simulation generator.
+
+    Takes a simulation and the required parameters, and outputs the simulated
+    data matrices.
+
+    Parameters
+    ----------
+    sim : str
+        The name of the simulation (from the :mod:`hyppo.tools` module) that is to be
+        rotated.
+    n : int
+        The number of samples desired by the simulation (>= 3).
+    **kwargs
+        Additional keyword arguements for the desired simulation.
+
+    Returns
+    -------
+    x,y : ndarray of float
+        Simulated data matrices.
+    """
+    if sim not in TS_SIMS.keys():
+        raise ValueError(
+            "sim_name must be one of the following: {}".format(list(TS_SIMS.keys()))
+        )
+    else:
+        sim = TS_SIMS[sim]
+
+    return sim(n, **kwargs)

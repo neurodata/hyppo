@@ -1,18 +1,29 @@
 import warnings
+from typing import NamedTuple
+
+import numpy as np
 from scipy.stats import multiscale_graphcorr
 
 from ..tools import compute_dist
-from .base import IndependenceTest
 from ._utils import _CheckInputs
+from .base import IndependenceTest
+
+
+class MGCTestOutput(NamedTuple):
+    stat: float
+    pvalue: float
+    mgc_dict: dict
 
 
 class MGC(IndependenceTest):
     r"""
-    Class for calculating the MGC test statistic and p-value.
+    Multiscale Graph Correlation (MGC) test statistic and p-value.
 
     Specifically, for each point, MGC finds the :math:`k`-nearest neighbors for
     one property (e.g. cloud density), and the :math:`l`-nearest neighbors for
-    the other property (e.g. grass wetness) [#1MGC]_. This pair :math:`(k, l)` is
+    the other property (e.g. grass wetness)
+    :footcite:p:`vogelsteinDiscoveringDecipheringRelationships2019`.
+    This pair :math:`(k, l)` is
     called the "scale". A priori, however, it is not know which scales will be
     most informative. So, MGC computes all distance pairs, and then efficiently
     computes the distance correlations for all scales. The local correlations
@@ -25,27 +36,44 @@ class MGC(IndependenceTest):
     determination was made. This is especially important in high-dimensional
     data, where simple visualizations do not reveal relationships to the
     unaided human eye. Characterizations of this implementation in particular
-    have been derived from and benchmarked within in [#2MGC]_.
+    have been derived from and benchmarked within
+    :footcite:t:`pandaHyppoMultivariateHypothesis2021`.
 
     Parameters
     ----------
-    compute_distance : callable(), optional (default: euclidean)
+    compute_distance : str, callable, or None, default: "euclidean"
         A function that computes the distance among the samples within each
-        data matrix. Set to `None` if `x` and `y` are already distance
-        matrices. To call a custom function, either create the distance matrix
-        before-hand or create a function of the form ``compute_distance(x)``
-        where `x` is the data matrix for which pairwise distances are
-        calculated.
+        data matrix.
+        Valid strings for ``compute_distance`` are, as defined in
+        :func:`sklearn.metrics.pairwise_distances`,
 
-    See Also
-    --------
-    Hsic : Hilbert-Schmidt independence criterion test statistic and p-value.
-    Dcorr : Distance correlation test statistic and p-value.
+            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
+              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
+              :mod:`scipy.spatial.distance` for details
+              on these metrics.
+            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
+              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
+              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
+              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
+              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
+              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
+              details on these metrics.
+
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
+        matrices. To call a custom function, either create the distance matrix
+        before-hand or create a function of the form ``metric(x, **kwargs)``
+        where ``x`` is the data matrix for which pairwise distances are
+        calculated and ``**kwargs`` are extra arguements to send to your custom
+        function.
+    **kwargs
+        Arbitrary keyword arguments for ``compute_distance``.
 
     Notes
     -----
     A description of the process of MGC and applications on neuroscience data
-    can be found in [#1MGC]_. It is performed using the following steps:
+    can be found in
+    :footcite:t:`vogelsteinDiscoveringDecipheringRelationships2019`.
+    It is performed using the following steps:
 
     Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
     :math:`X` and :math:`Y`. Let :math:`D^x` be the :math:`n \times n`
@@ -53,7 +81,8 @@ class MGC(IndependenceTest):
     the distance matrix of :math:`y`. :math:`D^x` and :math:`D^y` are
     modified to be mean zero columnwise. This results in two
     :math:`n \times n` distance matrices :math:`A` and :math:`B` (the
-    centering and unbiased modification) [3]_.
+    centering and unbiased modification)
+    :footcite:p:`shenDistanceCorrelationMultiscale2020`.
 
     + For all values :math:`k` and :math:`l` from :math:`1, ..., n`,
 
@@ -63,7 +92,7 @@ class MGC(IndependenceTest):
          and :math:`H_l (i, j)` indicates the :math:`l` smallested values of
          the :math:`i`-th row of :math:`B`
 
-       * Let :math:`\circ` denotes the entry-wise matrix product, then local
+       * The local
          correlations are summed and normalized using the following statistic:
 
          .. math::
@@ -74,31 +103,24 @@ class MGC(IndependenceTest):
     + The MGC test statistic is the smoothed optimal local correlation of
       :math:`\{ c^{kl} \}`. Denote the smoothing operation as :math:`R(\cdot)`
       (which essentially set all isolated large correlations) as 0 and
-      connected large correlations the same as before, see [#3MGC]_.) MGC is,
+      connected large correlations the same as before, see
+      :footcite:t:`shenDistanceCorrelationMultiscale2020`.)
+      MGC is,
 
       .. math::
 
-         MGC_n (x, y) = \max_{(k, l)} R \left(c^{kl} \left( x_n, y_n \right)
+         \mathrm{MGC}_n (x, y) = \max_{(k, l)} R \left(c^{kl} \left( x_n, y_n \right)
                                                     \right)
 
     The test statistic returns a value between :math:`(-1, 1)` since it is
     normalized.
 
-    The p-value returned is calculated using a permutation test using a
-    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
+    The p-value returned is calculated using a permutation test using
+    :meth:`hyppo.tools.perm_test`.
 
     References
     ----------
-    .. [#1MGC] Vogelstein, J. T., Bridgeford, E. W., Wang, Q., Priebe, C. E.,
-               Maggioni, M., & Shen, C. (2019). Discovering and deciphering
-               relationships across disparate data modalities. ELife.
-    .. [#2MGC] Panda, S., Palaniappan, S., Xiong, J., Swaminathan, A.,
-               Ramachandran, S., Bridgeford, E. W., ... Vogelstein, J. T. (2019).
-               mgcpy: A Comprehensive High Dimensional Independence Testing Python
-               Package. ArXiv:1907.02088 [Cs, Stat].
-    .. [#3MGC] Shen, C., Priebe, C.E., & Vogelstein, J. T. (2019). From distance
-               correlation to multiscale graph correlation. Journal of the American
-               Statistical Association.
+    .. footbibliography::
     """
 
     def __init__(self, compute_distance="euclidean", **kwargs):
@@ -108,18 +130,18 @@ class MGC(IndependenceTest):
             self.is_distance = True
         IndependenceTest.__init__(self, compute_distance=compute_distance, **kwargs)
 
-    def _statistic(self, x, y):
+    def statistic(self, x, y):
         r"""
         Helper function that calculates the MGC test statistic.
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices. `x` and `y` must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        x,y : ndarray of float
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, `x` and `y` can be distance matrices,
-            where the shapes must both be `(n, n)`.
+            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
+            where the shapes must both be ``(n, n)``.
 
         Returns
         -------
@@ -143,24 +165,24 @@ class MGC(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the MGC test statistic and p-value.
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices. `x` and `y` must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        x,y : ndarray of float
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, `x` and `y` can be distance matrices,
-            where the shapes must both be `(n, n)`.
-        reps : int, optional (default: 1000)
+            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
+            where the shapes must both be ``(n, n)``.
+        reps : int, default: 1000
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        workers : int, optional (default: 1)
+        workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
-            Supply -1 to use all cores available to the Process.
+            Supply ``-1`` to use all cores available to the Process.
 
         Returns
         -------
@@ -171,10 +193,10 @@ class MGC(IndependenceTest):
         mgc_dict : dict
             Contains additional useful returns containing the following keys:
 
-                - mgc_map : ndarray
+                - mgc_map : ndarray of float
                     A 2D representation of the latent geometry of the relationship.
                 - opt_scale : (int, int)
-                    The estimated optimal scale as a `(x, y)` pair.
+                    The estimated optimal scale as a ``(x, y)`` pair.
 
         Examples
         --------
@@ -206,6 +228,22 @@ class MGC(IndependenceTest):
         )
         x, y = check_input()
 
+        # add test for redundant rows
+        if (
+            np.unique(x, axis=0).shape[0] != x.shape[0]
+            or np.unique(y, axis=0).shape[0] != y.shape[0]
+        ):
+            warnings.warn(
+                "Input x has {} redundant rows, and input y has {} redundant "
+                "rows. MGC Map will be of shape ({}, {}).".format(
+                    x.shape[0] - np.unique(x, axis=0).shape[0],
+                    y.shape[0] - np.unique(y, axis=0).shape[0],
+                    np.unique(x, axis=0).shape[0],
+                    np.unique(y, axis=0).shape[0],
+                ),
+                RuntimeWarning,
+            )
+
         x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
         self.is_distance = True
 
@@ -216,7 +254,9 @@ class MGC(IndependenceTest):
             _, _, mgc_dict = multiscale_graphcorr(x, y, compute_distance=None, reps=0)
         mgc_dict.pop("null_dist")
 
-        stat, pvalue = super(MGC, self).test(x, y, reps, workers)
+        stat, pvalue = super(MGC, self).test(
+            x, y, reps, workers, random_state=random_state
+        )
         self.mgc_dict = mgc_dict
 
-        return stat, pvalue, mgc_dict
+        return MGCTestOutput(stat, pvalue, mgc_dict)

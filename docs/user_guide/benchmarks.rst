@@ -1,0 +1,1 @@
+.. include:: ../benchmarks/index.rst

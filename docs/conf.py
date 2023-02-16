@@ -8,23 +8,24 @@
 
 # -- Path setup --------------------------------------------------------------
 
+import datetime
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
 import sys
-import shutil
 
 sys.path.insert(0, os.path.abspath(".."))
-sys.path.insert(0, os.path.abspath("sphinxext"))
-from github_link import make_linkcode_resolve
 
 # -- Project information -----------------------------------------------------
 
+# General information about the project
+year = datetime.date.today().year
 project = "hyppo"
-copyright = "2018"
-authors = u"Sambit Panda"
+copyright = "2018-{}, NeuroData".format(year)
+authors = "Sambit Panda"
 
 # The short X.Y version
 # Find hyppo version.
@@ -42,35 +43,104 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.todo",
     "sphinx.ext.mathjax",
-    "numpydoc",
+    # "numpydoc",
     "sphinx.ext.ifconfig",
     "sphinx.ext.githubpages",
     "nbsphinx",
     "sphinx.ext.intersphinx",
-    "sphinx.ext.linkcode",
+    "sphinx.ext.napoleon",
+    "sphinx_gallery.gen_gallery",
+    "sphinxcontrib.bibtex",
+    "myst_parser",
 ]
+
+bibtex_bibfiles = ["refs.bib"]
+bibtex_reference_style = "super"
+bibtex_default_style = "unsrt"
+
+autodoc_typehints = "none"
+
+napoleon_google_docstring = False
+napoleon_numpy_docstring = True
+
+napoleon_use_param = False
+napoleon_use_rtype = False
+napoleon_preprocess_types = True
+napoleon_type_aliases = {
+    # general terms
+    "sequence": ":term:`sequence`",
+    "iterable": ":term:`iterable`",
+    "callable": ":py:func:`callable`",
+    "dict_like": ":term:`dict-like <mapping>`",
+    # objects without namespace
+    "ndarray": "~numpy.ndarray",
+}
 
 # -- numpydoc
 # Below is needed to prevent errors
+numpydoc_class_members_toctree = True
 numpydoc_show_class_members = False
 
 # -- sphinx.ext.autosummary
-autosummary_generate = True
+autosummary_generate = []
+
+# Otherwise, the Return parameter list looks different from the Parameters list
+napoleon_use_rtype = False
+# Otherwise, the Attributes parameter list looks different from the Parameters
+# list
+napoleon_use_ivar = True
+
+
+# uncomment line 55
+from sphinx_gallery.sorting import FileNameSortKey
+
+sphinx_gallery_conf = {
+    # path to your examples scripts
+    "examples_dirs": ["../examples", "../tutorials", "../sample_data", "../benchmarks"],
+    # path where to save gallery generated examples
+    "gallery_dirs": ["gallery", "tutorials", "sample_data", "benchmarks"],
+    "filename_pattern": r"\.py",
+    # Remove the "Download all examples" button from the top level gallery
+    "download_all_examples": False,
+    # Sort gallery example by file name instead of number of lines (default)
+    "within_subsection_order": FileNameSortKey,
+    # directory where function granular galleries are stored
+    "backreferences_dir": "api/generated/backreferences",
+    # Modules for which function level galleries are created.  In
+    # this case sphinx_gallery and numpy in a tuple of strings.
+    "doc_module": "hyppo",
+    # Insert links to documentation of objects in the examples
+    "reference_url": {"hyppo": None},
+}
+
+html_css_files = [
+    "css/custom.css",
+]
 
 # -- sphinx.ext.autodoc
-autoclass_content = "both"
-autodoc_default_flags = ["members", "inherited-members"]
-autodoc_member_order = "bysource"  # default is alphabetical
+# autoclass_content = "both"
+# autodoc_default_flags = ["members", "inherited-members"]
+# autodoc_member_order = "bysource"  # default is alphabetical
 
 # -- sphinx.ext.intersphinx
 intersphinx_mapping = {
-    "numpy": ("https://docs.scipy.org/doc/numpy", None),
-    "python": ("https://docs.python.org/3", None),
+    "python": ("https://docs.python.org/3/", None),
+    "numpy": ("https://numpy.org/doc/stable", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
+    "matplotlib": ("https://matplotlib.org", None),
+    "sklearn": ("http://scikit-learn.org/stable", None),
 }
 
+# Always show the source code that generates a plot
+plot_include_source = True
+plot_formats = ["png"]
+
 # -- sphinx options ----------------------------------------------------------
-source_suffix = ".rst"
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".txt": "markdown",
+    ".md": "markdown",
+}
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints"]
 master_doc = "index"
 source_encoding = "utf-8"
@@ -79,44 +149,57 @@ source_encoding = "utf-8"
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 html_static_path = ["_static"]
+html_extra_path = []
 modindex_common_prefix = ["hyppo."]
+html_last_updated_fmt = "%b %d, %Y"
+add_function_parentheses = False
+html_show_sourcelink = False
+html_show_sphinx = True
+html_show_copyright = True
+
+import warnings
+
+warnings.filterwarnings("ignore", category=UserWarning)
 
 pygments_style = "sphinx"
 smartquotes = False
 
-# Use RTD Theme
-import sphinx_rtd_theme
-
-html_theme = "sphinx_rtd_theme"
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-html_theme_options = {"collapse_navigation": False, "navigation_depth": 4}
-
-html_context = {
-    # Enable the "Edit in GitHub link within the header of each page.
-    "display_github": True,
-    # Set the following variables to generate the resulting github URL for each page.
-    # Format Template: https://{{ github_host|default("github.com") }}/{{ github_user }}/{{ github_repo }}/blob/{{ github_version }}{{ conf_py_path }}{{ pagename }}{{ suffix }}
-    "github_user": "neurodata",
-    "github_repo": "hyppo",
-    "github_version": "master/docs/",
+html_theme = "pydata_sphinx_theme"
+html_theme_options = {
+    "icon_links_label": "Quick Links",
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/neurodata/hyppo",
+            "icon": "fab fa-github-square",
+        },
+        {
+            "name": "Paper",
+            "url": "https://arxiv.org/abs/1907.02088",
+            "icon": "fas fa-book",
+        },
+        {
+            "name": "NeuroData",
+            "url": "https://neurodata.io/",
+            "icon": "fas fa-brain",
+        },
+    ],
+    "use_edit_page_button": True,
 }
 
-linkcode_resolve = make_linkcode_resolve(
-    "hyppo",
-    u"https://github.com/neurodata/"
-    "hyppo/blob/{revision}/"
-    "{package}/{path}#L{lineno}",
-)
-
-# Custom sidebar templates, must be a dictionary that maps document names
-# to template names.
-#
-# The default sidebars (for documents that don't match any pattern) are
-# defined by theme itself.  Builtin themes are using these templates by
-# default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
-# 'searchbox.html']``.
-#
-# html_sidebars = {}
+html_context = {
+    "github_user": "neurodata",
+    "github_repo": "hyppo",
+    "github_version": "main",
+    "doc_path": "docs",
+    "galleries": sphinx_gallery_conf["gallery_dirs"],
+    "gallery_dir": dict(
+        zip(
+            sphinx_gallery_conf["gallery_dirs"],
+            sphinx_gallery_conf["examples_dirs"],
+        )
+    ),
+}
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
@@ -186,27 +269,19 @@ epub_title = project
 epub_exclude_files = ["search.html"]
 
 
+# -- Other -------------------------------------------------------------------
+
+
 def setup(app):
     # to hide/show the prompt in code examples:
-    app.add_javascript("js/copybutton.js")
+    app.add_js_file("js/copybutton.js")
 
 
-# -- Jupyter Notebook --------------------------------------------------------
+# -- Accessibility -----------------------------------------------------------
 
+language = "en"
+extensions += ["sphinx_sitemap"]
 
-# def all_but_ipynb(dir, contents):
-#     result = []
-#     for c in contents:
-#         if os.path.isfile(os.path.join(dir, c)) and (not c.endswith(".ipynb")):
-#             result += [c]
-#     return result
-
-
-# shutil.rmtree(
-#     os.path.join(PROJECT_PATH, "..", "docs/tutorials/benchmarks"), ignore_errors=True
-# )
-# shutil.copytree(
-#     os.path.join(PROJECT_PATH, "..", "benchmarks"),
-#     os.path.join(PROJECT_PATH, "..", "docs/tutorials/benchmarks"),
-#     ignore=all_but_ipynb,
-# )
+html_baseurl = os.environ.get("SPHINX_HTML_BASE_URL", "https://127.0.0.1:8000/")
+sitemap_locales = [None]
+sitemap_url_scheme = "{link}"

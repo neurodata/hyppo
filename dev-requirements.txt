@@ -1,0 +1,9 @@
+-r requirements.txt
+numba==0.49.1; python_version < '3.7'
+pytest
+coverage
+pytest-cov
+codecov
+black
+twine
+autograd

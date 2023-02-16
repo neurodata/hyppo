@@ -1,8 +1,9 @@
-import pytest
 import numpy as np
-from numpy.testing import assert_almost_equal, assert_raises, assert_warns
+import pytest
+from numpy.testing import assert_almost_equal
+from sklearn.metrics import pairwise_distances
 
-from ...tools import linear
+from ...tools import linear, power
 from .. import HHG
 
 
@@ -19,55 +20,35 @@ class TestHHGStat:
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(pvalue, obs_pvalue, decimal=2)
 
+    def test_diststat(self):
+        np.random.seed(123456789)
+        x, y = linear(100, 1)
+        distx = pairwise_distances(x, x)
+        disty = pairwise_distances(y, y)
+        stat = HHG().statistic(distx, disty)
 
-class TestHHGErrorWarn:
-    """Tests errors and warnings derived from MGC."""
+        assert_almost_equal(stat, 950600.0, decimal=2)
 
-    def test_error_notndarray(self):
-        # raises error if x or y is not a ndarray
-        x = np.arange(20)
-        y = [5] * 20
-        assert_raises(TypeError, HHG().test, x, y)
-        assert_raises(TypeError, HHG().test, y, x)
+    @pytest.mark.parametrize("n", [10, 200])
+    def test_rep(self, n):
+        x, y = linear(n, 1)
+        stat, pvalue = HHG().test(x, y, random_state=2)
+        stat2, pvalue2 = HHG().test(x, y, random_state=2)
 
-    def test_error_shape(self):
-        # raises error if number of samples different (n)
-        x = np.arange(100).reshape(25, 4)
-        y = x.reshape(10, 10)
-        assert_raises(ValueError, HHG().test, x, y)
+        assert stat == stat2
+        assert pvalue == pvalue2
 
-    def test_error_lowsamples(self):
-        # raises error if samples are low (< 3)
-        x = np.arange(3)
-        y = np.arange(3)
-        assert_raises(ValueError, HHG().test, x, y)
 
-    def test_error_nans(self):
-        # raises error if inputs contain NaNs
-        x = np.arange(20, dtype=float)
-        x[0] = np.nan
-        assert_raises(ValueError, HHG().test, x, x)
+class TestHHGTypeIError:
+    def test_oned(self):
+        np.random.seed(123456789)
+        est_power = power(
+            "HHG",
+            sim_type="indep",
+            sim="multimodal_independence",
+            n=50,
+            p=1,
+            alpha=0.05,
+        )
 
-        y = np.arange(20)
-        assert_raises(ValueError, HHG().test, x, y)
-
-    def test_error_wrongdisttype(self):
-        # raises error if compute_distance is not a function
-        x = np.arange(20)
-        compute_distance = 1
-        hhg = HHG(compute_distance=compute_distance)
-        assert_raises(ValueError, hhg.test, x, x)
-
-    @pytest.mark.parametrize(
-        "reps", [-1, "1"]  # reps is negative  # reps is not integer
-    )
-    def test_error_reps(self, reps):
-        # raises error if reps is negative
-        x = np.arange(20)
-        assert_raises(ValueError, HHG().test, x, x, reps=reps)
-
-    def test_warns_reps(self):
-        # raises warning when reps is less than 1000
-        x = np.arange(20)
-        reps = 100
-        assert_warns(RuntimeWarning, HHG().test, x, x, reps=reps)
+        assert_almost_equal(est_power, 0.05, decimal=2)

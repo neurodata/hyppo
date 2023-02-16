@@ -1,0 +1,34 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@1.2
+  codecov: codecov/codecov@3.1.1
+
+jobs:
+  build-and-test:
+    parallelism: 16
+    docker:
+      - image: cimg/python:3.8
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: pip
+      - run:
+          name: Run tests
+          command: |
+            set -e
+            pip install pytest pytest-cov
+            TEST_FILES=$(circleci tests glob "hyppo/**/test_*.py" | circleci tests split --split-by=timings)
+            mkdir -p test-results
+            pytest --verbose --junitxml=test-results/junit.xml --cov-report=xml --cov=hyppo $TEST_FILES
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
+      - codecov/upload:
+          file: "coverage.xml"
+
+workflows:
+  run-tests:
+    jobs:
+      - build-and-test

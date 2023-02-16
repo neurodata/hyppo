@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
+
 import numpy as np
 
 
 class DiscriminabilityTest(ABC):
     r"""
-    A base class for a Discriminability test.
+    A base class for a discriminability test.
     """
 
     def __init__(self):
@@ -12,46 +13,20 @@ class DiscriminabilityTest(ABC):
         super().__init__()
 
     @abstractmethod
-    def _statistic(self, x, y):
+    def statistic(self, x, y):
         r"""
         Calulates the independence test statistic.
 
         Parameters
         ----------
-        x, y : ndarray
+        x, y : ndarray of float
             Input data matrices.
         """
 
-        rdfs = self._discr_rdf(x, y)
+        rdfs = _discr_rdf(x, y)
         stat = np.nanmean(rdfs)
 
         return stat
-
-    def _discr_rdf(self, dissimilarities, labels):
-        # calculates test statistics distribution
-        rdfs = []
-
-        for i, label in enumerate(labels):
-            di = dissimilarities[i]
-
-            # All other samples except its own label
-            idx = labels == label
-            Dij = di[~idx]
-
-            # All samples except itself
-            idx[i] = False
-            Dii = di[idx]
-
-            rdf = [
-                1 - ((Dij < d).sum() + 0.5 * (Dij == d).sum()) / Dij.size for d in Dii
-            ]
-            rdfs.append(rdf)
-
-        out = np.full((len(rdfs), max(map(len, rdfs))), np.nan)
-        for i, rdf in enumerate(rdfs):
-            out[i, : len(rdf)] = rdf
-
-        return out
 
     def _perm_stat(self, index):
         r"""
@@ -70,8 +45,47 @@ class DiscriminabilityTest(ABC):
         """
 
     @abstractmethod
-    def test(self):
+    def test(self, *args, **kwargs):
         r"""
-        Calculates the test statistic and p-value for Discriminability one sample
-        and two sample test.
+        Calculates the Discriminability test statistic and p-value.
         """
+
+
+def _discr_rdf(dissimilarities, labels):
+    """
+    Calculates the distributions of the test statistics.
+
+    Parameters
+    ----------
+    dissimilarities : ndarray of float
+        Input matrix containing the disimilarities.
+    labels : ndarray of float
+        The label matrix corresponding to each dissimilarity.
+
+    Returns
+    -------
+    [type]
+        [description]
+    """
+    # calculates test statistics distribution
+    rdfs = []
+
+    for i, label in enumerate(labels):
+        di = dissimilarities[i]
+
+        # All other samples except its own label
+        idx = labels == label
+        Dij = di[~idx]
+
+        # All samples except itself
+        idx[i] = False
+        Dii = di[idx]
+
+        rdf = [1 - ((Dij < d).sum() + 0.5 * (Dij == d).sum()) / Dij.size for d in Dii]
+        rdfs.append(rdf)
+
+    out = np.full((len(rdfs), max(map(len, rdfs))), np.nan)
+    for i, rdf in enumerate(rdfs):
+        out[i, : len(rdf)] = rdf
+
+    return out

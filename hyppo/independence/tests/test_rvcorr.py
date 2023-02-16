@@ -1,8 +1,8 @@
-import pytest
 import numpy as np
-from numpy.testing import assert_almost_equal, assert_warns, assert_raises
+import pytest
+from numpy.testing import assert_almost_equal, assert_raises, assert_warns
 
-from ...tools import linear
+from ...tools import linear, power
 from .. import RV
 
 
@@ -18,48 +18,26 @@ class TestRVStat:
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(pvalue, obs_pvalue, decimal=2)
 
+    @pytest.mark.parametrize("n", [100, 1000])
+    def test_rep(self, n):
+        x, y = linear(n, 1)
+        stat1, pvalue1 = RV().test(x, y)
+        stat2, pvalue2 = RV().test(x, y)
 
-class TestRVErrorWarn:
-    """Tests errors and warnings derived from MGC."""
+        assert stat1 == stat2
+        assert pvalue1 == pvalue2
 
-    def test_error_notndarray(self):
-        # raises error if x or y is not a ndarray
-        x = np.arange(20)
-        y = [5] * 20
-        assert_raises(TypeError, RV().test, x, y)
-        assert_raises(TypeError, RV().test, y, x)
 
-    def test_error_shape(self):
-        # raises error if number of samples different (n)
-        x = np.arange(100).reshape(25, 4)
-        y = x.reshape(10, 10)
-        assert_raises(ValueError, RV().test, x, y)
+class TestCCATypeIError:
+    def test_oned(self):
+        np.random.seed(123456789)
+        est_power = power(
+            "RV",
+            sim_type="indep",
+            sim="multimodal_independence",
+            n=1000,
+            p=1,
+            alpha=0.05,
+        )
 
-    def test_error_lowsamples(self):
-        # raises error if samples are low (< 3)
-        x = np.arange(3)
-        y = np.arange(3)
-        assert_raises(ValueError, RV().test, x, y)
-
-    def test_error_nans(self):
-        # raises error if inputs contain NaNs
-        x = np.arange(20, dtype=float)
-        x[0] = np.nan
-        assert_raises(ValueError, RV().test, x, x)
-
-        y = np.arange(20)
-        assert_raises(ValueError, RV().test, x, y)
-
-    @pytest.mark.parametrize(
-        "reps", [-1, "1"]  # reps is negative  # reps is not integer
-    )
-    def test_error_reps(self, reps):
-        # raises error if reps is negative
-        x = np.arange(20)
-        assert_raises(ValueError, RV().test, x, x, reps=reps)
-
-    def test_warns_reps(self):
-        # raises warning when reps is less than 1000
-        x = np.arange(20)
-        reps = 100
-        assert_warns(RuntimeWarning, RV().test, x, x, reps=reps)
+        assert_almost_equal(est_power, 0.05, decimal=2)

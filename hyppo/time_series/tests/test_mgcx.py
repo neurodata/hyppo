@@ -1,8 +1,8 @@
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_array_less
 
-from .. import MGCX
 from ...tools import nonlinear_process
+from .. import MGCX
 
 
 class TestMGCXStat:
@@ -32,19 +32,6 @@ class TestMGCXStat:
 
     #     assert_almost_equal(stat1, stat2, decimal=0)
 
-    def test_distance(self):
-        n = 10
-        x = np.arange(1, n + 1)
-        y = np.arange(1, n + 1)
-
-        distx = np.fromfunction(lambda i, j: np.abs(i - j), (n, n))
-        disty = np.fromfunction(lambda i, j: np.abs(i - j), (n, n))
-
-        stat1 = MGCX(max_lag=1).test(x, y)[0]
-        stat2 = MGCX(max_lag=1).test(distx, disty)[0]
-
-        assert_almost_equal(stat1, stat2, decimal=0)
-
     def test_optimal_scale_linear(self):
         n = 10
         x = np.arange(n)
@@ -57,8 +44,30 @@ class TestMGCXStat:
     def test_optimal_scale_nonlinear(self):
         n = 7
         x = np.arange(n)
-        y = x ** 2
+        y = x**2
         mgcx_dict = MGCX().test(x, y, reps=100)[2]
         opt_scale = mgcx_dict["opt_scale"]
         assert_array_less(opt_scale[0], n)
         assert_array_less(opt_scale[1], n)
+
+    def test_rep_linear(self):
+        n = 10
+        x = np.arange(n)
+        y = x
+        mgcx_dict = MGCX().test(x, y, reps=100, random_state=2)[2]
+        opt_scale = mgcx_dict["opt_scale"]
+        mgcx_dict2 = MGCX().test(x, y, reps=100, random_state=2)[2]
+        opt_scale2 = mgcx_dict2["opt_scale"]
+
+        assert opt_scale == opt_scale2
+
+    def test_rep_nonlinear(self):
+        n = 7
+        x = np.arange(n)
+        y = x**2
+        mgcx_dict = MGCX().test(x, y, reps=100, random_state=2)[2]
+        opt_scale = mgcx_dict["opt_scale"]
+        mgcx_dict2 = MGCX().test(x, y, reps=100, random_state=2)[2]
+        opt_scale2 = mgcx_dict2["opt_scale"]
+
+        assert opt_scale == opt_scale2

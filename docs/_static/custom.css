@@ -1,0 +1,9 @@
+/* Disable the sphinx-gallery download note at the top */
+.sphx-glr-download-link-note {
+    display: none;
+  }
+
+  .sphx-glr-timing {
+    border-top: 1px solid #dddddd;
+    padding: 1.8rem 0;
+  }

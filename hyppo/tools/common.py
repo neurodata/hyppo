@@ -1,42 +1,48 @@
 import warnings
-from joblib import Parallel, delayed
 
 import numpy as np
+from joblib import Parallel, delayed
 from scipy.stats.distributions import chi2
 from sklearn.metrics import pairwise_distances
 from sklearn.metrics.pairwise import pairwise_kernels
+from sklearn.utils import check_random_state
 
 
-def contains_nan(a):  # from scipy
-    """Check if inputs contains NaNs"""
+# Explicitly copying private function from scipy 1.7.3
+# Modified to only use nan_policy 'raise'
+# REF: https://github.com/scipy/scipy/blob/59e6539cf80dc04b16b0f0ab52343381f0a7a2fa/scipy/stats/stats.py#L79
+def contains_nan(a):
+    nan_policy = "raise"
     try:
         # Calling np.sum to avoid creating a huge array into memory
         # e.g. np.isnan(a).any()
         with np.errstate(invalid="ignore"):
-            contains_nan = np.isnan(np.sum(a))
+            contains_nan_var = np.isnan(np.sum(a))
     except TypeError:
         # This can happen when attempting to sum things which are not
         # numbers (e.g. as in the function `mode`). Try an alternative method:
         try:
-            contains_nan = np.nan in set(a.ravel())
+            contains_nan_var = np.nan in set(a.ravel())
         except TypeError:
             # Don't know what to do. Fall back to omitting nan values and
             # issue a warning.
-            contains_nan = False
-            msg = (
-                "The input array could not be properly checked for nan "
-                "values. nan values will be ignored."
+            contains_nan_var = False
+            nan_policy = "omit"
+            warnings.warn(
+                "The input array could not be properly "
+                "checked for nan values. nan values "
+                "will be ignored.",
+                RuntimeWarning,
             )
-            warnings.warn(msg, RuntimeWarning)
 
-    if contains_nan:
-        raise ValueError("Input contains NaNs. Please omit and try again")
+    if contains_nan_var:
+        raise ValueError("The input contains nan values")
 
-    return contains_nan
+    return contains_nan_var, nan_policy
 
 
 def check_ndarray_xy(x, y):
-    """Check if x or y is an ndarray"""
+    """Check if x or y is an ndarray of float"""
     if not isinstance(x, np.ndarray) or not isinstance(y, np.ndarray):
         raise TypeError("x and y must be ndarrays")
 
@@ -69,8 +75,8 @@ def check_reps(reps):
 def _check_distmat(x, y):
     """Check if x and y are distance matrices."""
     if (
-        not np.array_equal(x, x.T)
-        or not np.array_equal(y, y.T)
+        not np.allclose(x, x.T)
+        or not np.allclose(y, y.T)
         or not np.all((x.diagonal() == 0))
         or not np.all((y.diagonal() == 0))
     ):
@@ -94,13 +100,14 @@ def _check_distmat(x, y):
 def _check_kernmat(x, y):
     """Check if x and y are similarity matrices."""
     if (
-        not np.array_equal(x, x.T)
-        or not np.array_equal(y, y.T)
+        not np.allclose(x, x.T)
+        or not np.allclose(y, y.T)
         or not np.all((x.diagonal() == 1))
         or not np.all((y.diagonal() == 1))
     ):
         raise ValueError(
-            "x and y must be distance matrices, {is_sym} symmetric and {one_diag} "
+            "x and y must be kernel similarity matrices, "
+            "{is_sym} symmetric and {one_diag} "
             "ones along the diagonal".format(
                 is_sym="x is not"
                 if not np.array_equal(x, x.T)
@@ -118,54 +125,60 @@ def _check_kernmat(x, y):
 
 def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
     """
-    Compute kernel similarity matrix for the input matrices.
+    Kernel similarity matrices for the inputs.
 
     Parameters
     ----------
-    x, y : ndarray
-        Input data matrices. `x` and `y` must have the same number of
-        samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+    x,y : ndarray of float
+        Input data matrices. ``x`` and ``y`` must have the same number of
+        samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
         `n` is the number of samples and `p` and `q` are the number of
-        dimensions. Alternatively, if `x` and `y` can be distance matrices,
-        where the shapes must both be `(n, n)`, no kernel will be computed.
-    metric : str, optional (default: "gaussian")
-        A function that computes the distance among the samples within each
+        dimensions. Alternatively, ``x`` and ``y`` can be kernel similarity matrices,
+        where the shapes must both be ``(n, n)``.
+    metric : str, callable, or None, default: "gaussian"
+        A function that computes the kernel similarity among the samples within each
         data matrix.
         Valid strings for ``metric`` are, as defined in
-        ``sklearn.metrics.pairwise.pairwise_kernels``,
+        :func:`sklearn.metrics.pairwise.pairwise_kernels`,
 
-            ['additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'gaussian',
-            'laplacian', 'sigmoid', 'cosine']
+            [``"additive_chi2"``, ``"chi2"``, ``"linear"``, ``"poly"``,
+            ``"polynomial"``, ``"rbf"``,
+            ``"laplacian"``, ``"sigmoid"``, ``"cosine"``]
 
-        Set to `None` or `precomputed` if `x` and `y` are already distance
-        matrices. To call a custom function, either create the distance matrix
-        before-hand or create a function of the form ``metric(x, **kwargs)``
-        where `x` is the data matrix for which pairwise distances are
+        Note ``"rbf"`` and ``"gaussian"`` are the same metric.
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already similarity
+        matrices. To call a custom function, either create the similarity matrix
+        before-hand or create a function of the form :func:`metric(x, **kwargs)`
+        where ``x`` is the data matrix for which pairwise kernel similarity matrices are
         calculated and kwargs are extra arguements to send to your custom function.
-    workers : int, optional (default: 1)
+    workers : int, default: 1
         The number of cores to parallelize the p-value computation over.
-        Supply -1 to use all cores available to the Process.
-    **kwargs : optional
-        Optional arguments provided to ``sklearn.metrics.pairwise.pairwise_kernels``
+        Supply ``-1`` to use all cores available to the Process.
+    **kwargs
+        Arbitrary keyword arguments provided to
+        :func:`sklearn.metrics.pairwise.pairwise_kernels`
         or a custom kernel function.
 
     Returns
     -------
-    simx, simy : ndarray
+    simx, simy : ndarray of float
         Similarity matrices based on the metric provided by the user.
     """
     if not metric:
         metric = "precomputed"
-    if metric == "gaussian":
+    if metric in ["gaussian", "rbf"]:
         if "gamma" not in kwargs:
-            l1 = pairwise_distances(x, metric="l1", n_jobs=workers)
-            n = l1.shape[0]
+            l2 = pairwise_distances(x, metric="l2", n_jobs=workers)
+            n = l2.shape[0]
+            # compute median of off diagonal elements
             med = np.median(
                 np.lib.stride_tricks.as_strided(
-                    l1, (n - 1, n + 1), (l1.itemsize * (n + 1), l1.itemsize)
+                    l2, (n - 1, n + 1), (l2.itemsize * (n + 1), l2.itemsize)
                 )[:, 1:]
             )
-            kwargs["gamma"] = 1.0 / (2 * (med ** 2))
+            # prevents division by zero when used on label vectors
+            med = med if med else 1
+            kwargs["gamma"] = 1.0 / (2 * (med**2))
         metric = "rbf"
     if callable(metric):
         simx = metric(x, **kwargs)
@@ -179,48 +192,142 @@ def compute_kern(x, y, metric="gaussian", workers=1, **kwargs):
     return simx, simy
 
 
-def compute_dist(x, y, metric="euclidean", workers=None, **kwargs):
+def _multi_check_kernmat(*args):
+    """Check if every input is a similarity matrix."""
+    for x in args:
+        if not np.allclose(x, x.T) or not np.all((x.diagonal() == 1)):
+            raise ValueError(
+                "x must be a kernel similarity matrix, "
+                "{is_sym} symmetric and {one_diag} "
+                "ones along the diagonal".format(
+                    is_sym="is not" if not np.array_equal(x, x.T) else "is",
+                    one_diag="doesn't have"
+                    if not np.all((x.diagonal() == 1))
+                    else "has",
+                )
+            )
+
+
+def multi_compute_kern(*args, metric="gaussian", workers=1, **kwargs):
     """
-    Compute kernel similarity matrix for the input matrices.
+    Kernel similarity matrices for the input matrices.
 
     Parameters
     ----------
-    x, y : ndarray
-        Input data matrices. `x` and `y` must have the same number of
-        samples. That is, the shapes must be `(n, p)` and `(n, q)` where
-        `n` is the number of samples and `p` and `q` are the number of
-        dimensions. Alternatively, if `x` and `y` can be distance matrices,
-        where the shapes must both be `(n, n)`, no kernel will be computed.
-    metric : str, optional (default: "gaussian")
-        A function that computes the distance among the samples within each
+    *args: ndarray of float
+        Variable length input data matrices. All inputs must have the same
+        number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
+        etc., where `n` is the number of samples and `p` and `q` are the
+        number of dimensions.
+    metric: str, callable, or None, default="gaussian"
+        A function that computes the kernel similarity among the samples within each
         data matrix.
         Valid strings for ``metric`` are, as defined in
-        ``sklearn.metrics.pairwise_distances``,
+        :func:`sklearn.metrics.pairwise.pairwise_kernels`,
 
-            - From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’,
-              ‘manhattan’] See the documentation for scipy.spatial.distance for details
-              on these metrics.
-            - From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’,
-              ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’,
-              ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
-              ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’] See the
-              documentation for scipy.spatial.distance for details on these metrics.
+            [``"additive_chi2"``, ``"chi2"``, ``"linear"``, ``"poly"``,
+            ``"polynomial"``, ``"rbf"``,
+            ``"laplacian"``, ``"sigmoid"``, ``"cosine"``]
 
-        Set to `None` or `precomputed` if `x` and `y` are already distance
-        matrices. To call a custom function, either create the distance matrix
-        before-hand or create a function of the form ``metric(x, **kwargs)``
-        where `x` is the data matrix for which pairwise distances are
+        Note ``"rbf"`` and ``"gaussian"`` are the same metric.
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already similarity
+        matrices. To call a custom function, either create the similarity matrix
+        before-hand or create a function of the form :func:`metric(x, **kwargs)`
+        where ``x`` is the data matrix for which pairwise kernel similarity matrices are
         calculated and kwargs are extra arguements to send to your custom function.
-    workers : int, optional (default: 1)
+    workers: int, default=1
         The number of cores to parallelize the p-value computation over.
-        Supply -1 to use all cores available to the Process.
-    **kwargs : optional
-        Optional arguments provided to ``sklearn.metrics.pairwise_distances`` or a
-        custom kernel function.
+        Supply ``-1`` to use all cores available to the Process.
+    **kwargs
+        Arbitrary keyword arguments provided to
+        :func:`sklearn.metrics.pairwise.pairwise_kernels`
+        or a custom kernel function.
 
     Returns
     -------
-    distx, disty : ndarray
+    sim_matrices: ndarray of float
+        Similarity matrices based on the metric provided by the user.
+        Must be same shape as ''args''.
+    """
+    if not metric:
+        metric = "precomputed"
+    if metric in ["gaussian", "rbf"]:
+        if "gamma" not in kwargs:
+            l2 = pairwise_distances(args[0], metric="l2", n_jobs=workers)
+            n = l2.shape[0]
+            # compute median of off diagonal elements
+            med = np.median(
+                np.lib.stride_tricks.as_strided(
+                    l2, (n - 1, n + 1), (l2.itemsize * (n + 1), l2.itemsize)
+                )[:, 1:]
+            )
+            # prevents division by zero when used on label vectors
+            med = med if med else 1
+            kwargs["gamma"] = 1.0 / (2 * (med**2))
+        metric = "rbf"
+    if callable(metric):
+        sim_mats = []
+        for mat in args:
+            sim_mat = metric(mat, **kwargs)
+            sim_mats.append(sim_mat)
+        sim_matrices = tuple(sim_mats)
+        _multi_check_kernmat(*sim_matrices)
+    else:
+        sim_mats = []
+        for mat in args:
+            sim_mat = pairwise_kernels(mat, metric=metric, n_jobs=workers, **kwargs)
+            sim_mats.append(sim_mat)
+        sim_matrices = tuple(sim_mats)
+    return sim_matrices
+
+
+def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
+    """
+    Distance matrices for the inputs.
+
+    Parameters
+    ----------
+    x,y : ndarray of float
+        Input data matrices. ``x`` and ``y`` must have the same number of
+        samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
+        `n` is the number of samples and `p` and `q` are the number of
+        dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
+        where the shapes must both be ``(n, n)``.
+    metric : str, callable, or None, default: "euclidean"
+        A function that computes the distance among the samples within each
+        data matrix.
+        Valid strings for ``metric`` are, as defined in
+        :func:`sklearn.metrics.pairwise_distances`,
+
+            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
+              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
+              :mod:`scipy.spatial.distance` for details
+              on these metrics.
+            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
+              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
+              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
+              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
+              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
+              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
+              details on these metrics.
+
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
+        matrices. To call a custom function, either create the distance matrix
+        before-hand or create a function of the form ``metric(x, **kwargs)``
+        where ``x`` is the data matrix for which pairwise distances are
+        calculated and ``**kwargs`` are extra arguements to send to your custom
+        function.
+    workers : int, default: 1
+        The number of cores to parallelize the p-value computation over.
+        Supply ``-1`` to use all cores available to the Process.
+    **kwargs
+        Arbitrary keyword arguments provided to
+        :func:`sklearn.metrics.pairwise_distances` or a
+        custom distance function.
+
+    Returns
+    -------
+    distx, disty : ndarray of float
         Distance matrices based on the metric provided by the user.
     """
     if not metric:
@@ -326,7 +433,9 @@ class _PermTree(object):
                 root.add_child(child_node)
                 self._add_levels(child_node, perm_blocks[idxs, 1:], indices[idxs])
 
-    def _permute_level(self, node):
+    def _permute_level(self, node, rng=None):
+        if rng is None:
+            rng = np.random
         if len(node.get_children()) == 0:
             return [node.index]
         else:
@@ -339,13 +448,11 @@ class _PermTree(object):
             shuffle_children = [i for i, label in enumerate(labels) if label >= 0]
             indices = np.asarray(indices)
             if len(shuffle_children) > 1:
-                indices[shuffle_children] = indices[
-                    np.random.permutation(shuffle_children)
-                ]
+                indices[shuffle_children] = indices[rng.permutation(shuffle_children)]
             return np.concatenate(indices)
 
-    def permute_indices(self):
-        return self._permute_level(self.root)[self._index_order]
+    def permute_indices(self, rng=None):
+        return self._permute_level(self.root, rng)[self._index_order]
 
     def original_indices(self):
         return np.arange(len(self._index_order))
@@ -362,22 +469,25 @@ class _PermGroups(object):
         else:
             self.perm_tree = _PermTree(perm_blocks)
 
-    def __call__(self):
+    def __call__(self, rng=None):
+        if rng is None:
+            rng = np.random
         if self.perm_tree is None:
-            order = np.random.permutation(self.n)
+            order = rng.permutation(self.n)
         else:
-            order = self.perm_tree.permute_indices()
+            order = self.perm_tree.permute_indices(rng)
 
         return order
 
 
 # p-value computation
-def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None):
+def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None, random_state=None):
     """Permute the test statistic"""
-    if not permuter:
-        order = np.random.permutation(y.shape[0])
+    rng = check_random_state(random_state)
+    if permuter is None:
+        order = rng.permutation(y.shape[0])
     else:
-        order = permuter()
+        order = permuter(rng)
 
     if is_distsim:
         permy = y[order][:, order]
@@ -389,9 +499,18 @@ def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None):
     return perm_stat
 
 
-def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_blocks=None):
+def perm_test(
+    calc_stat,
+    x,
+    y,
+    reps=1000,
+    workers=1,
+    is_distsim=True,
+    perm_blocks=None,
+    random_state=None,
+):
     """
-    Calculate the p-value for a nonparametric test via permutation.
+    Permutation test for the p-value of a nonparametric test.
 
     This process is completed by first randomly permuting :math:`y` to estimate the null
     distribution and then calculating the probability of observing a test
@@ -400,23 +519,104 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
 
     Parameters
     ----------
-    calc_stat : callable()
-        The method used to calculate the test statistic (must use hyppo API)
-    x, y : ndarray
-        Input data matrices. `x` and `y` must have the same number of
-        samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+    calc_stat : callable
+        The method used to calculate the test statistic (must use hyppo API).
+    x,y : ndarray of float
+        Input data matrices. ``x`` and ``y`` must have the same number of
+        samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
         `n` is the number of samples and `p` and `q` are the number of
-        dimensions. Alternatively, `x` and `y` can be distance matrices,
-        where the shapes must both be `(n, n)`.
-    reps : int, optional (default: 1000)
+        dimensions. Alternatively, ``x`` and ``y`` can be distance or similarity
+        matrices,
+        where the shapes must both be ``(n, n)``.
+    reps : int, default: 1000
         The number of replications used to estimate the null distribution
         when using the permutation test used to calculate the p-value.
-    workers : int, optional (default: 1)
+    workers : int, default: 1
         The number of cores to parallelize the p-value computation over.
-        Supply -1 to use all cores available to the Process.
-    is_distsim : bool, optional (default: True)
-        Whether or not `x` and `y` are distance or similarity matrices. Changes the
-        permutation style of `y`.
+        Supply ``-1`` to use all cores available to the Process.
+    is_distsim : bool, default: True
+        Whether or not ``x`` and ``y`` are distance or similarity matrices.
+    perm_blocks : ndarray, default: None
+        Defines blocks of exchangeable samples during the permutation test.
+        If ``None``, all samples can be permuted with one another. Requires `n`
+        rows. Constructs a tree graph with all samples initially at
+        the root node. Each column partitions samples from the same leaf with
+        shared column label into a child of that leaf. During the permutation
+        test, samples within the same final leaf node are exchangeable
+        and blocks of samples with a common parent node are exchangeable. If a
+        column value is negative, the resulting block is unexchangeable.
+    Returns
+    -------
+    stat : float
+        The computed test statistic.
+    pvalue : float
+        The computed p-value.
+    null_dist : list of float
+        The approximated null distribution of shape ``(reps,)``.
+    """
+    # calculate observed test statistic
+    stat = calc_stat(x, y)
+
+    # make RandomState seeded array
+    if random_state is not None:
+        rng = check_random_state(random_state)
+        random_state = rng.randint(np.iinfo(np.int32).max, size=reps)
+
+    # make random array
+    else:
+        random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
+
+    # calculate null distribution
+    permuter = _PermGroups(y, perm_blocks)
+
+    null_dist = np.array(
+        Parallel(n_jobs=workers)(
+            [
+                delayed(_perm_stat)(calc_stat, x, y, is_distsim, permuter, rng)
+                for rng in random_state
+            ]
+        )
+    )
+    pvalue = (1 + (null_dist >= stat).sum()) / (1 + reps)
+
+    return stat, pvalue, null_dist
+
+
+def _multi_perm_stat(calc_stat, *args):
+    """Permute every entry and calculate test statistic"""
+    # permute each row
+    comb_matrix = np.concatenate(args, axis=1)
+    perm_matrix = np.zeros(np.shape(comb_matrix))
+    for j in range(comb_matrix.shape[1]):
+        order = np.random.permutation(comb_matrix.shape[0])
+        perm_matrix[:, j] = comb_matrix[order, j]
+    perm_args = tuple(np.split(perm_matrix, len(args), axis=1))
+
+    # calculate test statistic using permuted matrices
+    perm_stat = calc_stat(*perm_args)
+
+    return perm_stat
+
+
+def multi_perm_test(calc_stat, *args, reps=1000, workers=1):
+    """
+    Permutation test for the p-value of a nonparametric test with multiple variables.
+
+    Parameters
+    ----------
+    calc_stat : callable
+        The method used to calculate the test statistic (must use hyppo API).
+    *args : ndarray
+        Variable length input data matrices. All inputs must have the same
+        number of samples. That is, the shapes must be ``(n, p)``, ``(n, q)``,
+        etc., where `n` is the number of samples and `p` and `q` are the
+        number of dimensions.
+    reps : int, default: 1000
+        The number of replications used to estimate the null distribution
+        when using the permutation test used to calculate the p-value.
+    workers : int, default: 1
+        The number of cores to parallelize the p-value computation over.
+        Supply ``-1`` to use all cores available to the Process.
 
     Returns
     -------
@@ -424,20 +624,16 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
         The computed test statistic.
     pvalue : float
         The computed p-value.
-    pvalue : float
-        The approximated null distribution of shape `(reps,)`.
+    null_dist : list of float
+        The approximated null distribution of shape ``(reps,)``.
     """
     # calculate observed test statistic
-    stat = calc_stat(x, y)
+    stat = calc_stat(*args)
 
     # calculate null distribution
-    permuter = _PermGroups(y, perm_blocks)
     null_dist = np.array(
         Parallel(n_jobs=workers)(
-            [
-                delayed(_perm_stat)(calc_stat, x, y, is_distsim, permuter)
-                for rep in range(reps)
-            ]
+            [delayed(_multi_perm_stat)(calc_stat, *args) for _ in range(reps)]
         )
     )
     pvalue = (1 + (null_dist >= stat).sum()) / (1 + reps)
@@ -447,23 +643,27 @@ def perm_test(calc_stat, x, y, reps=1000, workers=1, is_distsim=True, perm_block
 
 def chi2_approx(calc_stat, x, y):
     """
-    Calculate the p-value for Dcorr and Hsic via a chi-squared approximation.
+    Fast chi-squared approximation for the p-value.
 
     In the case of distance and kernel methods, Dcorr (and by extension Hsic
-    [#2ChiSq]_) can be approximated via a chi-squared distribution [#1ChiSq].
+    :footcite:p:`shenExactEquivalenceDistance2020`)
+    can be approximated via a chi-squared distribution
+    :footcite:p:`shenChiSquareTestDistance2021`.
     This approximation is also applicable for the nonparametric MANOVA via
-    independence testing method in our package [#3ChiSq]_.
+    independence testing method in our package
+    :footcite:p:`pandaNonparMANOVAIndependence2021`.
 
     Parameters
     ----------
-    calc_stat : callable()
+    calc_stat : callable
         The method used to calculate the test statistic (must use hyppo API).
-    x, y : ndarray
-        Input data matrices. `x` and `y` must have the same number of
-        samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+    x,y : ndarray of float
+        Input data matrices. ``x`` and ``y`` must have the same number of
+        samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
         `n` is the number of samples and `p` and `q` are the number of
-        dimensions. Alternatively, `x` and `y` can be distance matrices,
-        where the shapes must both be `(n, n)`.
+        dimensions. Alternatively, ``x`` and ``y`` can be distance or similarity
+        matrices,
+        where the shapes must both be ``(n, n)``.
 
     Returns
     -------
@@ -474,14 +674,7 @@ def chi2_approx(calc_stat, x, y):
 
     References
     ----------
-    .. [#1ChiSq] Shen, C., & Vogelstein, J. T. (2019). The Chi-Square Test of Distance
-                 Correlation. arXiv preprint arXiv:1912.12150.
-    .. [#2ChiSq] Shen, C., & Vogelstein, J. T. (2018). The exact equivalence of
-                 distance and kernel methods for hypothesis testing. arXiv preprint
-                 arXiv:1806.05514.
-    .. [#3ChiSq] Panda, S., Shen, C., Perry, R., Zorn, J., Lutz, A., Priebe, C. E., &
-                 Vogelstein, J. T. (2019). Nonparametric MANOVA via Independence
-                 Testing. arXiv e-prints, arXiv-1910.
+    .. footbibliography::
     """
     n = x.shape[0]
     stat = calc_stat(x, y)

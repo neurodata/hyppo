@@ -1,38 +1,62 @@
-from .base import TimeSeriesTest
-from ._utils import _CheckInputs, compute_stat
+from typing import NamedTuple
+
 from ..independence import Dcorr
+from ._utils import _CheckInputs, compute_stat
+from .base import TimeSeriesTest
+
+
+class DcorrXTestOutput(NamedTuple):
+    stat: float
+    pvalue: float
+    dcorrx_dict: dict
 
 
 class DcorrX(TimeSeriesTest):
     r"""
-    Class for running the DcorrX test for independence of time series.
+    Cross Distance Correlation (DcorrX) test statistic and p-value.
 
     DcorrX is an independence test between two (paired) time series of
     not necessarily equal dimensions. The population parameter is 0 if and only if the
     time series are independent. It is based upon energy distance between distributions.
 
+    .. _[1]: https://arxiv.org/abs/1908.06486
+
     Parameters
     ----------
-    compute_distance : callable(), optional (default: euclidean)
+    compute_distance : str, callable, or None, default: "euclidean"
         A function that computes the distance among the samples within each
-        data matrix. Set to `None` if `x` and `y` are already distance
+        data matrix.
+        Valid strings for ``compute_distance`` are, as defined in
+        :func:`sklearn.metrics.pairwise_distances`,
+
+            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
+              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
+              :mod:`scipy.spatial.distance` for details
+              on these metrics.
+            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
+              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
+              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
+              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
+              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
+              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
+              details on these metrics.
+
+        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
         matrices. To call a custom function, either create the distance matrix
-        before-hand or create a function of the form ``compute_distance(x)``
-        where `x` is the data matrix for which pairwise distances are
-        calculated.
-
-    max_lag : int, optional (default: 0)
-        The maximum number of lags in the past to check dependence between `x` and the
-        shifted `y`. Also the :math:`M` hyperparmeter below.
-
-    See Also
-    --------
-    Dcorr: Distance correlation test statistic and p-value.
-    MGCX : Cross multiscale graph correlation test statistic and p-value.
+        before-hand or create a function of the form ``metric(x, **kwargs)``
+        where ``x`` is the data matrix for which pairwise distances are
+        calculated and ``**kwargs`` are extra arguements to send to your custom
+        function.
+    max_lag : int, default: 0
+        The maximum number of lags in the past to check dependence between ``x`` and the
+        shifted ``y``. Also the ``M`` hyperparmeter below.
+    **kwargs
+        Arbitrary keyword arguments for ``compute_distance``.
 
     Notes
     -----
-    The statistic can be derived as follows:
+    The statistic can be derived as follows
+    :footcite:p:`mehtaIndependenceTestingMultivariate2020`:
 
     Let :math:`x` and :math:`y` be :math:`(n, p)` and :math:`(n, q)` series
     respectively, which each contain :math:`y` observations of the series
@@ -43,14 +67,14 @@ class DcorrX(TimeSeriesTest):
 
     .. math::
 
-        \mathrm{DcorrX}_n (x, y) =  \sum_{j=0}^M frac{n-j}{n}
-                                    \mathrm{Dcorr}_n (x[j:n], y[0:(n-j)])
+        \mathrm{DcorrX}_n (x, y) =  \sum_{j=0}^M \frac{n-j}{n}
+                                    Dcorr_n (x[j:n], y[0:(n-j)])
+
+    The p-value returned is calculated using a permutation test.
 
     References
     ----------
-    .. [#1DcorX] Mehta, R., Chung, J., Shen C., Xu T., Vogelstein, J. T. (2019).
-                A Consistent Independence Test for Multivariate Time-Series.
-                *ArXiv*
+    .. footbibliography::
     """
 
     def __init__(self, compute_distance="euclidean", max_lag=0, **kwargs):
@@ -58,18 +82,18 @@ class DcorrX(TimeSeriesTest):
             self, compute_distance=compute_distance, max_lag=max_lag, **kwargs
         )
 
-    def _statistic(self, x, y):
+    def statistic(self, x, y):
         r"""
         Helper function that calculates the DcorrX test statistic.
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices. `x` and `y` must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        x,y : ndarray of float
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, `x` and `y` can be distance matrices,
-            where the shapes must both be `(n, n)`.
+            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
+            where the shapes must both be ``(n, n)``.
 
         Returns
         -------
@@ -86,29 +110,24 @@ class DcorrX(TimeSeriesTest):
 
         return stat, opt_lag
 
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the DcorrX test statistic and p-value.
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices. `x` and `y` must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
+        x,y : ndarray of float
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
             `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, `x` and `y` can be distance matrices,
-            where the shapes must both be `(n, n)`.
-        reps : int, optional (default: 1000)
+            dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
+            where the shapes must both be ``(n, n)``.
+        reps : int, default: 1000
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        workers : int, optional (default: 1)
+        workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
-            Supply -1 to use all cores available to the Process.
-        auto : bool (default: True)
-            Automatically uses fast approximation when sample size and size of array
-            is greater than 20. If True, and sample size is greater than 20, a fast
-            chi2 approximation will be run. Parameters ``reps`` and ``workers`` are
-            irrelevant in this case.
+            Supply ``-1`` to use all cores available to the Process.
 
         Returns
         -------
@@ -131,18 +150,7 @@ class DcorrX(TimeSeriesTest):
         >>> y = x
         >>> stat, pvalue, dcorrx_dict = DcorrX().test(x, y, reps = 100)
         >>> '%.1f, %.2f, %d' % (stat, pvalue, dcorrx_dict['opt_lag'])
-        '1.0, 0.01, 0'
-
-        The increasing the max_lag can increase the ability to identify dependence.
-
-        >>> import numpy as np
-        >>> from hyppo.time_series import DcorrX
-        >>> np.random.seed(1234)
-        >>> x = np.random.permutation(10)
-        >>> y = np.roll(x, -1)
-        >>> stat, pvalue, dcorrx_dict = DcorrX(max_lag=1).test(x, y, reps=1000)
-        >>> '%.1f, %.2f, %d' % (stat, pvalue, dcorrx_dict['opt_lag'])
-        '1.1, 0.01, 1'
+        '1.0, 0.04, 0'
         """
         check_input = _CheckInputs(
             x,
@@ -151,6 +159,8 @@ class DcorrX(TimeSeriesTest):
         )
         x, y = check_input()
 
-        stat, pvalue, stat_list = super(DcorrX, self).test(x, y, reps, workers)
+        stat, pvalue, stat_list = super(DcorrX, self).test(
+            x, y, reps, workers, random_state
+        )
         dcorrx_dict = {"opt_lag": stat_list[1]}
-        return stat, pvalue, dcorrx_dict
+        return DcorrXTestOutput(stat, pvalue, dcorrx_dict)

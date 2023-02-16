@@ -1,11 +1,12 @@
+from typing import NamedTuple
+
 import numpy as np
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import pairwise_distances
 
-from .base import IndependenceTest
 from ._utils import _CheckInputs, sim_matrix
-from . import Dcorr
-
+from .base import IndependenceTest
+from .dcorr import _dcorr
 
 FOREST_TYPES = {
     "classifier": RandomForestClassifier,
@@ -13,33 +14,41 @@ FOREST_TYPES = {
 }
 
 
+class KMERFTestOutput(NamedTuple):
+    stat: float
+    pvalue: float
+    kmerf_dict: dict
+
+
 class KMERF(IndependenceTest):
     r"""
-    Class for calculating the KMERF test statistic and p-value.
+    Kernel Mean Embedding Random Forest (KMERF) test statistic and p-value.
 
     The KMERF test statistic is a kernel method for calculating independence by using
     a random forest induced similarity matrix as an input, and has been shown to have
     especially high gains in finite sample testing power in high dimensional settings
-    [#1KMERF]_.
+    :footcite:p:`shenLearningInterpretableCharacteristic2020`.
 
     Parameters
     ----------
-    forest : {"classifier", "regressor"}
+    forest : "regressor", "classifier", default: "regressor"
         Type of forest used when running the independence test. If the `y` input in
         ``test`` is categorial, use the "classifier" keyword.
-    ntrees : int, optional (default: 500)
+    ntrees : int, default: 500
         The number of trees used in the random forest.
-    **kwargs : optional
+    **kwargs
         Additional arguments used for the forest (see
-        ``sklearn.ensemble.RandomForestClassifier`` or
-        ``sklearn.ensemble.RandomForestRegressor``)
+        :class:`sklearn.ensemble.RandomForestClassifier` or
+        :class:`sklearn.ensemble.RandomForestRegressor`)
 
     Notes
     -----
-    A description of KMERF in greater detail can be found in [#1KMERF]_. It is computed
+    A description of KMERF in greater detail can be found in
+    :footcite:p:`shenLearningInterpretableCharacteristic2020`. It is computed
     using the following steps:
 
-    Let :math:`x` and :math:`y` be :math:`(n, p)` samples of random variables
+    Let :math:`x` and :math:`y` be :math:`(n, p)` and :math:`(n, 1)` samples of random
+    variables
     :math:`X` and :math:`Y`.
 
     + Run random forest with :math:`m` trees. Independent bootstrap samples of size
@@ -55,8 +64,8 @@ class KMERF(IndependenceTest):
          \mathbf{K}^{\mathbf{x}}_{ij} = \frac{1}{m} \sum_{w = 1}^{m} I(\phi_w(x_i)
          = \phi_w(x_j))
 
-    where :math:`I(\cdot)`$` is the indicator function for how often two observations
-    lie in the same partition.
+      where :math:`I(\cdot)`$` is the indicator function for how often two observations
+      lie in the same partition.
 
     + Compute the induced kernel correlation: Let
 
@@ -78,17 +87,15 @@ class KMERF(IndependenceTest):
 
       .. math::
 
-         KMERF_n(\mathbf{x}, \mathbf{y}) = \frac{1}{n(n-3)}
+         \mathrm{KMERF}_n(\mathbf{x}, \mathbf{y}) = \frac{1}{n(n-3)}
          \mathrm{tr} \left( \mathbf{L}^{\mathbf{x}} \mathbf{L}^{\mathbf{y}} \right)
 
-    The p-value returned is calculated using a permutation test using a
-    `permutation test <https://hyppo.neurodata.io/reference/tools.html#permutation-test>`_.
+    The p-value returned is calculated using a permutation test using
+    :meth:`hyppo.tools.perm_test`.
 
     References
     ----------
-    .. [#1KMERF] Shen, C., Panda, S., & Vogelstein, J. T. (2018). Learning
-                 Interpretable Characteristic Kernels via Decision Forests.
-                 arXiv preprint arXiv:1812.00029.
+    .. footbibliography::
     """
 
     def __init__(self, forest="regressor", ntrees=500, **kwargs):
@@ -98,54 +105,53 @@ class KMERF(IndependenceTest):
             raise ValueError("Forest must be of type classification or regression")
         IndependenceTest.__init__(self)
 
-    def _statistic(self, x, y):
+    def statistic(self, x, y):
         r"""
         Helper function that calculates the KMERF test statistic.
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices. `x` and `y` must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
-            `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, `x` and `y` can be distance matrices,
-            where the shapes must both be `(n, n)`.
+        x,y : ndarray of float
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            samples. That is, the shapes must be ``(n, p)`` and ``(n, 1)`` where
+            `n` is the number of samples and `p` is the number of
+            dimensions.
 
         Returns
         -------
         stat : float
             The computed KMERF statistic.
-
-        y must be categorical
         """
         y = y.reshape(-1)
         self.clf.fit(x, y)
         distx = np.sqrt(1 - sim_matrix(self.clf, x))
         y = y.reshape(-1, 1)
         disty = pairwise_distances(y, metric="euclidean")
-        stat = Dcorr(compute_distance=None)._statistic(distx, disty)
+        stat = _dcorr(distx, disty, bias=False, is_fast=False)
         self.stat = stat
+
+        # get feature importances from gini-based random forest
+        self.importances = self.clf.feature_importances_
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
         Calculates the KMERF test statistic and p-value.
 
         Parameters
         ----------
-        x, y : ndarray
-            Input data matrices. `x` and `y` must have the same number of
-            samples. That is, the shapes must be `(n, p)` and `(n, q)` where
-            `n` is the number of samples and `p` and `q` are the number of
-            dimensions. Alternatively, `x` and `y` can be distance matrices,
-            where the shapes must both be `(n, n)`.
-        reps : int, optional (default: 1000)
+        x,y : ndarray of float
+            Input data matrices. ``x`` and ``y`` must have the same number of
+            samples. That is, the shapes must be ``(n, p)`` and ``(n, 1)`` where
+            `n` is the number of samples and `p` is the number of
+            dimensions.
+        reps : int, default: 1000
             The number of replications used to estimate the null distribution
             when using the permutation test used to calculate the p-value.
-        workers : int, optional (default: 1)
+        workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
-            Supply -1 to use all cores available to the Process.
+            Supply ``-1`` to use all cores available to the Process.
 
         Returns
         -------
@@ -153,6 +159,11 @@ class KMERF(IndependenceTest):
             The computed KMERF statistic.
         pvalue : float
             The computed KMERF p-value.
+        kmerf_dict : dict
+            Contains additional useful returns containing the following keys:
+
+                - feat_importance : ndarray of float
+                    An array containing the importance of each dimension
 
         Examples
         --------
@@ -160,10 +171,15 @@ class KMERF(IndependenceTest):
         >>> from hyppo.independence import KMERF
         >>> x = np.arange(100)
         >>> y = x
-        >>> '%.1f, %.2f' % KMERF().test(x, y) # doctest: +SKIP
+        >>> '%.1f, %.2f' % KMERF().test(x, y)[:1] # doctest: +SKIP
         '1.0, 0.001'
         """
         check_input = _CheckInputs(x, y, reps=reps)
         x, y = check_input()
 
-        return super(KMERF, self).test(x, y, reps, workers, is_distsim=False)
+        stat, pvalue = super(KMERF, self).test(
+            x, y, reps, workers, is_distsim=False, random_state=random_state
+        )
+        kmerf_dict = {"feat_importance": self.importances}
+
+        return KMERFTestOutput(stat, pvalue, kmerf_dict)
