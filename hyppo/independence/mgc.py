@@ -112,7 +112,7 @@ class MGC(IndependenceTest):
          \mathrm{MGC}_n (x, y) = \max_{(k, l)} R \left(c^{kl} \left( x_n, y_n \right)
                                                     \right)
 
-    The test statistic returns a value between :math:`(-1, 1)` since it is
+    The test statistic returns a value between :math:`(0, 1)` since it is
     normalized.
 
     The p-value returned is calculated using a permutation test using
