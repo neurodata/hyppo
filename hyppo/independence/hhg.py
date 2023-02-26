@@ -130,7 +130,7 @@ class HHG(IndependenceTest):
     values less than the :math:`i`-th point.
 
     :math:`D` is notably sensitive to ties and gets smaller the more pairs of variables with identical values.
-    If there are no ties in the data,D ranges between -0.5 and 1, with 1 indicating complete dependence.
+    If there are no ties in the data,D ranges between 0 and 1, with 1 indicating complete dependence.
     :footcite:p:`sasHoeffdingDependenceCoefficient`
 
     The p-value returned is calculated using a permutation test using
