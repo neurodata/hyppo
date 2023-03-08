@@ -6,7 +6,7 @@ from ...tools import indep_normal, power
 from .. import ConditionalDcorr
 
 
-class TestDcorrStat:
+class TestCDcorrStat:
     @pytest.mark.parametrize("n", [100, 200])
     @pytest.mark.parametrize("obs_stat", [0.0])
     def test_linear_oned(self, n, obs_stat):
@@ -28,7 +28,7 @@ class TestDcorrStat:
         assert pvalue1 == pvalue2
 
 
-class TestDcorrTypeIError:
+class TestCDcorrTypeIError:
     def test_oned(self):
         np.random.seed(123456789)
         est_power = power(
@@ -39,4 +39,4 @@ class TestDcorrTypeIError:
             p=1,
             alpha=0.05,
         )
-        assert est_power <= 0.05
+        assert assert_almost_equal(0.05, est_power, decimal=2)
