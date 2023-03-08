@@ -334,7 +334,7 @@ def correlated_binomial(n, p=1, random_state=None):
 
 
 def correlated_normal(n, p=1, random_state=None):
-    """
+    r"""
     Conditionally dependent normal distributions. Example 5 from :footcite:p:`wang2015conditional`
 
     :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}`:
@@ -382,7 +382,7 @@ def correlated_normal(n, p=1, random_state=None):
 
 
 def correlated_normal_nonliear(n, p=1, random_state=None):
-    """
+    r"""
     Conditionally dependent normal distributions with nonlinear dependence.
     Example 7 from :footcite:p:`wang2015conditional`
 
@@ -435,7 +435,7 @@ def correlated_normal_nonliear(n, p=1, random_state=None):
 
 
 def correlated_lognormal(n, p=1, random_state=None):
-    """
+    r"""
     Example 5 from :footcite:p:`szekelyPartialDistanceCorrelation2014a`
     :math:`(X, Y, Z) \in \mathbb{R} \times \mathbb{R} \times \mathbb{R}`:
 
@@ -463,7 +463,7 @@ def correlated_lognormal(n, p=1, random_state=None):
 
 
 def correlated_t_linear(n, p=4, random_state=None):
-    """
+    r"""
     Conditionally dependent t-distributed data with linear dependence.
     Example 9 from :footcite:p:`wang2015conditional`
 
@@ -507,7 +507,7 @@ def correlated_t_linear(n, p=4, random_state=None):
 
 
 def correlated_t_quadratic(n, p=10, random_state=None):
-    """
+    r"""
     Conditionally dependent t-distributed data with quadratic dependence.
     Example 10 from :footcite:p:`wang2015conditional`
 
@@ -552,7 +552,7 @@ def correlated_t_quadratic(n, p=10, random_state=None):
 
 
 def correlated_t_nonlinear(n, p=4, random_state=None):
-    """
+    r"""
     Conditionally dependent t-distributed data with nonlinear dependence.
     Example 11 from :footcite:p:`wang2015conditional`
 
