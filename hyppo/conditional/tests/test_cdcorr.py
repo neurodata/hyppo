@@ -39,4 +39,4 @@ class TestCDcorrTypeIError:
             p=1,
             alpha=0.05,
         )
-        assert assert_almost_equal(0.05, est_power, decimal=2)
+        assert_almost_equal(0.05, est_power, decimal=2)
