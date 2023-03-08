@@ -154,12 +154,15 @@ class PartialCorr(ConditionalIndependenceTest):
         x, y, z = check_input()
 
         if auto:  # run t-stat
-            self.stat = self.statistic(x, y, z)
+            stat = self.statistic(x, y, z)
 
             n = x.shape[0]
             dof = n - 3
-            tstat = self.stat * np.sqrt(dof) / np.sqrt(1 - stat**2)
-            self.pvalue = 1 - t.cdf(np.abs(tstat), dof)
+            tstat = stat * np.sqrt(dof) / np.sqrt(1 - stat**2)
+            pvalue = 1 - t.cdf(np.abs(tstat), dof)
+
+            self.stat = stat
+            self.pvalue = pvalue
             self.null_dist = None
         else:  # run permutation
             stat, pvalue, null_dist = perm_test(
