@@ -180,9 +180,9 @@ class ConditionalDcorr(ConditionalIndependenceTest):
 
         stat, pvalue, null_dist = perm_test(
             self.statistic,
-            x,
-            y,
-            z,
+            x=x,
+            y=y,
+            z=z,
             reps=reps,
             workers=workers,
             is_distsim=self.is_distance,

@@ -39,11 +39,6 @@ class PartialCorr(ConditionalIndependenceTest):
         where ``x`` is the data matrix for which pairwise distances are
         calculated and ``**kwargs`` are extra arguements to send to your custom
         function.
-    bandwith : str, scalar, 1d-array
-        The method used to calculate the bandwidth used for kernel density estimate of
-        the conditional matrix. This can be ‘scott’, ‘silverman’, a scalar constant or a
-        1d-array with length ``r`` which is the dimensions of the conditional matrix.
-        If None (default), ‘scott’ is used.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
 
@@ -167,9 +162,9 @@ class PartialCorr(ConditionalIndependenceTest):
         else:  # run permutation
             stat, pvalue, null_dist = perm_test(
                 self.statistic,
-                x,
-                y,
-                z,
+                x=x,
+                y=y,
+                z=z,
                 reps=reps,
                 workers=workers,
                 is_distsim=False,

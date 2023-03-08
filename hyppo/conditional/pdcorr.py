@@ -63,7 +63,8 @@ class PartialDcorr(ConditionalIndependenceTest):
     where
     .. math::
         P_{z^\perp}(x) &= C^x - \frac{(C^x\cdot C^z)}{ C^z \cdot C^z) C^z
-    is the orthogonal proejction of :math:`C^x` onto the subspace orthogonal to :math:`C^z`. The partial distance correlation is defined as
+    is the orthogonal proejction of :math:`C^x` onto the subspace orthogonal to :math:`C^z`.
+    The partial distance correlation is defined as
 
     .. math::
         \mathrm{PDcorr}_n (x, y; z) &= \frac{P_{z^\perp}(x)\cdot P_{z^\perp}(y)}{\abs{P_{z^\perp}(x)}\abs{P_{z^\perp}(y)}}
@@ -182,9 +183,9 @@ class PartialDcorr(ConditionalIndependenceTest):
 
         stat, pvalue, null_dist = perm_test(
             self.statistic,
-            x,
-            y,
-            z,
+            x=x,
+            y=y,
+            z=z,
             reps=reps,
             workers=workers,
             is_distsim=self.is_distance,
