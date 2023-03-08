@@ -1,4 +1,4 @@
-from itertools import permutation
+from itertools import permutations
 
 import numpy as np
 import pytest
@@ -16,7 +16,7 @@ class TestErrorWarn:
         y = np.arange(20)
         z = [5] * 20
 
-        for data in permutation((x, y, z)):
+        for data in permutations((x, y, z)):
             assert_raises(TypeError, _CheckInputs(*data))
 
     def test_error_shape(self):
