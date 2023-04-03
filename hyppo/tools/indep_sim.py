@@ -735,7 +735,7 @@ def _square_diamond(n, p, noise=False, low=-1, high=1, period=-np.pi / 2):
     sig = np.identity(p)
     gauss_noise = np.random.multivariate_normal(np.zeros(p), sig, size=n)
 
-    x = u * np.cos(period) + v * np.sin(period) + 0.05 * p * gauss_noise
+    x = u * np.cos(period) + v * np.sin(period) + 0.05 * p * gauss_noise * noise
     y = -u * np.sin(period) + v * np.cos(period)
 
     return x, y
