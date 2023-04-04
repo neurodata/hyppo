@@ -13,11 +13,11 @@ class dHsic(DVariateTest):
     dHsic is a non-parametric kernel-based independence test between an
     arbitrary number of variables. The dHsic statistic is 0 if the variables
     are jointly independent and positive if the variables are dependent
-    :footcite:p:`grettonKernelJointIndependence2016`.
+    :footcite:p:`pfister2018kernel`.
     The default choice is the Gaussian kernel, which uses the median distance
     as the bandwidth, which is a characteristic kernel that guarantees that
     dHsic is a consistent test
-    :footcite:p:`grettonKernelJointIndependence2016`
+    :footcite:p:`pfister2018kernel`
     :footcite:p:`grettonKernelStatisticalTest2007`
     :footcite:p:`grettonConsistentNonparametricTests2010`.
 
@@ -47,7 +47,7 @@ class dHsic(DVariateTest):
     Notes
     -----
     The statistic can be derived as follows
-    :footcite:p:`grettonKernelJointIndependence2016`:
+    :footcite:p:`pfister2018kernel`:
 
     dHsic builds on the two-variable Hilbert Schmidt Independence Criterion (Hsic),
     implemented in :class:`hyppo.independence.Hsic`, but allows for an arbitrary

@@ -43,6 +43,9 @@ class KMERF(IndependenceTest):
 
     Notes
     -----
+    .. note::
+       This algorithm is currently under review at a peer-review journal.
+
     A description of KMERF in greater detail can be found in
     :footcite:p:`shenLearningInterpretableCharacteristic2020`. It is computed
     using the following steps:

@@ -135,8 +135,10 @@ class FSSD(GofTest):
     and a set of paired test locations. The statistic is n*FSSD^2.
     The statistic can be negative because of the unbiased estimator.
 
-    :math:`H0` : the sample follows :math:`p`
-    :math:`H1` : the sample does not follow :math:`p`
+    .. math::
+
+       H_0 &: \text{ the sample follows } p \\
+       H_A &: \text{ the sample does not follow } p
 
     :math:`p` is specified to the constructor in the form of an UnnormalizedDensity.
 
@@ -147,17 +149,17 @@ class FSSD(GofTest):
     density, the GoF test tests whether or not the sample :math:`\{ \mathbf{x}_i \}_{i=1}^n`
     is distributed according to a known :math:`p`.
 
-    The implemented test relies on a new test statistic called The Finite-Set Stein Discrepancy (FSSD)
+    The implemented test relies on a new test statistic called The Finite-Set Stein Discrepancy (FSSD) :footcite:p:`jitkrittum2017linear`
     which is a discrepancy measure between a density and a sample. Unique features of the new goodness-of-fit test are:
 
-    It makes only a few mild assumptions on the distributions :math:`p` and :math:`q`. The model :math:`p`
-    can take almost any form. The normalizer of :math:`p` is not assumed known. The test only assesses the goodness of
-    :math:`p` through :math:`\nabla_{\mathbf{x}} \log p(\mathbf{x})` i.e., the first derivative of the log density.
+    * It makes only a few mild assumptions on the distributions :math:`p` and :math:`q`. The model :math:`p`
+      can take almost any form. The normalizer of :math:`p` is not assumed known. The test only assesses the goodness of
+      :math:`p` through :math:`\nabla_{\mathbf{x}} \log p(\mathbf{x})` i.e., the first derivative of the log density.
 
-    The runtime complexity of the full test (both parameter tuning and the actual test) is
-    :math:`\mathcal{O}(n)` i.e., linear in the sample size.
+    * The runtime complexity of the full test (both parameter tuning and the actual test) is
+      :math:`\mathcal{O}(n)` i.e., linear in the sample size.
 
-    It returns a set of points (features) which indicate where :math:`p` fails to fit the data.
+    * It returns a set of points (features) which indicate where :math:`p` fails to fit the data.
 
     The FSSD test requires that the derivative of :math:`\log p` exists.
     The test requires a technical condition called the "vanishing boundary" condition for it to be consistent.
