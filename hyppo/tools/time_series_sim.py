@@ -227,8 +227,8 @@ def extinct_gaussian_process(n, phi=0.2, extinction_rate=0.5, radius=1):
         msg = "extinction_rate must be between 0 and 1, inclusive."
         raise ValueError(msg)
 
-    X = np.zeros(n)
-    Y = np.zeros(n)
+    x = np.zeros(n)
+    y = np.zeros(n)
 
     for t in range(0, n):
         while True:
@@ -240,13 +240,13 @@ def extinct_gaussian_process(n, phi=0.2, extinction_rate=0.5, radius=1):
                 break
 
         if t == 0:
-            X[t] = eta
-            Y[t] = epsilon
+            x[t] = eta
+            y[t] = epsilon
         else:
-            X[t] = phi * X[t - 1] + epsilon
-            Y[t] = phi * Y[t - 1] + eta
+            x[t] = phi * x[t - 1] + epsilon
+            y[t] = phi * y[t - 1] + eta
 
-    return X, Y
+    return x, y
 
 
 TS_SIMS = {
@@ -286,4 +286,11 @@ def ts_sim(sim, n, **kwargs):
     else:
         sim = TS_SIMS[sim]
 
-    return sim(n, **kwargs)
+    x, y = sim(n, **kwargs)
+
+    if x.ndim == 1:
+        x = x[:, np.newaxis]
+    if y.ndim == 1:
+        y = y[:, np.newaxis]
+
+    return x, y
