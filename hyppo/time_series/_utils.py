@@ -31,7 +31,7 @@ class _CheckInputs:
         if self.reps:
             check_reps(self.reps)
 
-        return self.x, self.y
+        return self.x, self.y, self.max_lag
 
     def check_dim_xy(self):
         # check if x and y are ndarrays
@@ -64,9 +64,10 @@ class _CheckInputs:
 
     def _check_max_lag(self):
         if not self.max_lag:
-            self.max_lag = np.ceil(self.max_lag)
+            n = self.x.shape[0]
+            self.max_lag = np.ceil(np.log(n))
 
-        return self.max_lag
+        return int(self.max_lag)
 
     def _check_min_samples(self):
         nx = self.x.shape[0]

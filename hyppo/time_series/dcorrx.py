@@ -1,14 +1,6 @@
-from typing import NamedTuple
-
 from ..independence import Dcorr
 from ._utils import _CheckInputs, compute_stat
-from .base import TimeSeriesTest
-
-
-class DcorrXTestOutput(NamedTuple):
-    stat: float
-    pvalue: float
-    dcorrx_dict: dict
+from .base import TimeSeriesTest, TimeSeriesTestOutput
 
 
 class DcorrX(TimeSeriesTest):
@@ -157,10 +149,10 @@ class DcorrX(TimeSeriesTest):
             y,
             max_lag=self.max_lag,
         )
-        x, y = check_input()
+        x, y, self.max_lag = check_input()
 
         stat, pvalue, stat_list = super(DcorrX, self).test(
             x, y, reps, workers, random_state
         )
         dcorrx_dict = {"opt_lag": stat_list[1]}
-        return DcorrXTestOutput(stat, pvalue, dcorrx_dict)
+        return TimeSeriesTestOutput(stat, pvalue, dcorrx_dict)

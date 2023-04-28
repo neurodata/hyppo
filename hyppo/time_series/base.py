@@ -2,9 +2,14 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 from joblib import Parallel, delayed
+from sklearn.utils import check_random_state
 
 from ..tools import compute_dist
-from sklearn.utils import check_random_state
+
+
+class TimeSeriesTestOutput(NamedTuple):
+    stat: float
+    pvalue: float
 
 
 class TimeSeriesTest(ABC):
