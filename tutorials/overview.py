@@ -77,7 +77,7 @@ plt.show()
 
 ########################################################################################
 # Let's ask the question: are ``x`` and ``y`` independent? From the description given
-# above, the answer to that is obviously yes.
+# above, the answer to that is obviously no.
 # From the simulation visualization, it's hard to tell.
 # We can verify whether or not we can see a trend within the data by
 # running an independence test. Let's use the test multiscale graph correlation
@@ -109,7 +109,7 @@ print(stat, pvalue)
 # :mod:`hyppo.independence` have 2 outputs.
 #
 # We see that we are right! Since the p-value is less than the alpha level of 0.05, we
-# can conclude that random variables :math:`X` and :math:`Y` are dependent (and reject the hypothesis that they are independent). And
+# can conclude that random variables :math:`X` and :math:`Y` are dependent (and reject the null hypothesis that they are independent). And
 # that's it!
 
 ########################################################################################
