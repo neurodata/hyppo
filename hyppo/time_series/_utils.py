@@ -23,13 +23,14 @@ class _CheckInputs:
         check_ndarray_xy(self.x, self.y)
         contains_nan(self.x)
         contains_nan(self.y)
-        self.max_lag = self._check_max_lag()
         self.x, self.y = self.check_dim_xy()
         self.x, self.y = convert_xy_float64(self.x, self.y)
         self._check_min_samples()
 
         if self.reps:
             check_reps(self.reps)
+
+        self.max_lag = check_max_lag(self.max_lag, self.x.shape[0])
 
         return self.x, self.y, self.max_lag
 
@@ -62,13 +63,6 @@ class _CheckInputs:
                 "Shape mismatch, x and y must have shape [n, p] and [n, q]."
             )
 
-    def _check_max_lag(self):
-        if not self.max_lag:
-            n = self.x.shape[0]
-            self.max_lag = np.ceil(np.log(n))
-
-        return int(self.max_lag)
-
     def _check_min_samples(self):
         nx = self.x.shape[0]
         ny = self.y.shape[0]
@@ -77,23 +71,48 @@ class _CheckInputs:
             raise ValueError("Number of samples is too low")
 
 
-def compute_stat(x, y, indep_test, compute_distance, max_lag, **kwargs):
-    """Compute time series test statistic"""
-    # calculate distance matrices
-    distx, disty = compute_dist(x, y, metric=compute_distance, **kwargs)
+def check_max_lag(max_lag, n):
+    if max_lag is None:
+        max_lag = int(np.ceil(np.log(n)))
+    elif not np.issubdtype(type(max_lag), np.integer):
+        raise ValueError("max_lag must be an integer.")
+    elif max_lag < 0:
+        raise ValueError("max_lag must be >= 0.")
 
-    # calculate dep_lag when max_lag is 0
-    dep_lag = []
-    indep_test = indep_test(compute_distance=compute_distance, **kwargs)
-    indep_test_stat = indep_test.statistic(x, y)
-    dep_lag.append(indep_test_stat)
+    return max_lag
+
+
+def compute_stat(x, y, calc_stat, max_lag, is_distsim):
+    """
+    Computes time series test statistic and optimal lag.
+
+    Parameters
+    ----------
+    x,y : ndarray of float
+        Input data matrices. ``x`` and ``y`` must have the same number of
+        samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
+        `n` is the number of samples and `p` and `q` are the number of
+        dimensions. Alternatively, ``x`` and ``y`` can be distance or similarity
+        matrices, where the shapes must both be ``(n, n)``.
+    calc_stat : callable
+        The method used to calculate the test statistic (must use hyppo API).
+    max_lag : int
+        The maximum lag to consider when computing the test statistic.
+    is_distsim : bool
+        Whether or not ``x`` and ``y`` are distance or similarity matrices.
+    """
 
     # loop over time points and find max test statistic
-    n = distx.shape[0]
-    for j in range(1, max_lag + 1):
-        slice_distx = distx[j:n, j:n]
-        slice_disty = disty[0 : (n - j), 0 : (n - j)]
-        stat = indep_test.statistic(slice_distx, slice_disty)
+    dep_lag = []
+    n = x.shape[0]
+    for j in range(0, max_lag + 1):
+        if is_distsim:
+            slice_x = x[j:n, j:n]
+            slice_y = y[0 : (n - j), 0 : (n - j)]
+        else:
+            slice_x = x[j:n, :]
+            slice_y = y[0 : (n - j), :]
+        stat = calc_stat(slice_x, slice_y)
         dep_lag.append((n - j) * stat / n)
 
     # calculate optimal lag and test statistic

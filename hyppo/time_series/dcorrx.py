@@ -1,6 +1,15 @@
+from typing import NamedTuple
+
 from ..independence import Dcorr
-from ._utils import _CheckInputs, compute_stat
-from .base import TimeSeriesTest, TimeSeriesTestOutput
+from ..tools import compute_dist
+from ._utils import _CheckInputs, compute_stat, check_max_lag
+from .base import TimeSeriesTest
+
+
+class DcorrXTestOutput(NamedTuple):
+    stat: float
+    pvalue: float
+    dcorrx_dict: dict
 
 
 class DcorrX(TimeSeriesTest):
@@ -39,9 +48,10 @@ class DcorrX(TimeSeriesTest):
         where ``x`` is the data matrix for which pairwise distances are
         calculated and ``**kwargs`` are extra arguements to send to your custom
         function.
-    max_lag : int, default: 0
+    max_lag : int, default: None
         The maximum number of lags in the past to check dependence between ``x`` and the
-        shifted ``y``. Also the ``M`` hyperparmeter below.
+        shifted ``y``. If ``None``, then ``max_lag=np.ceil(np.log(n))``. Also the
+        ``M`` hyperparmeter below.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
 
@@ -69,7 +79,10 @@ class DcorrX(TimeSeriesTest):
     .. footbibliography::
     """
 
-    def __init__(self, compute_distance="euclidean", max_lag=0, **kwargs):
+    def __init__(self, compute_distance="euclidean", max_lag=None, **kwargs):
+        self.is_distance = False
+        if not compute_distance:
+            self.is_distance = True
         TimeSeriesTest.__init__(
             self, compute_distance=compute_distance, max_lag=max_lag, **kwargs
         )
@@ -94,9 +107,25 @@ class DcorrX(TimeSeriesTest):
         opt_lag : int
             The computed optimal lag.
         """
+        self.max_lag = check_max_lag(self.max_lag, x.shape[0])
+
+        if not self.is_distance:
+            distx, disty = compute_dist(
+                x, y, metric=self.compute_distance, **self.kwargs
+            )
+            self.is_distance = True
+        else:
+            distx = x
+            disty = y
+
         stat, opt_lag = compute_stat(
-            x, y, Dcorr, self.compute_distance, self.max_lag, **self.kwargs
+            distx,
+            disty,
+            Dcorr(compute_distance=None).statistic,
+            self.max_lag,
+            is_distsim=self.is_distance,
         )
+
         self.stat = stat
         self.opt_lag = opt_lag
 
@@ -151,8 +180,14 @@ class DcorrX(TimeSeriesTest):
         )
         x, y, self.max_lag = check_input()
 
+        if not self.is_distance:
+            x, y = compute_dist(
+                x, y, metric=self.compute_distance, **self.kwargs
+            )
+            self.is_distance = True
+
         stat, pvalue, stat_list = super(DcorrX, self).test(
             x, y, reps, workers, random_state
         )
         dcorrx_dict = {"opt_lag": stat_list[1]}
-        return TimeSeriesTestOutput(stat, pvalue, dcorrx_dict)
+        return DcorrXTestOutput(stat, pvalue, dcorrx_dict)

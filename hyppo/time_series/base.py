@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
+from typing import NamedTuple
 
 import numpy as np
 from joblib import Parallel, delayed
 from sklearn.utils import check_random_state
-
-from ..tools import compute_dist
 
 
 class TimeSeriesTestOutput(NamedTuple):
@@ -76,7 +75,7 @@ class TimeSeriesTest(ABC):
         """
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=1, random_state=None):
+    def test(self, x, y, reps=1000, workers=1, is_distsim=True, random_state=None):
         """
         Calulates the time-series test test statistic and p-value.
 
@@ -94,17 +93,21 @@ class TimeSeriesTest(ABC):
         workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
             Supply ``-1`` to use all cores available to the Process.
+        is_distsim : bool, default: True
+            Whether or not ``x`` and ``y`` are input matrices.
 
         Returns
         -------
         stat : float
-            The discriminability test statistic.
+            The computed time-series independence test statistic.
         pvalue : float
-            The discriminability p-value.
-        null_dist : list
-            The null distribution of the permuted test statistics.
+            The time-series independence p-value.
         """
-        distx, disty = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
+
+        self.x = x
+        self.y = y
+
+        print(x, y)
 
         # calculate observed test statistic
         stat_list = self.statistic(x, y)
@@ -122,10 +125,7 @@ class TimeSeriesTest(ABC):
         # calculate null distribution
         null_dist = np.array(
             Parallel(n_jobs=workers)(
-                [
-                    delayed(_perm_stat)(self.statistic, distx, disty, rng)
-                    for rng in random_state
-                ]
+                [delayed(_perm_stat)(self.statistic, x, y, rng) for rng in random_state]
             )
         )
         pvalue = (1 + (null_dist >= stat).sum()) / (1 + reps)

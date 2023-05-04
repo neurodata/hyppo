@@ -11,7 +11,7 @@ class TestDcorrXStat:
     def test_zero_var(self):
         x = np.ones(4)
         y = np.arange(4)
-        stat = DcorrX().test(x, y)[0]
+        stat = DcorrX(max_lag=0).test(x, y, reps=0)[0]
         assert_almost_equal(stat, 0.0)
 
     def test_multiple_lags(self):

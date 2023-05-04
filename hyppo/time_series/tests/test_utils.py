@@ -43,3 +43,11 @@ class TestErrorWarn:
         # raises error if reps is negative
         x = np.arange(20)
         assert_raises(ValueError, _CheckInputs(x, x, reps=reps, max_lag=1))
+
+    @pytest.mark.parametrize(
+        "max_lag", [-1, "1"]  # max_lag is negative  # max_lag is not integer
+    )
+    def test_error_max_lag(self, max_lag):
+        # raises error if reps is negative
+        x = np.arange(20)
+        assert_raises(ValueError, _CheckInputs(x, x, reps=1000, max_lag=max_lag))
