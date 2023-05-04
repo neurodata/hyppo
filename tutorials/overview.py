@@ -109,7 +109,7 @@ print(stat, pvalue)
 # :mod:`hyppo.independence` have 2 outputs.
 #
 # We see that we are right! Since the p-value is less than the alpha level of 0.05, we
-# can conclude that random variables :math:`X` and :math:`Y` are independent. And
+# can conclude that random variables :math:`X` and :math:`Y` are dependent (and reject the hypothesis that they are independent). And
 # that's it!
 
 ########################################################################################
