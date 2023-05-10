@@ -23,7 +23,6 @@ class _CheckInputs:
         check_ndarray_xy(self.x, self.y)
         contains_nan(self.x)
         contains_nan(self.y)
-        self.max_lag = self._check_max_lag()
         self.x, self.y = self.check_dim_xy()
         self.x, self.y = convert_xy_float64(self.x, self.y)
         self._check_min_samples()
@@ -31,7 +30,9 @@ class _CheckInputs:
         if self.reps:
             check_reps(self.reps)
 
-        return self.x, self.y
+        self.max_lag = check_max_lag(self.max_lag, self.x.shape[0])
+
+        return self.x, self.y, self.max_lag
 
     def check_dim_xy(self):
         # check if x and y are ndarrays
@@ -62,18 +63,23 @@ class _CheckInputs:
                 "Shape mismatch, x and y must have shape [n, p] and [n, q]."
             )
 
-    def _check_max_lag(self):
-        if not self.max_lag:
-            self.max_lag = np.ceil(self.max_lag)
-
-        return self.max_lag
-
     def _check_min_samples(self):
         nx = self.x.shape[0]
         ny = self.y.shape[0]
 
         if nx <= 3 or ny <= 3:
             raise ValueError("Number of samples is too low")
+
+
+def check_max_lag(max_lag, n):
+    if max_lag is None:
+        max_lag = int(np.ceil(np.log(n)))
+    elif not np.issubdtype(type(max_lag), np.integer):
+        raise ValueError("max_lag must be an integer.")
+    elif max_lag < 0:
+        raise ValueError("max_lag must be >= 0.")
+
+    return max_lag
 
 
 def compute_stat(x, y, indep_test, compute_distance, max_lag, **kwargs):
