@@ -5,6 +5,8 @@ import numpy as np
 from joblib import Parallel, delayed
 from sklearn.utils import check_random_state
 
+from ..tools import compute_dist
+
 
 class TimeSeriesTestOutput(NamedTuple):
     stat: float
