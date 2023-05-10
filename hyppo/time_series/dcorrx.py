@@ -1,15 +1,7 @@
-from typing import NamedTuple
-
 from ..independence import Dcorr
 from ..tools import compute_dist
-from ._utils import _CheckInputs, compute_stat, check_max_lag
-from .base import TimeSeriesTest
-
-
-class DcorrXTestOutput(NamedTuple):
-    stat: float
-    pvalue: float
-    dcorrx_dict: dict
+from ._utils import _CheckInputs, compute_stat
+from .base import TimeSeriesTest, TimeSeriesTestOutput
 
 
 class DcorrX(TimeSeriesTest):
@@ -107,7 +99,6 @@ class DcorrX(TimeSeriesTest):
         opt_lag : int
             The computed optimal lag.
         """
-        self.max_lag = check_max_lag(self.max_lag, x.shape[0])
 
         if not self.is_distance:
             distx, disty = compute_dist(
@@ -181,13 +172,12 @@ class DcorrX(TimeSeriesTest):
         x, y, self.max_lag = check_input()
 
         if not self.is_distance:
-            x, y = compute_dist(
-                x, y, metric=self.compute_distance, **self.kwargs
-            )
+            x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
             self.is_distance = True
 
         stat, pvalue, stat_list = super(DcorrX, self).test(
             x, y, reps, workers, random_state
         )
         dcorrx_dict = {"opt_lag": stat_list[1]}
-        return DcorrXTestOutput(stat, pvalue, dcorrx_dict)
+
+        return TimeSeriesTestOutput(stat, pvalue, dcorrx_dict)
