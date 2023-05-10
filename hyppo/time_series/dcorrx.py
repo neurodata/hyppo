@@ -176,7 +176,7 @@ class DcorrX(TimeSeriesTest):
             self.is_distance = True
 
         stat, pvalue, stat_list = super(DcorrX, self).test(
-            x, y, reps, workers, random_state
+            x=x, y=y, reps=reps, workers=workers, random_state=random_state
         )
         dcorrx_dict = {"opt_lag": stat_list[1]}
 
