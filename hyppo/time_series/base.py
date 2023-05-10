@@ -1,10 +1,15 @@
 from abc import ABC, abstractmethod
+from typing import NamedTuple
 
 import numpy as np
 from joblib import Parallel, delayed
-
-from ..tools import compute_dist
 from sklearn.utils import check_random_state
+
+
+class TimeSeriesTestOutput(NamedTuple):
+    stat: float
+    pvalue: float
+    test_dict: dict
 
 
 class TimeSeriesTest(ABC):
