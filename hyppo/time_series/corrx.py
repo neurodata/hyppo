@@ -92,7 +92,11 @@ class LjungBox(TimeSeriesTest):
             self.null_dist = None
         elif auto is False:
             stat, pvalue, stat_list = super(LjungBox, self).test(
-                x=x, y=y, reps=reps, workers=workers, is_distsim=False, random_state=random_state
+                x=x,
+                y=y,
+                reps=reps,
+                workers=workers,
+                random_state=random_state,
             )
 
         self.pvalue = pvalue
