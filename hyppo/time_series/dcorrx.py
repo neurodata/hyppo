@@ -157,7 +157,7 @@ class DcorrX(TimeSeriesTest):
             y,
             max_lag=self.max_lag,
         )
-        x, y = check_input()
+        x, y, self.max_lag = check_input()
 
         stat, pvalue, stat_list = super(DcorrX, self).test(
             x, y, reps, workers, random_state
