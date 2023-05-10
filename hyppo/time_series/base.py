@@ -9,6 +9,7 @@ from sklearn.utils import check_random_state
 class TimeSeriesTestOutput(NamedTuple):
     stat: float
     pvalue: float
+    test_dict: dict
 
 
 class TimeSeriesTest(ABC):
@@ -106,8 +107,6 @@ class TimeSeriesTest(ABC):
 
         self.x = x
         self.y = y
-
-        print(x, y)
 
         # calculate observed test statistic
         stat_list = self.statistic(x, y)
