@@ -179,11 +179,76 @@ def nonlinear_process(n, lag=1, phi=1, sigma=1):
     return x, y
 
 
+def extinct_gaussian_process(n, phi=0.2, extinction_rate=0.5, radius=1):
+    r"""
+    2 nonlinearly dependent time series simulation.
+    :math:`X_t` and :math:`Y_t` are together a bivariate nonlinear process.
+    Noise :math:`\epsilon_t, \eta_t` are :math:`\mathcal{N}(0, \sigma)`, but chosen
+    such that given radius, :math:`r`, uniform variable :math:`d \sim \mathcal{U}(0, 1)`,
+    and extinction rate, :math:`p`:
+    .. math::
+        \begin{align*}
+        \epsilon_t^2 + \eta_t^2 &> r^2\\
+        d &> p
+        \end{align*}
+    With :math:`\phi = 0.2`,  :math:`:math:`X_t` and :math:`Y_t` follows:
+    .. math::
+        \begin{bmatrix} X_t \\ Y_t \end{bmatrix} =
+        \begin{bmatrix} \phi & 0 \\ 0 & \phi \end{bmatrix}
+        \begin{bmatrix} X_{t - 1} \\ Y_{t - 1} \end{bmatrix} +
+        \begin{bmatrix} \epsilon_t \\ \eta_t \end{bmatrix}
+    Parameters
+    ----------
+    n : int
+        The number of samples desired by the simulation (>= 3).
+    phi : float, default: 0.2
+        The variance of the noise.
+    extinction_rate : float, default: 0.5
+        The rate at which the Gaussian process is extinct.
+    radius : float, default: 1
+        The radius of the Gaussian process.
+    """
+    extra_args = {
+        "extinction_rate": (extinction_rate, float),
+        "radius": (radius, float),
+        "phi": (phi, float),
+    }
+    check_in = _CheckInputs(n)
+    check_in(**extra_args)
+
+    if (extinction_rate < 0) or (extinction_rate > 1):
+        msg = "extinction_rate must be between 0 and 1, inclusive."
+        raise ValueError(msg)
+
+    x = np.zeros(n)
+    y = np.zeros(n)
+
+    for t in range(0, n):
+        while True:
+            eta = np.random.normal(0, 1)
+            epsilon = np.random.normal(0, 1)
+            d = np.random.uniform()
+
+            if (eta**2 + epsilon**2 > radius**2) or (d > extinction_rate):
+                break
+
+        if t == 0:
+            x[t] = eta
+            y[t] = epsilon
+        else:
+            x[t] = phi * x[t - 1] + epsilon
+            y[t] = phi * y[t - 1] + eta
+
+    return x, y
+
+
 TS_SIMS = {
     "indep_ar": indep_ar,
     "cross_corr_ar": cross_corr_ar,
     "nonlinear_process": nonlinear_process,
+    "extinct_gaussian_process": extinct_gaussian_process,
 }
+
 
 
 def ts_sim(sim, n, **kwargs):
@@ -215,4 +280,11 @@ def ts_sim(sim, n, **kwargs):
     else:
         sim = TS_SIMS[sim]
 
-    return sim(n, **kwargs)
+    x, y = sim(n, **kwargs)
+
+    if x.ndim == 1:
+        x = x[:, np.newaxis]
+    if y.ndim == 1:
+        y = y[:, np.newaxis]
+
+    return x, y
