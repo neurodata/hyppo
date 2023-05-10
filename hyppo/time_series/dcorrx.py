@@ -49,7 +49,8 @@ class DcorrX(TimeSeriesTest):
         function.
     max_lag : int, default: 0
         The maximum number of lags in the past to check dependence between ``x`` and the
-        shifted ``y``. Also the ``M`` hyperparmeter below.
+        shifted ``y``. If ``None``, then ``max_lag=np.ceil(np.log(n))``. Also the
+        ``M`` hyperparmeter below.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
 

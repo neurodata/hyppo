@@ -14,7 +14,8 @@ class LjungBox(TimeSeriesTest):
     ----------
     max_lag : int, default: 0
         The maximum number of lags in the past to check dependence between ``x`` and the
-        shifted ``y``. Also the ``M`` hyperparmeter below.
+        shifted ``y``. If ``None``, then ``max_lag=np.ceil(np.log(n))``. Also the
+        ``M`` hyperparmeter below.
 
     Notes
     -----
@@ -69,7 +70,7 @@ class LjungBox(TimeSeriesTest):
         ccf = correlate(x - x.mean(), y - y.mean())[n - 1 :].ravel()
         ccf /= np.arange(n, 0, -1)
         ccf /= np.std(x) * np.std(y)
-        stat = ccf[1 : self.max_lag + 1] ** 2 / (n - np.arange(1, self.max_lag + 1))
+        stat = ccf[1 : self.max_lag + 1] ** 2 / (n - np.arange(1, self.max_lag + 1)) * (n * (n+2))
 
         self.stat = np.sum(stat)
         self.opt_lag = np.argmax(stat) + 1
@@ -84,19 +85,23 @@ class LjungBox(TimeSeriesTest):
         )
         x, y, self.max_lag = check_input()
 
+        if self.max_lag <= 0:
+            raise ValueError("max_lag must be greater than 0")
+
         # calculate observed test statistic
         stat, opt_lag = self.statistic(x, y)
 
         if auto and x.shape[0] > 20:
             pvalue = chi2.sf(stat, self.max_lag)
             self.null_dist = None
-        elif auto is False:
+        else:
             stat, pvalue, stat_list = super(LjungBox, self).test(
                 x=x,
                 y=y,
                 reps=reps,
                 workers=workers,
                 random_state=random_state,
+                is_distsim=False,
             )
 
         self.pvalue = pvalue
