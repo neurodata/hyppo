@@ -100,11 +100,11 @@ class TimeSeriesTest(ABC):
         Returns
         -------
         stat : float
-            The discriminability test statistic.
+            The computed time-series independence test statistic.
         pvalue : float
-            The discriminability p-value.
+            The computed time-series independence p-value.
         null_dist : list
-            The null distribution of the permuted test statistics.
+            The time-series independence p-value.
         """
         distx, disty = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
 
