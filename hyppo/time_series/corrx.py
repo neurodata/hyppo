@@ -70,7 +70,11 @@ class LjungBox(TimeSeriesTest):
         ccf = correlate(x - x.mean(), y - y.mean())[n - 1 :].ravel()
         ccf /= np.arange(n, 0, -1)
         ccf /= np.std(x) * np.std(y)
-        stat = ccf[1 : self.max_lag + 1] ** 2 / (n - np.arange(1, self.max_lag + 1)) * (n * (n+2))
+        stat = (
+            ccf[1 : self.max_lag + 1] ** 2
+            / (n - np.arange(1, self.max_lag + 1))
+            * (n * (n + 2))
+        )
 
         self.stat = np.sum(stat)
         self.opt_lag = np.argmax(stat) + 1

@@ -182,21 +182,26 @@ def nonlinear_process(n, lag=1, phi=1, sigma=1):
 def extinct_gaussian_process(n, phi=0.2, extinction_rate=0.5, radius=1):
     r"""
     2 nonlinearly dependent time series simulation.
+
     :math:`X_t` and :math:`Y_t` are together a bivariate nonlinear process.
     Noise :math:`\epsilon_t, \eta_t` are :math:`\mathcal{N}(0, \sigma)`, but chosen
     such that given radius, :math:`r`, uniform variable :math:`d \sim \mathcal{U}(0, 1)`,
     and extinction rate, :math:`p`:
+
     .. math::
         \begin{align*}
         \epsilon_t^2 + \eta_t^2 &> r^2\\
         d &> p
         \end{align*}
+
     With :math:`\phi = 0.2`,  :math:`:math:`X_t` and :math:`Y_t` follows:
+
     .. math::
         \begin{bmatrix} X_t \\ Y_t \end{bmatrix} =
         \begin{bmatrix} \phi & 0 \\ 0 & \phi \end{bmatrix}
         \begin{bmatrix} X_{t - 1} \\ Y_{t - 1} \end{bmatrix} +
         \begin{bmatrix} \epsilon_t \\ \eta_t \end{bmatrix}
+
     Parameters
     ----------
     n : int
@@ -248,7 +253,6 @@ TS_SIMS = {
     "nonlinear_process": nonlinear_process,
     "extinct_gaussian_process": extinct_gaussian_process,
 }
-
 
 
 def ts_sim(sim, n, **kwargs):

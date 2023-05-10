@@ -35,7 +35,7 @@ class TestLjungBox:
         assert_almost_equal(stat, 18.53, decimal=2)
 
         res = LjungBox(max_lag=1).test(x, y)
-        assert_almost_equal(res[1], 0., decimal=2)
+        assert_almost_equal(res[1], 0.0, decimal=2)
 
     def test_same_seq_permutations(self):
         np.random.seed(2)
@@ -44,7 +44,7 @@ class TestLjungBox:
         x = np.arange(1, n + 1).reshape(n, 1)
         y = np.arange(1, n + 1).reshape(n, 1)
         res = LjungBox(max_lag=1).test(x, y, auto=False)
-        assert_almost_equal(res[1], 0., decimal=2)
+        assert_almost_equal(res[1], 0.0, decimal=2)
 
     def test_linear(self):
         np.random.seed(3)
