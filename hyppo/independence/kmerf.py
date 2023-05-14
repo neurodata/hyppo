@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import pairwise_distances
 
+from ..tools import chi2_approx
 from ._utils import _CheckInputs, sim_matrix
 from .base import IndependenceTest
 from .dcorr import _dcorr
@@ -135,7 +136,7 @@ class KMERF(IndependenceTest):
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1, random_state=None):
+    def test(self, x, y, reps=1000, workers=1, auto=True, random_state=None):
         r"""
         Calculates the KMERF test statistic and p-value.
 
@@ -152,6 +153,13 @@ class KMERF(IndependenceTest):
         workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
             Supply ``-1`` to use all cores available to the Process.
+        auto : bool, default: True
+            Automatically uses fast approximation when `n` and size of array
+            is greater than 20. If ``True``, and sample size is greater than 20, then
+            :class:`hyppo.tools.chi2_approx` will be run. Parameters ``reps`` and
+            ``workers`` are
+            irrelevant in this case. Otherwise, :class:`hyppo.tools.perm_test` will be
+            run.
 
         Returns
         -------
@@ -177,9 +185,15 @@ class KMERF(IndependenceTest):
         check_input = _CheckInputs(x, y, reps=reps)
         x, y = check_input()
 
-        stat, pvalue = super(KMERF, self).test(
-            x, y, reps, workers, is_distsim=False, random_state=random_state
-        )
+        if auto and x.shape[0] > 20:
+            stat, pvalue = chi2_approx(self.statistic, x, y)
+            self.stat = stat
+            self.pvalue = pvalue
+            self.null_dist = None
+        else:
+            stat, pvalue = super(KMERF, self).test(
+                x, y, reps, workers, is_distsim=False, random_state=random_state
+            )
         kmerf_dict = {"feat_importance": self.importances}
 
         return KMERFTestOutput(stat, pvalue, kmerf_dict)
