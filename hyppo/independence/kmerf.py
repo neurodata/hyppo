@@ -1,3 +1,4 @@
+from turtle import distance
 from typing import NamedTuple
 
 import numpy as np
@@ -5,7 +6,6 @@ from scipy.stats.distributions import chi2
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import pairwise_distances
 
-from ..tools import chi2_approx
 from ._utils import _CheckInputs, sim_matrix
 from .base import IndependenceTest
 from .dcorr import _dcorr
@@ -38,6 +38,31 @@ class KMERF(IndependenceTest):
         ``test`` is categorial, use the "classifier" keyword.
     ntrees : int, default: 500
         The number of trees used in the random forest.
+    compute_distance : str, callable, or None, default: "euclidean"
+        A function that computes the distance among the samples for `y`.
+        Valid strings for ``compute_distance`` are, as defined in
+        :func:`sklearn.metrics.pairwise_distances`,
+
+            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
+              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
+              :mod:`scipy.spatial.distance` for details
+              on these metrics.
+            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
+              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
+              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
+              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
+              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
+              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
+              details on these metrics.
+
+        Set to ``None`` or ``"precomputed"`` if ``y`` is already a distance
+        matrices. To call a custom function, either create the distance matrix
+        before-hand or create a function of the form ``metric(x, **kwargs)``
+        where ``x`` is the data matrix for which pairwise distances are
+        calculated and ``**kwargs`` are extra arguements to send to your custom
+        function.
+    distance_kwargs : dict
+        Arbitrary keyword arguments for ``compute_distance``.
     **kwargs
         Additional arguments used for the forest (see
         :class:`sklearn.ensemble.RandomForestClassifier` or
@@ -100,12 +125,23 @@ class KMERF(IndependenceTest):
     .. footbibliography::
     """
 
-    def __init__(self, forest="regressor", ntrees=500, **kwargs):
+    def __init__(
+        self,
+        forest="regressor",
+        ntrees=500,
+        compute_distance="euclidean",
+        distance_kwargs={},
+        **kwargs
+    ):
+        self.is_distance = False
+        self.distance_kwargs = distance_kwargs
+        if not compute_distance:
+            self.is_distance = True
         if forest in FOREST_TYPES.keys():
             self.clf = FOREST_TYPES[forest](n_estimators=ntrees, **kwargs)
         else:
             raise ValueError("Forest must be of type classification or regression")
-        IndependenceTest.__init__(self)
+        IndependenceTest.__init__(self, compute_distance=compute_distance)
 
     def statistic(self, x, y):
         r"""
@@ -128,9 +164,16 @@ class KMERF(IndependenceTest):
         if rf_y.shape[1] == 1:
             rf_y = rf_y.ravel()
         self.clf.fit(x, rf_y)
+
         distx = np.sqrt(1 - sim_matrix(self.clf, x))
-        disty = np.sqrt(1 - sim_matrix(self.clf, y))
-        # disty = pairwise_distances(y, metric="euclidean")
+        # can use induced kernel if shapes are the same, otherwise
+        # default to compute_distance
+        if x.shape[1] == y.shape[1]:
+            disty = np.sqrt(1 - sim_matrix(self.clf, y))
+        else:
+            disty = pairwise_distances(
+                y, metric=self.compute_distance, **self.distance_kwargs
+            )
         stat = _dcorr(distx, disty, bias=False, is_fast=False)
         self.stat = stat
 
