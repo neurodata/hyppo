@@ -1,6 +1,7 @@
 from typing import NamedTuple
 
 import numpy as np
+from scipy.stats.distributions import chi2
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import pairwise_distances
 
@@ -123,11 +124,13 @@ class KMERF(IndependenceTest):
         stat : float
             The computed KMERF statistic.
         """
-        y = y.reshape(-1)
-        self.clf.fit(x, y)
+        rf_y = y
+        if rf_y.shape[1] == 1:
+            rf_y = rf_y.ravel()
+        self.clf.fit(x, rf_y)
         distx = np.sqrt(1 - sim_matrix(self.clf, x))
-        y = y.reshape(-1, 1)
-        disty = pairwise_distances(y, metric="euclidean")
+        disty = np.sqrt(1 - sim_matrix(self.clf, y))
+        # disty = pairwise_distances(y, metric="euclidean")
         stat = _dcorr(distx, disty, bias=False, is_fast=False)
         self.stat = stat
 
@@ -186,7 +189,11 @@ class KMERF(IndependenceTest):
         x, y = check_input()
 
         if auto and x.shape[0] > 20:
-            stat, pvalue = chi2_approx(self.statistic, x, y)
+            n = x.shape[0]
+            stat = self.statistic(x, y)
+            statx = self.statistic(x, x)
+            staty = self.statistic(y, y)
+            pvalue = chi2.sf(stat / np.sqrt(statx * staty) * n + 1, 1)
             self.stat = stat
             self.pvalue = pvalue
             self.null_dist = None
