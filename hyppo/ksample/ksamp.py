@@ -234,7 +234,7 @@ class KSample(KSampleTest):
         else:
             u, v = k_sample_transform(inputs)
 
-        return self.indep_test.statistic(u, v)
+        return self.indep_test.statistic(u, v.astype(int))
 
     def test(self, *args, reps=1000, workers=1, auto=True, random_state=None):
         r"""

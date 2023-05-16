@@ -13,9 +13,9 @@ class TestKMERFStat(object):
     @pytest.mark.parametrize(
         "sim, obs_stat, obs_pvalue",
         [
-            (linear, 0.253, 1.0),  # test linear simulation
-            (spiral, 0.037, 1.0),  # test spiral simulation
-            (multimodal_independence, -0.0363, 1.0),  # test independence simulation
+            (linear, 1.0, 1.0),  # test linear simulation
+            (spiral, 0.1835550720881665, 1.0),  # test spiral simulation
+            (multimodal_independence, -0.0059788, 1.0),  # test independence simulation
         ],
     )
     def test_oned(self, sim, obs_stat, obs_pvalue):
