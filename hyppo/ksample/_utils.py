@@ -49,7 +49,8 @@ class _CheckInputs:
     def _check_nd_ksampletest(self, dims):
         if len(set(dims)) > 1:
             raise ValueError(
-                "Shape mismatch, inputs must have shape " "[n, p] and [m, p]."
+                "Shape mismatch, inputs must have shape "
+                "[n, p] and [m, p]. Found shapes {}".format(list(set(dims)))
             )
 
     def _convert_inputs_float64(self):
