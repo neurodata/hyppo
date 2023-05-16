@@ -104,7 +104,9 @@ def k_sample_transform(inputs, test_type="normal"):
         raise ValueError("Test cannot be run, the inputs have 0 variance")
 
     if test_type == "rf":
-        v = np.vstack([np.repeat(i, inputs[i].shape[0]) for i in range(n_inputs)])
+        v = np.vstack(
+            [np.repeat(i, inputs[i].shape[0]).reshape(-1, 1) for i in range(n_inputs)]
+        )
     elif test_type == "normal":
         if n_inputs == 2:
             n1 = inputs[0].shape[0]
