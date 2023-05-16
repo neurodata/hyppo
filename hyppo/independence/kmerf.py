@@ -236,6 +236,7 @@ class KMERF(IndependenceTest):
             statx = self.statistic(x, x)
             staty = self.statistic(y, y)
             pvalue = chi2.sf(stat / np.sqrt(statx * staty) * n + 1, 1)
+            # pvalue = chi2.sf(stat * n + 1, 1)
             self.stat = stat
             self.pvalue = pvalue
             self.null_dist = None

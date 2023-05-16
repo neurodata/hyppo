@@ -234,7 +234,7 @@ class KSample(KSampleTest):
         else:
             u, v = k_sample_transform(inputs)
 
-        return self.indep_test.statistic(u, v.astype(int))
+        return self.indep_test.statistic(u, v)
 
     def test(self, *args, reps=1000, workers=1, auto=True, random_state=None):
         r"""
@@ -293,6 +293,7 @@ class KSample(KSampleTest):
             u, v = k_sample_transform(inputs, test_type="rf")
         else:
             u, v = k_sample_transform(inputs)
+        v = v.astype(int)
 
         kwargs = {}
         if self.indep_test_name in ["dcorr", "hsic"]:
