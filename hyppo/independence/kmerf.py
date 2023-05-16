@@ -1,4 +1,3 @@
-from turtle import distance
 from typing import NamedTuple
 
 import numpy as np
