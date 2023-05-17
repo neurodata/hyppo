@@ -3,18 +3,18 @@ from typing import NamedTuple
 import numpy as np
 from scipy.stats import entropy
 
-from honest_forests import HonestForestClassifier
+from honest_forests import HonestForestClassifier  # change this to scikit-tree later
 from ._utils import _CheckInputs
 from .base import IndependenceTest
 
 
-class MITestOutput(NamedTuple):
+class MIRFTestOutput(NamedTuple):
     stat: float
     pvalue: float
-    # mi_dict: dict
+    # mirf_dict: dict
 
 
-class MI(IndependenceTest):
+class MIRF(IndependenceTest):
     r"""
     Independence test using mutual information as the test statistic.
 
@@ -111,9 +111,9 @@ class MI(IndependenceTest):
         check_input = _CheckInputs(x, y, reps=reps)
         x, y = check_input()
 
-        stat, pvalue = super(MI, self).test(
+        stat, pvalue = super(MIRF, self).test(
             x, y, reps, workers, is_distsim=False, random_state=random_state
         )
-        # mi_dict = {}
+        # mirf_dict = {}
 
-        return MITestOutput(stat, pvalue)  # , mi_dict)
+        return MIRFTestOutput(stat, pvalue)  # , mirf_dict)
