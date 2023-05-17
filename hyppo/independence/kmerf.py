@@ -136,6 +136,10 @@ class KMERF(IndependenceTest):
         self.distance_kwargs = distance_kwargs
         if not compute_distance:
             self.is_distance = True
+        if "is_ksamp" in kwargs.keys():
+            self.is_ksamp = True
+            self.k_sample_transform = kwargs["is_ksamp"]
+            kwargs.pop("is_ksamp")
         if forest in FOREST_TYPES.keys():
             self.clf = FOREST_TYPES[forest](n_estimators=ntrees, **kwargs)
         else:
@@ -233,8 +237,14 @@ class KMERF(IndependenceTest):
         if auto and x.shape[0] > 20:
             n = x.shape[0]
             stat = self.statistic(x, y)
-            statx = self.statistic(x, x)
-            staty = self.statistic(y, y)
+            if self.is_ksamp:
+                xs = self.k_sample_transform([x, x], test_type="rf")
+                ys = self.k_sample_transform([y, y], test_type="rf")
+            else:
+                xs = (x, x)
+                ys = (y, y)
+            statx = self.statistic(*xs)
+            staty = self.statistic(*ys)
             pvalue = chi2.sf(stat / np.sqrt(statx * staty) * n + 1, 1)
             # pvalue = chi2.sf(stat * n + 1, 1)
             self.stat = stat

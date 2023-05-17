@@ -298,6 +298,8 @@ class KSample(KSampleTest):
         kwargs = {}
         if self.indep_test_name in ["dcorr", "hsic"]:
             kwargs = {"auto": auto}
+        elif self.indep_test_name in ["kmerf"]:
+            kwargs = {"auto": auto, "is_ksamp": k_sample_transform}
 
         return self.indep_test.test(
             u, v, reps, workers, **kwargs, random_state=random_state
