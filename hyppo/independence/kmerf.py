@@ -136,10 +136,11 @@ class KMERF(IndependenceTest):
         self.distance_kwargs = distance_kwargs
         if not compute_distance:
             self.is_distance = True
+        self.is_ksamp = False
         if "is_ksamp" in kwargs.keys():
             self.is_ksamp = True
             self.k_sample_transform = kwargs["is_ksamp"]
-            kwargs.pop("is_ksamp")
+            del kwargs["is_ksamp"]
         if forest in FOREST_TYPES.keys():
             self.clf = FOREST_TYPES[forest](n_estimators=ntrees, **kwargs)
         else:
