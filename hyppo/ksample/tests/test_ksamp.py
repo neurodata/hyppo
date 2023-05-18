@@ -3,7 +3,7 @@ import pytest
 from numpy.testing import assert_almost_equal, assert_raises
 
 from ...tools import power, rot_ksamp
-from .. import KSample
+from .. import KSample, Energy
 
 
 class TestKSample:
@@ -45,6 +45,13 @@ class TestKSample:
         assert stat == stat2
         assert pvalue == pvalue2
 
+    def test_energy(self):
+        x = np.arange(200.0)
+        y = x**2
+        ksample_energy_stat = Energy(bias=True).statistic(x[:, None], y[:, None])
+        energy_stat = 12950.98
+
+        assert_almost_equal(ksample_energy_stat, energy_stat, decimal=2)
 
 class TestKSampleErrorWarn:
     """Tests errors and warnings derived from MGC."""
