@@ -1,4 +1,4 @@
-from ..independence.dcorr import _dcov, _fast_1d_dcov
+from ..independence.dcorr import _dcov
 from ..tools import compute_dist
 from ._utils import _CheckInputs
 from .base import KSampleTest, KSampleTestOutput
