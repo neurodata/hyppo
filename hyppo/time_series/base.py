@@ -1,10 +1,17 @@
 from abc import ABC, abstractmethod
+from typing import NamedTuple
 
 import numpy as np
 from joblib import Parallel, delayed
+from sklearn.utils import check_random_state
 
 from ..tools import compute_dist
-from sklearn.utils import check_random_state
+
+
+class TimeSeriesTestOutput(NamedTuple):
+    stat: float
+    pvalue: float
+    test_dict: dict
 
 
 class TimeSeriesTest(ABC):
@@ -71,7 +78,7 @@ class TimeSeriesTest(ABC):
         """
 
     @abstractmethod
-    def test(self, x, y, reps=1000, workers=1, random_state=None):
+    def test(self, x, y, reps=1000, workers=1, random_state=None, is_distsim=False):
         """
         Calulates the time-series test test statistic and p-value.
 
@@ -89,18 +96,18 @@ class TimeSeriesTest(ABC):
         workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
             Supply ``-1`` to use all cores available to the Process.
+        is_distsim : bool, default: False
+            Whether or not ``x`` and ``y`` are input matrices.
 
         Returns
         -------
         stat : float
-            The discriminability test statistic.
+            The computed time-series independence test statistic.
         pvalue : float
-            The discriminability p-value.
+            The computed time-series independence p-value.
         null_dist : list
-            The null distribution of the permuted test statistics.
+            The time-series independence p-value.
         """
-        distx, disty = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
-
         # calculate observed test statistic
         stat_list = self.statistic(x, y)
         stat = stat_list[0]
@@ -118,7 +125,7 @@ class TimeSeriesTest(ABC):
         null_dist = np.array(
             Parallel(n_jobs=workers)(
                 [
-                    delayed(_perm_stat)(self.statistic, distx, disty, rng)
+                    delayed(_perm_stat)(self.statistic, x, y, rng, is_distsim)
                     for rng in random_state
                 ]
             )
@@ -130,7 +137,7 @@ class TimeSeriesTest(ABC):
         return stat, pvalue, stat_list
 
 
-def _perm_stat(calc_stat, distx, disty, random_state=None):
+def _perm_stat(calc_stat, distx, disty, random_state, is_distsim):
     """Permutes the test statistics."""
     n = distx.shape[0]
     block_size = int(np.ceil(np.sqrt(n)))
@@ -139,7 +146,10 @@ def _perm_stat(calc_stat, distx, disty, random_state=None):
         [np.arange(t, t + block_size) for t in rng.choice(n, n // block_size + 1)]
     ].flatten()[:n]
     perm_index = np.mod(perm_index, n)
-    permy = disty[np.ix_(perm_index, perm_index)]
+    if is_distsim:
+        permy = disty[np.ix_(perm_index, perm_index)]
+    else:
+        permy = disty[perm_index]
 
     # calculate permuted statics, store in null distribution
     perm_stat = calc_stat(distx, permy)[0]

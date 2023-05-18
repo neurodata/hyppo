@@ -49,7 +49,8 @@ class MGCX(TimeSeriesTest):
         function.
     max_lag : int, default: 0
         The maximum number of lags in the past to check dependence between ``x`` and the
-        shifted ``y``. Also the ``M`` hyperparmeter below.
+        shifted ``y``. If ``None``, then ``max_lag=np.ceil(np.log(n))``. Also the
+        ``M`` hyperparmeter below.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
 
@@ -188,7 +189,7 @@ class MGCX(TimeSeriesTest):
             y,
             max_lag=self.max_lag,
         )
-        x, y = check_input()
+        x, y, self.max_lag = check_input()
 
         stat, pvalue, stat_list = super(MGCX, self).test(
             x, y, reps, workers, random_state
