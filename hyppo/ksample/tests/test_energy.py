@@ -34,7 +34,7 @@ class TestEnergy:
     def test_against_dcor(self):
         x = np.arange(100.0)
         y = x**2
-        stat, _ = Energy().statistic(x.reshape(-1, 1), y.reshape(-1, 1))
+        stat = Energy().statistic(x.reshape(-1, 1), y.reshape(-1, 1))
 
         assert_almost_equal(stat, 3146.5236, decimal=4)
 
