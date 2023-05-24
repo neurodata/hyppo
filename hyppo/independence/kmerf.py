@@ -240,8 +240,8 @@ class KMERF(IndependenceTest):
         if auto and x.shape[0] > 20:
             n = x.shape[0]
             stat = self.statistic(x, y)
-            statx = _dcorr(distx, distx, bias=False, is_fast=False)
-            staty = _dcorr(disty, disty, bias=False, is_fast=False)
+            statx = _dcorr(self.distx, self.distx, bias=False, is_fast=False)
+            staty = _dcorr(self.disty, self.disty, bias=False, is_fast=False)
             pvalue = chi2.sf(stat / np.sqrt(statx * staty) * n + 1, 1)
             self.stat = stat
             self.pvalue = pvalue
