@@ -24,6 +24,7 @@ _NONPERM_TESTS = {
     "disco": "fast",
     "manova": "analytical",
     "hotelling": "analytical",
+    "kmerf": "fast",
 }
 
 

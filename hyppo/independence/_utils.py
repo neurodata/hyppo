@@ -50,7 +50,9 @@ class _CheckInputs:
         ny, _ = self.y.shape
         if nx != ny:
             raise ValueError(
-                "Shape mismatch, x and y must have shape " "[n, p] and [n, q]."
+                "Shape mismatch, x and y must have shape [n, p] and [n, q], found shape {} and {}".format(
+                    self.x.shape, self.y.shape
+                )
             )
 
     def _check_min_samples(self):
