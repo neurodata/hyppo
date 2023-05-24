@@ -231,6 +231,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "harsh204016",
+      "name": "Harsh Gupta",
+      "avatar_url": "https://avatars.githubusercontent.com/u/37452506?v=4",
+      "profile": "https://www.linkedin.com/in/harsh-gupta-/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -238,5 +247,7 @@
   "projectOwner": "neurodata",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitType": "docs",
+  "commitConvention": "angular"
 }
