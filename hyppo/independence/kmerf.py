@@ -180,6 +180,8 @@ class KMERF(IndependenceTest):
             )
         stat = _dcorr(distx, disty, bias=False, is_fast=False)
         self.stat = stat
+        self.distx = distx
+        self.disty = disty
 
         # get feature importances from gini-based random forest
         self.importances = self.clf.feature_importances_
@@ -238,16 +240,9 @@ class KMERF(IndependenceTest):
         if auto and x.shape[0] > 20:
             n = x.shape[0]
             stat = self.statistic(x, y)
-            if self.is_ksamp:
-                xs = self.k_sample_transform([x, x], test_type="rf")
-                ys = self.k_sample_transform([y, y], test_type="rf")
-            else:
-                xs = (x, x)
-                ys = (y, y)
-            statx = self.statistic(*xs)
-            staty = self.statistic(*ys)
+            statx = _dcorr(self.distx, self.distx, bias=False, is_fast=False)
+            staty = _dcorr(self.disty, self.disty, bias=False, is_fast=False)
             pvalue = chi2.sf(stat / np.sqrt(statx * staty) * n + 1, 1)
-            # pvalue = chi2.sf(stat * n + 1, 1)
             self.stat = stat
             self.pvalue = pvalue
             self.null_dist = None
