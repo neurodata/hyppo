@@ -241,6 +241,14 @@
         "doc",
         "bug"
       ]
+    },
+      "login": "transpersonify",
+      "name": "Shruti Naik",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8897933?v=4",
+      "profile": "https://github.com/transpersonify",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
