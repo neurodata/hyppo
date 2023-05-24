@@ -72,7 +72,7 @@ Time-Series
 
    MGCX
    DcorrX
-
+   LjungBox
 
 
 .. automodule:: hyppo.discrim
