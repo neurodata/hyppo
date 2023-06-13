@@ -2,6 +2,7 @@ from typing import NamedTuple
 
 import numpy as np
 from scipy.stats import entropy
+from sklearn.metrics import roc_curve
 
 from honest_forests import HonestForestClassifier  # change this to scikit-tree later
 from ._utils import _CheckInputs
@@ -70,6 +71,7 @@ class MIRF(IndependenceTest):
         _, counts = np.unique(y, return_counts=True)
         H_Y = entropy(counts, base=np.exp(1))
         stat = max(H_Y - H_YX, 0)
+
         self.stat = stat
 
         return stat
@@ -117,3 +119,59 @@ class MIRF(IndependenceTest):
         # mirf_dict = {}
 
         return MIRFTestOutput(stat, pvalue)  # , mirf_dict)
+
+
+class MIRF_AUC(IndependenceTest):
+    def __init__(
+        self,
+        n_estimators=500,
+        honest_fraction=0.5,
+        honest_prior="empirical",
+        limit=0.05,
+        **kwargs,
+    ):
+        self.clf = HonestForestClassifier(
+            n_estimators=n_estimators,
+            honest_fraction=honest_fraction,
+            honest_prior=honest_prior,
+            **kwargs
+        )
+        self.limit = limit
+        IndependenceTest.__init__(self)
+
+    def statistic(self, x, y):
+        self.clf.fit(x, y.ravel())
+        y_pred = self.clf.predict_proba(x)[:, 1]
+
+        fpr, tpr, thresholds = roc_curve(y.ravel(), y_pred)
+        fpr_tpr = list(zip(fpr, tpr))
+
+        area = 0
+        stored_fpr = 0.0
+        stored_tpr = 0.0
+        for (fpr, tpr) in fpr_tpr:
+            if fpr <= self.limit:
+                if round(fpr, 3) == round(stored_fpr, 3):
+                    continue
+                else:
+                    area += (fpr - stored_fpr) * tpr
+                    stored_fpr = fpr
+                    stored_tpr = tpr
+            else:
+                x = max(0, (limit - stored_fpr))
+                area += x * tpr
+                break
+
+        self.stat = area
+
+        return stat
+
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
+        check_input = _CheckInputs(x, y, reps=reps)
+        x, y = check_input()
+
+        stat, pvalue = super(MIRF, self).test(
+            x, y, reps, workers, is_distsim=False, random_state=random_state
+        )
+
+        return MIRFTestOutput(stat, pvalue)

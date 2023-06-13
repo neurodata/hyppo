@@ -8,7 +8,7 @@ from .max_margin import MaxMargin
 from .mgc import MGC
 from .rv import RV
 from .friedman_rafsky import FriedmanRafsky
-from .mirf import MIRF
+from .mirf import MIRF, MIRF_AUC
 
 
 __all__ = [s for s in dir()]  # add imported tests to __all__
