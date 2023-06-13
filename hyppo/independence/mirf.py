@@ -158,7 +158,7 @@ class MIRF_AUC(IndependenceTest):
                     stored_fpr = fpr
                     stored_tpr = tpr
             else:
-                x = max(0, (limit - stored_fpr))
+                x = max(0, (self.limit - stored_fpr))
                 area += x * tpr
                 break
 
