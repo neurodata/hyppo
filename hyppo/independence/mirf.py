@@ -164,7 +164,7 @@ class MIRF_AUC(IndependenceTest):
 
         self.stat = area
 
-        return stat
+        return self.stat
 
     def test(self, x, y, reps=1000, workers=1, random_state=None):
         check_input = _CheckInputs(x, y, reps=reps)
