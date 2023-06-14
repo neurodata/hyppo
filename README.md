@@ -13,10 +13,10 @@
 
 hyppo (**HYP**othesis Testing in **P**yth**O**n, pronounced "Hippo") is an open-source software package for multivariate hypothesis testing. We decided to develop hyppo for the following reasons:
 
-* With the increase in the amount of data in many fields, hypothesis testing for high dimensional and nonlinear data is important
-* Libraries in R exist, but their interfaces are inconsistent and most are not available in Python
+* With the increase in the amount of data in many fields, hypothesis testing for high-dimensional and nonlinear data is important.
+* Libraries in R exist, but their interfaces are inconsistent, and most are not available in Python.
 
-hyppo intends to be a comprehensive multivariate hypothesis testing package and runs on all major versions of operating systems. It also includes novel tests not found in other packages. It is quick to install and free of charge. If you need to use multivariate hypothesis testing, be sure to give hyppo a try!
+hyppo intends to be a comprehensive multivariate hypothesis testing package that runs on all major versions of operating systems. It also includes novel tests not found in other packages. It is quick to install and free of charge. If you need to use multivariate hypothesis testing, be sure to give hyppo a try!
 
 Website: [https://hyppo.neurodata.io/](https://hyppo.neurodata.io/)
 
@@ -35,13 +35,13 @@ hyppo requires the following:
 
 ### User installation
 
-The easiest way to install hyppo is using `pip`
+The easiest way to install hyppo is using `pip`.
 
 ```sh
 pip install hyppo
 ```
 
-To upgrade to a newer release use the `--upgrade` flag
+To upgrade to a newer release, use the `--upgrade` flag.
 
 ```sh
 pip install --upgrade hyppo
@@ -59,15 +59,15 @@ for a history of notable changes to hyppo.
 ## Development
 
 We welcome new contributors of all experience levels. The hyppo
-community goals are to be helpful, welcoming, and effective. The
+community's goals are to be helpful, welcoming, and effective. The
 [contributor guide](https://hyppo.neurodata.io/development/contributing.html)
-has detailed information about contributing code, documentation and tests.
+has detailed information about contributing code, documentation, and tests.
 
 * Official source code: [https://github.com/neurodata/hyppo/tree/main/hyppo](https://github.com/neurodata/hyppo/tree/main/hyppo)
 * Download releases: [https://pypi.org/project/hyppo/](https://pypi.org/project/hyppo/)
 * Issue tracker: [https://github.com/neurodata/hyppo/issues](https://github.com/neurodata/hyppo/issues)
 
-**Note: We have recently moved our benchmarks (with relevant figure replication code for our papers) folder to a new [repo](https://github.com/neurodata/hyppo-papers)!** We aim to add test development code and paper figure replication code there, and will add relevant tests (with tutorials) to hyppo.
+**Note: We have recently moved our benchmarks (with relevant figure replication code for our papers) folder to a new [repo](https://github.com/neurodata/hyppo-papers)!** We aim to add test development code and paper figure replication codes there, and we will add relevant tests (with tutorials) to hyppo.
 
 ## Contributors
 
@@ -133,7 +133,7 @@ Contributions of any kind are welcome!
 
 ## Project History
 
-hyppo is a rebranding of mgcpy, which was founded in Novemember 2018.
+hyppo is a rebranding of mgcpy, which was founded in November 2018.
 mgcpy was designed and written by Satish Palaniappan, Sambit
 Panda, Junhao Xiong, Sandhya Ramachandran, and Ronak Mehtra. hyppo
-was designed and written by Sambit Panda and first released February 2020.
+was designed and written by Sambit Panda and first released in February 2020.
