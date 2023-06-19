@@ -2,7 +2,7 @@ from typing import NamedTuple
 
 import numpy as np
 from scipy.stats import entropy
-from sklearn.metrics import roc_curve
+from sklearn.metrics import roc_curve, roc_auc_score
 
 from honest_forests import HonestForestClassifier  # change this to scikit-tree later
 from ._utils import _CheckInputs
@@ -143,26 +143,7 @@ class MIRF_AUC(IndependenceTest):
         self.clf.fit(x, y.ravel())
         y_pred = self.clf.predict_proba(x)[:, 1]
 
-        fpr, tpr, thresholds = roc_curve(y.ravel(), y_pred)
-        fpr_tpr = list(zip(fpr, tpr))
-
-        area = 0
-        stored_fpr = 0.0
-        stored_tpr = 0.0
-        for (fpr, tpr) in fpr_tpr:
-            if fpr <= self.limit:
-                if round(fpr, 3) == round(stored_fpr, 3):
-                    continue
-                else:
-                    area += (fpr - stored_fpr) * tpr
-                    stored_fpr = fpr
-                    stored_tpr = tpr
-            else:
-                x = max(0, (self.limit - stored_fpr))
-                area += x * tpr
-                break
-
-        self.stat = area
+        self.stat = roc_auc_score(y, y_pred, max_fpr=self.limit)
 
         return self.stat
 
