@@ -8,7 +8,7 @@ from .. import MaxMargin
 
 class TestMaxMarginStat:
     @pytest.mark.parametrize(
-        "n, obs_stat", [(100, 0.6983550238795532), (200, 0.7026459581729386)]
+        "n, obs_stat", [(100, 0.8356763870539561), (200, 0.8382397975358477)]
     )
     @pytest.mark.parametrize("obs_pvalue", [1 / 1000])
     def test_linear_oned(self, n, obs_stat, obs_pvalue):

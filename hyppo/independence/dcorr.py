@@ -236,7 +236,7 @@ class Dcorr(IndependenceTest):
         ):
             self.is_fast = True
 
-        if auto and x.shape[0] > 20 and perm_blocks is None:
+        if auto and x.shape[0] > 20 and perm_blocks is None and not self.bias:
             stat, pvalue = chi2_approx(self.statistic, x, y)
             self.stat = stat
             self.pvalue = pvalue
@@ -432,11 +432,11 @@ def _dcorr(distx, disty, bias=False, is_fast=False):  # pragma: no cover
         vary = _dcov(disty, disty, bias=bias, only_dcov=False)
 
     # stat is 0 with negative variances (would make denominator undefined)
-    if varx <= 0 or vary <= 0:
+    if varx <= 0 or vary <= 0 or covar <= 0:
         stat = 0
 
     # calculate generalized test statistic
     else:
-        stat = covar / np.real(np.sqrt(varx * vary))
+        stat = np.sqrt(covar / np.real(np.sqrt(varx * vary)))
 
     return stat
