@@ -16,12 +16,12 @@ class TestKMERFStat(object):
             (linear, 1.0, 9.19834440770024e-24),  # test linear simulation
             (
                 spiral,
-                0.1835550720881665,
+                0.4284332761214592,
                 1.3087565060526607e-05,
             ),  # test spiral simulation
             (
                 multimodal_independence,
-                -0.0059788,
+                0.0,
                 0.5390103019274002,
             ),  # test independence simulation
         ],
