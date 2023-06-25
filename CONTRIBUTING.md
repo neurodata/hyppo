@@ -144,3 +144,13 @@ Properly formatted docstrings are required for documentation generation by Sphin
 follows the numpydoc guidelines. Please read and follow the
 [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html#overview) guidelines. Refer to the
 [example.py](https://numpydoc.readthedocs.io/en/latest/example.html#example) provided by numpydoc.
+
+###Commit and Pull Request Naming Conventions
+
+When making commits and pull requests, please follow these best practices:
+
+- Use clear and descriptive commit messages and pull request titles.
+- Start commit messages and pull request titles with a capital letter and use sentence case.
+- Use imperative verbs in the present tense (e.g., "Fix bug" instead of "Fixed bug" or "Fixes bug").
+- Limit the subject line to 50 characters and provide a detailed description in the body of the commit or pull request.
+- For more information on commit message best practices, you can refer to the documentation of [scipy](https://pypi.org/project/Scripy/) or [scikit-learn](https://scikit-learn.org/stable/). 
