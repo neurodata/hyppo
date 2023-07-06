@@ -1,7 +1,7 @@
 from typing import NamedTuple
 
 import numpy as np
-from honest_forests import HonestForestClassifier  # change this to scikit-tree later
+from sktree.ensemble import HonestForestClassifier
 from scipy.stats import entropy
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedKFold
@@ -36,7 +36,7 @@ class MIRF(IndependenceTest):
         If all trees are ignored, the empirical estimate is returned.
     **kwargs
         Additional arguments used for the forest (see
-        :class:`honest_forests.HonestForestClassifier`)
+        :class:`sktree.ensemble.HonestForestClassifier`)
     """
 
     def __init__(
