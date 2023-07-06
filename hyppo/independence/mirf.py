@@ -140,15 +140,16 @@ class MIRF_AUC(IndependenceTest):
         self.limit = limit
         IndependenceTest.__init__(self)
 
-    def statistic(self, x, y):
+    def statistic(self, x, y, reps=10):
         stats = []
 
-        # 5-fold cross validation for truncated AUROC
-        cv = StratifiedKFold()
-        for fold, (train, test) in enumerate(cv.split(x, y)):
-            self.clf.fit(x[train], y[train].ravel())
-            y_pred = self.clf.predict_proba(x[test])[:, 1]
-            stats.append(roc_auc_score(y[test], y_pred, max_fpr=self.limit))
+        for rep in reps:
+            # 5-fold cross validation for truncated AUROC
+            cv = StratifiedKFold()
+            for fold, (train, test) in enumerate(cv.split(x, y)):
+                self.clf.fit(x[train], y[train].ravel())
+                y_pred = self.clf.predict_proba(x[test])[:, 1]
+                stats.append(roc_auc_score(y[test], y_pred, max_fpr=self.limit))
 
         self.stat = np.mean(stats)
         return self.stat
