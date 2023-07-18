@@ -1,10 +1,11 @@
 from typing import NamedTuple
 
 import numpy as np
-from sktree.ensemble import HonestForestClassifier
+from joblib import Parallel, delayed
 from scipy.stats import entropy
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
+from sktree.ensemble import HonestForestClassifier
 
 from ._utils import _CheckInputs
 from .base import IndependenceTest
@@ -171,7 +172,7 @@ class MIRF_AUC(IndependenceTest):
         self.clf.fit(x, y.ravel())
 
         # Compute posteriors with train test splits
-        posterior = Parallel(n_jobs=-1)(
+        posterior = Parallel(n_jobs=workers)(
             delayed(auc_calibrator)(tree, x, y, test_size)
             for tree in (self.clf.estimators_)
         )
@@ -228,7 +229,7 @@ class MIRF_MV(IndependenceTest):
         self.clf.fit(x, y.ravel())
 
         # Compute posteriors with train test splits
-        posterior = Parallel(n_jobs=-1)(
+        posterior = Parallel(n_jobs=workers)(
             delayed(auc_calibrator)(tree, x, y, test_size)
             for tree in (self.clf.estimators_)
         )
