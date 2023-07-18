@@ -4,10 +4,29 @@ import numpy as np
 from sktree.ensemble import HonestForestClassifier
 from scipy.stats import entropy
 from sklearn.metrics import roc_auc_score
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import train_test_split
 
 from ._utils import _CheckInputs
 from .base import IndependenceTest
+
+
+def auc_calibrator(tree, X, y, test_size=0.2):
+    indices = np.arange(X.shape[0])
+    X_train, X_test, y_train, y_test, indices_train, indices_test = train_test_split(
+        X, y, indices, test_size=test_size
+    )
+    ## indicine of test set
+    tree.fit(X_train, y_train)
+    y_pred = tree.predict_proba(X_test).argmax(1).reshape((X_test.shape[0]), 1)
+    ### save the y_pred
+    posterior_ind = np.hstack(
+        (
+            indices_test.reshape((len(indices_test), 1)),
+            y_pred,
+            y_test.reshape((X_test.shape[0]), 1),
+        )
+    )
+    return posterior_ind
 
 
 class MIRFTestOutput(NamedTuple):
@@ -140,21 +159,35 @@ class MIRF_AUC(IndependenceTest):
         self.limit = limit
         IndependenceTest.__init__(self)
 
-    def statistic(self, x, y, reps=10):
-        stats = []
+    def statistic(self, x, y, workers=-1, test_size=0.2):
+        # Initialize trees
+        self.clf.fit(x, y.ravel())
 
-        for rep in reps:
-            # 5-fold cross validation for truncated AUROC
-            cv = StratifiedKFold()
-            for fold, (train, test) in enumerate(cv.split(x, y)):
-                self.clf.fit(x[train], y[train].ravel())
-                y_pred = self.clf.predict_proba(x[test])[:, 1]
-                stats.append(roc_auc_score(y[test], y_pred, max_fpr=self.limit))
+        # Compute posteriors with train test splits
+        posterior = Parallel(n_jobs=-1)(
+            delayed(auc_calibrator)(tree, x, y, test_size)
+            for tree in (self.clf.estimators_)
+        )
 
-        self.stat = np.mean(stats)
+        posterior_matrix = np.array(posterior).reshape(-1, 3)
+        posterior_sorted = posterior_matrix[posterior_matrix[:, 0].argsort()]
+        posterior_unique = np.unique(posterior_sorted[:, [0, 2]], axis=0)
+        posterior_final = np.hstack(
+            (posterior_unique, np.zeros((posterior_unique.shape[0], 1)))
+        )
+
+        ### get final posterior over the forest
+        for i in posterior_final[:, 0]:
+            posterior_final[posterior_final[:, 0] == i, 2] = np.mean(
+                posterior_sorted[posterior_sorted[:, 0] == i, :][:, 1]
+            )
+        self.stat = roc_auc_score(
+            posterior_final[:, 1], posterior_final[:, 2], max_fpr=self.limit
+        )
+
         return self.stat
 
-    def test(self, x, y, reps=1000, workers=1, random_state=None):
+    def test(self, x, y, reps=1000, workers=-1, random_state=None):
         check_input = _CheckInputs(x, y, reps=reps)
         x, y = check_input()
 
