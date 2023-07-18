@@ -29,6 +29,13 @@ def auc_calibrator(tree, X, y, test_size=0.2):
     return posterior_ind
 
 
+def perm_stat(clf, x, z, y, random_state=None):
+    permuted_Z = np.random.permutation(z)
+    X_permutedZ = np.hstack((x, permuted_Z))
+    perm_stat = clf.statistic(X_permutedZ, y)
+    return perm_stat
+
+
 class MIRFTestOutput(NamedTuple):
     stat: float
     pvalue: float
@@ -196,3 +203,72 @@ class MIRF_AUC(IndependenceTest):
         )
 
         return MIRFTestOutput(stat, pvalue)
+
+
+class MIRF_MV(IndependenceTest):
+    def __init__(
+        self,
+        n_estimators=500,
+        honest_fraction=0.5,
+        honest_prior="empirical",
+        limit=0.05,
+        **kwargs,
+    ):
+        self.clf = HonestForestClassifier(
+            n_estimators=n_estimators,
+            honest_fraction=honest_fraction,
+            honest_prior=honest_prior,
+            **kwargs,
+        )
+        self.limit = limit
+        IndependenceTest.__init__(self)
+
+    def statistic(self, x, y, workers=-1, test_size=0.2):
+        # Initialize trees
+        self.clf.fit(x, y.ravel())
+
+        # Compute posteriors with train test splits
+        posterior = Parallel(n_jobs=-1)(
+            delayed(auc_calibrator)(tree, x, y, test_size)
+            for tree in (self.clf.estimators_)
+        )
+
+        posterior_matrix = np.array(posterior).reshape(-1, 3)
+        posterior_sorted = posterior_matrix[posterior_matrix[:, 0].argsort()]
+        posterior_unique = np.unique(posterior_sorted[:, [0, 2]], axis=0)
+        posterior_final = np.hstack(
+            (posterior_unique, np.zeros((posterior_unique.shape[0], 1)))
+        )
+
+        ### get final posterior over the forest
+        for i in posterior_final[:, 0]:
+            posterior_final[posterior_final[:, 0] == i, 2] = np.mean(
+                posterior_sorted[posterior_sorted[:, 0] == i, :][:, 1]
+            )
+        self.stat = roc_auc_score(
+            posterior_final[:, 1], posterior_final[:, 2], max_fpr=self.limit
+        )
+
+        return self.stat
+
+    def test(self, x, z, y, reps=1000, workers=-1, random_state=None):
+        XZ = np.hstack((x, z))
+        observe_stat = self.statistic(XZ, y)
+
+        null_dist = np.array(
+            Parallel(n_jobs=workers)(
+                [delayed(perm_stat)(self, x, z, y) for _ in range(reps)]
+            )
+        )
+        pval = (1 + (null_dist >= observe_stat).sum()) / (1 + reps)
+
+        return observe_stat, null_dist, pval
+
+    def test_cutoff(self, x, z, y):
+        XZ = np.hstack((x, z))
+        observe_stat = self.statistic(XZ, y)
+
+        permuted_Z = np.random.permutation(z)
+        X_permutedZ = np.hstack((x, permuted_Z))
+        null = self.statistic(X_permutedZ, y)
+        return observe_stat, null_dist
