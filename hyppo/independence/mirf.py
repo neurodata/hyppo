@@ -167,7 +167,7 @@ class MIRF_AUC(IndependenceTest):
         self.limit = limit
         IndependenceTest.__init__(self)
 
-    def statistic(self, x, y, workers=-1, test_size=0.2):
+    def statistic(self, x, y, workers=1, test_size=0.2):
         # Initialize trees
         self.clf.fit(x, y.ravel())
 
@@ -195,7 +195,7 @@ class MIRF_AUC(IndependenceTest):
 
         return self.stat
 
-    def test(self, x, y, reps=1000, workers=-1, random_state=None):
+    def test(self, x, y, reps=1000, workers=1, random_state=None):
         check_input = _CheckInputs(x, y, reps=reps)
         x, y = check_input()
 
@@ -224,7 +224,7 @@ class MIRF_MV(IndependenceTest):
         self.limit = limit
         IndependenceTest.__init__(self)
 
-    def statistic(self, x, y, workers=-1, test_size=0.2):
+    def statistic(self, x, y, workers=1, test_size=0.2):
         # Initialize trees
         self.clf.fit(x, y.ravel())
 
@@ -252,7 +252,7 @@ class MIRF_MV(IndependenceTest):
 
         return self.stat
 
-    def test(self, x, z, y, reps=1000, workers=-1, random_state=None):
+    def test(self, x, z, y, reps=1000, workers=1, random_state=None):
         XZ = np.hstack((x, z))
         observe_stat = self.statistic(XZ, y)
 
