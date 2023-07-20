@@ -1,6 +1,6 @@
 # hyppo
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[all-contrib]: https://img.shields.io/badge/all_contributors-32-orange.svg?style=flat 'All Contributors'
+[all-contrib]: https://img.shields.io/badge/all_contributors-33-orange.svg?style=flat 'All Contributors'
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![CircleCI](https://img.shields.io/circleci/build/github/neurodata/hyppo/main?style=flat)](https://app.circleci.com/pipelines/github/neurodata/hyppo?branch=main)
@@ -119,6 +119,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/transpersonify"><img src="https://avatars.githubusercontent.com/u/8897933?v=4?s=100" width="100px;" alt="Shruti Naik"/><br /><sub><b>Shruti Naik</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=transpersonify" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ohpraveenprasad"><img src="https://avatars.githubusercontent.com/u/119914283?v=4?s=100" width="100px;" alt="Praveen Prasad "/><br /><sub><b>Praveen Prasad </b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=ohpraveenprasad" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/JenniferWTam"><img src="https://avatars.githubusercontent.com/u/80274896?v=4?s=100" width="100px;" alt="Jennifer Tam"/><br /><sub><b>Jennifer Tam</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=JenniferWTam" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/PoojaMandal"><img src="https://avatars.githubusercontent.com/u/63387928?v=4?s=100" width="100px;" alt="PoojaMandal"/><br /><sub><b>PoojaMandal</b></sub></a><br /><a href="https://github.com/neurodata/hyppo/commits?author=PoojaMandal" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
