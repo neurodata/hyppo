@@ -171,9 +171,10 @@ class MIRF_AUC(IndependenceTest):
         self.limit = limit
         IndependenceTest.__init__(self)
 
-    def statistic(self, x, y, workers=1, test_size=0.2, return_pos=False):
+    def statistic(self, x, y, workers=1, test_size=0.2, initial=True, return_pos=False):
         # Initialize trees
-        self.clf.fit(x, y.ravel())
+        if initial:
+            self.clf.fit(x, y.ravel())
 
         # Compute posteriors with train test splits
         posterior = Parallel(n_jobs=workers)(
@@ -231,9 +232,10 @@ class MIRF_MV(IndependenceTest):
         self.limit = limit
         IndependenceTest.__init__(self)
 
-    def statistic(self, x, y, workers=1, test_size=0.2, return_pos=False):
+    def statistic(self, x, y, workers=1, test_size=0.2, initial=True, return_pos=False):
         # Initialize trees
-        self.clf.fit(x, y.ravel())
+        if initial:
+            self.clf.fit(x, y.ravel())
 
         # Compute posteriors with train test splits
         posterior = Parallel(n_jobs=workers)(
@@ -282,4 +284,4 @@ class MIRF_MV(IndependenceTest):
         permuted_Z = np.random.permutation(z)
         X_permutedZ = np.hstack((x, permuted_Z))
         null = self.statistic(X_permutedZ, y)
-        return observe_stat, null_dist
+        return observe_stat, null
