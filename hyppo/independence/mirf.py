@@ -77,7 +77,7 @@ class MIRF(IndependenceTest):
         )
         IndependenceTest.__init__(self)
 
-    def statistic(self, x, y):
+    def statistic(self, x, y, return_pos=False):
         r"""
         Helper function that calculates the MI test statistic.
 
@@ -95,14 +95,18 @@ class MIRF(IndependenceTest):
             The computed MI statistic.
         """
         self.clf.fit(x, y.ravel())
-        H_YX = np.mean(entropy(self.clf.predict_proba(x), base=np.exp(1), axis=1))
+        posterior = self.clf.predict_proba(x)
+        H_YX = np.mean(entropy(posterior, base=np.exp(1), axis=1))
         _, counts = np.unique(y, return_counts=True)
         H_Y = entropy(counts, base=np.exp(1))
         stat = max(H_Y - H_YX, 0)
 
         self.stat = stat
 
-        return stat
+        if return_pos:
+            return self.stat, posterior
+
+        return self.stat
 
     def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
