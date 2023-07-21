@@ -167,7 +167,7 @@ class MIRF_AUC(IndependenceTest):
         self.limit = limit
         IndependenceTest.__init__(self)
 
-    def statistic(self, x, y, workers=1, test_size=0.2):
+    def statistic(self, x, y, workers=1, test_size=0.2, return_pos=False):
         # Initialize trees
         self.clf.fit(x, y.ravel())
 
@@ -192,6 +192,9 @@ class MIRF_AUC(IndependenceTest):
         self.stat = roc_auc_score(
             posterior_final[:, 1], posterior_final[:, 2], max_fpr=self.limit
         )
+
+        if return_pos:
+            return self.stat, posterior
 
         return self.stat
 
@@ -224,7 +227,7 @@ class MIRF_MV(IndependenceTest):
         self.limit = limit
         IndependenceTest.__init__(self)
 
-    def statistic(self, x, y, workers=1, test_size=0.2):
+    def statistic(self, x, y, workers=1, test_size=0.2, return_pos=False):
         # Initialize trees
         self.clf.fit(x, y.ravel())
 
@@ -249,6 +252,9 @@ class MIRF_MV(IndependenceTest):
         self.stat = roc_auc_score(
             posterior_final[:, 1], posterior_final[:, 2], max_fpr=self.limit
         )
+
+        if return_pos:
+            return self.stat, posterior
 
         return self.stat
 
