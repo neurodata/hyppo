@@ -22,7 +22,7 @@ N = 500
 CASES = [1, 2, 3, 4, 5]
 
 
-# make a function to plot the guassian simulations
+# make a function to plot the Gaussian simulations
 def plot_gaussian_sims():
     """Plot simulations"""
     fig, ax = plt.subplots(nrows=1, ncols=5, figsize=(28, 6))
@@ -72,5 +72,5 @@ def plot_gaussian_sims():
     plt.subplots_adjust(hspace=0.75)
 
 
-# run the created function for the guassian simulations
+# run the created function for the Gaussian simulations
 plot_gaussian_sims()
