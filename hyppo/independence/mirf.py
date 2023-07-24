@@ -37,6 +37,38 @@ def perm_stat(clf, x, z, y, random_state=None):
     return perm_stat
 
 
+def pos_diff(observe_pos, perm_pos, limit):
+    total_pos = np.random.shuffle(np.concatenate((observe_pos, perm_pos)))
+
+    half_ind = len(total_pos) * 0.5
+    half_pos = total_pos[:half_ind]
+    end_pos = total_pos[half_ind:]
+
+    half_pos_final = forest_pos(half_pos)
+    half_stat = roc_auc_score(half_pos_final[:, 1], half_pos_final[:, 2], max_fpr=limit)
+
+    end_pos_final = forest_pos(end_pos)
+    end_stat = roc_auc_score(end_pos_final[:, 1], end_pos_final[:, 2], max_fpr=limit)
+
+    return abs(half_stat - end_stat)
+
+
+def forest_pos(posterior):
+    posterior_matrix = np.array(posterior).reshape(-1, 3)
+    posterior_sorted = posterior_matrix[posterior_matrix[:, 0].argsort()]
+    posterior_unique = np.unique(posterior_sorted[:, [0, 2]], axis=0)
+    posterior_final = np.hstack(
+        (posterior_unique, np.zeros((posterior_unique.shape[0], 1)))
+    )
+
+    ### get final posterior over the forest
+    for i in posterior_final[:, 0]:
+        posterior_final[posterior_final[:, 0] == i, 2] = np.mean(
+            posterior_sorted[posterior_sorted[:, 0] == i, :][:, 1]
+        )
+    return posterior_final
+
+
 class MIRFTestOutput(NamedTuple):
     stat: float
     pvalue: float
@@ -182,18 +214,7 @@ class MIRF_AUC(IndependenceTest):
             for tree in (self.clf.estimators_)
         )
 
-        posterior_matrix = np.array(posterior).reshape(-1, 3)
-        posterior_sorted = posterior_matrix[posterior_matrix[:, 0].argsort()]
-        posterior_unique = np.unique(posterior_sorted[:, [0, 2]], axis=0)
-        posterior_final = np.hstack(
-            (posterior_unique, np.zeros((posterior_unique.shape[0], 1)))
-        )
-
-        ### get final posterior over the forest
-        for i in posterior_final[:, 0]:
-            posterior_final[posterior_final[:, 0] == i, 2] = np.mean(
-                posterior_sorted[posterior_sorted[:, 0] == i, :][:, 1]
-            )
+        posterior_final = forest_pos(posterior)
         self.stat = roc_auc_score(
             posterior_final[:, 1], posterior_final[:, 2], max_fpr=self.limit
         )
@@ -243,18 +264,7 @@ class MIRF_MV(IndependenceTest):
             for tree in (self.clf.estimators_)
         )
 
-        posterior_matrix = np.array(posterior).reshape(-1, 3)
-        posterior_sorted = posterior_matrix[posterior_matrix[:, 0].argsort()]
-        posterior_unique = np.unique(posterior_sorted[:, [0, 2]], axis=0)
-        posterior_final = np.hstack(
-            (posterior_unique, np.zeros((posterior_unique.shape[0], 1)))
-        )
-
-        ### get final posterior over the forest
-        for i in posterior_final[:, 0]:
-            posterior_final[posterior_final[:, 0] == i, 2] = np.mean(
-                posterior_sorted[posterior_sorted[:, 0] == i, :][:, 1]
-            )
+        posterior_final = forest_pos(posterior)
         self.stat = roc_auc_score(
             posterior_final[:, 1], posterior_final[:, 2], max_fpr=self.limit
         )
@@ -285,3 +295,27 @@ class MIRF_MV(IndependenceTest):
         X_permutedZ = np.hstack((x, permuted_Z))
         null = self.statistic(X_permutedZ, y)
         return observe_stat, null
+
+    def test_diff(self, x, z, y, reps=1000, workers=1):
+        XZ = np.hstack((x, z))
+        observe_stat, observe_pos = self.statistic(XZ, y, return_pos=True)
+
+        # Compute statistic for permuted sets
+        permuted_Z = np.random.permutation(z)
+        X_permutedZ = np.hstack((x, permuted_Z))
+        perm_stat, perm_pos = self.statistic(X_permutedZ, y, return_pos=True)
+
+        # Boostrap sample the posterior from the two forests
+        null_stats = np.array(
+            Parallel(n_jobs=workers)(
+                [
+                    delayed(pos_diff)(observe_pos, perm_pos, limit=self.limit)
+                    for _ in range(reps)
+                ]
+            )
+        )
+
+        stat = observe_stat - perm_stat
+
+        pval = (1 + (null_stats >= stat).sum()) / (1 + reps)
+        return stat, null_stats, pval
