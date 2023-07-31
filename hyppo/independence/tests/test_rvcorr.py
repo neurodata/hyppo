@@ -13,6 +13,9 @@ class TestRVStat:
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
         x, y = linear(n, 1)
+        num_rows, num_cols = x.shape
+        y = np.random.choice([-1, 1], num_rows, p=[0.5, 0.5])
+        y = np.transpose(y)
         stat, pvalue = RV().test(x, y)
 
         assert_almost_equal(stat, obs_stat, decimal=2)
@@ -21,6 +24,9 @@ class TestRVStat:
     @pytest.mark.parametrize("n", [100, 1000])
     def test_rep(self, n):
         x, y = linear(n, 1)
+        num_rows, num_cols = x.shape
+        y = np.random.choice([-1, 1], num_rows, p=[0.5, 0.5])
+        y = np.transpose(y)
         stat1, pvalue1 = RV().test(x, y)
         stat2, pvalue2 = RV().test(x, y)
 
@@ -41,3 +47,4 @@ class TestCCATypeIError:
         )
 
         assert_almost_equal(est_power, 0.05, decimal=2)
+
