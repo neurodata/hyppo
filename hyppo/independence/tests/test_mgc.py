@@ -6,8 +6,9 @@ from numpy.testing import (
     assert_equal,
     assert_warns,
 )
+from scipy.stats import multiscale_graphcorr
 
-from ...tools import linear, multimodal_independence, power, spiral
+from ...tools import linear, power, spiral
 from .. import MGC
 
 
@@ -15,52 +16,51 @@ class TestMGCStat(object):
     """Test validity of MGC test statistic"""
 
     @pytest.mark.parametrize(
-        "sim, obs_stat, obs_pvalue",
-        [
-            (linear, 0.97, 1 / 1000),  # test linear simulation
-            (spiral, 0.163, 1 / 1000),  # test spiral simulation
-        ],
+        "sim",
+        (
+            linear,  # test linear simulation
+            spiral,  # test spiral simulation
+        ),
     )
-    def test_oned(self, sim, obs_stat, obs_pvalue):
+    def test_oned(self, sim):
         np.random.seed(12345678)
 
         # generate x and y
         x, y = sim(n=100, p=1)
 
         # test stat and pvalue
-        stat1 = MGC().statistic(x, y)
-        stat2, pvalue, _ = MGC().test(x, y)
-        assert_approx_equal(stat1, obs_stat, significant=1)
-        assert_approx_equal(stat2, obs_stat, significant=1)
-        assert_approx_equal(pvalue, obs_pvalue, significant=1)
+        stat_hyppo, pvalue_hyppo, _ = MGC().test(x, y)
+        stat_scipy, pvalue_scipy, _ = multiscale_graphcorr(x, y)
+        assert_approx_equal(stat_hyppo, stat_scipy, significant=4)
+        assert_approx_equal(pvalue_hyppo, pvalue_scipy, significant=3)
 
     @pytest.mark.parametrize(
-        "sim, obs_stat, obs_pvalue",
+        "sim",
         [
-            (linear, 0.463, 1 / 1000),  # test linear simulation
-            (spiral, 0.091, 0.01),  # test spiral simulation
+            linear,  # test linear simulation
+            spiral,  # test spiral simulation
         ],
     )
-    def test_fived(self, sim, obs_stat, obs_pvalue):
+    def test_fived(self, sim):
         np.random.seed(12345678)
 
         # generate x and y
         x, y = sim(n=100, p=5)
 
         # test stat and pvalue
-        stat1 = MGC().statistic(x, y)
-        stat2, pvalue, _ = MGC().test(x, y)
-        assert_approx_equal(stat1, obs_stat, significant=1)
-        assert_approx_equal(stat2, obs_stat, significant=1)
-        assert_approx_equal(pvalue, obs_pvalue, significant=1)
+        stat_hyppo, pvalue_hyppo, _ = MGC().test(x, y)
+        stat_scipy, pvalue_scipy, _ = multiscale_graphcorr(x, y)
+        assert_approx_equal(stat_hyppo, stat_scipy, significant=4)
+        assert_approx_equal(pvalue_hyppo, pvalue_scipy, significant=3)
 
     @pytest.mark.parametrize(
-        "sim, obs_stat, obs_pvalue",
+        "sim",
         [
-            (linear, 0.97, 1 / 1000),
-        ],  # test linear simulation
+            linear,  # test linear simulation
+            spiral,  # test spiral simulation
+        ],
     )
-    def test_rep(self, sim, obs_stat, obs_pvalue):
+    def test_rep(self, sim):
         x, y = sim(n=100, p=5)
         stat1, pvalue1, _ = MGC().test(x, y, random_state=2)
         stat2, pvalue2, _ = MGC().test(x, y, random_state=2)
