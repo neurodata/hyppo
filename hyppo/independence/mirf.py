@@ -37,6 +37,15 @@ def perm_stat(clf, x, z, y, random_state=None):
     return perm_stat
 
 
+def perm_half(clf, z, y, x_pos):
+    permuted_Z = np.random.permutation(z)
+    perm_stat, perm_pos = clf.statistic(permutedZ, y, return_pos=True)
+    null_pos = forest_pos(x_pos + perm_pos)
+    null_stat = roc_auc_score(null_pos[:, 1], null_pos[:, 2], max_fpr=clf.limit)
+
+    return null_stat
+
+
 def pos_diff(observe_pos, perm_pos, limit):
     total_pos = np.random.shuffle(np.concatenate((observe_pos, perm_pos)))
 
@@ -393,6 +402,27 @@ class MIRF_MV(IndependenceTest):
         null_dist = np.array(
             Parallel(n_jobs=workers)(
                 [delayed(perm_stat)(self, x, z, y) for _ in range(reps)]
+            )
+        )
+        pval = (1 + (null_dist >= observe_stat).sum()) / (1 + reps)
+
+        return observe_stat, null_dist, pval
+
+    def test_twin(self, x, z, y, reps=1000, workers=1, random_state=None):
+        x_stat, x_pos = self.statistic(x, y, return_pos=True)
+
+        # TODO: determine whether we need the forest
+
+        z_stat, z_pos = self.statistic(z, y, return_pos=True)
+
+        observe_pos = forest_pos(x_pos + z_pos)
+        observe_stat = roc_auc_score(
+            observe_pos[:, 1], observe_pos[:, 2], max_fpr=self.limit
+        )
+
+        null_dist = np.array(
+            Parallel(n_jobs=workers)(
+                [delayed(perm_half)(self, z, y, x_pos) for _ in range(reps)]
             )
         )
         pval = (1 + (null_dist >= observe_stat).sum()) / (1 + reps)
