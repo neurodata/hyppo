@@ -99,13 +99,53 @@ class MIRF(IndependenceTest):
     """
 
     def __init__(
-        self, n_estimators=500, honest_fraction=0.5, honest_prior="empirical", **kwargs
+        self,
+        n_estimators=500,
+        criterion="gini",
+        splitter="best",
+        max_depth=None,
+        min_samples_split=2,
+        min_samples_leaf=1,
+        min_weight_fraction_leaf=0.0,
+        max_features="sqrt",
+        max_leaf_nodes=None,
+        min_impurity_decrease=0.0,
+        bootstrap=False,
+        oob_score=False,
+        n_jobs=None,
+        random_state=None,
+        verbose=0,
+        warm_start=False,
+        class_weight=None,
+        ccp_alpha=0.0,
+        max_samples=None,
+        honest_prior="empirical",
+        honest_fraction=0.5,
+        tree_estimator=None,
     ):
         self.clf = HonestForestClassifier(
             n_estimators=n_estimators,
-            honest_fraction=honest_fraction,
+            criterion=criterion,
+            splitter=splitter,
+            max_depth=max_depth,
+            min_samples_split=min_samples_split,
+            min_samples_leaf=min_samples_leaf,
+            min_weight_fraction_leaf=min_weight_fraction_leaf,
+            max_features=max_features,
+            max_leaf_nodes=max_leaf_nodes,
+            min_impurity_decrease=min_impurity_decrease,
+            bootstrap=bootstrap,
+            oob_score=oob_score,
+            n_jobs=n_jobs,
+            random_state=random_state,
+            verbose=verbose,
+            warm_start=warm_start,
+            class_weight=class_weight,
+            ccp_alpha=ccp_alpha,
+            max_samples=max_samples,
             honest_prior=honest_prior,
-            **kwargs,
+            honest_fraction=honest_fraction,
+            tree_estimator=tree_estimator,
         )
         IndependenceTest.__init__(self)
 
@@ -189,16 +229,52 @@ class MIRF_AUC(IndependenceTest):
     def __init__(
         self,
         n_estimators=500,
-        honest_fraction=0.5,
+        criterion="gini",
+        splitter="best",
+        max_depth=None,
+        min_samples_split=2,
+        min_samples_leaf=1,
+        min_weight_fraction_leaf=0.0,
+        max_features="sqrt",
+        max_leaf_nodes=None,
+        min_impurity_decrease=0.0,
+        bootstrap=False,
+        oob_score=False,
+        n_jobs=None,
+        random_state=None,
+        verbose=0,
+        warm_start=False,
+        class_weight=None,
+        ccp_alpha=0.0,
+        max_samples=None,
         honest_prior="empirical",
+        honest_fraction=0.5,
+        tree_estimator=None,
         limit=0.05,
-        **kwargs,
     ):
         self.clf = HonestForestClassifier(
             n_estimators=n_estimators,
-            honest_fraction=honest_fraction,
+            criterion=criterion,
+            splitter=splitter,
+            max_depth=max_depth,
+            min_samples_split=min_samples_split,
+            min_samples_leaf=min_samples_leaf,
+            min_weight_fraction_leaf=min_weight_fraction_leaf,
+            max_features=max_features,
+            max_leaf_nodes=max_leaf_nodes,
+            min_impurity_decrease=min_impurity_decrease,
+            bootstrap=bootstrap,
+            oob_score=oob_score,
+            n_jobs=n_jobs,
+            random_state=random_state,
+            verbose=verbose,
+            warm_start=warm_start,
+            class_weight=class_weight,
+            ccp_alpha=ccp_alpha,
+            max_samples=max_samples,
             honest_prior=honest_prior,
-            **kwargs,
+            honest_fraction=honest_fraction,
+            tree_estimator=tree_estimator,
         )
         self.limit = limit
         IndependenceTest.__init__(self)
@@ -239,16 +315,52 @@ class MIRF_MV(IndependenceTest):
     def __init__(
         self,
         n_estimators=500,
-        honest_fraction=0.5,
+        criterion="gini",
+        splitter="best",
+        max_depth=None,
+        min_samples_split=2,
+        min_samples_leaf=1,
+        min_weight_fraction_leaf=0.0,
+        max_features="sqrt",
+        max_leaf_nodes=None,
+        min_impurity_decrease=0.0,
+        bootstrap=False,
+        oob_score=False,
+        n_jobs=None,
+        random_state=None,
+        verbose=0,
+        warm_start=False,
+        class_weight=None,
+        ccp_alpha=0.0,
+        max_samples=None,
         honest_prior="empirical",
+        honest_fraction=0.5,
+        tree_estimator=None,
         limit=0.05,
-        **kwargs,
     ):
         self.clf = HonestForestClassifier(
             n_estimators=n_estimators,
-            honest_fraction=honest_fraction,
+            criterion=criterion,
+            splitter=splitter,
+            max_depth=max_depth,
+            min_samples_split=min_samples_split,
+            min_samples_leaf=min_samples_leaf,
+            min_weight_fraction_leaf=min_weight_fraction_leaf,
+            max_features=max_features,
+            max_leaf_nodes=max_leaf_nodes,
+            min_impurity_decrease=min_impurity_decrease,
+            bootstrap=bootstrap,
+            oob_score=oob_score,
+            n_jobs=n_jobs,
+            random_state=random_state,
+            verbose=verbose,
+            warm_start=warm_start,
+            class_weight=class_weight,
+            ccp_alpha=ccp_alpha,
+            max_samples=max_samples,
             honest_prior=honest_prior,
-            **kwargs,
+            honest_fraction=honest_fraction,
+            tree_estimator=tree_estimator,
         )
         self.limit = limit
         IndependenceTest.__init__(self)
@@ -286,15 +398,6 @@ class MIRF_MV(IndependenceTest):
         pval = (1 + (null_dist >= observe_stat).sum()) / (1 + reps)
 
         return observe_stat, null_dist, pval
-
-    def test_cutoff(self, x, z, y):
-        XZ = np.hstack((x, z))
-        observe_stat = self.statistic(XZ, y)
-
-        permuted_Z = np.random.permutation(z)
-        X_permutedZ = np.hstack((x, permuted_Z))
-        null = self.statistic(X_permutedZ, y)
-        return observe_stat, null
 
     def test_diff(self, x, z, y, reps=1000, workers=1):
         XZ = np.hstack((x, z))
