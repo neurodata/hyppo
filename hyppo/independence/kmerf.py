@@ -242,7 +242,7 @@ class KMERF(IndependenceTest):
             stat = self.statistic(x, y)
             statx = _dcorr(self.distx, self.distx, bias=False, is_fast=False)
             staty = _dcorr(self.disty, self.disty, bias=False, is_fast=False)
-            pvalue = chi2.sf(stat / np.sqrt(statx * staty) * n + 1, 1)
+            pvalue = chi2.sf(stat ** 2 / np.sqrt(statx ** 2 * staty ** 2) * n + 1, 1)
             self.stat = stat
             self.pvalue = pvalue
             self.null_dist = None
