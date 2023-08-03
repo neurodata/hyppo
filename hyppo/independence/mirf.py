@@ -39,7 +39,7 @@ def perm_stat(clf, x, z, y, random_state=None):
 
 def perm_half(clf, z, y, x_pos):
     permuted_Z = np.random.permutation(z)
-    perm_stat, perm_pos = clf.statistic(permutedZ, y, return_pos=True)
+    perm_stat, perm_pos = clf.statistic(permuted_Z, y, return_pos=True)
     null_pos = forest_pos(x_pos + perm_pos)
     null_stat = roc_auc_score(null_pos[:, 1], null_pos[:, 2], max_fpr=clf.limit)
 
