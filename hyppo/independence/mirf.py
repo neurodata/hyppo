@@ -18,7 +18,7 @@ def auc_calibrator(tree, X, y, test_size=0.2):
     )
     ## indicine of test set
     tree.fit(X_train, y_train)
-    y_pred = tree.predict_proba(X_test).argmax(1).reshape((X_test.shape[0]), 1)
+    y_pred = tree.predict_proba(X_test)[:,1].reshape((X_test.shape[0]), 1)
     ### save the y_pred
     posterior_ind = np.hstack(
         (
