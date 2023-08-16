@@ -25,4 +25,6 @@ INDEP_TESTS = {
     "maxmargin": MaxMargin,
     "friedman_rafsky": FriedmanRafsky,
     "mirf": MIRF,
+    "mirf_auc": MIRF_AUC,
+    "mirf_mv": MIRF_MV,
 }
