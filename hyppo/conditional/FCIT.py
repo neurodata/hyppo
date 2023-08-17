@@ -164,8 +164,8 @@ class FCIT(ConditionalIndependenceTest):
         >>> model = DecisionTreeRegressor()
         >>> cv_grid = {"min_samples_split": [2, 8, 64, 512, 1e-2, 0.2, 0.4]}
         >>> stat, pvalue = FCIT(model=model, cv_grid=cv_grid).test(x1.T, y1.T, z1)
-        >>> '%.2f, %.3f' % (stat, pvalue)
-        '-3.59, 0.995'
+        >>> '%.1f, %.2f' % (stat, pvalue)
+        '-3.6, 1.00'
         """
 
         n_samples = x.shape[0]

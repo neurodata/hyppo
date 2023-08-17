@@ -404,7 +404,9 @@ def _dcov(distx, disty, bias=False, only_dcov=True):  # pragma: no cover
     if only_dcov:
         N = distx.shape[0]
         if bias:
-            stat = 1 / (N**2) * stat
+            # only biased Dcov is square-rooted
+            # https://search.r-project.org/CRAN/refmans/energy/html/dcovu.html
+            stat = np.sqrt(1 / (N**2) * stat)
         else:
             stat = 1 / (N * (N - 3)) * stat
 
@@ -437,6 +439,10 @@ def _dcorr(distx, disty, bias=False, is_fast=False):  # pragma: no cover
 
     # calculate generalized test statistic
     else:
-        stat = np.sqrt(covar / np.real(np.sqrt(varx * vary)))
+        stat = covar / np.sqrt(np.real(varx * vary))
+        # only biased Dcov is square-rooted
+        # https://search.r-project.org/CRAN/refmans/energy/html/dcovu.html
+        if bias:
+            stat = np.sqrt(stat)
 
     return stat

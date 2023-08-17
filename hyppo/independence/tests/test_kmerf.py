@@ -16,7 +16,7 @@ class TestKMERFStat(object):
             (linear, 1.0, 9.19834440770024e-24),  # test linear simulation
             (
                 spiral,
-                0.4284332761214592,
+                0.1835550720881665,
                 1.3087565060526607e-05,
             ),  # test spiral simulation
             (
@@ -34,7 +34,7 @@ class TestKMERFStat(object):
 
         # test stat and pvalue
         stat1 = KMERF().statistic(x, y)
-        stat2, pvalue, _ = KMERF().test(x, y, reps=0)
+        stat2, pvalue, _ = KMERF().test(x, y)
         assert_approx_equal(stat1, obs_stat, significant=1)
         assert_approx_equal(stat2, obs_stat, significant=1)
         assert_approx_equal(pvalue, obs_pvalue, significant=1)

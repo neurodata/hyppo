@@ -36,7 +36,7 @@ class TestEnergy:
         y = x**2
         stat = Energy(bias=True).statistic(x.reshape(-1, 1), y.reshape(-1, 1))
 
-        assert_almost_equal(stat, 3146.5236, decimal=4)
+        assert_almost_equal(stat, 158.6574574358228, decimal=4)
 
 
 class TestEnergyTypeIError:

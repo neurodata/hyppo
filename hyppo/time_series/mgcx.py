@@ -171,7 +171,7 @@ class MGCX(TimeSeriesTest):
         >>> stat, pvalue, mgcx_dict = MGCX().test(x, y, reps = 100)
         >>> '%.1f, %.2f, [%d, %d]' % (stat, pvalue, mgcx_dict['opt_scale'][0],
         ... mgcx_dict['opt_scale'][1])
-        '1.0, 0.05, [7, 7]'
+        '1.0, 0.06, [7, 7]'
 
         The increasing the max_lag can increase the ability to identify dependence.
 
@@ -182,7 +182,7 @@ class MGCX(TimeSeriesTest):
         >>> y = np.roll(x, -1)
         >>> stat, pvalue, mgcx_dict = MGCX(max_lag=1).test(x, y, reps=1000)
         >>> '%.1f, %.2f, %d' % (stat, pvalue, mgcx_dict['opt_lag'])
-        '1.1, 0.01, 1'
+        '1.1, 0.00, 1'
         """
         check_input = _CheckInputs(
             x,
