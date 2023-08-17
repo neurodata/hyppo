@@ -295,7 +295,7 @@ class MIRF_AUC(IndependenceTest):
 
         # Compute posteriors with train test splits
         posterior = Parallel(n_jobs=workers)(
-            delayed(auc_calibrator)(tree, x, y, test_size)
+            delayed(auc_calibrator)(tree, x, y.ravel(), test_size)
             for tree in (self.clf.estimators_)
         )
 
@@ -381,7 +381,7 @@ class MIRF_MV(IndependenceTest):
 
         # Compute posteriors with train test splits
         posterior = Parallel(n_jobs=workers)(
-            delayed(auc_calibrator)(tree, x, y, test_size)
+            delayed(auc_calibrator)(tree, x, y.ravel(), test_size)
             for tree in (self.clf.estimators_)
         )
 
