@@ -8,7 +8,7 @@ from .max_margin import MaxMargin
 from .mgc import MGC
 from .rv import RV
 from .friedman_rafsky import FriedmanRafsky
-from .mirf import MIRF, MIRF_AUC
+from .mirf import MIRF, MIRF_AUC, MIRF_MV
 
 
 __all__ = [s for s in dir()]  # add imported tests to __all__
@@ -25,4 +25,6 @@ INDEP_TESTS = {
     "maxmargin": MaxMargin,
     "friedman_rafsky": FriedmanRafsky,
     "mirf": MIRF,
+    "mirf_auc": MIRF_AUC,
+    "mirf_mv": MIRF_MV,
 }
