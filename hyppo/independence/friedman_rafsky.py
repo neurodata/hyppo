@@ -161,7 +161,7 @@ def _num_runs(labels, MST_connections):
     return run_count
 
 
-@jit(nopython=True, cache=True)  # pragma: no cover
+
 def prim(weight_mat, labels):
     r"""
     Helper function to read weighted matrix input and compute minimum
@@ -190,15 +190,23 @@ def prim(weight_mat, labels):
         minimum = INF
         x = 0
         y = 0
-        for i in range(V):
-            if selected[i]:
-                for j in range(V):
-                    if (not selected[j]) and weight_mat[i][j]:
-                        # not in selected and there is an edge
-                        if minimum > weight_mat[i][j]:
-                            minimum = weight_mat[i][j]
-                            x = i
-                            y = j
+        rows_true = np.where(selected)[0]
+        columns_false = np.where(np.logical_not(selected))[0]
+        """
+        based on choose rows with True and columns with False make indexes 
+        'ind'  to fetch values from an array 'weight_mat'.
+        """
+        ind = np.array(np.meshgrid(rows_true, columns_false, indexing='ij')).reshape(2, -1)
+        sample = weight_mat[ind[0], ind[1]]
+        """
+        'i_min' index of the minimum from sample. With the help of which we
+         extract the desired index corresponding to the 'weight_mat' array.
+        """
+        i_min = np.where((sample < minimum) & (sample == np.min(sample[np.nonzero(sample)])))
+
+        x = ind[0][i_min[0]][0]
+        y = ind[1][i_min[0]][0]
+
         MST_connections.append([x, y])
         selected[y] = True
         no_edge += 1
