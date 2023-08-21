@@ -1,7 +1,6 @@
 import random
 from typing import NamedTuple
 
-from numba import jit
 import numpy as np
 
 from .base import IndependenceTest
@@ -214,7 +213,7 @@ def prim(weight_mat, labels):
     return MST_connections
 
 
-@jit(nopython=True, cache=True)
+
 def MST(x, labels):  # pragma: no cover
     r"""
     Helper function to read input data and calculate Euclidean distance
