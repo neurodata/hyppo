@@ -11,14 +11,18 @@ from ._utils import _CheckInputs
 from .base import IndependenceTest
 
 
-def auc_calibrator(tree, X, y, test_size=0.2):
+def auc_calibrator(tree, X, y, test_size=0.2, permute_y=False):
     indices = np.arange(X.shape[0])
     X_train, X_test, y_train, y_test, indices_train, indices_test = train_test_split(
         X, y, indices, test_size=test_size
     )
-    ## indicine of test set
+
+    # individual tree permutation of y labels
+    if permute_y:
+        y_train = np.random.permutation(y_train)
+
     tree.fit(X_train, y_train)
-    y_pred = tree.predict_proba(X_test)[:,1].reshape((X_test.shape[0]), 1)
+    y_pred = tree.predict_proba(X_test)[:, 1].reshape((X_test.shape[0]), 1)
     ### save the y_pred
     posterior_ind = np.hstack(
         (
@@ -288,14 +292,23 @@ class MIRF_AUC(IndependenceTest):
         self.limit = limit
         IndependenceTest.__init__(self)
 
-    def statistic(self, x, y, workers=1, test_size=0.2, initial=True, return_pos=False):
+    def statistic(
+        self,
+        x,
+        y,
+        workers=1,
+        test_size=0.2,
+        initial=True,
+        return_pos=False,
+        permute_y=False,
+    ):
         # Initialize trees
         if initial:
             self.clf.fit(x, y.ravel())
 
         # Compute posteriors with train test splits
         posterior = Parallel(n_jobs=workers)(
-            delayed(auc_calibrator)(tree, x, y.ravel(), test_size)
+            delayed(auc_calibrator)(tree, x, y.ravel(), test_size, permute_y)
             for tree in (self.clf.estimators_)
         )
 
@@ -374,14 +387,23 @@ class MIRF_MV(IndependenceTest):
         self.limit = limit
         IndependenceTest.__init__(self)
 
-    def statistic(self, x, y, workers=1, test_size=0.2, initial=True, return_pos=False):
+    def statistic(
+        self,
+        x,
+        y,
+        workers=1,
+        test_size=0.2,
+        initial=True,
+        return_pos=False,
+        permute_y=False,
+    ):
         # Initialize trees
         if initial:
             self.clf.fit(x, y.ravel())
 
         # Compute posteriors with train test splits
         posterior = Parallel(n_jobs=workers)(
-            delayed(auc_calibrator)(tree, x, y.ravel(), test_size)
+            delayed(auc_calibrator)(tree, x, y.ravel(), test_size, permute_y)
             for tree in (self.clf.estimators_)
         )
 
