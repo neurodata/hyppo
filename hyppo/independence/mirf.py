@@ -22,16 +22,13 @@ def auc_calibrator(tree, X, y, test_size=0.2, permute_y=False):
         y_train = np.random.permutation(y_train)
 
     tree.fit(X_train, y_train)
-    y_pred = tree.predict_proba(X_test)[:, 1].reshape((X_test.shape[0]), 1)
-    ### save the y_pred
-    posterior_ind = np.hstack(
-        (
-            indices_test.reshape((len(indices_test), 1)),
-            y_pred,
-            y_test.reshape((X_test.shape[0]), 1),
-        )
-    )
-    return posterior_ind
+    y_pred = tree.predict_proba(X_test)[:, 1]
+
+    # Fill test set posteriors & set rest NaN
+    posterior = np.full(y.shape, np.nan)
+    posterior[indices_test] = y_pred
+
+    return posterior
 
 
 def perm_stat(clf, x, z, y, random_state=None):
@@ -44,8 +41,8 @@ def perm_stat(clf, x, z, y, random_state=None):
 def perm_half(clf, z, y, x_pos):
     permuted_Z = np.random.permutation(z)
     perm_stat, perm_pos = clf.statistic(permuted_Z, y, return_pos=True)
-    null_pos = forest_pos(x_pos + perm_pos)
-    null_stat = roc_auc_score(null_pos[:, 1], null_pos[:, 2], max_fpr=clf.limit)
+    null_pos = forest_pos(x_pos + perm_pos, y)
+    null_stat = roc_auc_score(null_pos[:, 0], null_pos[:, 1], max_fpr=clf.limit)
 
     return null_stat
 
@@ -57,29 +54,24 @@ def pos_diff(observe_pos, perm_pos, limit):
     half_pos = total_pos[:half_ind]
     end_pos = total_pos[half_ind:]
 
-    half_pos_final = forest_pos(half_pos)
-    half_stat = roc_auc_score(half_pos_final[:, 1], half_pos_final[:, 2], max_fpr=limit)
+    half_pos_final = forest_pos(half_pos, y)
+    half_stat = roc_auc_score(half_pos_final[:, 0], half_pos_final[:, 1], max_fpr=limit)
 
-    end_pos_final = forest_pos(end_pos)
-    end_stat = roc_auc_score(end_pos_final[:, 1], end_pos_final[:, 2], max_fpr=limit)
+    end_pos_final = forest_pos(end_pos, y)
+    end_stat = roc_auc_score(end_pos_final[:, 0], end_pos_final[:, 1], max_fpr=limit)
 
     return abs(half_stat - end_stat)
 
 
-def forest_pos(posterior):
-    posterior_matrix = np.array(posterior).reshape(-1, 3)
-    posterior_sorted = posterior_matrix[posterior_matrix[:, 0].argsort()]
-    posterior_unique = np.unique(posterior_sorted[:, [0, 2]], axis=0)
-    posterior_final = np.hstack(
-        (posterior_unique, np.zeros((posterior_unique.shape[0], 1)))
-    )
+def forest_pos(posterior, y):
+    # Average all posteriors
+    posterior_final = np.nanmean(posterior, axis=0)
 
-    ### get final posterior over the forest
-    for i in posterior_final[:, 0]:
-        posterior_final[posterior_final[:, 0] == i, 2] = np.mean(
-            posterior_sorted[posterior_sorted[:, 0] == i, :][:, 1]
-        )
-    return posterior_final
+    # Ignore all NaN values (samples not tested)
+    true_final = y.ravel()[~np.isnan(posterior_final)].reshape(-1, 1)
+    posterior_final = posterior_final[~np.isnan(posterior_final)].reshape(-1, 1)
+
+    return np.hstack((true_final, posterior_final))
 
 
 class MIRFTestOutput(NamedTuple):
@@ -312,9 +304,9 @@ class MIRF_AUC(IndependenceTest):
             for tree in (self.clf.estimators_)
         )
 
-        posterior_final = forest_pos(posterior)
+        posterior_final = forest_pos(posterior, y)
         self.stat = roc_auc_score(
-            posterior_final[:, 1], posterior_final[:, 2], max_fpr=self.limit
+            posterior_final[:, 0], posterior_final[:, 1], max_fpr=self.limit
         )
 
         if return_pos:
@@ -407,10 +399,14 @@ class MIRF_MV(IndependenceTest):
             for tree in (self.clf.estimators_)
         )
 
-        posterior_final = forest_pos(posterior)
-        self.stat = roc_auc_score(
-            posterior_final[:, 1], posterior_final[:, 2], max_fpr=self.limit
-        )
+        # Average all posteriors
+        posterior_final = np.nanmean(posterior, axis=0)
+
+        # Ignore all NaN values (samples not tested)
+        true_final = y.ravel()[~np.isnan(posterior_final)]
+        posterior_final = posterior_final[~np.isnan(posterior_final)]
+
+        self.stat = roc_auc_score(true_final, posterior_final, max_fpr=self.limit)
 
         if return_pos:
             return self.stat, posterior
@@ -437,9 +433,9 @@ class MIRF_MV(IndependenceTest):
 
         z_stat, z_pos = self.statistic(z, y, return_pos=True)
 
-        observe_pos = forest_pos(x_pos + z_pos)
+        observe_pos = forest_pos(x_pos + z_pos, y)
         observe_stat = roc_auc_score(
-            observe_pos[:, 1], observe_pos[:, 2], max_fpr=self.limit
+            observe_pos[:, 0], observe_pos[:, 1], max_fpr=self.limit
         )
 
         null_dist = np.array(
