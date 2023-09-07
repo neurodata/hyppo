@@ -296,7 +296,7 @@ class MIRF_AUC(IndependenceTest):
     ):
         # Initialize trees
         if initial:
-            self.clf.fit(x, y.ravel())
+            self.clf.fit(x[0:2], y.ravel()[0:2])
 
         # Compute posteriors with train test splits
         posterior = Parallel(n_jobs=workers)(
@@ -391,7 +391,7 @@ class MIRF_MV(IndependenceTest):
     ):
         # Initialize trees
         if initial:
-            self.clf.fit(x, y.ravel())
+            self.clf.fit(x[0:2], y.ravel()[0:2])
 
         # Compute posteriors with train test splits
         posterior = Parallel(n_jobs=workers)(
