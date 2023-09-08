@@ -186,9 +186,6 @@ def prim(weight_mat, labels):
     MST_connections = []
 
     while no_edge < V - 1:
-        minimum = INF
-        x = 0
-        y = 0
         rows_true = np.where(selected)[0]
         columns_false = np.where(np.logical_not(selected))[0]
         """
