@@ -178,7 +178,6 @@ def prim(weight_mat, labels):
     MST_connections : list of int
         List of pairs of nodes connected in final MST.
     """
-    INF = 9999999
     V = len(labels)
     selected = np.zeros(len(labels))
     no_edge = 0
