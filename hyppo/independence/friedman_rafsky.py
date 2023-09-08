@@ -201,7 +201,7 @@ def prim(weight_mat, labels):
         'i_min' index of the minimum from sample. With the help of which we
          extract the desired index corresponding to the 'weight_mat' array.
         """
-        i_min = np.where((sample < minimum) & (sample == np.min(sample[np.nonzero(sample)])))
+        i_min = np.where(sample == np.min(sample[np.nonzero(sample)]))
 
         x = ind[0][i_min[0]][0]
         y = ind[1][i_min[0]][0]
