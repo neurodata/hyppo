@@ -94,7 +94,7 @@ branch. Steps:
 
 ### Pull Request Checklist
 
-We recommended that your contribution complies with the following rules before you submit a pull request:
+We recommend that your contribution complies with the following rules before you submit a pull request:
 
 - Follow the [coding-guidelines](#guidelines).
 - Give your pull request a helpful title that summarizes what your contribution does.
