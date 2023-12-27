@@ -184,7 +184,7 @@ class KSample(KSampleTest):
             "hsic": {"bias": bias, "compute_kernel": compute_distkern},
             "hhg": {"compute_distance": compute_distkern},
             "mgc": {"compute_distance": compute_distkern},
-            "kmerf": {"forest": "classifier"},
+            "kmerf": {"forest": "classifier", "is_ksamp": k_sample_transform},
             "rv": {},
             "cca": {},
         }
@@ -281,7 +281,7 @@ class KSample(KSampleTest):
         >>> z = np.arange(10)
         >>> stat, pvalue = KSample("Dcorr").test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
-        '-0.136, 1.0'
+        '0.000, 1.0'
         """
         inputs = list(args)
         check_input = _CheckInputs(
@@ -293,9 +293,12 @@ class KSample(KSampleTest):
             u, v = k_sample_transform(inputs, test_type="rf")
         else:
             u, v = k_sample_transform(inputs)
+        v = v.astype(int)
 
         kwargs = {}
         if self.indep_test_name in ["dcorr", "hsic"]:
+            kwargs = {"auto": auto}
+        elif self.indep_test_name in ["kmerf"]:
             kwargs = {"auto": auto}
 
         return self.indep_test.test(

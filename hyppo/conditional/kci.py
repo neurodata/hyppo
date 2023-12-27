@@ -98,10 +98,10 @@ class KCI(ConditionalIndependenceTest):
         >>> from hyppo.conditional import KCI
         >>> from hyppo.tools.indep_sim import linear
         >>> np.random.seed(123456789)
-        >>> x, y = linear(n, 1)
+        >>> x, y = linear(100, 1)
         >>> stat, pvalue = KCI().test(x, y)
-        >>> print("Statistic: ", stat)
-        >>> print("p-value: ", pvalue)
+        >>> '%.1f, %.2f' % (stat, pvalue)
+        '544.7, 0.00'
         """
 
         T = len(y)

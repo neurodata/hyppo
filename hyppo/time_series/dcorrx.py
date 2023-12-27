@@ -49,7 +49,8 @@ class DcorrX(TimeSeriesTest):
         function.
     max_lag : int, default: 0
         The maximum number of lags in the past to check dependence between ``x`` and the
-        shifted ``y``. Also the ``M`` hyperparmeter below.
+        shifted ``y``. If ``None``, then ``max_lag=np.ceil(np.log(n))``. Also the
+        ``M`` hyperparmeter below.
     **kwargs
         Arbitrary keyword arguments for ``compute_distance``.
 
@@ -150,14 +151,14 @@ class DcorrX(TimeSeriesTest):
         >>> y = x
         >>> stat, pvalue, dcorrx_dict = DcorrX().test(x, y, reps = 100)
         >>> '%.1f, %.2f, %d' % (stat, pvalue, dcorrx_dict['opt_lag'])
-        '1.0, 0.04, 0'
+        '1.0, 0.05, 0'
         """
         check_input = _CheckInputs(
             x,
             y,
             max_lag=self.max_lag,
         )
-        x, y = check_input()
+        x, y, self.max_lag = check_input()
 
         stat, pvalue, stat_list = super(DcorrX, self).test(
             x, y, reps, workers, random_state

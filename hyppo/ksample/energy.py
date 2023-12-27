@@ -1,6 +1,6 @@
 from ..independence.dcorr import _dcov
 from ..tools import compute_dist
-from ._utils import _CheckInputs
+from ._utils import _CheckInputs, k_sample_transform
 from .base import KSampleTest, KSampleTestOutput
 from .ksamp import KSample
 
@@ -111,11 +111,14 @@ class Energy(KSampleTest):
         n = x.shape[0]
         m = y.shape[0]
 
+        x, y = k_sample_transform([x, y])
         distx, disty = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
 
         # exact equivalence transformation Dcorr and Energy
         stat = (
-            _dcov(distx, disty, self.bias) * (2 * (n**2) * (m**2)) / ((n + m) ** 4)
+            _dcov(distx, disty, bias=self.bias, only_dcov=True)
+            * ((n + m) ** 4)
+            / (2 * (n**2) * (m**2))
         )
         self.stat = stat
 
@@ -161,7 +164,7 @@ class Energy(KSampleTest):
         >>> y = x
         >>> stat, pvalue = Energy().test(x, y)
         >>> '%.3f, %.1f' % (stat, pvalue)
-        '0.267, 1.0'
+        '-0.895, 1.0'
         """
         check_input = _CheckInputs(
             inputs=[x, y],

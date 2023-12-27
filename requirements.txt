@@ -1,4 +1,4 @@
-numpy>=1.17
+numpy>=1.17, <=1.23.5
 scipy>=1.4.0
 numba>=0.46
 scikit-learn>=0.22

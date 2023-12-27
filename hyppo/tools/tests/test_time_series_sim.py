@@ -9,7 +9,7 @@ class TestTSSimShape:
     @pytest.mark.parametrize("n", [100, 1000])
     @pytest.mark.parametrize(
         "sim",
-        ["indep_ar", "cross_corr_ar", "nonlinear_process"],
+        ["indep_ar", "cross_corr_ar", "nonlinear_process", "extinct_gaussian_process"],
     )
     def test_shapes(self, n, sim):
         np.random.seed(123456789)

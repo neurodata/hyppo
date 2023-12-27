@@ -1,6 +1,7 @@
 from typing import NamedTuple
 
 import numpy as np
+from scipy.stats.distributions import chi2
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import pairwise_distances
 
@@ -36,6 +37,31 @@ class KMERF(IndependenceTest):
         ``test`` is categorial, use the "classifier" keyword.
     ntrees : int, default: 500
         The number of trees used in the random forest.
+    compute_distance : str, callable, or None, default: "euclidean"
+        A function that computes the distance among the samples for `y`.
+        Valid strings for ``compute_distance`` are, as defined in
+        :func:`sklearn.metrics.pairwise_distances`,
+
+            - From scikit-learn: [``"euclidean"``, ``"cityblock"``, ``"cosine"``,
+              ``"l1"``, ``"l2"``, ``"manhattan"``] See the documentation for
+              :mod:`scipy.spatial.distance` for details
+              on these metrics.
+            - From scipy.spatial.distance: [``"braycurtis"``, ``"canberra"``,
+              ``"chebyshev"``, ``"correlation"``, ``"dice"``, ``"hamming"``,
+              ``"jaccard"``, ``"kulsinski"``, ``"mahalanobis"``, ``"minkowski"``,
+              ``"rogerstanimoto"``, ``"russellrao"``, ``"seuclidean"``,
+              ``"sokalmichener"``, ``"sokalsneath"``, ``"sqeuclidean"``,
+              ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
+              details on these metrics.
+
+        Set to ``None`` or ``"precomputed"`` if ``y`` is already a distance
+        matrices. To call a custom function, either create the distance matrix
+        before-hand or create a function of the form ``metric(x, **kwargs)``
+        where ``x`` is the data matrix for which pairwise distances are
+        calculated and ``**kwargs`` are extra arguements to send to your custom
+        function.
+    distance_kwargs : dict
+        Arbitrary keyword arguments for ``compute_distance``.
     **kwargs
         Additional arguments used for the forest (see
         :class:`sklearn.ensemble.RandomForestClassifier` or
@@ -98,12 +124,28 @@ class KMERF(IndependenceTest):
     .. footbibliography::
     """
 
-    def __init__(self, forest="regressor", ntrees=500, **kwargs):
+    def __init__(
+        self,
+        forest="regressor",
+        ntrees=500,
+        compute_distance="euclidean",
+        distance_kwargs={},
+        **kwargs
+    ):
+        self.is_distance = False
+        self.distance_kwargs = distance_kwargs
+        if not compute_distance:
+            self.is_distance = True
+        self.is_ksamp = False
+        if "is_ksamp" in kwargs.keys():
+            self.is_ksamp = True
+            self.k_sample_transform = kwargs["is_ksamp"]
+            del kwargs["is_ksamp"]
         if forest in FOREST_TYPES.keys():
             self.clf = FOREST_TYPES[forest](n_estimators=ntrees, **kwargs)
         else:
             raise ValueError("Forest must be of type classification or regression")
-        IndependenceTest.__init__(self)
+        IndependenceTest.__init__(self, compute_distance=compute_distance)
 
     def statistic(self, x, y):
         r"""
@@ -122,20 +164,34 @@ class KMERF(IndependenceTest):
         stat : float
             The computed KMERF statistic.
         """
-        y = y.reshape(-1)
-        self.clf.fit(x, y)
+        rf_y = y
+        if rf_y.shape[1] == 1:
+            rf_y = rf_y.ravel()
+        self.clf.fit(x, rf_y)
+
         distx = np.sqrt(1 - sim_matrix(self.clf, x))
-        y = y.reshape(-1, 1)
-        disty = pairwise_distances(y, metric="euclidean")
+        # can use induced kernel if shapes are the same, otherwise
+        # default to compute_distance
+        if x.shape[1] == y.shape[1]:
+            disty = np.sqrt(1 - sim_matrix(self.clf, y))
+        else:
+            disty = pairwise_distances(
+                y, metric=self.compute_distance, **self.distance_kwargs
+            )
         stat = _dcorr(distx, disty, bias=False, is_fast=False)
         self.stat = stat
+        self.distx = distx
+        self.disty = disty
+
+        # get feature importances from gini-based random forest
+        self.importances = self.clf.feature_importances_
 
         # get feature importances from gini-based random forest
         self.importances = self.clf.feature_importances_
 
         return stat
 
-    def test(self, x, y, reps=1000, workers=1, random_state=None):
+    def test(self, x, y, reps=1000, workers=1, auto=True, random_state=None):
         r"""
         Calculates the KMERF test statistic and p-value.
 
@@ -152,6 +208,13 @@ class KMERF(IndependenceTest):
         workers : int, default: 1
             The number of cores to parallelize the p-value computation over.
             Supply ``-1`` to use all cores available to the Process.
+        auto : bool, default: True
+            Automatically uses fast approximation when `n` and size of array
+            is greater than 20. If ``True``, and sample size is greater than 20, then
+            :class:`hyppo.tools.chi2_approx` will be run. Parameters ``reps`` and
+            ``workers`` are
+            irrelevant in this case. Otherwise, :class:`hyppo.tools.perm_test` will be
+            run.
 
         Returns
         -------
@@ -177,9 +240,19 @@ class KMERF(IndependenceTest):
         check_input = _CheckInputs(x, y, reps=reps)
         x, y = check_input()
 
-        stat, pvalue = super(KMERF, self).test(
-            x, y, reps, workers, is_distsim=False, random_state=random_state
-        )
+        if auto and x.shape[0] > 20:
+            n = x.shape[0]
+            stat = self.statistic(x, y)
+            statx = _dcorr(self.distx, self.distx, bias=False, is_fast=False)
+            staty = _dcorr(self.disty, self.disty, bias=False, is_fast=False)
+            pvalue = chi2.sf(stat / np.sqrt(statx * staty) * n + 1, 1)
+            self.stat = stat
+            self.pvalue = pvalue
+            self.null_dist = None
+        else:
+            stat, pvalue = super(KMERF, self).test(
+                x, y, reps, workers, is_distsim=False, random_state=random_state
+            )
         kmerf_dict = {"feat_importance": self.importances}
 
         return KMERFTestOutput(stat, pvalue, kmerf_dict)

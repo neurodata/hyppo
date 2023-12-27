@@ -122,8 +122,8 @@ class FriedmanRafsky(IndependenceTest):
             self.statistic,
             x,
             y,
-            reps=reps,
-            workers=workers,
+            reps,
+            workers,
             is_distsim=False,
             random_state=random_state,
         )

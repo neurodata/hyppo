@@ -94,7 +94,7 @@ branch. Steps:
 
 ### Pull Request Checklist
 
-We recommended that your contribution complies with the following rules before you submit a pull request:
+We recommend that your contribution complies with the following rules before you submit a pull request:
 
 - Follow the [coding-guidelines](#guidelines).
 - Give your pull request a helpful title that summarizes what your contribution does.
@@ -134,13 +134,28 @@ For all your hard work, please add yourself using the All Contributors bot. Foll
 
 ### Coding Guidelines
 
-Uniformly formatted code makes it easier to share code ownership. hyppo package closely follows the official
-Python guidelines detailed in [PEP8](https://www.python.org/dev/peps/pep-0008/) that detail how code should be
-formatted and indented. Please read it and follow it.
+Idiomatic code enables us to easily share ownership and faster modification of code. Hyppo package closely follows the official
+Python guidelines as detailed in [PEP8](https://www.python.org/dev/peps/pep-0008/), it provides the exact details on how code the should be formatted and indented in a python file. Please read it and follow it's guidelines while contributing.
 
 ### Docstring Guidelines
 
-Properly formatted docstrings are required for documentation generation by Sphinx. The hyppo package closely
-follows the numpydoc guidelines. Please read and follow the
-[numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html#overview) guidelines. Refer to the
-[example.py](https://numpydoc.readthedocs.io/en/latest/example.html#example) provided by numpydoc.
+The hyppo package closely follows the numpydoc guidelines. Proper formatting of docstrings is essential to generate documentation by Sphinx. Please go through the [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html#overview) and follow it's guidelines. Also, Refer to the [example.py](https://numpydoc.readthedocs.io/en/latest/example.html#example) provided by numpydoc.
+
+### Commit and Pull Request Naming Conventions
+When making commits and pull requests, please follow these best practices:
+
+#### Commit Naming Conventions
+
+- Start with a concise summary: Begin the commit message with a short, descriptive summary of the changes made in the commit. Limit the subject line to 50 characters and provide a detailed description in the body of the commit. Keep it brief but meaningful.
+- Use present tense: Write the commit message using present tense, as if you're describing the current state of the codebase after applying the changes.
+- Use imperative mood: Formulate the summary in an imperative mood, which means starting with a verb. For example, use "Add feature," "Fix bug," or "Update documentation."
+- Provide additional details: If needed, include additional information in the commit message, such as motivation, context, or any relevant issue or pull request references. It helps others understand the rationale behind the changes.
+
+#### Pull Request Naming Conventions
+
+- Start with a clear prefix: Begin the pull request (PR) title with a clear prefix that indicates its purpose. Common prefixes include "Feature:", "Bug Fix:", "Documentation:", or "Refactor:".
+- Use a descriptive summary: Provide a concise but descriptive summary of the changes introduced by the PR. This will provide reviewers with a quick understanding of what the PR aims to accomplish.
+- Include issue references: If the PR addresses a specific issue or feature request, it's helpful to include the corresponding issue number or link in the PR title. This helps track the relationship between the PR and the underlying task.
+
+
+- For more information on commit message best practices, you can refer to the documentation of [scipy](https://pypi.org/project/Scripy/) or [scikit-learn](https://scikit-learn.org/stable/). 

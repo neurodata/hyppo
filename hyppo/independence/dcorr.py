@@ -236,7 +236,7 @@ class Dcorr(IndependenceTest):
         ):
             self.is_fast = True
 
-        if auto and x.shape[0] > 20 and perm_blocks is None:
+        if auto and x.shape[0] > 20 and perm_blocks is None and not self.bias:
             stat, pvalue = chi2_approx(self.statistic, x, y)
             self.stat = stat
             self.pvalue = pvalue
@@ -404,7 +404,9 @@ def _dcov(distx, disty, bias=False, only_dcov=True):  # pragma: no cover
     if only_dcov:
         N = distx.shape[0]
         if bias:
-            stat = 1 / (N**2) * stat
+            # only biased Dcov is square-rooted
+            # https://search.r-project.org/CRAN/refmans/energy/html/dcovu.html
+            stat = np.sqrt(1 / (N**2) * stat)
         else:
             stat = 1 / (N * (N - 3)) * stat
 
@@ -432,11 +434,15 @@ def _dcorr(distx, disty, bias=False, is_fast=False):  # pragma: no cover
         vary = _dcov(disty, disty, bias=bias, only_dcov=False)
 
     # stat is 0 with negative variances (would make denominator undefined)
-    if varx <= 0 or vary <= 0:
+    if varx <= 0 or vary <= 0 or covar <= 0:
         stat = 0
 
     # calculate generalized test statistic
     else:
-        stat = covar / np.real(np.sqrt(varx * vary))
+        stat = covar / np.sqrt(np.real(varx * vary))
+        # only biased Dcov is square-rooted
+        # https://search.r-project.org/CRAN/refmans/energy/html/dcovu.html
+        if bias:
+            stat = np.sqrt(stat)
 
     return stat

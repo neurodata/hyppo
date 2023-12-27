@@ -31,6 +31,13 @@ class TestEnergy:
         assert stat == stat2
         assert pvalue == pvalue2
 
+    def test_against_dcor(self):
+        x = np.arange(100.0)
+        y = x**2
+        stat = Energy(bias=True).statistic(x.reshape(-1, 1), y.reshape(-1, 1))
+
+        assert_almost_equal(stat, 158.6574574358228, decimal=4)
+
 
 class TestEnergyTypeIError:
     def test_oned(self):

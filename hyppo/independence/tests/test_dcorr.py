@@ -29,6 +29,13 @@ class TestDcorrStat:
         assert stat1 == stat2
         assert pvalue1 == pvalue2
 
+    def test_dcorr_sqrt_bug(self):
+        x = np.array([1,2,3,4,5])
+        y = np.array([1,2,9,4,4])
+        stat = Dcorr(bias=True).test(x, y, reps=0)[0]
+
+        assert_almost_equal(stat, 0.762676242417, decimal=2)
+
 
 class TestDcorrTypeIError:
     def test_oned(self):

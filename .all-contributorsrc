@@ -86,7 +86,9 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/5142539?v=4",
       "profile": "https://github.com/j1c",
       "contributions": [
-        "bug"
+        "bug",
+        "code",
+        "doc"
       ]
     },
     {
@@ -231,6 +233,124 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "MatthewZhao26",
+      "name": "MatthewZhao26",
+      "avatar_url": "https://avatars.githubusercontent.com/u/52184663?v=4",
+      "profile": "https://github.com/MatthewZhao26",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "oakla",
+      "name": "Alexander Oakley",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2579439?v=4",
+      "profile": "https://github.com/oakla",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "harsh204016",
+      "name": "Harsh Gupta",
+      "avatar_url": "https://avatars.githubusercontent.com/u/37452506?v=4",
+      "profile": "https://www.linkedin.com/in/harsh-gupta-/",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "prabhatkgupta",
+      "name": "Prabhat Kr. Gupta",
+      "avatar_url": "https://avatars.githubusercontent.com/u/42283586?v=4",
+      "profile": "https://github.com/prabhatkgupta",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "victoris93",
+      "name": "Victoria Shevchenko",
+      "avatar_url": "https://avatars.githubusercontent.com/u/49495286?v=4",
+      "profile": "https://github.com/victoris93",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "saivythik",
+      "name": "saivythik",
+      "avatar_url": "https://avatars.githubusercontent.com/u/60150574?v=4",
+      "profile": "https://github.com/saivythik",
+      "contributions": [
+        "doc",
+        "bug"
+      ]
+    },
+    {
+      "login": "transpersonify",
+      "name": "Shruti Naik",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8897933?v=4",
+      "profile": "https://github.com/transpersonify",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "ohpraveenprasad",
+      "name": "Praveen Prasad ",
+      "avatar_url": "https://avatars.githubusercontent.com/u/119914283?v=4",
+      "profile": "https://github.com/ohpraveenprasad",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "JenniferWTam",
+      "name": "Jennifer Tam",
+      "avatar_url": "https://avatars.githubusercontent.com/u/80274896?v=4",
+      "profile": "https://github.com/JenniferWTam",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "PoojaMandal",
+      "name": "PoojaMandal",
+      "avatar_url": "https://avatars.githubusercontent.com/u/63387928?v=4",
+      "profile": "https://github.com/PoojaMandal",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "Satarupa22-SD",
+      "name": "Satarupa Deb",
+      "avatar_url": "https://avatars.githubusercontent.com/u/84276219?v=4",
+      "profile": "http://sciencestatia.in",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "Alex1-ai",
+      "name": "Alex1-ai",
+      "avatar_url": "https://avatars.githubusercontent.com/u/78540958?v=4",
+      "profile": "https://github.com/Alex1-ai",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "vatsalya-vyas",
+      "name": "Vatsalya Vyas",
+      "avatar_url": "https://avatars.githubusercontent.com/u/140804211?v=4",
+      "profile": "https://github.com/vatsalya-vyas",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -238,5 +358,7 @@
   "projectOwner": "neurodata",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitType": "docs",
+  "commitConvention": "angular"
 }

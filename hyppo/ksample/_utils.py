@@ -49,7 +49,8 @@ class _CheckInputs:
     def _check_nd_ksampletest(self, dims):
         if len(set(dims)) > 1:
             raise ValueError(
-                "Shape mismatch, inputs must have shape " "[n, p] and [m, p]."
+                "Shape mismatch, inputs must have shape "
+                "[n, p] and [m, p]. Found shapes {}".format(list(set(dims)))
             )
 
     def _convert_inputs_float64(self):
@@ -103,8 +104,8 @@ def k_sample_transform(inputs, test_type="normal"):
         raise ValueError("Test cannot be run, the inputs have 0 variance")
 
     if test_type == "rf":
-        v = np.concatenate(
-            [np.repeat(i, inputs[i].shape[0]) for i in range(n_inputs)], axis=0
+        v = np.vstack(
+            [np.repeat(i, inputs[i].shape[0]).reshape(-1, 1) for i in range(n_inputs)]
         )
     elif test_type == "normal":
         if n_inputs == 2:
