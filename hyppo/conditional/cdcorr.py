@@ -224,6 +224,8 @@ class ConditionalDcorr(ConditionalIndependenceTest):
         np.exp(sim_mat, sim_mat)
         sim_mat /= denom
 
+        rng = np.random.default_rng()
+        sim_mat += rng.standard_normal(size=sim_mat.shape) * 1e-6
         return sim_mat
 
     def _permuter(self, probs, rng=None, axis=1):

@@ -85,4 +85,4 @@ class _CheckInputs:
 
     def _check_variance(self):
         if np.var(self.x) == 0 or np.var(self.y) == 0 or np.var(self.z) == 0:
-            raise ValueError("Test cannot be run, one of the inputs has 0 variance")
+            raise ValueError(f"Test cannot be run, one of the inputs has 0 variance {np.var(self.x)}, {np.var(self.y)}, {np.var(self.z)}, {self.z}, {self.z.shape}")
