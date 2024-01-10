@@ -199,7 +199,7 @@ class PartialDcorr(ConditionalIndependenceTest):
 
 
 @jit(nopython=True, cache=True)
-def _pdcov(distx, disty, distz):
+def _pdcov(distx, disty, distz): # pragma: no cover
     """Calculate the PDcov test statistic"""
     N = distx.shape[0]
     denom = N * (N - 3)
@@ -223,7 +223,7 @@ def _pdcov(distx, disty, distz):
 
 
 @jit(nopython=True, cache=True)
-def _pdcorr(distx, disty, distz):
+def _pdcorr(distx, disty, distz): # pragma: no cover
     """Calculate the PDcorr test statistic"""
 
     distx = _center_distmat(distx, bias=False)

@@ -240,7 +240,7 @@ class ConditionalDcorr(ConditionalIndependenceTest):
         return idx
 
 
-def _weighted_center_distmat(distx, weights):
+def _weighted_center_distmat(distx, weights): # pragma: no cover
     """Centers the distance matrices with weights"""
 
     n = distx.shape[0]
@@ -254,7 +254,7 @@ def _weighted_center_distmat(distx, weights):
     return cent_distx
 
 
-def _cdcov(distx, disty, distz):
+def _cdcov(distx, disty, distz): # pragma: no cover
     """Calculate the CDcov test statistic"""
     n = distx.shape[0]
 
@@ -271,7 +271,7 @@ def _cdcov(distx, disty, distz):
     return cdcov
 
 
-def _cdcorr(distx, disty, distz):
+def _cdcorr(distx, disty, distz): # pragma: no cover
     """Calculate the CDcorr test statistic"""
     varx = _cdcov(distx, distx, distz)
     vary = _cdcov(disty, disty, distz)
