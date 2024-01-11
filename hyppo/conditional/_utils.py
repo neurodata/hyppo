@@ -6,12 +6,13 @@ from ..tools import check_ndarray_xyz, check_reps, contains_nan, convert_xyz_flo
 class _CheckInputs:
     """Checks inputs for all independence tests"""
 
-    def __init__(self, x, y, z, reps=None, max_dims=None):
+    def __init__(self, x, y, z, reps=None, max_dims=None, ignore_z_var=False):
         self.x = x
         self.y = y
         self.z = z
         self.reps = reps
         self.max_dims = max_dims
+        self.ignore_z_var = ignore_z_var # to allow for constant z input
 
     def __call__(self):
         check_ndarray_xyz(self.x, self.y, self.z)
@@ -84,5 +85,11 @@ class _CheckInputs:
             raise ValueError("Number of samples is too low")
 
     def _check_variance(self):
-        if np.var(self.x) == 0 or np.var(self.y) == 0 or np.var(self.z) == 0:
-            raise ValueError("Test cannot be run, one of the inputs has 0 variance")
+        if np.var(self.x) == 0:
+        # or np.var(self.y) == 0 or np.var(self.z) == 0:
+            raise ValueError("Test cannot be run. Input array x has 0 variance.")
+        if np.var(self.y) == 0:
+            raise ValueError("Test cannot be run. Input array y has 0 variance")
+        if not self.ignore_z_var:
+            if np.var(self.z) == 0:
+                raise ValueError("Test cannot be run. Input array z has 0 variance")

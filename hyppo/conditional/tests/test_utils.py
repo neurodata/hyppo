@@ -57,3 +57,16 @@ class TestErrorWarn:
         z = y
 
         assert_raises(ValueError, _CheckInputs(x, y, z, max_dims=1))
+
+    def test_constant_input(self):
+        # raises error if z is constant
+        x = np.arange(20).reshape(-1, 1)
+        y = np.arange(20).reshape(-1, 1)
+        z = np.ones(20).reshape(-1, 1)
+
+        assert_raises(ValueError, _CheckInputs(x, y, z, ignore_z_var=False))
+
+        try:
+            _CheckInputs(x, y, z, ignore_z_var=True)
+        except Exception as exc:
+            assert False, f"'_CheckInputs' with 'ignore_z_var=True' with constant z input raised an exception {exc}"
