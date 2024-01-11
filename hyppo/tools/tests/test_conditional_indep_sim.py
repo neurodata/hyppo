@@ -61,7 +61,9 @@ class TestCondiIndepSimErrorWarn:
 
     def test_np_inctype(self):
         assert_raises(ValueError, condi_indep_sim, n="a", p=1, sim="independent_normal")
-        assert_raises(ValueError, condi_indep_sim, n=10, p=7.0, sim="independent_normal")
+        assert_raises(
+            ValueError, condi_indep_sim, n=10, p=7.0, sim="independent_normal"
+        )
 
     def test_low_n(self):
         assert_raises(ValueError, condi_indep_sim, n=3, p=1, sim="independent_normal")
@@ -71,4 +73,3 @@ class TestCondiIndepSimErrorWarn:
 
     def test_wrong_sim(self):
         assert_raises(ValueError, condi_indep_sim, n=100, p=1, sim="abcd")
-

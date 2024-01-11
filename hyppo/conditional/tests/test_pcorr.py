@@ -21,8 +21,12 @@ class TestPcorrStat:
     @pytest.mark.parametrize("n", [100, 200])
     def test_rep(self, n):
         x, y, z = indep_normal(n, 1)
-        stat1, pvalue1 = PartialCorr().test(x, y, z, random_state=2, auto=False, reps=1000)
-        stat2, pvalue2 = PartialCorr().test(x, y, z, random_state=2, auto=False, reps=1000)
+        stat1, pvalue1 = PartialCorr().test(
+            x, y, z, random_state=2, auto=False, reps=1000
+        )
+        stat2, pvalue2 = PartialCorr().test(
+            x, y, z, random_state=2, auto=False, reps=1000
+        )
 
         assert stat1 == stat2
         assert pvalue1 == pvalue2

@@ -27,6 +27,17 @@ class TestPDcorrStat:
         assert stat1 == stat2
         assert pvalue1 == pvalue2
 
+    @pytest.mark.parametrize("n", [100])
+    @pytest.mark.parametrize("obs_stat", [0.0143057])
+    @pytest.mark.parametrize("obs_pvalue", [0.12])
+    def test_indep_normal_corr(self, n, obs_stat, obs_pvalue):
+        np.random.seed(123456789)
+        x, y, z = indep_normal(n, 1)
+        stat1, pvalue1 = PartialDcorr(use_cov=False).test(x, y, z)
+
+        assert_almost_equal(stat1, obs_stat, decimal=2)
+        assert_almost_equal(pvalue1, obs_pvalue, decimal=2)
+
 
 class TestPDcorrTypeIError:
     def test_oned(self):
