@@ -7,6 +7,7 @@ from ..tools import (
     check_ndarray_xy,
     check_reps,
     compute_dist,
+    compute_kern,
     contains_nan,
     convert_xy_float64,
 )
@@ -98,6 +99,34 @@ def compute_stat(x, y, indep_test, compute_distance, max_lag, **kwargs):
     for j in range(1, max_lag + 1):
         slice_distx = distx[j:n, j:n]
         slice_disty = disty[0 : (n - j), 0 : (n - j)]
+        stat = indep_test.statistic(slice_distx, slice_disty)
+        dep_lag.append((n - j) * stat / n)
+
+    # calculate optimal lag and test statistic
+    opt_lag = np.argmax(dep_lag)
+    stat = np.sum(dep_lag)
+
+    return stat, opt_lag
+
+
+def compute_stat_hsic(x, y, indep_test, compute_kernel, max_lag, **kwargs):
+    """Compute time series test statistic"""
+    # calculate distance matrices
+    # kernx, kerny = compute_kern(x, y, metric=compute_kernel, **kwargs)
+    # distx = 1 - kernx / np.max(kernx)
+    # disty = 1 - kerny / np.max(kerny)
+
+    # calculate dep_lag when max_lag is 0
+    dep_lag = []
+    indep_test = indep_test(compute_kernel=compute_kernel, **kwargs)
+    indep_test_stat = indep_test.statistic(x, y)
+    dep_lag.append(indep_test_stat)
+
+    # loop over time points and find max test statistic
+    n = x.shape[0]
+    for j in range(1, max_lag + 1):
+        slice_distx = x[j:n, ]
+        slice_disty = y[0 : (n - j)]
         stat = indep_test.statistic(slice_distx, slice_disty)
         dep_lag.append((n - j) * stat / n)
 

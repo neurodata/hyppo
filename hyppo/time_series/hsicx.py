@@ -1,7 +1,7 @@
 from typing import NamedTuple
 
-from ..independence import Hsic
-from ._utils import _CheckInputs, compute_stat
+from ..independence import Hsic, Dcorr
+from ._utils import _CheckInputs, compute_stat, compute_stat_hsic
 from .base import TimeSeriesTest
 
 
@@ -102,8 +102,8 @@ class HsicX(TimeSeriesTest):
         opt_lag : int
             The computed optimal lag.
         """
-        stat, opt_lag = compute_stat(
-            x, y, Hsic, self.compute_distance, self.max_lag, **self.kwargs
+        stat, opt_lag = compute_stat_hsic(
+            x, y, Hsic, self.compute_kernel, self.max_lag, **self.kwargs
         )
         self.stat = stat
         self.opt_lag = opt_lag
@@ -159,8 +159,8 @@ class HsicX(TimeSeriesTest):
         )
         x, y, self.max_lag = check_input()
 
-        stat, pvalue, stat_list = super(DcorrX, self).test(
+        stat, pvalue, stat_list = super(HsicX, self).test(
             x, y, reps, workers, random_state
         )
         dcorrx_dict = {"opt_lag": stat_list[1]}
-        return DcorrXTestOutput(stat, pvalue, dcorrx_dict)
+        return HsicXTestOutput(stat, pvalue, dcorrx_dict)
