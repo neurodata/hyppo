@@ -1,52 +1,79 @@
-# YAML 1.2
----
-abstract: "We introduce hyppo, a unified library for performing multivariate hypothesis testing, including independence, two-sample, and k-sample testing. While many multivariate independence tests have R packages available, the interfaces are inconsistent and most are not available in Python. hyppo includes many state-of-the-art multivariate testing procedures. The package is easy to use and is flexible enough to enable future extensions. The documentation and all releases are available at https://hyppo.neurodata.io."
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: hyppo
+message: 'If you use this software, please cite it as below'
+type: software
 authors:
-  -
-    affiliation: "Johns Hopkins University, Baltimore, MD"
+  - given-names: Sambit
     family-names: Panda
-    given-names: Sambit
-    orcid: "https://orcid.org/0000-0001-8455-4243"
-  -
-    affiliation: "Johns Hopkins University, Baltimore, MD"
-    family-names: Palaniappan
+    email: spanda3@Jhu.edu
+    affiliation: Johns Hopkins University
+    orcid: 'https://orcid.org/0000-0001-8455-4243'
+  - orcid: 'https://orcid.org/0000-0001-6115-719X'
     given-names: Satish
-  -
-    affiliation: "Johns Hopkins University, Baltimore, MD"
-    family-names: Xiong
-    given-names: Junhao
-  -
-    affiliation: "Johns Hopkins School of Public Health, Baltimore, MD"
+    family-names: Palaniappan
+    affiliation: Johns Hopkins University
+  - given-names: Eric W.
     family-names: Bridgeford
-    given-names: Eric
-  -
-    affiliation: "Johns Hopkins University, Baltimore, MD"
+    affiliation: Johns Hopkins School of Public Health
+  - given-names: Ronak
     family-names: Mehta
-    given-names: Ronak
-  -
-    affiliation: "University of Delaware, Newark, DE"
-    family-names: Shen
+    affiliation: Johns Hopkins University
+  - affiliation: University of Delaware
     given-names: Cencheng
-  -
-    affiliation: "Johns Hopkins University, Baltimore, MD"
+    family-names: Shen
+  - given-names: Joshua T.
     family-names: Vogelstein
-    given-names: Joshua
-    orcid: "https://orcid.org/0000-0003-2487-6237"
-cff-version: "1.1.0"
-date-released: 2021-02-05
+    affiliation: Johns Hopkins University
+    orcid: 'https://orcid.org/0000-0003-2487-6237'
 identifiers:
-  -
-    type: url
-    value: "https://arxiv.org/pdf/1907.02088.pdf"
+  - type: doi
+    value: 10.48550/arXiv.1907.02088
+    description: arXiv
+repository-code: 'https://github.com/neurodata/hyppo/tree/main'
+url: 'https://hyppo.neurodata.io/'
+repository: 'https://github.com/neurodata/hyppo-papers'
+repository-artifact: 'https://github.com/neurodata/mgcpy-old'
+abstract: >-
+  We introduce hyppo, a unified library for performing
+  multivariate hypothesis testing, including independence,
+  two-sample, and k-sample testing. While many multivariate
+  independence tests have R packages available, the
+  interfaces are inconsistent and most are not available in
+  Python. hyppo includes many state of the art multivariate
+  testing procedures. The package is easy-to-use and is
+  flexible enough to enable future extensions.
 keywords:
   - Python
   - multivariate
   - independence
-  - "k-sample"
+  - k-sample
   - hypothesis
-license: MIT
-message: "If you use this software, please cite it using this metadata."
-repository-code: "https://github.com/neurodata/hyppo"
-title: "hyppo: A Multivariate Hypothesis Testing Python Package"
-version: "0.2.0"
-...
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Panda"
+    given-names: "Sambit"
+    orcid: "https://orcid.org/0000-0001-8455-4243"
+  - family-names: "Palaniappan"
+    given-names: "Satish"
+  - family-names: "Bridgeford"
+    given-names: "Eric W."
+  - family-names: "Mehta"
+    given-names: "Ronak"
+  - family-names: "Shen"
+    given-names: "Cencheng"
+  - family-names: "Vogelstein"
+    given-names: "Joshua T."
+    orcid: "https://orcid.org/0000-0003-2487-6237"
+  doi: "10.48550/arXiv.1907.02088"
+  journal: "arXiv"
+  month: 9
+  # start: 1 # First page number
+  # end: 10 # Last page number
+  title: "hyppo: A Multivariate Hypothesis Testing Python Package"
+  # issue: 1
+  # volume: 1
+  year: 2021
