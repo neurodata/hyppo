@@ -144,6 +144,19 @@ class TestErrorWarn:
         assert_raises(ValueError, _check_distmat, x, y)
         assert_raises(ValueError, _check_kernmat, x, y)
 
+    def test_error_threedist(self):
+        x = np.arange(10).reshape(-1, 1)
+        y = np.arange(10).reshape(1, -1)
+        z = np.arange(10).reshape(1, -1)
+        assert_raises(ValueError, _check_distmat, x, y, z)
+
+    def test_error_nonzerodiag(self):
+        x = np.eye(10, dtype=int) ^ 1  # 0 on diag, 1 elsewhere
+        y = np.eye(10, dtype=int) ^ 1  # 0 on diag, 1 elsewhere
+        z = np.eye(10, dtype=int)
+
+        assert_raises(ValueError, _check_distmat, x, y, z)
+
     def test_error_multidistkern(self):
         # raises error if samples are low (< 3)
         x = np.arange(10).reshape(-1, 1)

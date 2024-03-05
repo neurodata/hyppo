@@ -6,6 +6,7 @@ from joblib import Parallel, delayed
 from sklearn.utils import check_random_state
 
 from ..tools import compute_dist
+from sklearn.utils import check_random_state
 
 
 class TimeSeriesTestOutput(NamedTuple):
