@@ -83,23 +83,43 @@ def check_max_lag(max_lag, n):
     return max_lag
 
 
+def compute_lagged_stat(x, y, indep_test, max_lag, is_dist_kern=False):
+    """_summary_
+
+    Parameters
+    ----------
+    x : _type_
+        _description_
+    y : _type_
+        _description_
+    indep_test : _type_
+        _description_
+    max_lag : _type_
+        _description_
+    is_dist_kern : bool, optional
+        _description_, by default False
+    """
+    pass
+
+
+
 def compute_stat(x, y, indep_test, compute_distance, max_lag, **kwargs):
     """Compute time series test statistic"""
     # calculate distance matrices
-    distx, disty = compute_dist(x, y, metric=compute_distance, **kwargs)
+    # distx, disty = compute_dist(x, y, metric=compute_distance, **kwargs)
 
     # calculate dep_lag when max_lag is 0
     dep_lag = []
-    indep_test = indep_test(compute_distance=compute_distance, **kwargs)
-    indep_test_stat = indep_test.statistic(x, y)
+    test = indep_test(compute_distance=compute_distance, **kwargs)
+    indep_test_stat = test.statistic(x, y)
     dep_lag.append(indep_test_stat)
 
     # loop over time points and find max test statistic
-    n = distx.shape[0]
+    n = x.shape[0]
     for j in range(1, max_lag + 1):
-        slice_distx = distx[j:n, j:n]
-        slice_disty = disty[0 : (n - j), 0 : (n - j)]
-        stat = indep_test.statistic(slice_distx, slice_disty)
+        slice_x = x[j:n]
+        slice_y = y[0 : (n - j)]
+        stat = test.statistic(slice_x, slice_y)
         dep_lag.append((n - j) * stat / n)
 
     # calculate optimal lag and test statistic
