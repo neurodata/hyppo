@@ -43,8 +43,8 @@ class CCA(IndependenceTest):
     .. footbibliography::
     """
 
-    def __init__(self):
-        IndependenceTest.__init__(self)
+    def __init__(self, **kwargs):
+        IndependenceTest.__init__(self, **kwargs)
 
     def statistic(self, x, y):
         r"""
