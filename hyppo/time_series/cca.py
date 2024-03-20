@@ -104,7 +104,7 @@ class CCAX(TimeSeriesTest):
         )
         x, y, self.max_lag = check_input()
 
-        stat, pvalue, stat_list = super(CCAX(), self).test(
+        stat, pvalue, stat_list = super(CCAX, self).test(
             x, y, reps, workers, random_state
         )
         ccax_dict = {"opt_lag": stat_list[1]}
