@@ -1,5 +1,6 @@
 from typing import NamedTuple
 
+import numpy as np
 from ..independence import CCA
 from ._utils import _CheckInputs, compute_stat
 from .base import TimeSeriesTest
@@ -48,7 +49,7 @@ class CCAX(TimeSeriesTest):
             The computed optimal lag.
         """
         stat, opt_lag = compute_stat(
-            x, y, CCA, self.compute_distance, self.max_lag, **self.kwargs
+            x, y, CCA, self.compute_distance, self.max_lag, reduction=np.max, **self.kwargs
         )
         self.stat = stat
         self.opt_lag = opt_lag

@@ -103,7 +103,7 @@ def compute_lagged_stat(x, y, indep_test, max_lag, is_dist_kern=False):
 
 
 
-def compute_stat(x, y, indep_test, compute_distance, max_lag, **kwargs):
+def compute_stat(x, y, indep_test, compute_distance, max_lag, reduction=np.sum, **kwargs):
     """Compute time series test statistic"""
     # calculate distance matrices
     # distx, disty = compute_dist(x, y, metric=compute_distance, **kwargs)
@@ -124,7 +124,7 @@ def compute_stat(x, y, indep_test, compute_distance, max_lag, **kwargs):
 
     # calculate optimal lag and test statistic
     opt_lag = np.argmax(dep_lag)
-    stat = np.sum(dep_lag)
+    stat = reduction(dep_lag)
 
     return stat, opt_lag
 
