@@ -1,5 +1,7 @@
 from typing import NamedTuple
 
+import numpy as np
+
 from ..independence import Dcorr
 from ._utils import _CheckInputs, compute_stat
 from .base import TimeSeriesTest
@@ -103,13 +105,13 @@ class DcorrX(TimeSeriesTest):
         opt_lag : int
             The computed optimal lag.
         """
-        stat, opt_lag = compute_stat(
+        stats = compute_stat(
             x, y, Dcorr, self.compute_distance, self.max_lag, **self.kwargs
         )
-        self.stat = stat
-        self.opt_lag = opt_lag
+        self.stat = np.sum(stats)
+        self.opt_lag = np.argmax(stats)
 
-        return stat, opt_lag
+        return self.stat, self.opt_lag
 
     def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
