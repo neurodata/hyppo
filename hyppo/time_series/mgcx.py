@@ -1,5 +1,7 @@
 from typing import NamedTuple
 
+import numpy as np
+
 from ..independence import MGC
 from ._utils import _CheckInputs, compute_scale_at_lag, compute_stat
 from .base import TimeSeriesTest
@@ -103,19 +105,19 @@ class MGCX(TimeSeriesTest):
         opt_scale : (int, int)
             The computed optimal scale as a pair of two elements.
         """
-        stat, opt_lag = compute_stat(
+        stats = compute_stat(
             x, y, MGC, self.compute_distance, self.max_lag, **self.kwargs
         )
-        self.stat = stat
-        self.opt_lag = opt_lag
+        self.stat = np.sum(stats)
+        self.opt_lag = np.argmax(stats)
 
         # Run the test at the optimal lag to get the optimal scale.
         opt_scale = compute_scale_at_lag(
-            x, y, opt_lag, self.compute_distance, **self.kwargs
+            x, y, self.opt_lag, self.compute_distance, **self.kwargs
         )
         self.opt_scale = opt_scale
 
-        return stat, opt_lag, opt_scale
+        return self.stat, self.opt_lag, self.opt_scale
 
     def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
