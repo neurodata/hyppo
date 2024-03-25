@@ -54,7 +54,7 @@ class CCAX(TimeSeriesTest):
         )
         stats = np.abs(stats)
 
-        self.stat = np.sum(stats)
+        self.stat = np.max(stats)
         self.opt_lag = np.argmax(stats)
 
         return self.stat, self.opt_lag
