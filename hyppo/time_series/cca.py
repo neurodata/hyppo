@@ -2,15 +2,28 @@ from typing import NamedTuple
 
 import numpy as np
 
-from ..independence import CCA
+# from ..independence import CCA
 from ._utils import _CheckInputs, compute_stat
 from .base import TimeSeriesTest
+
+from sklearn.cross_decomposition import CCA as CCA_sklearn
 
 
 class CCAXTestOutput(NamedTuple):
     stat: float
     pvalue: float
     dcorrx_dict: dict
+
+
+class CCA:
+    def __init__(self, **kwargs) -> None:
+        self.kwargs = kwargs
+
+    def statistic(self, x, y):
+        cca = CCA_sklearn(1)
+        stat = np.corrcoef(*cca.fit_transform(x, y), rowvar=False).diagonal(offset=1)[0]
+
+        return stat
 
 
 class CCAX(TimeSeriesTest):
@@ -54,7 +67,7 @@ class CCAX(TimeSeriesTest):
         )
         stats = np.abs(stats)
 
-        self.stat = np.max(stats)
+        self.stat = np.sum(stats)
         self.opt_lag = np.argmax(stats)
 
         return self.stat, self.opt_lag
