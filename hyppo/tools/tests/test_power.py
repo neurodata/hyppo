@@ -42,6 +42,18 @@ class TestPower:
         )
         assert_almost_equal(est_power, 0.05, decimal=1)
 
+    def test_condi_power_perm(self):
+        np.random.seed(123456789)
+        est_power = power(
+            "conditionaldcorr",
+            sim_type="condi",
+            sim="independent_normal",
+            n=50,
+            p=1,
+            auto=False,
+        )
+        assert_almost_equal(est_power, 0.05, decimal=2)
+
 
 class TestPowerErrorWarn:
     def test_power_nosim(self):

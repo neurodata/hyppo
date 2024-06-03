@@ -140,6 +140,5 @@ Contributions of any kind are welcome!
 ## Project History
 
 hyppo is a rebranding of mgcpy, which was founded in November 2018.
-mgcpy was designed and written by Satish Palaniappan, Sambit
-Panda, Junhao Xiong, Sandhya Ramachandran, and Ronak Mehtra. hyppo
+mgcpy was designed and written by @tpsatish95, @sampan501, @junhaobearxiong, @sundaysundya, @ananyas713, and @ronakdm. hyppo
 was designed and written by Sambit Panda and first released in February 2020.
