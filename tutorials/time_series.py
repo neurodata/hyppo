@@ -63,10 +63,6 @@ The p-value returned is calculated using a permutation test.
 #
 # .. note::
 #
-#    This algorithm is currently a preprint on arXiv.
-#
-# .. note::
-#
 #    :Pros: - Very accurate
 #           - Operates of multivariate data
 #    :Cons: - Slower than pairwise Pearson's correlation
