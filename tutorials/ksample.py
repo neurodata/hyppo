@@ -240,5 +240,33 @@ print("5 degrees of freedom (stat, pval):\n", stat1, pval1)
 print("10 degrees of freedom (stat, pval):\n", stat2, pval2)
 
 ########################################################################################
+# Univariate-Based Test
+# --------------------------------------------
+# The **Heller Heller Gorfine (HHG) 2-Sample Test** is a non-parametric two-sample
+# statistical test. This test is based on testing the independence of the distances of sample vectors
+# from a center point by a univariate K-sample test. If the distribution of samples differs
+# across categories, then so does the distribution of distances of the vectors from almost every
+# point z. The univariate test used is the Kolmogorov-Smirnov 2-sample Test, which looks
+# at the largest absolute deviation between the cumulative distribution functions of
+# the samples.
+# More info can found at :class:`hyppo.ksample.KSampleHHG`.
+#
+# .. note::
+#
+#    :Pros: - Very fast computation time
+#    :Cons: - Lower power than more computationally complex algorithms
+#           - Inherits the assumptions of the KS univariate test
+
+from hyppo.ksample import KSampleHHG
+
+np.random.seed(1234)
+
+x, y = rot_ksamp("linear", n=100, p=1, k=2, noise=False)
+
+stat, pvalue = KSampleHHG().test(x, y)
+print(stat, pvalue)
+
+
+########################################################################################
 # .. _[1]: https://link.springer.com/article/10.1007/s10182-020-00378-1
 # .. _[2]: https://arxiv.org/abs/1910.08883

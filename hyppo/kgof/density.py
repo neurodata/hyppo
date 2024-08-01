@@ -1,8 +1,6 @@
 """
 Module containing implementations of some unnormalized probability density 
 functions.
-Contains overlapping functionality with sims that exist in numpy.
-Module will be refactored to remove dependencies on this object.
 """
 from __future__ import division
 
@@ -12,7 +10,7 @@ from past.utils import old_div
 from abc import ABC, abstractmethod
 import autograd
 import autograd.numpy as np
-from .data import DSNormal, DSIsotropicNormal
+from .datasource import DSNormal, DSIsotropicNormal
 import scipy.stats as stats
 
 
@@ -22,7 +20,7 @@ class UnnormalizedDensity(ABC):
     intended to be used to represent a model of the data for goodness-of-fit
     testing.
     """
-
+    
     @abstractmethod
     def log_den(self, X):
         """
@@ -121,7 +119,6 @@ class Normal(UnnormalizedDensity):
             raise ValueError("covariance matrix is not full rank.")
         # The precision matrix
         self.prec = np.dot(np.dot(V, np.diag(old_div(1.0, E))), V.T)
-        # print self.prec
 
     def log_den(self, X):
         mean = self.mean

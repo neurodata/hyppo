@@ -56,7 +56,7 @@ class Dcorr(IndependenceTest):
 
     .. math::
 
-        \mathrm{Dcov}^b_n (x, y) = \frac{1}{n^2} \mathrm{tr} (D^x H D^y H)
+        \mathrm{Dcov}^b_n (x, y) = \frac{1}{n^2} \mathrm{tr} (H D^x H H D^y H)
 
     where :math:`\mathrm{tr} (\cdot)` is the trace operator and :math:`H` is
     defined as :math:`H = I - (1/n) J` where :math:`I` is the identity matrix
@@ -206,8 +206,8 @@ class Dcorr(IndependenceTest):
         >>> '%.1f, %.2f' % (stat, pvalue)
         '1.0, 0.00'
 
-        In addition, the inputs can be distance matrices. Using this is the,
-        same as before, except the ``compute_distance`` parameter must be set
+        In addition, the inputs can be distance matrices. In this case,
+        the ``compute_distance`` parameter must be set
         to ``None``.
 
         >>> import numpy as np

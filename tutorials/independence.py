@@ -370,8 +370,10 @@ plt.show()
 # As such, we see that this set of data contains 3 such runs, and again by randomizing the
 # labels of each data point we can determine the test statistic and p-value for the hypothesis
 # that to determine the randomness of our combined sample.
-# It's worth noting that X and Y have the same number of samples, just that they posess the same number of multivariate
-# features. Lastly, labels for X and Y need not be 0 and 1, they just need be consistent across samples.
+# It's worth noting that X and Y need not have the same number of samples, just that they posess the same number of
+# multivariate features. Lastly, labels for X and Y need not be 0 and 1, they just need be consistent across samples.
 # These tests runs like :ref:`any other test<general indep>`.
+#
+# Test statistic range: :math:`[2, m+n]`
 #
 # .. _[1]: https://link.springer.com/article/10.1007/s10182-020-00378-1

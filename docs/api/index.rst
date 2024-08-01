@@ -57,6 +57,7 @@ Independence
    Hotelling
    SmoothCFTest
    MeanEmbeddingTest
+   KSampleHHG
 
 
 .. automodule:: hyppo.time_series
@@ -87,6 +88,18 @@ Discriminability
    DiscrimOneSample
    DiscrimTwoSample
 
+.. automodule:: hyppo.conditional
+
+.. currentmodule:: hyppo.conditional
+
+Conditional Independence
+-------------------------
+
+.. autosummary::
+    :toctree: generated/
+
+    FCIT
+    KCI
 
 
 .. automodule:: hyppo.kgof

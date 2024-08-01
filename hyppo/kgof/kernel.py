@@ -1,8 +1,8 @@
 """
 Module containing kernel related classes
-Contains overlapping functionality with sims that exist in 
-hyppo.tools.common.compute_kern.
-Module will be refactored to remove dependencies on this object.
+
+TODO: Replace kernel evaluation with compute_kern found in hyppo.common.tools by reducing
+dependencies on autograd.numpy
 """
 from __future__ import division
 
@@ -12,6 +12,8 @@ from past.utils import old_div
 from abc import ABC, abstractmethod
 import autograd
 import autograd.numpy as np
+
+from ..tools import compute_kern
 
 
 class Kernel(ABC):
@@ -145,7 +147,6 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
     """
 
     def __init__(self, sigma2):
-        assert sigma2 > 0, "sigma2 must be > 0. Was %s" % str(sigma2)
         self.sigma2 = sigma2
 
     def eval(self, X, Y):
@@ -159,9 +160,6 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         ------
         K : a n1 x n2 Gram matrix.
         """
-        # (n1, d1) = X.shape
-        # (n2, d2) = Y.shape
-        # assert d1==d2, 'Dimensions of the two inputs must be the same'
         sumx2 = np.reshape(np.sum(X**2, 1), (-1, 1))
         sumy2 = np.reshape(np.sum(Y**2, 1), (1, -1))
         D2 = sumx2 - 2 * np.dot(X, Y.T) + sumy2
@@ -178,7 +176,6 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         sigma2 = self.sigma2
         K = self.eval(X, Y)
         Diff = X[:, [dim]] - Y[:, [dim]].T
-        # Diff = np.reshape(X[:, dim], (-1, 1)) - np.reshape(Y[:, dim], (1, -1))
         G = -K * Diff / sigma2
         return G
 
@@ -226,7 +223,6 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         """
         (n1, d1) = X.shape
         (n2, d2) = Y.shape
-        assert d1 == d2, "Dimensions of the two inputs must be the same"
         d = d1
         sigma2 = self.sigma2
         D2 = np.sum(X**2, 1)[:, np.newaxis] - 2 * np.dot(X, Y.T) + np.sum(Y**2, 1)
@@ -259,10 +255,6 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         -------
         a numpy array with length n
         """
-        (n1, d1) = X.shape
-        (n2, d2) = Y.shape
-        assert n1 == n2, "Two inputs must have the same number of instances"
-        assert d1 == d2, "Two inputs must have the same dimension"
         D2 = np.sum((X - Y) ** 2, 1)
         Kvec = np.exp(old_div(-D2, (2.0 * self.sigma2)))
         return Kvec

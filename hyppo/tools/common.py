@@ -367,7 +367,7 @@ def check_perm_blocks_dim(perm_blocks, y):
 
 def check_perm_block(perm_block):
     # checks a hierarchy level of perm_blocks for proper exchangeability
-    if not isinstance(perm_block[0], int):
+    if not np.issubdtype(type(perm_block[0]), np.integer):
         unique, perm_blocks, counts = np.unique(
             perm_block, return_counts=True, return_inverse=True
         )

@@ -10,6 +10,7 @@ from sklearn.utils import check_random_state
 class DiscrimOneSampleTestOutput(NamedTuple):
     stat: float
     pvalue: float
+    null_dist: float
 
 
 class DiscrimOneSample(DiscriminabilityTest):
@@ -136,7 +137,7 @@ class DiscrimOneSample(DiscriminabilityTest):
 
         self.pvalue_ = pvalue
 
-        return DiscrimOneSampleTestOutput(stat, pvalue)
+        return DiscrimOneSampleTestOutput(stat, pvalue, null_dist)
 
     def _perm_stat(self, index, random_state=None):  # pragma: no cover
         r"""

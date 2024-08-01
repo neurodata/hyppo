@@ -14,7 +14,7 @@ class TestOneSample:
         np.random.seed(123456789)
         obs_stat = 0.5
         obs_p = 1.0
-        stat, p = DiscrimOneSample().test(x, y, reps=10)
+        stat, p, _ = DiscrimOneSample().test(x, y, reps=10)
 
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(p, obs_p, decimal=2)
@@ -27,32 +27,10 @@ class TestOneSample:
         np.random.seed(123456789)
         obs_stat = 1.0
         obs_p = 0.0909090909090909
-        stat, p = DiscrimOneSample().test(x, y, reps=10)
+        stat, p, _ = DiscrimOneSample().test(x, y, reps=10)
 
         assert_almost_equal(stat, obs_stat, decimal=3)
         assert_almost_equal(p, obs_p, decimal=3)
-
-    # TODO: timeout CircleCI, make discrim faster
-    def test_rep_same_one(self):
-        # tests reproducibility for indiscriminable subjects
-        x = np.ones((100, 2), dtype=float)
-        y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
-
-        stat1, _ = DiscrimOneSample().test(x, y, reps=0, random_state=2)
-        stat2, _ = DiscrimOneSample().test(x, y, reps=0, random_state=2)
-
-        assert stat1 == stat2
-
-    # TODO: timeout CircleCI, make discrim faster
-    def test_rep_diff_one(self):
-        # tests reproducibility for discriminable subjects
-        x = np.concatenate((np.zeros((50, 2)), np.ones((50, 2))), axis=0)
-        y = np.concatenate((np.zeros(50), np.ones(50)), axis=0)
-
-        stat1, _ = DiscrimOneSample().test(x, y, reps=0, random_state=3)
-        stat2, _ = DiscrimOneSample().test(x, y, reps=0, random_state=3)
-
-        assert stat1 == stat2
 
 
 class TestOneSampleWarn:

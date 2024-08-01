@@ -32,7 +32,6 @@ def _2samp_rotate(sim, x, y, p, degree=90, pow_type="samp"):
             "spiral",
             "uncorrelated_bernoulli",
             "fourth_root",
-            "circle",
         ]:
             for i in range(rot_shape):
                 mat = np.random.normal(size=(rot_shape, 1))
@@ -112,8 +111,8 @@ def rot_ksamp(sim, n, p, k=2, noise=True, degree=90, pow_type="samp", **kwargs):
         else:
             if (k - 1) != 1:
                 raise ValueError(
-                    "k={}, so degree must be list of length {}, got {}".format(
-                        k, k - 1, type(degree)
+                    "k={}, so degree must be type int or float, got {}".format(
+                        k, type(degree)
                     )
                 )
 
