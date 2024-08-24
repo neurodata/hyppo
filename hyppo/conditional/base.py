@@ -13,7 +13,11 @@ class ConditionalIndependenceTest(ABC):
 
     """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+        self.stat = None
+        self.pvalue = None
+        self.kwargs = kwargs
+
         super().__init__()
 
     @abstractmethod
