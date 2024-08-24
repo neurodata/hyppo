@@ -31,7 +31,7 @@ The p-value returned is calculated using a permutation test using
 :meth:`hyppo.tools.perm_test` unless otherwise specified.
 
 Specifics about how the test statistics are calculated for each in
-:class:`hyppo.independence` can be found the docstring of the respective test. Here,
+:class:`hyppo.independence` can be found in the docstring of the respective test. Here,
 we overview subsets of the types of independence tests we offer in hyppo, and special
 parameters unique to those tests.
 
@@ -268,7 +268,7 @@ plt.show()
 #    :Cons: - Very slow (requires training a random forest for each permutation)
 #
 # Unlike other tests, there is no ``compute_distance``
-# parameter. Instead, the number of trees can be set explicityly, and the type of
+# parameter. Instead, the number of trees can be set explicitly, and the type of
 # classifier can be set ("classifier" in the case where the return value :math:`y` is
 # categorical, and "regressor" when that is not the case). Check out
 # :class:`sklearn.ensemble.RandomForestClassifier` and
@@ -351,7 +351,7 @@ plt.show()
 # for a two-valued data sequence. More specifically, it can be used to test the hypothesis that the elements of a sequence
 # are mutually independent. For a data sequence with identifiers of two groups,
 # say: :math:`X , Y` we begin by sorting the combined data set
-# :math: `W` in numerical ascending order. The number of runs is then defined by the number
+# :math:`W` in numerical ascending order. The number of runs is then defined by the number
 # of maximal, non-empty segments of the sequence consisting of adjacent and equal elements.
 # So if we designate every :math:`X = +,  Y = -` an example assortment of the 15 element long sequence
 # of both sets could be given as :math:`+++----++---+++` which contains 5 runs, 3 of which positive and 2 of which negative.
@@ -374,6 +374,6 @@ plt.show()
 # multivariate features. Lastly, labels for X and Y need not be 0 and 1, they just need be consistent across samples.
 # These tests runs like :ref:`any other test<general indep>`.
 #
-# Test statistic range: :math:`[2, m+n]`
+# Test statistic range: :math:`[2, m+n]`, where :math:`m` and :math:`n` are the number of samples in sets :math:`X` and :math:`Y` respectively.
 #
 # .. _[1]: https://link.springer.com/article/10.1007/s10182-020-00378-1
