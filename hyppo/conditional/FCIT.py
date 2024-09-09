@@ -1,13 +1,11 @@
 import time
-import joblib
 
+import joblib
 import numpy as np
 from scipy.stats import ttest_1samp
 from sklearn.metrics import mean_squared_error as mse
+from sklearn.model_selection import GridSearchCV, ShuffleSplit
 from sklearn.preprocessing import StandardScaler
-
-from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import ShuffleSplit
 from sklearn.tree import DecisionTreeRegressor
 
 from .base import ConditionalIndependenceTest, ConditionalIndependenceTestOutput
@@ -32,8 +30,12 @@ class FCIT(ConditionalIndependenceTest):
         Proportion of data to evaluate test stat on.
     discrete: tuple of string
         Whether :math:`X` or :math:`Y` are discrete
+
     Notes
     -----
+    .. note::
+       This algorithm is currently a pre-print on arXiv.
+
     The motivation for the test rests on the assumption that if :math:`X \not\!\perp\!\!\!\perp Y \mid Z`,
     then :math:`Y` should be more accurately predicted by using both
     :math:`X` and :math:`Z` as covariates as opposed to only using

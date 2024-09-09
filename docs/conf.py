@@ -82,7 +82,7 @@ numpydoc_class_members_toctree = True
 numpydoc_show_class_members = False
 
 # -- sphinx.ext.autosummary
-autosummary_generate = []
+autosummary_generate = True
 
 # Otherwise, the Return parameter list looks different from the Parameters list
 napoleon_use_rtype = False

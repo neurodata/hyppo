@@ -21,7 +21,6 @@ Independence
    HHG
    CCA
    RV
-   FriedmanRafsky
 
 
 
@@ -57,6 +56,7 @@ Independence
    Hotelling
    SmoothCFTest
    MeanEmbeddingTest
+   FriedmanRafsky
    KSampleHHG
 
 
@@ -98,6 +98,9 @@ Conditional Independence
 .. autosummary::
     :toctree: generated/
 
+    ConditionalDcorr
+    PartialCorr
+    PartialDcorr
     FCIT
     KCI
 
