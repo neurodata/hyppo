@@ -47,6 +47,16 @@ def check_ndarray_xy(x, y):
         raise TypeError("x and y must be ndarrays")
 
 
+def check_ndarray_xyz(x, y, z):
+    """Check if x or y is an ndarray of float"""
+    if (
+        not isinstance(x, np.ndarray)
+        or not isinstance(y, np.ndarray)
+        or not isinstance(z, np.ndarray)
+    ):
+        raise TypeError("x, y, and z must be ndarrays")
+
+
 def convert_xy_float64(x, y):
     """Convert x or y to np.float64 (if not already done)"""
     # convert x and y to floats
@@ -54,6 +64,16 @@ def convert_xy_float64(x, y):
     y = np.asarray(y).astype(np.float64)
 
     return x, y
+
+
+def convert_xyz_float64(x, y, z):
+    """Convert x or y or z to np.float64 (if not already done)"""
+    # convert x and y to floats
+    x = np.asarray(x).astype(np.float64)
+    y = np.asarray(y).astype(np.float64)
+    z = np.asarray(z).astype(np.float64)
+
+    return x, y, z
 
 
 def check_reps(reps):
@@ -72,29 +92,35 @@ def check_reps(reps):
         warnings.warn(msg, RuntimeWarning)
 
 
-def _check_distmat(x, y):
-    """Check if x and y are distance matrices."""
-    if (
-        not np.allclose(x, x.T)
-        or not np.allclose(y, y.T)
-        or not np.all((x.diagonal() == 0))
-        or not np.all((y.diagonal() == 0))
-    ):
-        raise ValueError(
-            "x and y must be distance matrices, {is_sym} symmetric and "
-            "{zero_diag} zeros along the diagonal".format(
-                is_sym="x is not"
-                if not np.array_equal(x, x.T)
-                else "y is not"
-                if not np.array_equal(y, y.T)
-                else "both are",
-                zero_diag="x doesn't have"
-                if not np.all((x.diagonal() == 0))
-                else "y doesn't have"
-                if not np.all((y.diagonal() == 0))
-                else "both have",
-            )
-        )
+def _check_distmat(x, y, z=None):
+    """Check if x, y, and z are distance matrices."""
+    if z is None:
+        data = (x, y)
+        labs = np.array(["x", "y"])
+    else:
+        data = (x, y, z)
+        labs = np.array(["x", "y", "z"])
+
+    check_sym = np.array([not np.allclose(arr, arr.T) for arr in data])
+    check_diag = np.array([not np.all((arr.diagonal() == 0)) for arr in data])
+
+    if np.any(check_sym) or np.any(check_diag):
+        inputs = "x and y" if z is None else "x, y and z"
+        if np.any(check_sym):
+            names = ", ".join(labs[check_sym])
+            verb = "is" if check_sym.sum() == 1 else "are"
+            sym_msg = f"{names} {verb} not symmetric."
+        else:
+            sym_msg = ""
+        if np.any(check_diag):
+            names = ", ".join(labs[check_diag])
+            verb = "does not" if check_diag.sum() == 1 else "do not"
+            diag_msg = f"{names} {verb} have zeros along the diagonal."
+        else:
+            diag_msg = ""
+
+        msg = f"{inputs} must be distance matrices. {sym_msg} {diag_msg}"
+        raise ValueError(msg)
 
 
 def _check_kernmat(x, y):
@@ -281,18 +307,19 @@ def multi_compute_kern(*args, metric="gaussian", workers=1, **kwargs):
     return sim_matrices
 
 
-def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
+def compute_dist(x, y, z=None, metric="euclidean", workers=1, **kwargs):
     """
     Distance matrices for the inputs.
 
     Parameters
     ----------
-    x,y : ndarray of float
-        Input data matrices. ``x`` and ``y`` must have the same number of
-        samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
-        `n` is the number of samples and `p` and `q` are the number of
-        dimensions. Alternatively, ``x`` and ``y`` can be distance matrices,
-        where the shapes must both be ``(n, n)``.
+    x,y,z : ndarray of float
+        Input data matrices. ``x``, ``y`` and ``z`` must have the same number
+        of samples. That is, the shapes must be ``(n, p)``, ``(n, q)`` and
+        ``(n, r)`` where `n` is the number of samples and `p`, `q`, and `r`
+        are the number of dimensions. Alternatively, ``x``, ``y`` and ``z``
+        can be distance matrices where the shapes must be ``(n, n)``. ``z``
+        is an optional ndarray.
     metric : str, callable, or None, default: "euclidean"
         A function that computes the distance among the samples within each
         data matrix.
@@ -311,8 +338,8 @@ def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
               ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
               details on these metrics.
 
-        Set to ``None`` or ``"precomputed"`` if ``x`` and ``y`` are already distance
-        matrices. To call a custom function, either create the distance matrix
+        Set to ``None`` or ``"precomputed"`` if ``x``, ``y``, and ``z`` are already
+        distance matrices. To call a custom function, either create the distance matrix
         before-hand or create a function of the form ``metric(x, **kwargs)``
         where ``x`` is the data matrix for which pairwise distances are
         calculated and ``**kwargs`` are extra arguements to send to your custom
@@ -327,21 +354,34 @@ def compute_dist(x, y, metric="euclidean", workers=1, **kwargs):
 
     Returns
     -------
-    distx, disty : ndarray of float
-        Distance matrices based on the metric provided by the user.
+    distx, disty, distz : ndarray of float
+        Distance matrices based on the metric provided by the user. ``distz`` is
+        only returned if ``z`` is provided.
     """
     if not metric:
         metric = "precomputed"
     if callable(metric):
         distx = metric(x, **kwargs)
         disty = metric(y, **kwargs)
+        distz = None if z is None else metric(z, **kwargs)
         _check_distmat(
-            distx, disty
+            distx,
+            disty,
+            distz,
         )  # verify whether matrix is correct, built into sklearn func
     else:
         distx = pairwise_distances(x, metric=metric, n_jobs=workers, **kwargs)
         disty = pairwise_distances(y, metric=metric, n_jobs=workers, **kwargs)
-    return distx, disty
+        distz = (
+            None
+            if z is None
+            else pairwise_distances(z, metric=metric, n_jobs=workers, **kwargs)
+        )
+
+    if z is None:
+        return distx, disty
+    else:
+        return distx, disty, distz
 
 
 def check_perm_blocks(perm_blocks):
@@ -470,8 +510,7 @@ class _PermGroups(object):
             self.perm_tree = _PermTree(perm_blocks)
 
     def __call__(self, rng=None):
-        if rng is None:
-            rng = np.random
+        rng = check_random_state(rng)
         if self.perm_tree is None:
             order = rng.permutation(self.n)
         else:
@@ -481,20 +520,25 @@ class _PermGroups(object):
 
 
 # p-value computation
-def _perm_stat(calc_stat, x, y, is_distsim=True, permuter=None, random_state=None):
+def _perm_stat(
+    calc_stat, x, y, z=None, is_distsim=True, permuter=None, random_state=None
+):
     """Permute the test statistic"""
     rng = check_random_state(random_state)
     if permuter is None:
         order = rng.permutation(y.shape[0])
     else:
-        order = permuter(rng)
+        order = permuter(rng=rng)
 
     if is_distsim:
         permy = y[order][:, order]
     else:
         permy = y[order]
 
-    perm_stat = calc_stat(x, permy)
+    if z is not None:
+        perm_stat = calc_stat(x, permy, z)
+    else:
+        perm_stat = calc_stat(x, permy)
 
     return perm_stat
 
@@ -503,11 +547,13 @@ def perm_test(
     calc_stat,
     x,
     y,
+    z=None,
     reps=1000,
     workers=1,
     is_distsim=True,
     perm_blocks=None,
     random_state=None,
+    permuter=None,
 ):
     """
     Permutation test for the p-value of a nonparametric test.
@@ -521,13 +567,14 @@ def perm_test(
     ----------
     calc_stat : callable
         The method used to calculate the test statistic (must use hyppo API).
-    x,y : ndarray of float
-        Input data matrices. ``x`` and ``y`` must have the same number of
-        samples. That is, the shapes must be ``(n, p)`` and ``(n, q)`` where
-        `n` is the number of samples and `p` and `q` are the number of
+    x,y,z : ndarray of float
+        Input data matrices. ``x``, ``y`` and ``z`` must have the same number of
+        samples. That is, the shapes must be ``(n, p)``, ``(n, q)``, ``(n, r)``where
+        `n` is the number of samples and `p`, `q` , and `r` are the number of
         dimensions. Alternatively, ``x`` and ``y`` can be distance or similarity
-        matrices,
-        where the shapes must both be ``(n, n)``.
+        matrices, and ``z`` must be a similarity matrix where the shapes
+        must be ``(n, n)``. ``z`` is an optional matrix only used for conditional
+        independence testing.
     reps : int, default: 1000
         The number of replications used to estimate the null distribution
         when using the permutation test used to calculate the p-value.
@@ -545,6 +592,10 @@ def perm_test(
         test, samples within the same final leaf node are exchangeable
         and blocks of samples with a common parent node are exchangeable. If a
         column value is negative, the resulting block is unexchangeable.
+    permuter : callable, default: None
+        Defines a custom permutation function. If None, the default permutation
+        test is used.
+
     Returns
     -------
     stat : float
@@ -554,8 +605,12 @@ def perm_test(
     null_dist : list of float
         The approximated null distribution of shape ``(reps,)``.
     """
+
     # calculate observed test statistic
-    stat = calc_stat(x, y)
+    if z is None:
+        stat = calc_stat(x, y)
+    else:
+        stat = calc_stat(x, y, z)
 
     # make RandomState seeded array
     if random_state is not None:
@@ -567,12 +622,13 @@ def perm_test(
         random_state = np.random.randint(np.iinfo(np.int32).max, size=reps)
 
     # calculate null distribution
-    permuter = _PermGroups(y, perm_blocks)
+    if not callable(permuter):
+        permuter = _PermGroups(y, perm_blocks)
 
     null_dist = np.array(
         Parallel(n_jobs=workers)(
             [
-                delayed(_perm_stat)(calc_stat, x, y, is_distsim, permuter, rng)
+                delayed(_perm_stat)(calc_stat, x, y, z, is_distsim, permuter, rng)
                 for rng in random_state
             ]
         )

@@ -122,8 +122,8 @@ class FriedmanRafsky(KSampleTest):
             self.statistic,
             x,
             y,
-            reps,
-            workers,
+            reps=reps,
+            workers=workers,
             is_distsim=False,
             random_state=random_state,
         )

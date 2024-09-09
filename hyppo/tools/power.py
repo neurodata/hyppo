@@ -2,17 +2,20 @@ from math import ceil
 
 import numpy as np
 
+from ..conditional import COND_INDEP_TESTS
+from ..d_variate import MULTI_TESTS
 from ..independence import INDEP_TESTS
 from ..ksample import KSAMP_TESTS, KSample, k_sample_transform
-from ..d_variate import MULTI_TESTS
 from .indep_sim import indep_sim
 from .ksample_sim import gaussian_3samp, rot_ksamp
+from .conditional_indep_sim import condi_indep_sim
 
 _ALL_SIMS = {
     "indep": indep_sim,
     "multi": indep_sim,
     "ksamp": rot_ksamp,
     "gauss": gaussian_3samp,
+    "condi": condi_indep_sim,
 }
 
 _NONPERM_TESTS = {
@@ -83,10 +86,32 @@ def _multi_perm_stat(test, sim_type, **kwargs):
     return obs_stat, perm_stat
 
 
+def _conditional_perm_stat(test, sim_type, **kwargs):
+    """
+    Generates null and alternate distributions for the conditional independence test.
+    """
+    x, y, z = _sim_gen(sim_type=sim_type, **kwargs)
+    obs_stat = test.statistic(x, y, z)
+
+    # Separate if block for conditional distance correlation since it requires
+    # special permutation
+    if str(test).lower() == "cdcorr":
+        probs = test._compute_kde(z)
+        idx = test._permuter(probs)
+        permy = y[idx]
+        perm_stat = test.statistic(x, permy, z)
+    else:
+        permy = np.random.permutation(y)
+        perm_stat = test.statistic(x, permy, z)
+
+    return obs_stat, perm_stat
+
+
 _PERM_STATS = {
     "indep": _indep_perm_stat,
     "ksamp": _ksamp_perm_stat,
     "multi": _multi_perm_stat,
+    "condi": _conditional_perm_stat,
 }
 
 
@@ -107,13 +132,13 @@ def power(test, sim_type, sim=None, n=100, alpha=0.05, reps=1000, auto=False, **
     Parameters
     ----------
     test : str or list
-        The name of the independence test (from the :mod:`hyppo.independence` module
-        or the :mod:`hyppo.d_variate` module) that is to be tested. If MaxMargin,
-        accepts list with first entry "MaxMargin" and second entry the name of
-        another independence test.
+        The name of the independence test (from the :mod:`hyppo.independence` module,
+        the :mod:`hyppo.d_variate` module, or the :mod:`hyppo.conditional` module)
+        that is to be tested. If MaxMargin, accepts list with first entry "MaxMargin"
+        and second entry the name of another independence test.
         For :class:`hyppo.ksample.KSample` put the name of the independence test.
         For other tests in :mod:`hyppo.ksample` just use the name of the class.
-    sim_type : "indep", "ksamp", "gauss", "multi"
+    sim_type : "indep", "ksamp", "gauss", "multi", "condi"
         Type of power method to calculate. Depends on the type of ``sim``.
     sim : str, default: None
         The name of the independence simulation (from the :mod:`hyppo.tools` module).
@@ -162,13 +187,16 @@ def power(test, sim_type, sim=None, n=100, alpha=0.05, reps=1000, auto=False, **
             test = KSAMP_TESTS[test_name]()
         elif test_name in MULTI_TESTS.keys():
             test = MULTI_TESTS[test_name]()
+        elif test_name in COND_INDEP_TESTS.keys():
+            test = COND_INDEP_TESTS[test_name]()
         else:
             raise ValueError(
                 "Test {} not in {}".format(
                     test_name,
                     list(INDEP_TESTS.keys())
                     + list(KSAMP_TESTS.keys())
-                    + list(MULTI_TESTS.keys()),
+                    + list(MULTI_TESTS.keys())
+                    + list(COND_INDEP_TESTS.keys()),
                 )
             )
 
@@ -178,6 +206,8 @@ def power(test, sim_type, sim=None, n=100, alpha=0.05, reps=1000, auto=False, **
         perm_type = "ksamp"
     if sim_type == "multi":
         perm_type = "multi"
+    if sim_type == "condi":
+        perm_type = "condi"
     if sim_type != "gauss":
         kwargs["sim"] = sim
 

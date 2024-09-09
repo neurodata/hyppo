@@ -186,6 +186,9 @@ class KMERF(IndependenceTest):
         # get feature importances from gini-based random forest
         self.importances = self.clf.feature_importances_
 
+        # get feature importances from gini-based random forest
+        self.importances = self.clf.feature_importances_
+
         return stat
 
     def test(self, x, y, reps=1000, workers=1, auto=True, random_state=None):
