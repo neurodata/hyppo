@@ -1,11 +1,11 @@
 import random
 from typing import NamedTuple
 
-from numba import jit
 import numpy as np
+from numba import jit
 
-from .base import IndependenceTest
 from ..tools import perm_test
+from .base import KSampleTest
 
 
 class FRTestOutput(NamedTuple):
@@ -14,7 +14,7 @@ class FRTestOutput(NamedTuple):
     uncor_stat: dict
 
 
-class FriedmanRafsky(IndependenceTest):
+class FriedmanRafsky(KSampleTest):
     r"""
     Friedman-Rafksy (FR) test statistic and p-value.
     This is a multivariate extension of the Wald-Wolfowitz
@@ -51,7 +51,7 @@ class FriedmanRafsky(IndependenceTest):
 
     def __init__(self, **kwargs):
 
-        IndependenceTest.__init__(self, **kwargs)
+        KSampleTest.__init__(self, **kwargs)
 
     def statistic(self, x, y):
         r"""
