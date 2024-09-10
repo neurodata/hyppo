@@ -99,8 +99,8 @@ Conditional Independence
     :toctree: generated/
 
     ConditionalDcorr
-    PartialCorr
     PartialDcorr
+    PartialCorr
     FCIT
     KCI
 

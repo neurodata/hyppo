@@ -34,7 +34,7 @@ class LjungBox(TimeSeriesTest):
         \mathrm{Ljung-Box}_n (x, y) =  n(n+2)\sum_{j=1}^M \frac{
             \rho^2(x[j:n], y[0:(n-j)])}{n-j}
 
-    where $\rho$ is the Pearson correlation coefficient.
+    where :math:`\rho` is the Pearson correlation coefficient.
     The p-value returned is calculated either via chi-squared distribution or
     using a permutation test.
 
