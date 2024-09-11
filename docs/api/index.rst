@@ -4,9 +4,8 @@ API Reference
 =============
 
 .. automodule:: hyppo.independence
-   :no-members:
-   :no-inherited-members:
-   :no-special-members:
+   :toctree: generated/
+   :members:
 
 
 
