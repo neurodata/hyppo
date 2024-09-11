@@ -20,7 +20,7 @@ class LjungBox(TimeSeriesTest):
     Notes
     -----
     The statistic can be derived as follows
-    :footcite:p:`mehtaIndependenceTestingMultivariate2020`:
+    :footcite:p:`ljung1978measure`:
 
     Let :math:`x` and :math:`y` be :math:`(n, 1)` and :math:`(n, 1)` series
     respectively, which each contain :math:`y` observations of the series

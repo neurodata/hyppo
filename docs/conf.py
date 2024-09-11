@@ -79,7 +79,7 @@ napoleon_type_aliases = {
 # -- numpydoc
 # Below is needed to prevent errors
 numpydoc_class_members_toctree = True
-numpydoc_show_class_members = False
+numpydoc_show_class_members = True
 
 # -- sphinx.ext.autosummary
 autosummary_generate = True
