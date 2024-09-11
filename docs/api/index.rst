@@ -4,6 +4,9 @@ API Reference
 =============
 
 .. automodule:: hyppo.independence
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
 
 .. currentmodule:: hyppo.independence
 
