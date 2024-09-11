@@ -87,7 +87,7 @@ def plot_sims():
         loc="upper center",
     )
     leg.get_frame().set_linewidth(0.0)
-    for legobj in leg.legendHandles:
+    for legobj in leg.legend_handles:
         legobj.set_linewidth(5.0)
     plt.subplots_adjust(hspace=0.75)
 

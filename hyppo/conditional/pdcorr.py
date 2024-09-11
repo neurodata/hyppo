@@ -62,6 +62,7 @@ class PartialDcorr(ConditionalIndependenceTest):
         \mathrm{PDcov}_n (x, y; z) = \frac{1}{n(n-3)} \sum_{i\neq j}^n \left(P_{z^\perp}(x)\right)_{i,j} \left(P_{z^\perp}(y)\right)_{i,j}
 
     where
+
     .. math::
         P_{z^\perp}(x) = C^x - \frac{(C^x\cdot C^z)}{ C^z \cdot C^z) C^z
 
@@ -69,7 +70,7 @@ class PartialDcorr(ConditionalIndependenceTest):
     The partial distance correlation is defined as
 
     .. math::
-        \mathrm{PDcorr}_n (x, y; z) = \frac{P_{z^\perp}(x)\cdot P_{z^\perp}(y)}{\abs{P_{z^\perp}(x)}\abs{P_{z^\perp}(y)}}
+        \mathrm{PDcorr}_n (x, y; z) = \frac{P_{z^\perp}(x)\cdot P_{z^\perp}(y)}{|P_{z^\perp}(x)} |P_{z^\perp}(y)|}
 
     Equivalently, the partial distance correlation can be also defined as
 
