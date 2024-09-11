@@ -8,23 +8,6 @@ API Reference
    :no-inherited-members:
    :no-special-members:
 
-.. currentmodule:: hyppo.independence
-
-Independence
--------------
-
-.. autosummary::
-   :toctree: generated/
-
-   MaxMargin
-   KMERF
-   MGC
-   Dcorr
-   Hsic
-   HHG
-   CCA
-   RV
-
 
 
 .. automodule:: hyppo.d_variate
