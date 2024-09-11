@@ -4,8 +4,23 @@ API Reference
 =============
 
 .. automodule:: hyppo.independence
+
+.. currentmodule:: hyppo.independence
+
+Independence
+-------------
+
+.. autosummary::
    :toctree: generated/
-   :members:
+
+   MaxMargin
+   KMERF
+   MGC
+   Dcorr
+   Hsic
+   HHG
+   CCA
+   RV
 
 
 
