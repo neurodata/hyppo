@@ -72,6 +72,11 @@ class MaxMargin(IndependenceTest):
     **kwargs
         Arbitrary keyword arguments for ``compute_distkern``.
 
+    Notes
+    -----
+    .. note::
+       This algorithm is currently under review at a peer-review journal.
+
     References
     ----------
     .. footbibliography::

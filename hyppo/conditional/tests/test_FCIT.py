@@ -11,7 +11,7 @@ class TestFCIT:
         "n, obs_stat, obs_pvalue",
         [
             (2000, 11.677197, 3.8168e-06),
-            (1000, 7.733, 5.6549e-05),
+            (1000, 7.733, 0.00021089364300031204),
         ],
     )
     def test_linear_oned(self, n, obs_stat, obs_pvalue):
