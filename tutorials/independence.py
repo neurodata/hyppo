@@ -261,9 +261,6 @@ plt.show()
 # **Kernel mean embedding random forest (KMERF)** is one such test, which uses
 # similarity matrices as a result of random forest to generate a test statistic and
 # p-value. More details can be found in :class:`hyppo.independence.KMERF`.
-# .. note::
-#
-#    This algorithm is currently under review at a peer-reviewed conference.
 #
 # .. note::
 #

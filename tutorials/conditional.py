@@ -38,7 +38,11 @@ Now, let's look at unique properties of some of the tests in :mod:`hyppo.conditi
 # variable with only the conditioning variable should be just as accurate as
 # prediction of the independent variable using the dependent variable conditioned on
 # the conditioning variable.
-# More details can be found in :class:`hyppo.conditional.FCIT`
+# More details can be found in :class:`hyppo.conditional.FCIT`.
+#
+# .. note::
+#
+#    This algorithm is currently under review at a preprint on arXiv.
 #
 # .. note::
 #
@@ -77,14 +81,14 @@ print("p-value: ", pvalue)
 # the test statistic via the trace of the matrix product. The test then employs
 # a gamma approximation based on the mean and variance of the independent
 # sample kernel values to determine the p-value of the test.
-# More details can be found in :class:`hyppo.conditional.kci
+# More details can be found in :class:`hyppo.conditional.KCI`.
 #
 # .. note::
 #
 #    :Pros: - Very fast on high-dimensional data due to simplicity and approximation
 #    :Cons: - Dispute in literature as to ideal theta value, loss of accuracy on very large datasets
 #
-# Below is a linear example where we fail to reject the null hypothesis:
+# Below is a linear example where we reject the null hypothesis:
 
 import numpy as np
 from hyppo.conditional import KCI
@@ -92,5 +96,60 @@ from hyppo.tools import linear
 np.random.seed(123456789)
 x, y = linear(100, 1)
 stat, pvalue = KCI().test(x, y)
+print("Statistic: ", stat)
+print("p-value: ", pvalue)
+
+########################################################################################
+# Partial Correlation (PCorr) and Partial Distance Correlation (PDcorr)
+# ----------------------------------------------------------------------
+#
+# Partial Correlation (PCorr) and Partial Distance Correlation (PDcorr)
+# are conditional independence tests that are extensions of Pearson's Correlation
+# and Distance Correlation, respectively.
+# Partial distance correlation introduces a new Hilbert space where the squared
+# distance covariance is the inner product.
+# More details can be found in :class:`hyppo.conditional.PartialCorr`
+# and :class:`hyppo.conditional.PartialDcorr`.
+#
+# .. note::
+#
+#    :Pros: - Simplest extension of Pearson's Correlation and Distance Correlation
+#    :Cons: - Literature may suggest that this is not actually a dependence measure
+#           - Partial correlation makes strong linearity assumptions about the data
+#
+# Below is a linear example where we reject the null hypothesis:
+
+import numpy as np
+from hyppo.conditional import PDcorr
+from hyppo.tools import linear
+np.random.seed(123456789)
+x, y = linear(100, 1)
+stat, pvalue = PDcorr().test(x, y)
+print("Statistic: ", stat)
+print("p-value: ", pvalue)
+
+########################################################################################
+# Conditional Distance Correlation (CDcorr)
+# ---------------------------------------------
+#
+# Conditional Dcorr (CDcorr) is a nonparametric measure of conditional dependence
+# for multivariate random variables. The sample version takes the same statistical
+# form of Dcorr but is conditioned on a third variable. It has also has strong
+# guarantees regarding convergence and asymptotic normality.
+# More details can be found in :class:`hyppo.conditional.CDcorr`.
+#
+# .. note::
+#
+#    :Pros: - Has stronger theoretical guarantees than PCorr and PDcorr
+#    :Cons: - Computationally expensive on very large datasets
+#
+# Below is a linear example where we reject the null hypothesis:
+
+import numpy as np
+from hyppo.conditional import CDcorr
+from hyppo.tools import linear
+np.random.seed(123456789)
+x, y = linear(100, 1)
+stat, pvalue = CDcorr().test(x, y)
 print("Statistic: ", stat)
 print("p-value: ", pvalue)
