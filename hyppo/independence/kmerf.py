@@ -126,29 +126,15 @@ class KMERF(IndependenceTest):
     ----------
     .. footbibliography::
     """
-
-    def __init__(
-        self,
-        forest="regressor",
-        ntrees=500,
-        compute_distance="euclidean",
-        distance_kwargs={},
-        **kwargs
-    ):
-        self.is_distance = False
-        self.distance_kwargs = distance_kwargs
-        if not compute_distance:
-            self.is_distance = True
+    def __init__(self, forest="regressor", ntrees=500, **kwargs):
         self.is_ksamp = False
         if "is_ksamp" in kwargs.keys():
-            self.is_ksamp = True
-            self.k_sample_transform = kwargs["is_ksamp"]
             del kwargs["is_ksamp"]
         if forest in FOREST_TYPES.keys():
             self.clf = FOREST_TYPES[forest](n_estimators=ntrees, **kwargs)
         else:
-            raise ValueError("Forest must be of type classification or regression")
-        IndependenceTest.__init__(self, compute_distance=compute_distance)
+            raise ValueError("forest must be one of the following ")
+        IndependenceTest.__init__(self)
 
     def statistic(self, x, y):
         r"""
@@ -167,32 +153,15 @@ class KMERF(IndependenceTest):
         stat : float
             The computed KMERF statistic.
         """
-        rf_y = y
-        if rf_y.shape[1] == 1:
-            rf_y = rf_y.ravel()
-        self.clf.fit(x, rf_y)
-
-        distx = np.sqrt(1 - sim_matrix(self.clf, x))
-        # can use induced kernel if shapes are the same, otherwise
-        # default to compute_distance
-        if x.shape[1] == y.shape[1]:
-            disty = np.sqrt(1 - sim_matrix(self.clf, y))
-        else:
-            disty = pairwise_distances(
-                y, metric=self.compute_distance, **self.distance_kwargs
-            )
-        stat = _dcorr(distx, disty, bias=False, is_fast=False)
-        self.stat = stat
-        self.distx = distx
-        self.disty = disty
+        self.clf.fit(x, y)
+        self.distx = 1 - sim_matrix(self.clf, x)
+        self.disty = pairwise_distances(y, metric="euclidean")
+        self.stat = _dcorr(self.distx, self.disty, bias=False, is_fast=False)
 
         # get feature importances from gini-based random forest
         self.importances = self.clf.feature_importances_
 
-        # get feature importances from gini-based random forest
-        self.importances = self.clf.feature_importances_
-
-        return stat
+        return self.stat
 
     def test(self, x, y, reps=1000, workers=1, auto=True, random_state=None):
         r"""
