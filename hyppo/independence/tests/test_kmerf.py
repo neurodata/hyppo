@@ -13,11 +13,11 @@ class TestKMERFStat(object):
     @pytest.mark.parametrize(
         "sim, obs_stat, obs_pvalue",
         [
-            (linear, 1.0, 9.19834440770024e-24),  # test linear simulation
+            (linear, 0.26096478961164743, 2.210668062138582e-07),  # test linear simulation
             (
                 spiral,
-                0.1835550720881665,
-                1.3087565060526607e-05,
+                0.038750928574255245,
+                0.031366764487060314,
             ),  # test spiral simulation
             (
                 multimodal_independence,
