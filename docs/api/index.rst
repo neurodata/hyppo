@@ -163,6 +163,28 @@ Independence Simulations
    rot_ksamp
    gaussian_3samp
 
+Conditional Independence Simulations
+""""""""""""""""""""""""""""""""""""
+
+.. autosummary::
+   :toctree: generated/
+
+   indep_normal
+   indep_lognormal
+   indep_binomial
+   cond_indep_normal
+   cond_indep_lognormal
+   cond_indep_normal_nonlinear
+   cond_indep_binomial
+   correlated_binomial
+   correlated_normal
+   correlated_normal_nonliear
+   correlated_lognormal
+   correlated_t_linear
+   correlated_t_quadratic
+   correlated_t_nonlinear
+   condi_indep_sim
+
 Time-Series Simulations
 """"""""""""""""""""""""
 

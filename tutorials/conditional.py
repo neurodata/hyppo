@@ -121,10 +121,10 @@ print("p-value: ", pvalue)
 
 import numpy as np
 from hyppo.conditional import PartialDcorr
-from hyppo.tools import linear
+from hyppo.tools import correlated_normal
 np.random.seed(123456789)
-x, y = linear(100, 1)
-stat, pvalue = PartialDcorr().test(x, y)
+x, y, z = correlated_normal(100, 1)
+stat, pvalue = PartialDcorr().test(x, y, z)
 print("Statistic: ", stat)
 print("p-value: ", pvalue)
 
@@ -147,9 +147,9 @@ print("p-value: ", pvalue)
 
 import numpy as np
 from hyppo.conditional import ConditionalDcorr
-from hyppo.tools import linear
+from hyppo.tools import correlated_normal
 np.random.seed(123456789)
-x, y = linear(100, 1)
-stat, pvalue = ConditionalDcorr().test(x, y)
+x, y, z = correlated_normal(100, 1)
+stat, pvalue = ConditionalDcorr().test(x, y, z)
 print("Statistic: ", stat)
 print("p-value: ", pvalue)
