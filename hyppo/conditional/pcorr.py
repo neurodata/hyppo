@@ -46,7 +46,7 @@ class PartialCorr(ConditionalIndependenceTest):
     -----
     The statistic is computed as follows:
 
-    ..math::
+    .. math::
         r_{x, y ; z} = \frac{\rho_{xy} - \rho_{xz} \rho_{yz}}{\sqrt{(1 - \rho_{xz}^2)(1 - \rho_{yz}^2)}}
 
     where :math:`\rho_{xy}` is the Pearson correlation coefficient between :math:`x` and

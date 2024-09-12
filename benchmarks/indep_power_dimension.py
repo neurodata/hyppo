@@ -132,7 +132,7 @@ def estimate_power(sim, test, auto=False):
 #
 # outputs = Parallel(n_jobs=-1, verbose=100)(
 #     [
-#         delayed(estimate_featimport)(sim_name, test)
+#         delayed(estimate_power)(sim_name, test)
 #         for sim_name in SIMULATIONS.keys()
 #         for test in INDEP_TESTS.keys()
 #     ]
@@ -184,7 +184,7 @@ def plot_power():
         loc="upper center",
     )
     leg.get_frame().set_linewidth(0.0)
-    for legobj in leg.legendHandles:
+    for legobj in leg.legend_handles:
         legobj.set_linewidth(5.0)
     plt.subplots_adjust(hspace=0.50)
 

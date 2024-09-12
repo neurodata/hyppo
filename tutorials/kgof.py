@@ -35,6 +35,7 @@ can take almost any form. The normalizer of :math:`p` is not assumed known. The 
 :math:`p` through :math:`\nabla_{\mathbf{x}} \log p(\mathbf{x})` i.e., the first derivative of the log density.
 
 It returns a set of points (features) which indicate where :math:`p` fails to fit the data.
+More details can be found in `hyppo.kgof.FSSD`.
 
 """
 

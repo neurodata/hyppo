@@ -73,6 +73,10 @@ let's look at unique properties of some of these tests:
 # method has a number of advantages.
 # More details can be found in :class:`hyppo.ksample.KSample`.
 # The following applies to both:
+# 
+# .. note::
+#
+#    This algorithm is currently under review at a peer-reviewed journal.
 #
 # .. note::
 #
@@ -134,8 +138,8 @@ print(stat, pvalue)
 # :mod:`hyppo.independence` and for examples on how to use it, see :ref:`indep`.
 
 ########################################################################################
-# Distance (and Kernel) Equivalencies
-# --------------------------------------------
+# Energy, Distance components (DISCO), and Maximal mean discrepency (MMD)
+# ------------------------------------------------------------------------
 #
 # It turns out that a number of test statistics are multiples of one another and so,
 # their p-values are equivalent to the above :ref:`nonpar manova`. `[1]`_ goes through
@@ -240,7 +244,7 @@ print("5 degrees of freedom (stat, pval):\n", stat1, pval1)
 print("10 degrees of freedom (stat, pval):\n", stat2, pval2)
 
 ########################################################################################
-# Univariate-Based Test
+# Heller Heller Gorfine (HHG)
 # --------------------------------------------
 # The **Heller Heller Gorfine (HHG) 2-Sample Test** is a non-parametric two-sample
 # statistical test. This test is based on testing the independence of the distances of sample vectors

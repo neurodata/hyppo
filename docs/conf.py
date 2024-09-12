@@ -79,10 +79,10 @@ napoleon_type_aliases = {
 # -- numpydoc
 # Below is needed to prevent errors
 numpydoc_class_members_toctree = True
-numpydoc_show_class_members = False
+numpydoc_show_class_members = True
 
 # -- sphinx.ext.autosummary
-autosummary_generate = []
+autosummary_generate = True
 
 # Otherwise, the Return parameter list looks different from the Parameters list
 napoleon_use_rtype = False

@@ -20,7 +20,7 @@ class LjungBox(TimeSeriesTest):
     Notes
     -----
     The statistic can be derived as follows
-    :footcite:p:`mehtaIndependenceTestingMultivariate2020`:
+    :footcite:p:`ljung1978measure`:
 
     Let :math:`x` and :math:`y` be :math:`(n, 1)` and :math:`(n, 1)` series
     respectively, which each contain :math:`y` observations of the series
@@ -34,7 +34,7 @@ class LjungBox(TimeSeriesTest):
         \mathrm{Ljung-Box}_n (x, y) =  n(n+2)\sum_{j=1}^M \frac{
             \rho^2(x[j:n], y[0:(n-j)])}{n-j}
 
-    where $\rho$ is the Pearson correlation coefficient.
+    where :math:`\rho` is the Pearson correlation coefficient.
     The p-value returned is calculated either via chi-squared distribution or
     using a permutation test.
 

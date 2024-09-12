@@ -39,8 +39,8 @@ Now, let's look at unique properties of some of the tests in :mod:`hyppo.indepen
 """
 
 ########################################################################################
-# Pearson's Correlation Multivariate Variants
-# ---------------------------------------------
+# Cannonical correlation (CCA) and Rank value (RV)
+# ------------------------------------------------
 #
 # **Cannonical correlation (CCA)** and **Rank value (RV)** are multivariate analogues
 # of Pearson's correlation.
@@ -61,7 +61,7 @@ Now, let's look at unique properties of some of the tests in :mod:`hyppo.indepen
 # Otherwise, these tests runs like :ref:`any other test<general indep>`.
 
 ########################################################################################
-# Distance (and Kernel) Based Tests
+# Heller Heller Gorfine (HHG)
 # -----------------------------------
 #
 # A number of tests within :mod:`hyppo.independence` use the concept of inter-sample
@@ -101,7 +101,8 @@ print("Original HHG time: {0:.3g}s".format(hhg_time))
 print("Fast HHG time: {0:.3g}s".format(fast_hhg_time))
 
 ########################################################################################
-# ------------
+# Distance Correlation (Dcorr) and Hilbert Schmidt Independence Criterion (Hsic)
+# -------------------------------------------------------------------------------
 #
 # **Distance Correlation (Dcorr)** is a powerful multivariate independence test based on
 # energy distance.
@@ -162,7 +163,8 @@ print("Fast time (fast statistic chi-square): {0:.3g}s".format(fast_chisq_time))
 # run.
 
 ########################################################################################
-# ------------
+# Multiscale graph correlation (MGC)
+# -----------------------------------
 #
 # **Multiscale graph correlation (MGC)** is a powerful independence test the uses the
 # power of Dcorr
@@ -249,7 +251,7 @@ plt.show()
 # neighbor pair. Since we consider nonlinear data, this is not the case.
 
 ########################################################################################
-# Random Forest Based Tests
+# Kernel mean embedding random forest (KMERF)
 # --------------------------------------------
 #
 # Random-forest based tests exploit the theoretical properties of decision tree based

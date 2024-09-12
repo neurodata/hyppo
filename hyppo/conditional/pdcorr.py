@@ -59,20 +59,24 @@ class PartialDcorr(ConditionalIndependenceTest):
     partial distance covariance is defined as
 
     .. math::
-        \mathrm{PDcov}_n (x, y; z) &= \frac{1}{n(n-3)} \sum_{i\neq j}^n \left(P_{z^\perp}(x)\right)_{i,j} \left(P_{z^\perp}(y)\right)_{i,j}
+        \mathrm{PDcov}_n (x, y; z) = \frac{1}{n(n-3)} \sum_{i\neq j}^n \left(P_{z^\perp}(x)\right)_{i,j} \left(P_{z^\perp}(y)\right)_{i,j}
+
     where
+
     .. math::
-        P_{z^\perp}(x) &= C^x - \frac{(C^x\cdot C^z)}{ C^z \cdot C^z) C^z
+        P_{z^\perp}(x) = C^x - \frac{(C^x\cdot C^z)}{ C^z \cdot C^z) C^z
+
     is the orthogonal proejction of :math:`C^x` onto the subspace orthogonal to :math:`C^z`.
     The partial distance correlation is defined as
 
     .. math::
-        \mathrm{PDcorr}_n (x, y; z) &= \frac{P_{z^\perp}(x)\cdot P_{z^\perp}(y)}{\abs{P_{z^\perp}(x)}\abs{P_{z^\perp}(y)}}
+        \mathrm{PDcorr}_n (x, y; z) = \frac{P_{z^\perp}(x)\cdot P_{z^\perp}(y)}{|P_{z^\perp}(x)} |P_{z^\perp}(y)|}
 
     Equivalently, the partial distance correlation can be also defined as
 
     .. math::
-        \mathrm{CDcorr}_n (x, y; z) &=  \frac{R_{xy} - R_{xz} R_{yz}}{\sqrt{(1 - R_{xz}^2)(1 - R_{yz}^2)}}
+        \mathrm{CDcorr}_n (x, y; z) =  \frac{R_{xy} - R_{xz} R_{yz}}{\sqrt{(1 - R_{xz}^2)(1 - R_{yz}^2)}}
+
     where :math:`R_{xy}` is the unbiased distance correlation between :math:`x` and :math:`y`.
 
     References
@@ -199,7 +203,7 @@ class PartialDcorr(ConditionalIndependenceTest):
 
 
 @jit(nopython=True, cache=True)
-def _pdcov(distx, disty, distz): # pragma: no cover
+def _pdcov(distx, disty, distz):  # pragma: no cover
     """Calculate the PDcov test statistic"""
     N = distx.shape[0]
     denom = N * (N - 3)
@@ -223,7 +227,7 @@ def _pdcov(distx, disty, distz): # pragma: no cover
 
 
 @jit(nopython=True, cache=True)
-def _pdcorr(distx, disty, distz): # pragma: no cover
+def _pdcorr(distx, disty, distz):  # pragma: no cover
     """Calculate the PDcorr test statistic"""
 
     distx = _center_distmat(distx, bias=False)
