@@ -120,11 +120,11 @@ print("p-value: ", pvalue)
 # Below is a linear example where we reject the null hypothesis:
 
 import numpy as np
-from hyppo.conditional import PDcorr
+from hyppo.conditional import PartialDcorr
 from hyppo.tools import linear
 np.random.seed(123456789)
 x, y = linear(100, 1)
-stat, pvalue = PDcorr().test(x, y)
+stat, pvalue = PartialDcorr().test(x, y)
 print("Statistic: ", stat)
 print("p-value: ", pvalue)
 
@@ -146,10 +146,10 @@ print("p-value: ", pvalue)
 # Below is a linear example where we reject the null hypothesis:
 
 import numpy as np
-from hyppo.conditional import CDcorr
+from hyppo.conditional import ConditionalDcorr
 from hyppo.tools import linear
 np.random.seed(123456789)
 x, y = linear(100, 1)
-stat, pvalue = CDcorr().test(x, y)
+stat, pvalue = ConditionalDcorr().test(x, y)
 print("Statistic: ", stat)
 print("p-value: ", pvalue)
