@@ -73,10 +73,6 @@ let's look at unique properties of some of these tests:
 # method has a number of advantages.
 # More details can be found in :class:`hyppo.ksample.KSample`.
 # The following applies to both:
-# 
-# .. note::
-#
-#    This algorithm is currently under review at a peer-reviewed journal.
 #
 # .. note::
 #
