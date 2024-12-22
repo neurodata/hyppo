@@ -63,28 +63,23 @@ class CCA(IndependenceTest):
             The computed CCA statistic.
         """
         # center each matrix
-        centx = x - np.mean(x, axis=0)
-        centy = y - np.mean(y, axis=0)
+        # Standardize the data (zero mean, unit variance)
+        centx = (x - np.mean(x, axis=0)) / np.std(x, axis=0)
+        centy = (y - np.mean(y, axis=0)) / np.std(y, axis=0)
 
-        # calculate covariance and variances for inputs
-        covar = centx.T @ centy
-        varx = centx.T @ centx
-        vary = centy.T @ centy
+        # Covariance matrices
+        covar_xy = np.dot(centx.T, centy)  # Covariance between X and Y
+        covar_xx = np.dot(centx.T, centx)  # Covariance within X
+        covar_yy = np.dot(centy.T, centy)  # Covariance within Y
 
-        # Perform eigen-decomposition of the covariance matrices
-        # For canonical correlation, we solve the generalized eigenvalue problem
-        eigvals_x, eigvecs_x = np.linalg.eig(np.linalg.inv(varx) @ covar @ np.linalg.inv(vary) @ covar.T)
-        eigvals_y, eigvecs_y = np.linalg.eig(np.linalg.inv(vary) @ covar.T @ np.linalg.inv(varx) @ covar)
+        # Solve the generalized eigenvalue problem using SVD
+        u, s, vh = np.linalg.svd(np.linalg.inv(covar_xx) @ covar_xy @ np.linalg.inv(covar_yy) @ covar_xy.T)
 
-        # Canonical correlations are the square roots of the eigenvalues
+        # Canonical correlations are the square roots of singular values
+        canonical_corr = np.sqrt(s)
 
-        canonical_corr_x = np.sqrt(eigvals_x)
-        canonical_corr_y = np.sqrt(eigvals_y)
-        
-        # Take the first canonical correlation (which is the strongest one)
-        stat = max(canonical_corr_x[0], canonical_corr_y[0])
-
-        return stat
+        # Take the first canonical correlation
+        return canonical_corr[0]
 
     def test(self, x, y, reps=1000, workers=1, random_state=None):
         r"""
