@@ -6,7 +6,7 @@ from .base import IndependenceTest
 
 class CCA(IndependenceTest):
     r"""
-    Cannonical Correlation Analysis (CCA) test statistic and p-value.
+    Canonical Correlation Analysis (CCA) test statistic and p-value.
 
     This test can be thought of inferring information from cross-covariance
     matrices :footcite:p:`hardleCanonicalCorrelationAnalysis2015`.
@@ -71,17 +71,18 @@ class CCA(IndependenceTest):
         varx = centx.T @ centx
         vary = centy.T @ centy
 
-        # if 1-d, don't calculate the svd
-        if varx.size == 1 or vary.size == 1 or covar.size == 1:
-            covar = np.sum(covar**2)
-            stat = covar / np.sqrt(np.sum(varx**2) * np.sum(vary**2))
-        else:
-            covar = np.sum(np.linalg.svd(covar, 1)[1] ** 2)
-            stat = covar / np.sqrt(
-                np.sum(np.linalg.svd(varx, 1)[1] ** 2)
-                * np.sum(np.linalg.svd(vary, 1)[1] ** 2)
-            )
-        self.stat = stat
+        # Perform eigen-decomposition of the covariance matrices
+        # For canonical correlation, we solve the generalized eigenvalue problem
+        eigvals_x, eigvecs_x = np.linalg.eig(np.linalg.inv(varx) @ covar @ np.linalg.inv(vary) @ covar.T)
+        eigvals_y, eigvecs_y = np.linalg.eig(np.linalg.inv(vary) @ covar.T @ np.linalg.inv(varx) @ covar)
+
+        # Canonical correlations are the square roots of the eigenvalues
+
+        canonical_corr_x = np.sqrt(eigvals_x)
+        canonical_corr_y = np.sqrt(eigvals_y)
+        
+        # Take the first canonical correlation (which is the strongest one)
+        stat = max(canonical_corr_x[0], canonical_corr_y[0])
 
         return stat
 
