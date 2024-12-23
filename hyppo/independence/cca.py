@@ -6,7 +6,7 @@ from .base import IndependenceTest
 
 class CCA(IndependenceTest):
     r"""
-    Canonical Correlation Analysis (CCA) test statistic and p-value.
+    Cannonical Correlation Analysis (CCA) test statistic and p-value.
 
     This test can be thought of inferring information from cross-covariance
     matrices :footcite:p:`hardleCanonicalCorrelationAnalysis2015`.
@@ -63,24 +63,26 @@ class CCA(IndependenceTest):
             The computed CCA statistic.
         """
         # center each matrix
-        # Standardize the data (zero mean, unit variance)
         centx = x - np.mean(x, axis=0)
         centy = y - np.mean(y, axis=0)
 
-        # Calculate covariance matrices
-        cov_xx = centx.T @ centx / (x.shape[0] - 1)
-        cov_yy = centy.T @ centy / (y.shape[0] - 1)
-        cov_xy = centx.T @ centy / (x.shape[0] - 1)
-        cov_yx = cov_xy.T  # Cross-covariance transpose
+        # calculate covariance and variances for inputs
+        covar = centx.T @ centy
+        varx = centx.T @ centx
+        vary = centy.T @ centy
 
-        # Solve the generalized eigenvalue problem
-        eigvals, _ = np.linalg.eig(np.linalg.inv(cov_xx) @ cov_xy @ np.linalg.inv(cov_yy) @ cov_yx)
+        # if 1-d, don't calculate the svd
+        if varx.size == 1 or vary.size == 1 or covar.size == 1:
+            covar = np.sum(covar**2)
+            stat = covar / np.sqrt(np.sum(varx**2) * np.sum(vary**2))
+        else:
+            covar = np.sum(np.linalg.svd(covar, 1)[1] ** 2)
+            stat = covar / np.sqrt(
+                np.sum(np.linalg.svd(varx, 1)[1] ** 2)
+                * np.sum(np.linalg.svd(vary, 1)[1] ** 2)
+            )
+        self.stat = stat
 
-        # Canonical correlations are the square roots of the eigenvalues (real parts only)
-        canonical_corr = np.sqrt(np.real(eigvals))  # Only eigenvalues are needed
-
-        # Return the strongest canonical correlation
-        stat = np.max(canonical_corr)
         return stat
 
     def test(self, x, y, reps=1000, workers=1, random_state=None):
