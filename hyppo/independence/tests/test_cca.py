@@ -1,41 +1,54 @@
-import unittest
 import numpy as np
+import pytest
+from numpy.testing import assert_almost_equal
+
+from hyppo.tools import joint_normal, linear, power
 from hyppo.independence import CCA
-from sklearn.cross_decomposition import CCA as SklearnCCA
 
 
-class TestCCA(unittest.TestCase):
-    def setUp(self):
-        # Common test setup: Create sample data
-        self.cca = CCA()
-        self.sklearn_cca = SklearnCCA(n_components=1)  # Use only the first canonical correlation
-        self.x = np.random.rand(100, 3)
-        self.y = np.random.rand(100, 3)
+class TestCCAStat:
+    @pytest.mark.parametrize("n", [10, 100, 1000])
+    @pytest.mark.parametrize("obs_stat", [1.0])
+    @pytest.mark.parametrize("obs_pvalue", [1 / 1000])
+    def test_linear_oned(self, n, obs_stat, obs_pvalue):
+        np.random.seed(123456789)
+        x, y = linear(n, 1)
+        stat, pvalue = CCA().test(x, y)
 
-    def test_statistic_correctness(self):
-        # Fit sklearn CCA and calculate the first canonical correlation
-        self.sklearn_cca.fit(self.x, self.y)
-        x_c, y_c = self.sklearn_cca.transform(self.x, self.y)
-        expected_stat = np.corrcoef(x_c.T, y_c.T)[0, 1]  # First canonical correlation
+        assert_almost_equal(stat, obs_stat, decimal=2)
+        assert_almost_equal(pvalue, obs_pvalue, decimal=2)
 
-        # Compute the statistic using the custom implementation
-        stat = self.cca.statistic(self.x, self.y)
+    @pytest.mark.parametrize("n", [100, 1000, 10000])
+    @pytest.mark.parametrize("obs_stat", [0.512, 0.503, 0.486])
+    @pytest.mark.parametrize("obs_pvalue", [1 / 1000])
+    def test_linear_threed(self, n, obs_stat, obs_pvalue):
+        np.random.seed(123456789)
+        x, y = joint_normal(n, 3)
+        stat, pvalue = CCA().test(x, y)
 
-        # Compare the results
-        self.assertAlmostEqual(stat, expected_stat, places=5, msg="Statistic value is incorrect")
+        assert_almost_equal(stat, obs_stat, decimal=1)
+        assert_almost_equal(pvalue, obs_pvalue, decimal=1)
 
-    def test_statistic_with_noise(self):
-        # Add noise to the data and compute the statistic
-        noisy_y = self.y + np.random.normal(0, 0.1, self.y.shape)
-        stat = self.cca.statistic(self.x, noisy_y)
-        self.assertGreater(stat, 0, "Statistic should be greater than zero for correlated inputs")
+    @pytest.mark.parametrize("n", [1000, 10000])
+    def test_rep(self, n):
+        x, y = joint_normal(n, 3)
+        stat, pvalue = CCA().test(x, y, random_state=2)
+        stat2, pvalue2 = CCA().test(x, y, random_state=2)
 
-    def test_statistic_for_unrelated_data(self):
-        # Test with unrelated data
-        unrelated_y = np.random.rand(*self.y.shape)
-        stat = self.cca.statistic(self.x, unrelated_y)
-        self.assertLess(stat, 0.5, "Statistic should be small for uncorrelated inputs")
+        assert stat == stat2
+        assert pvalue == pvalue2
 
 
-if __name__ == "__main__":
-    unittest.main()
+class TestCCATypeIError:
+    def test_oned(self):
+        np.random.seed(123456789)
+        est_power = power(
+            "CCA",
+            sim_type="indep",
+            sim="multimodal_independence",
+            n=1000,
+            p=1,
+            alpha=0.05,
+        )
+
+        assert_almost_equal(est_power, 0.05, decimal=2)
