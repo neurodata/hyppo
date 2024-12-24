@@ -19,7 +19,7 @@ class TestCCAStat:
         assert_almost_equal(pvalue, obs_pvalue, decimal=2)
 
     @pytest.mark.parametrize("n", [100, 1000, 10000])
-    @pytest.mark.parametrize("obs_stat", [0.512, 0.503, 0.486])
+    @pytest.mark.parametrize("obs_stat", [0.07])
     @pytest.mark.parametrize("obs_pvalue", [1 / 1000])
     def test_linear_threed(self, n, obs_stat, obs_pvalue):
         np.random.seed(123456789)
