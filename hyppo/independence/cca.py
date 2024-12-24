@@ -1,7 +1,6 @@
 import numpy as np
-
-from ._utils import _CheckInputs
-from .base import IndependenceTest
+from hyppo.independence._utils import _CheckInputs
+from hyppo.independence.base import IndependenceTest
 
 
 class CCA(IndependenceTest):
@@ -41,10 +40,10 @@ class CCA(IndependenceTest):
             covar = np.sum(np.abs(covar))
             stat = covar / np.sqrt(np.sum(np.abs(varx)) * np.sum(np.abs(vary)))
         else:
-            covar = np.sum(np.linalg.svd(covar, 1)[1] ** 2)
+            covar = np.sum(np.abs(np.linalg.svd(covar, 1)[1]))
             stat = covar / np.sqrt(
-                np.sum(np.linalg.svd(varx, 1)[1] ** 2)
-                * np.sum(np.linalg.svd(vary, 1)[1] ** 2)
+                np.sum(np.abs(np.linalg.svd(varx, 1)[1]))
+                * np.sum(np.abs(np.linalg.svd(vary, 1)[1]))
             )
         self.stat = stat
 
