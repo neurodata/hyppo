@@ -6,6 +6,7 @@ import numpy as np
 import patsy
 from ..tools import contains_nan
 
+
 class _CleanInputsVM:
     """Cleans inputs for VM."""
 
@@ -58,15 +59,15 @@ class _CleanInputsVM:
         try:
             self.unique_treatments = np.unique(self.Ts)
             self.K = len(self.unique_treatments)
-            
+
             self.Ts_factor = pd.Categorical(
-                    self.Ts, categories=self.unique_treatments
-                ).codes
+                self.Ts, categories=self.unique_treatments
+            ).codes
         except Exception as e:
             raise TypeError(
                 f"Cannot cast `Ts' to a categorical treatment vector. Error: {e}"
             )
-        
+
     def generate_formula(self):
         """
         Check if the right-hand side of a patsy formula is valid.
@@ -80,7 +81,9 @@ class _CleanInputsVM:
             self.formula = f"Ts_factor ~ {self.prop_form_rhs}"
             self.Ts_design, self.Xs_design = patsy.dmatrices(
                 self.formula,
-                pd.concat([pd.Series(self.Ts_factor, name="Ts_factor"), self.Xs], axis=1),
+                pd.concat(
+                    [pd.Series(self.Ts_factor, name="Ts_factor"), self.Xs], axis=1
+                ),
                 return_type="dataframe",
             )
         except Exception as e:
@@ -102,9 +105,11 @@ class _CleanInputsVM:
 
         if nt <= 3 or nx <= 3:
             raise ValueError("Number of samples is too low")
-        
+
         if nt != nx:
-            raise ValueError("The number of samples does not match between the covariates `Xs' and the Treatments `Ts'. The number of rows of `Xs' and the number of elements of `Ts' should be equal.")
+            raise ValueError(
+                "The number of samples does not match between the covariates `Xs' and the Treatments `Ts'. The number of rows of `Xs' and the number of elements of `Ts' should be equal."
+            )
 
 
 class VectorMatch(ABC):
@@ -116,7 +121,7 @@ class VectorMatch(ABC):
     Parameters
     ----------
     prop_form_rhs : str, or None, default: None
-        the right-hand side of a formula for a generalized propensity score, an extension of the concept of a propensity score to more than two groups. 
+        the right-hand side of a formula for a generalized propensity score, an extension of the concept of a propensity score to more than two groups.
             - See the documentation for :mod:`statsmodels.discrete.discrete_model.MNLogit` for details on the use of formulas. If a propensity model is specified, anticipates that the covariate matrix specified for the `fit()` method will be a pandas dataframe.
             - Set to `None` to default to a propensity model which includes a single regressor for each column of the covariate matrix.
     retain_ratio: float, default: 0.05
@@ -132,7 +137,7 @@ class VectorMatch(ABC):
     def __init__(self, retain_ratio=0.05, prop_form_rhs=None, ddx=False):
         """
         Initialize the VectorMatcher.
-        
+
         Parameters:
         -----------
         retain_ratio : float, optional
@@ -157,7 +162,7 @@ class VectorMatch(ABC):
     def fit(self, Ts, Xs):
         """
         Fit the vector matching model and identify balanced observations.
-        
+
         Parameters:
         -----------
         Ts : array-like
@@ -170,7 +175,8 @@ class VectorMatch(ABC):
         balance_ids: list of int
           - the positional indices of samples to include for subsequent analysis.
         """
-        self.Ts = Ts; self.Xs = Xs
+        self.Ts = Ts
+        self.Xs = Xs
         self.cleaned_inputs = _CleanInputsVM(
             self.Ts, self.Xs, prop_form_rhs=self.prop_form_rhs
         )
