@@ -116,25 +116,57 @@ class VectorMatch(ABC):
     """
     Vector matching causal data pre-processing.
 
-    A function for implementing the vector matching procedure, a data pre-processing step for K-sample causal discrepancy testing :footcite:p:`Lopez2017Aug`. Uses propensity scores to strategically include/exclude samples from subsequent inference, based on whether (or not) there are samples with similar propensity scores across all treatment levels. Conceptually, this is an algorithmic heuristic for a K-way propensity trimming. Care should be taken to pursue including covariates which conceptually might satisfy the conditional ignorability criterion.
+    A propensity score-based algorithm for pre-processing observational data with multiple
+    treatment groups :footcite:p:`Lopez2017Aug`. The algorithm works as follows:
+
+    1. Estimates generalized propensity scores using multinomial logistic regression
+    2. For each treatment group `k`, identifies the range of propensity scores
+    3. Determines the overlapping region of propensity scores across all groups
+    4. Retains only observations that fall within the common support region
+
+    This effectively removes observations without comparable matches in other treatment
+    groups, improving covariate balance for downstream causal inference.
 
     Parameters
     ----------
-    prop_form_rhs : str, or None, default: None
-        the right-hand side of a formula for a generalized propensity score, an extension of the concept of a propensity score to more than two groups.
-            - See the documentation for :mod:`statsmodels.discrete.discrete_model.MNLogit` for details on the use of formulas. If a propensity model is specified, anticipates that the covariate matrix specified for the `fit()` method will be a pandas dataframe.
-            - Set to `None` to default to a propensity model which includes a single regressor for each column of the covariate matrix.
     retain_ratio: float, default: 0.05
-        If the number of samples retained is less than `retain_ratio`, throws a warning. Defaults to `0.05`.
-    ddx : bool, optional, default: False
-        Whether to print debugging information for model fitting. Defaults to `False`.
+        If the number of samples retained is less than `retain_ratio`, throws a warning.
+
+    Attributes
+    ----------
+    balanced_ids : array-like
+        Indices of observations that are retained after vector matching.
+    model : statsmodels.MNLogit
+        Fitted multinomial logistic regression model.
+    pred_probs : pandas.DataFrame
+        Predicted probabilities from the propensity model.
+    Rtable : numpy.ndarray
+        Table of propensity score ranges for each treatment group.
+    is_fitted : bool
+        Whether the model has been fitted.
+    retain_ratio : float
+        Minimum proportion of samples that should be retained.
+    prop_form_rhs : str or None
+        Formula used for propensity score estimation.
+    ddx : bool
+        Whether debugging information was displayed during fitting.
+    cleaned_inputs : _CleanInputsVM
+        Processed input data used for model fitting.
+    unique_treatments : array-like
+        Unique treatment values found in the data.
+
+    Notes
+    -----
+    Vector matching can be viewed as a K-way extension of propensity score
+    trimming, removing observations where treatment groups do not overlap
+    in their covariate distributions.
 
     References
     ----------
     .. footbibliography::
     """
 
-    def __init__(self, retain_ratio=0.05, prop_form_rhs=None, ddx=False):
+    def __init__(self, retain_ratio=0.05):
         """
         Initialize the VectorMatcher.
 
@@ -142,16 +174,9 @@ class VectorMatch(ABC):
         -----------
         retain_ratio : float, optional
             Minimum proportion of samples to retain
-        prop_form : str, optional
-            Formula for propensity score model (patsy formula syntax for RHS)
-        ddx : bool, optional
-            Whether to print debugging information
-        reference : any, optional
-            Reference level for treatment (not used in current implementation)
         """
         self.retain_ratio = retain_ratio
-        self.prop_form_rhs = prop_form_rhs
-        self.ddx = ddx
+        self.is_fitted = False
         self.balanced_ids = None
         self.model = None
         self.pred_probs = None
@@ -159,7 +184,7 @@ class VectorMatch(ABC):
         self.unique_treatments = None
         self.cleaned_inputs = None
 
-    def fit(self, Ts, Xs):
+    def fit(self, Ts, Xs, prop_form_rhs=None, ddx=False, niter=100):
         """
         Fit the vector matching model and identify balanced observations.
 
@@ -169,70 +194,107 @@ class VectorMatch(ABC):
             Treatment assignment vector, where entries are one of K-possible treatment indicators. Should have a shape castable to an ``n'' vector, where ``n'' is the number of samples.
         Xs : pandas DataFrame or array-like
             Covariates/features matrix, as an array. Should have a shape ``(n, r)``, where ``n`` is the number of samples, and ``r`` is the number of covariates.
+        prop_form_rhs : str, or None, default: None
+            the right-hand side of a formula for a generalized propensity score, an extension of the concept of a propensity score to more than two groups.
+                - See the documentation for :mod:`statsmodels.discrete.discrete_model.MNLogit` for details on the use of formulas. If a propensity model is specified, anticipates that the covariate matrix specified for the `fit()` method will be a pandas dataframe.
+                - Set to `None` to default to a propensity model which includes a single regressor for each column of the covariate matrix.
+        ddx : bool, optional, default: False
+            Whether to print diagnostic debugging information for model fitting.
+        niter : int, optional, default: 100
+            The number of iterations for the multinomial logit model.
 
         Returns:
         --------
         balance_ids: list of int
-          - the positional indices of samples to include for subsequent analysis.
+        - the positional indices of samples to include for subsequent analysis.
         """
-        self.Ts = Ts
-        self.Xs = Xs
-        self.cleaned_inputs = _CleanInputsVM(
-            self.Ts, self.Xs, prop_form_rhs=self.prop_form_rhs
-        )
+        if self.is_fitted:
+            raise ValueError(
+                "This VectorMatch instance has already been fit. "
+                "Create a new instance for a new dataset."
+            )
+
+        # Process inputs
+        try:
+            cleaned_inputs = _CleanInputsVM(Ts, Xs, prop_form_rhs=prop_form_rhs)
+        except Exception as e:
+            raise ValueError(f"Failed to clean inputs: {str(e)}") from e
 
         # Fit the multinomial logit model
-        self.model = MNLogit(
-            self.cleaned_inputs.Ts_design, self.cleaned_inputs.Xs_design
-        )
-        if self.ddx:
-            result = self.model.fit(disp=True)
-        else:
-            result = self.model.fit(disp=False)
+        try:
+            model = MNLogit(cleaned_inputs.Ts_design, cleaned_inputs.Xs_design)
+            if ddx:
+                result = model.fit(disp=True, maxiter=niter)
+            else:
+                result = model.fit(disp=False, maxiter=niter)
+        except Exception as e:
+            raise ValueError(f"Failed to fit propensity model: {str(e)}") from e
 
-        # Make predictions
-        self.pred_probs = result.predict()
+        # Get predictions
+        try:
+            pred_probs = result.predict()
+            pred_probs = pd.DataFrame(
+                pred_probs, columns=[str(t) for t in range(cleaned_inputs.K)]
+            )
+        except Exception as e:
+            raise ValueError(
+                f"Failed to generate propensity score predictions: {str(e)}"
+            ) from e
 
-        # Convert to DataFrame for easier handling
-        self.pred_probs = pd.DataFrame(
-            self.pred_probs, columns=[str(t) for t in range(self.cleaned_inputs.K)]
-        )
+        # Identify overlapping regions
+        try:
+            Rtable = np.zeros((cleaned_inputs.K, 2))
+            for i, t in enumerate(cleaned_inputs.unique_treatments):
+                t_idx = np.where(Ts == t)[0]
+                for j in range(cleaned_inputs.K):
+                    # Min and max probabilities for treatment t when actual treatment is j
+                    min_prob = np.min(pred_probs.iloc[t_idx, j])
+                    max_prob = np.max(pred_probs.iloc[t_idx, j])
 
-        # Create Rtable to store the range of predicted probabilities for each treatment
-        self.Rtable = np.zeros((self.cleaned_inputs.K, 2))
-        for i, t in enumerate(self.cleaned_inputs.unique_treatments):
-            t_idx = np.where(Ts == t)[0]
-            for j in range(self.cleaned_inputs.K):
-                # Min and max probabilities for treatment t when actual treatment is j
-                min_prob = np.min(self.pred_probs.iloc[t_idx, j])
-                max_prob = np.max(self.pred_probs.iloc[t_idx, j])
+                    # Update Rtable with max of mins and min of maxes
+                    Rtable[j, 0] = max(Rtable[j, 0], min_prob)
+                    Rtable[j, 1] = min(
+                        Rtable[j, 1] if Rtable[j, 1] > 0 else float("inf"),
+                        max_prob,
+                    )
+        except Exception as e:
+            raise ValueError(f"Failed to calculate overlap regions: {str(e)}") from e
 
-                # Update Rtable with max of mins and min of maxes
-                self.Rtable[j, 0] = max(self.Rtable[j, 0], min_prob)
-                self.Rtable[j, 1] = min(
-                    self.Rtable[j, 1] if self.Rtable[j, 1] > 0 else float("inf"),
-                    max_prob,
-                )
-
-        # Check balance condition for each observation and each treatment
-        self.balanced_ids = []
-        for i in range(len(Ts)):
-            is_balanced = True
-            for j in range(self.cleaned_inputs.K):
-                if not (
-                    self.pred_probs.iloc[i, j] >= self.Rtable[j, 0]
-                    and self.pred_probs.iloc[i, j] <= self.Rtable[j, 1]
-                ):
-                    is_balanced = False
-                    break
-            if is_balanced:
-                self.balanced_ids.append(i)
+        # Identify balanced observations
+        try:
+            balanced_ids = []
+            for i in range(len(Ts)):
+                is_balanced = True
+                for j in range(cleaned_inputs.K):
+                    if not (
+                        pred_probs.iloc[i, j] >= Rtable[j, 0]
+                        and pred_probs.iloc[i, j] <= Rtable[j, 1]
+                    ):
+                        is_balanced = False
+                        break
+                if is_balanced:
+                    balanced_ids.append(i)
+        except Exception as e:
+            raise ValueError(f"Failed to identify balanced observations: {str(e)}") from e
 
         # Check if enough samples are retained
-        if len(self.balanced_ids) < self.retain_ratio * len(Ts):
-            warnings.warn("Few samples retained by vector matching.")
+        if len(balanced_ids) < self.retain_ratio * len(Ts):
+            percentage = 100 * len(balanced_ids) / len(Ts)
+            warnings.warn(
+                f"Few samples retained by vector matching ({len(balanced_ids)} out of {len(Ts)}, {percentage:.1f}%)."
+            )
 
-        if len(self.balanced_ids) == 0:
+        if len(balanced_ids) == 0:
             raise ValueError("No samples retained by vector matching.")
 
-        return self.balanced_ids
+        # set attributes after successful rfitting
+        self.prop_form_rhs = prop_form_rhs
+        self.ddx = ddx
+        self.cleaned_inputs = cleaned_inputs
+        self.model = model
+        self.pred_probs = pred_probs
+        self.Rtable = Rtable
+        self.balanced_ids = balanced_ids
+        self.is_fitted = True
+
+        return balanced_ids

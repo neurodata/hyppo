@@ -5,9 +5,8 @@ import warnings
 from scipy.stats import gaussian_kde
 import pandas as pd
 
-from .. import CATE_SIMULATIONS, cate_sim
+from .. import CATE_SIMULATIONS, cate_sim, simulate_covars
 from .. import VectorMatch, _CleanInputsVM
-
 
 class TestCleanInputsVM:
     """Test the input cleaning and validation directly"""
@@ -212,13 +211,9 @@ class TestCleanInputsVM:
             # Check that encoded value matches the category index
             assert np.all(cleaner.Ts_factor[original_indices] == i)
 
-
 def approx_overlap(X1, X2, nbreaks=100):
     """
     Calculate approximate overlap between two distributions using KDE.
-
-    This is a Python conversion of the R function in the original tests.
-    For Python, we'll use scipy.stats.gaussian_kde instead of R's kde function.
     """
     xbreaks = np.linspace(-1, 1, nbreaks)
     x1_dens = gaussian_kde(X1.reshape(-1))(xbreaks)
@@ -236,11 +231,11 @@ class TestVectorMatch:
 
     def test_initialization(self):
         """Test initialization and that things are what we expect."""
-        rng = np.random.RandomState(123456789)
         vm = VectorMatch(retain_ratio=0.1)
-        assert vm.prop_form_rhs is None
         assert vm.retain_ratio == 0.1
-        assert vm.ddx is False
+        assert vm.is_fitted is False
+        assert vm.balanced_ids is None
+        assert vm.model is None
 
     def test_vector_matching_with_one_oddball_per_group(self):
         """Test vector matching correctly excludes outliers."""
@@ -332,6 +327,51 @@ class TestVectorMatch:
 
         with pytest.raises(ValueError):
             VectorMatch(retain_ratio=0).fit(sim_low["Ts"], sim_low["Xs"])
+            
+    def test_is_fitted_flag(self):
+        """Test that is_fitted flag is properly set after fitting."""
+        rng = np.random.RandomState(123456789)
+        sim = cate_sim("Sigmoidal", n=200, p=1, balance=0.5, random_state=rng)
+        
+        vm = VectorMatch()
+        assert vm.is_fitted is False
+        
+        vm.fit(sim["Ts"], sim["Xs"])
+        assert vm.is_fitted is True
+        
+        # Test that attempting to fit again raises an error
+        with pytest.raises(ValueError, match="already been fit"):
+            vm.fit(sim["Ts"], sim["Xs"])
+
+    def test_propensity_formula_parameter(self):
+        """Test that prop_form_rhs parameter works correctly when passed to fit."""
+        rng = np.random.RandomState(123456789)
+        
+        # Generate base simulation
+        sim = cate_sim("Sigmoidal", n=200, p=1, balance=0.5, random_state=rng)
+        
+        # Generate additional covariates using the same treatment assignments
+        X1 = simulate_covars(sim["Ts"], balance=0.7, random_state=rng)
+        X2 = simulate_covars(sim["Ts"], balance=0.9, random_state=rng)
+        
+        # Create DataFrame with multiple columns
+        Xs_df = pd.DataFrame({
+            "X0": sim["Xs"].flatten(),
+            "X1": X1.flatten(),
+            "X2": X2.flatten()
+        })
+        
+        # Create a formula that uses all three columns
+        formula = "X0 + np.log(X1 + 1) + X2"
+        
+        vm = VectorMatch()
+        vm.fit(sim["Ts"], Xs_df, prop_form_rhs=formula)
+        
+        # Check that the formula was stored
+        assert vm.prop_form_rhs == formula
+        
+        # Verify the formula made it through to the cleaned_inputs
+        assert formula in vm.cleaned_inputs.formula
 
     def test_vm_increases_covariate_overlap(self):
         """Test that VM increases covariate overlap between groups."""
@@ -367,15 +407,16 @@ class TestVectorMatch:
         )
 
         # Run vector matching on both datasets
-        vm = VectorMatch(retain_ratio=0.2)
+        vm_low = VectorMatch(retain_ratio=0.2)
+        vm_high = VectorMatch(retain_ratio=0.2)
 
         # Process low balance data
-        retained_ids_low = vm.fit(sim_low_balance["Ts"], sim_low_balance["Xs"])
+        retained_ids_low = vm_low.fit(sim_low_balance["Ts"], sim_low_balance["Xs"])
         Ts_tilde_low = sim_low_balance["Ts"][retained_ids_low]
         Xs_tilde_low = sim_low_balance["Xs"][retained_ids_low]
 
         # Process high balance data
-        retained_ids_high = vm.fit(sim_high_balance["Ts"], sim_high_balance["Xs"])
+        retained_ids_high = vm_high.fit(sim_high_balance["Ts"], sim_high_balance["Xs"])
         Ts_tilde_high = sim_high_balance["Ts"][retained_ids_high]
         Xs_tilde_high = sim_high_balance["Xs"][retained_ids_high]
 
