@@ -275,7 +275,9 @@ class VectorMatch(ABC):
                 if is_balanced:
                     balanced_ids.append(i)
         except Exception as e:
-            raise ValueError(f"Failed to identify balanced observations: {str(e)}") from e
+            raise ValueError(
+                f"Failed to identify balanced observations: {str(e)}"
+            ) from e
 
         # Check if enough samples are retained
         if len(balanced_ids) < self.retain_ratio * len(Ts):

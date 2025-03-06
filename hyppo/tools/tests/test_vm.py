@@ -8,6 +8,7 @@ import pandas as pd
 from .. import CATE_SIMULATIONS, cate_sim, simulate_covars
 from .. import VectorMatch, _CleanInputsVM
 
+
 class TestCleanInputsVM:
     """Test the input cleaning and validation directly"""
 
@@ -211,6 +212,7 @@ class TestCleanInputsVM:
             # Check that encoded value matches the category index
             assert np.all(cleaner.Ts_factor[original_indices] == i)
 
+
 def approx_overlap(X1, X2, nbreaks=100):
     """
     Calculate approximate overlap between two distributions using KDE.
@@ -327,49 +329,83 @@ class TestVectorMatch:
 
         with pytest.raises(ValueError):
             VectorMatch(retain_ratio=0).fit(sim_low["Ts"], sim_low["Xs"])
-            
+
     def test_is_fitted_flag(self):
         """Test that is_fitted flag is properly set after fitting."""
         rng = np.random.RandomState(123456789)
         sim = cate_sim("Sigmoidal", n=200, p=1, balance=0.5, random_state=rng)
-        
+
         vm = VectorMatch()
         assert vm.is_fitted is False
-        
+
         vm.fit(sim["Ts"], sim["Xs"])
         assert vm.is_fitted is True
-        
+
         # Test that attempting to fit again raises an error
         with pytest.raises(ValueError, match="already been fit"):
             vm.fit(sim["Ts"], sim["Xs"])
 
-    def test_propensity_formula_parameter(self):
-        """Test that prop_form_rhs parameter works correctly when passed to fit."""
+    def test_multicol_numpy_array(self):
+        """Test vector matching with a multi-column numpy array without formulas."""
         rng = np.random.RandomState(123456789)
-        
+
         # Generate base simulation
         sim = cate_sim("Sigmoidal", n=200, p=1, balance=0.5, random_state=rng)
-        
+
         # Generate additional covariates using the same treatment assignments
         X1 = simulate_covars(sim["Ts"], balance=0.7, random_state=rng)
         X2 = simulate_covars(sim["Ts"], balance=0.9, random_state=rng)
-        
+
+        # Create multi-column numpy array
+        Xs_array = np.column_stack([sim["Xs"].flatten(), X1.flatten(), X2.flatten()])
+
+        # Verify shape
+        assert Xs_array.shape == (200, 3)
+
+        # Fit vector matching without specifying a formula
+        vm = VectorMatch()
+        retained_ids = vm.fit(sim["Ts"], Xs_array)
+
+        # Verify fitting succeeded
+        assert vm.is_fitted
+        assert isinstance(retained_ids, list)
+        assert len(retained_ids) > 0
+
+        # Verify internal representation converted array to DataFrame
+        assert isinstance(vm.cleaned_inputs.Xs, pd.DataFrame)
+        assert vm.cleaned_inputs.Xs.shape[1] == 3
+
+        # Column names should be automatically generated
+        assert list(vm.cleaned_inputs.Xs.columns) == ["X0", "X1", "X2"]
+
+        # Default formula should include all columns
+        assert "X0 + X1 + X2" in vm.cleaned_inputs.formula
+
+    def test_propensity_formula_parameter(self):
+        """Test that prop_form_rhs parameter works correctly when passed to fit."""
+        rng = np.random.RandomState(123456789)
+
+        # Generate base simulation
+        sim = cate_sim("Sigmoidal", n=200, p=1, balance=0.5, random_state=rng)
+
+        # Generate additional covariates using the same treatment assignments
+        X1 = simulate_covars(sim["Ts"], balance=0.7, random_state=rng)
+        X2 = simulate_covars(sim["Ts"], balance=0.9, random_state=rng)
+
         # Create DataFrame with multiple columns
-        Xs_df = pd.DataFrame({
-            "X0": sim["Xs"].flatten(),
-            "X1": X1.flatten(),
-            "X2": X2.flatten()
-        })
-        
+        Xs_df = pd.DataFrame(
+            {"X0": sim["Xs"].flatten(), "X1": X1.flatten(), "X2": X2.flatten()}
+        )
+
         # Create a formula that uses all three columns
         formula = "X0 + np.log(X1 + 1) + X2"
-        
+
         vm = VectorMatch()
         vm.fit(sim["Ts"], Xs_df, prop_form_rhs=formula)
-        
+
         # Check that the formula was stored
         assert vm.prop_form_rhs == formula
-        
+
         # Verify the formula made it through to the cleaned_inputs
         assert formula in vm.cleaned_inputs.formula
 
