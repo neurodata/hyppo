@@ -6,13 +6,22 @@ from scipy.stats.distributions import chi2
 from sklearn.metrics import pairwise_distances
 from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.utils import check_random_state
-
+import pandas as pd
 
 # Explicitly copying private function from scipy 1.7.3
 # Modified to only use nan_policy 'raise'
 # REF: https://github.com/scipy/scipy/blob/59e6539cf80dc04b16b0f0ab52343381f0a7a2fa/scipy/stats/stats.py#L79
+# updated to work for pandas dataframes and series
 def contains_nan(a):
     nan_policy = "raise"
+    
+    # Special handling for pandas DataFrame and Series
+    if isinstance(a, (pd.DataFrame, pd.Series)):
+        contains_nan_var = a.isna().any().any()
+        if contains_nan_var:
+            raise ValueError("The input contains nan values")
+        return contains_nan_var, nan_policy
+    
     try:
         # Calling np.sum to avoid creating a huge array into memory
         # e.g. np.isnan(a).any()
@@ -39,6 +48,7 @@ def contains_nan(a):
         raise ValueError("The input contains nan values")
 
     return contains_nan_var, nan_policy
+
 
 
 def check_ndarray_xy(x, y):
