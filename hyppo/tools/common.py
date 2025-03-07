@@ -8,20 +8,21 @@ from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.utils import check_random_state
 import pandas as pd
 
+
 # Explicitly copying private function from scipy 1.7.3
 # Modified to only use nan_policy 'raise'
 # REF: https://github.com/scipy/scipy/blob/59e6539cf80dc04b16b0f0ab52343381f0a7a2fa/scipy/stats/stats.py#L79
 # updated to work for pandas dataframes and series
 def contains_nan(a):
     nan_policy = "raise"
-    
+
     # Special handling for pandas DataFrame and Series
     if isinstance(a, (pd.DataFrame, pd.Series)):
         contains_nan_var = a.isna().any().any()
         if contains_nan_var:
             raise ValueError("The input contains nan values")
         return contains_nan_var, nan_policy
-    
+
     try:
         # Calling np.sum to avoid creating a huge array into memory
         # e.g. np.isnan(a).any()
@@ -49,6 +50,7 @@ def contains_nan(a):
 
     return contains_nan_var, nan_policy
 
+
 def check_ndarray_xy(x, y):
     """Check if x or y is an ndarray of float"""
     if not isinstance(x, np.ndarray) or not isinstance(y, np.ndarray):
@@ -64,16 +66,17 @@ def check_ndarray_xyz(x, y, z):
     ):
         raise TypeError("x, y, and z must be ndarrays")
 
+
 def check_min_samples(min_samples=3, **arrays):
     """Check if the number of samples is at least min_samples across all input arrays
-    
+
     Parameters
     ----------
     min_samples : int, default=3
         Minimum number of samples required
     **arrays : dict of array-like
         Named arrays to check, e.g., Ts=self.Ts, Xs=self.Xs
-    
+
     Raises
     ------
     ValueError
@@ -81,29 +84,33 @@ def check_min_samples(min_samples=3, **arrays):
     """
     if not arrays:
         raise ValueError("No arrays provided for sample checking")
-    
+
     # Get the number of samples for each array
     sample_counts = {name: arr.shape[0] for name, arr in arrays.items()}
-    
+
     # Check if any array has fewer than min_samples
     for name, count in sample_counts.items():
         if count < min_samples:
-            raise ValueError(f"Array '{name}' has {count} samples, which is below the minimum of {min_samples}")
-    
+            raise ValueError(
+                f"Array '{name}' has {count} samples, which is below the minimum of {min_samples}"
+            )
+
     # Check if all arrays have the same number of samples
     if len(set(sample_counts.values())) > 1:
-        arrays_info = ", ".join([f"'{name}': {count} samples" for name, count in sample_counts.items()])
+        arrays_info = ", ".join(
+            [f"'{name}': {count} samples" for name, count in sample_counts.items()]
+        )
         raise ValueError(f"Inconsistent number of samples across arrays: {arrays_info}")
+
 
 def check_2d_array(data):
     """Convert data proper dimensions"""
     if data.ndim == 1:
         data = data[:, np.newaxis]
     elif data.ndim != 2:
-        raise ValueError(
-            "Expected a 2-D array, found shape " "{}".format(data.shape)
-        )
+        raise ValueError("Expected a 2-D array, found shape " "{}".format(data.shape))
     return data
+
 
 def check_categorical(data):
     """Cast data to a categorical vector if not already categorical."""
@@ -120,19 +127,16 @@ def check_categorical(data):
             K = len(unique_levels)
         else:
             # Check for empty arrays explicitly
-            if hasattr(data, 'size') and data.size == 0:
+            if hasattr(data, "size") and data.size == 0:
                 raise ValueError("Empty array provided")
-            
+
             unique_levels = np.unique(data)
             K = len(unique_levels)
-            data_factor = pd.Categorical(
-                data, categories=unique_levels
-            ).codes
+            data_factor = pd.Categorical(data, categories=unique_levels).codes
     except Exception as e:
-        raise TypeError(
-            f"Cannot cast to a categorical vector. Error: {e}"
-        )
+        raise TypeError(f"Cannot cast to a categorical vector. Error: {e}")
     return data_factor, unique_levels, K
+
 
 def convert_xy_float64(x, y):
     """Convert x or y to np.float64 (if not already done)"""
@@ -212,16 +216,20 @@ def _check_kernmat(x, y):
             "x and y must be kernel similarity matrices, "
             "{is_sym} symmetric and {one_diag} "
             "ones along the diagonal".format(
-                is_sym="x is not"
-                if not np.array_equal(x, x.T)
-                else "y is not"
-                if not np.array_equal(y, y.T)
-                else "both are",
-                one_diag="x doesn't have"
-                if not np.all((x.diagonal() == 1))
-                else "y doesn't have"
-                if not np.all((y.diagonal() == 1))
-                else "both have",
+                is_sym=(
+                    "x is not"
+                    if not np.array_equal(x, x.T)
+                    else "y is not" if not np.array_equal(y, y.T) else "both are"
+                ),
+                one_diag=(
+                    "x doesn't have"
+                    if not np.all((x.diagonal() == 1))
+                    else (
+                        "y doesn't have"
+                        if not np.all((y.diagonal() == 1))
+                        else "both have"
+                    )
+                ),
             )
         )
 
@@ -304,9 +312,9 @@ def _multi_check_kernmat(*args):
                 "{is_sym} symmetric and {one_diag} "
                 "ones along the diagonal".format(
                     is_sym="is not" if not np.array_equal(x, x.T) else "is",
-                    one_diag="doesn't have"
-                    if not np.all((x.diagonal() == 1))
-                    else "has",
+                    one_diag=(
+                        "doesn't have" if not np.all((x.diagonal() == 1)) else "has"
+                    ),
                 )
             )
 

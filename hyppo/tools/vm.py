@@ -6,6 +6,7 @@ import numpy as np
 import patsy
 from ..tools import contains_nan, check_min_samples, check_2d_array, check_categorical
 
+
 class _CleanInputsVM:
     """
     Cleans inputs for VM.
@@ -20,7 +21,7 @@ class _CleanInputsVM:
         the right-hand side of a formula for a generalized propensity score, an extension of the concept of a propensity score to more than two groups.
             - See the documentation for :mod:`statsmodels.discrete.discrete_model.MNLogit` for details on the use of formulas. If a propensity model is specified, anticipates that the covariate matrix specified for the `fit()` method will be a pandas dataframe.
             - Set to `None` to default to a propensity model which includes a single regressor for each column of the covariate matrix.
-    
+
     Attributes
     ----------
     Ts_factor: pandas series
@@ -37,6 +38,7 @@ class _CleanInputsVM:
     Ts_design: patsy.DesignMatrix
         Design matrix for the treatment variables.
     """
+
     def __init__(self, Ts, Xs, prop_form_rhs=None):
         self.validate_inputs(Ts, Xs, prop_form_rhs=prop_form_rhs)
 
@@ -52,18 +54,17 @@ class _CleanInputsVM:
             Ts_factor, unique_treatments, K = check_categorical(Ts)
         except Exception as e:
             raise ValueError(f"Error checking `Ts'. Error: {e}")
-        
+
         check_min_samples(Ts=Ts, Xs=Xs)
         # check that Xs is a ndarray or pandas dataframe, and
         # remove zero-variance columns if possible
         # generate a formula using user-specified values
         self.Ts_design, self.Xs_design, self.formula = self.generate_formula(
-            Xs_df,
-            Ts_factor,
-            prop_form_rhs
+            Xs_df, Ts_factor, prop_form_rhs
         )
-        
-        self.Xs_df = Xs_df; self.Ts_factor = Ts_factor
+
+        self.Xs_df = Xs_df
+        self.Ts_factor = Ts_factor
         self.unique_treatments = unique_treatments
         self.K = K
 
@@ -105,9 +106,7 @@ class _CleanInputsVM:
             formula = f"Ts ~ {prop_form_rhs}"
             Ts_design, Xs_design = patsy.dmatrices(
                 formula,
-                pd.concat(
-                    [pd.Series(Ts, name="Ts"), Xs], axis=1
-                ),
+                pd.concat([pd.Series(Ts, name="Ts"), Xs], axis=1),
                 return_type="dataframe",
             )
         except Exception as e:
