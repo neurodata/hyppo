@@ -140,6 +140,8 @@ class VectorMatch(ABC):
         Indices of observations that are retained after vector matching.
     model : statsmodels.MNLogit
         Fitted multinomial logistic regression model.
+    model_result : statsmodels.discrete.discrete_model.MNLogitResults
+        Result of model fitting from MNLogit regression.
     pred_probs : pandas.DataFrame
         Predicted probabilities from the propensity model.
     Rtable : numpy.ndarray
@@ -296,6 +298,7 @@ class VectorMatch(ABC):
         self.ddx = ddx
         self.cleaned_inputs = cleaned_inputs
         self.model = model
+        self.model_result = result
         self.pred_probs = pred_probs
         self.Rtable = Rtable
         self.balanced_ids = balanced_ids

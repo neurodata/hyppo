@@ -407,10 +407,24 @@ class TestCleanInputsVM:
     def test_categorical_covariate_design_matrix(self):
         """Test that categorical covariates are properly encoded in the design matrix."""
         # Create a feature matrix with mixed types
-        numeric_feature = np.random.normal(size=self.n_samples)
-        categorical_feature = np.random.choice(
-            ["red", "green", "blue"], size=self.n_samples
+        np.random.seed(12345)
+        n_samples = 100
+
+        # Generate numeric feature
+        numeric_feature = np.random.normal(size=n_samples)
+
+        # Generate categorical feature with 3 levels
+        categorical_feature = np.random.choice(["red", "green", "blue"], size=n_samples)
+
+        # Generate binary treatment influenced by both features
+        # This creates a simple propensity model
+        logits = (
+            0.5 * numeric_feature
+            + 1.0 * (categorical_feature == "red")
+            - 0.5 * (categorical_feature == "green")
         )
+        probs = 1 / (1 + np.exp(-logits))
+        treatments = np.random.binomial(1, probs)
 
         # Convert to DataFrame
         mixed_df = pd.DataFrame(
@@ -418,15 +432,14 @@ class TestCleanInputsVM:
         )
 
         # Initialize with these features
-        cleaner = _CleanInputsVM(self.Ts_binary, mixed_df)
+        cleaner = _CleanInputsVM(treatments, mixed_df)
 
         # Check the design matrix shape - should have columns for:
         # intercept + numeric + (3-1) dummy variables for color
         expected_cols = 1 + 1 + (3 - 1)  # intercept + numeric + (categories-1)
         assert cleaner.Xs_design.shape[1] == expected_cols
 
-        # Check column names - should include "color[T.green]" and "color[T.red]" or similar
-        # (exact format may vary based on patsy's treatment coding)
+        # Check column names
         column_names = cleaner.Xs_design.columns.tolist()
 
         # One column should be the intercept
@@ -437,20 +450,27 @@ class TestCleanInputsVM:
             "numeric" in col for col in column_names
         )
 
-        # There should be dummy variable columns for the categorical feature
-        assert any("color" in col for col in column_names)
+        # Check for dummy variable columns
+        cat_cols = [col for col in column_names if "color" in col]
+        assert len(cat_cols) == 2  # Should be 2 dummies for 3 categories
 
-        # Verify that the categorical feature is being treated as categorical
-        # by checking for dummy variable patterns in the design matrix
-        categorical_cols = [col for col in column_names if "color" in col]
-        assert len(categorical_cols) == 2  # Should be 2 dummies for 3 categories
+        # Verify the dummy coding is correct
+        for i, color in enumerate(mixed_df["color"]):
+            # Skip reference category
+            if color == "blue":  # Assuming 'blue' is reference
+                continue
 
-        # Check that the dummy variables contain only 0s and 1s
-        for col in categorical_cols:
-            values = cleaner.Xs_design[col].unique()
-            assert set(values).issubset(
-                {0, 1}
-            ), f"Column {col} contains values other than 0 and 1"
+            # Find corresponding dummy column
+            dummy_col = next((col for col in cat_cols if color in col), None)
+            assert dummy_col is not None
+
+            # Verify this row has a 1 in the correct dummy column
+            assert cleaner.Xs_design.iloc[i][dummy_col] == 1
+
+            # Verify this row has 0s in other dummy columns
+            for other_col in cat_cols:
+                if other_col != dummy_col:
+                    assert cleaner.Xs_design.iloc[i][other_col] == 0
 
 
 def approx_overlap(X1, X2, nbreaks=100):
@@ -733,72 +753,90 @@ class TestVectorMatch:
             high_improvement > 0
         ), "High balance data should show positive overlap improvement"
 
-    def test_categorical_covariate_design_matrix(self):
-        """Test that categorical covariates are properly encoded in the design matrix."""
-        # Create a feature matrix with mixed types
+    def test_vector_matching_with_categorical_covariates(self):
+        """Test vector matching with a controlled propensity model including categorical covariates."""
         np.random.seed(12345)
-        n_samples = 100
+        n_samples = 1000
 
-        # Generate numeric feature
-        numeric_feature = np.random.normal(size=n_samples)
+        # Generate features with known effect on propensity
+        numeric1 = np.random.normal(size=n_samples)
+        numeric2 = np.random.normal(size=n_samples)
+        categorical = np.random.choice(["A", "B", "C"], size=n_samples)
 
-        # Generate categorical feature with 3 levels
-        categorical_feature = np.random.choice(["red", "green", "blue"], size=n_samples)
-
-        # Generate binary treatment influenced by both features
-        # This creates a simple propensity model
+        # Create a propensity model with known coefficients
         logits = (
-            0.5 * numeric_feature
-            + 1.0 * (categorical_feature == "red")
-            - 0.5 * (categorical_feature == "green")
+            0.5 * numeric1
+            - 0.3 * numeric2
+            + 1.5 * (categorical == "A")
+            + 0.5 * (categorical == "B")
         )
         probs = 1 / (1 + np.exp(-logits))
         treatments = np.random.binomial(1, probs)
 
-        # Convert to DataFrame
-        mixed_df = pd.DataFrame(
-            {"numeric": numeric_feature, "color": categorical_feature}
+        # Create DataFrame with all features
+        Xs_df = pd.DataFrame(
+            {"numeric1": numeric1, "numeric2": numeric2, "category": categorical}
         )
 
-        # Initialize with these features
-        cleaner = _CleanInputsVM(treatments, mixed_df)
+        # Fit vector matching
+        vm = VectorMatch(retain_ratio=0.7)
+        retained_ids = vm.fit(treatments, Xs_df)
 
-        # Check the design matrix shape - should have columns for:
-        # intercept + numeric + (3-1) dummy variables for color
-        expected_cols = 1 + 1 + (3 - 1)  # intercept + numeric + (categories-1)
-        assert cleaner.Xs_design.shape[1] == expected_cols
+        # Verify fitting succeeded
+        assert vm.is_fitted
+        assert isinstance(retained_ids, list)
+        assert len(retained_ids) > 0
 
-        # Check column names
-        column_names = cleaner.Xs_design.columns.tolist()
+        # Check the propensity model coefficients
+        model_params = vm.model_result.params
+        param_names = model_params.index.tolist()
 
-        # One column should be the intercept
-        assert "Intercept" in column_names
+        # Should have intercept and coefficients for category levels
+        assert "Intercept" in param_names
 
-        # One column should be the numeric feature
-        assert "numeric" in column_names or any(
-            "numeric" in col for col in column_names
+        # Check if category levels are present in parameters
+        category_params = [p for p in param_names if "category" in p]
+        assert len(category_params) == 2  # Should have 2 parameters for 3 categories
+
+        # Compare covariate balance before and after matching
+        def categorical_imbalance(treatments, categories):
+            imbalance = 0
+            for cat in ["A", "B", "C"]:
+                prop_t0 = np.mean(categories[treatments == 0] == cat)
+                prop_t1 = np.mean(categories[treatments == 1] == cat)
+                # Add absolute difference to imbalance measure
+                imbalance += abs(prop_t0 - prop_t1)
+            return imbalance
+
+        # Calculate imbalance before matching
+        before_imbalance = categorical_imbalance(treatments, categorical)
+
+        # Calculate imbalance after matching
+        retained_Ts = treatments[retained_ids]
+        retained_cats = categorical[retained_ids]
+        after_imbalance = categorical_imbalance(retained_Ts, retained_cats)
+
+        # Imbalance should decrease after matching
+        assert after_imbalance < before_imbalance, (
+            f"Expected categorical imbalance to decrease after matching. "
+            f"Before: {before_imbalance}, After: {after_imbalance}"
         )
 
-        # There should be dummy variable columns for the categorical feature
-        # Patsy typically creates column names like "color[T.green]"
-        cat_cols = [col for col in column_names if "color" in col]
-        assert len(cat_cols) == 2  # Should be 2 dummies for 3 categories
+        # Also check numeric variables balance
+        def std_mean_diff(treatments, variable):
+            mean_t0 = np.mean(variable[treatments == 0])
+            mean_t1 = np.mean(variable[treatments == 1])
+            pooled_std = np.sqrt(
+                (np.var(variable[treatments == 0]) + np.var(variable[treatments == 1]))
+                / 2
+            )
+            return abs(mean_t0 - mean_t1) / pooled_std if pooled_std > 0 else 0
 
-        # Verify the dummy coding is correct
-        # For each categorical value, check that the corresponding row has correct dummy values
-        for i, color in enumerate(mixed_df["color"]):
-            # Skip reference category
-            if color == "blue":  # Assuming 'blue' is reference
-                continue
+        # Check balance improvement for numeric1
+        before_smd_num1 = std_mean_diff(treatments, numeric1)
+        after_smd_num1 = std_mean_diff(retained_Ts, numeric1[retained_ids])
 
-            # Find corresponding dummy column
-            dummy_col = next((col for col in cat_cols if color in col), None)
-            assert dummy_col is not None
-
-            # Verify this row has a 1 in the correct dummy column
-            assert cleaner.Xs_design.iloc[i][dummy_col] == 1
-
-            # Verify this row has 0s in other dummy columns
-            for other_col in cat_cols:
-                if other_col != dummy_col:
-                    assert cleaner.Xs_design.iloc[i][other_col] == 0
+        assert after_smd_num1 < before_smd_num1, (
+            f"Expected balance to improve for numeric1. "
+            f"Before SMD: {before_smd_num1}, After SMD: {after_smd_num1}"
+        )
