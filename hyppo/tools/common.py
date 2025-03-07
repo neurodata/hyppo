@@ -49,8 +49,6 @@ def contains_nan(a):
 
     return contains_nan_var, nan_policy
 
-
-
 def check_ndarray_xy(x, y):
     """Check if x or y is an ndarray of float"""
     if not isinstance(x, np.ndarray) or not isinstance(y, np.ndarray):
@@ -66,6 +64,75 @@ def check_ndarray_xyz(x, y, z):
     ):
         raise TypeError("x, y, and z must be ndarrays")
 
+def check_min_samples(min_samples=3, **arrays):
+    """Check if the number of samples is at least min_samples across all input arrays
+    
+    Parameters
+    ----------
+    min_samples : int, default=3
+        Minimum number of samples required
+    **arrays : dict of array-like
+        Named arrays to check, e.g., Ts=self.Ts, Xs=self.Xs
+    
+    Raises
+    ------
+    ValueError
+        If any array has fewer than min_samples samples or if arrays have inconsistent sample counts
+    """
+    if not arrays:
+        raise ValueError("No arrays provided for sample checking")
+    
+    # Get the number of samples for each array
+    sample_counts = {name: arr.shape[0] for name, arr in arrays.items()}
+    
+    # Check if any array has fewer than min_samples
+    for name, count in sample_counts.items():
+        if count < min_samples:
+            raise ValueError(f"Array '{name}' has {count} samples, which is below the minimum of {min_samples}")
+    
+    # Check if all arrays have the same number of samples
+    if len(set(sample_counts.values())) > 1:
+        arrays_info = ", ".join([f"'{name}': {count} samples" for name, count in sample_counts.items()])
+        raise ValueError(f"Inconsistent number of samples across arrays: {arrays_info}")
+
+def check_2d_array(data):
+    """Convert data proper dimensions"""
+    if data.ndim == 1:
+        data = data[:, np.newaxis]
+    elif data.ndim != 2:
+        raise ValueError(
+            "Expected a 2-D array, found shape " "{}".format(data.shape)
+        )
+    return data
+
+def check_categorical(data):
+    """Cast data to a categorical vector if not already categorical."""
+    try:
+        # Check if data is already a pandas Categorical
+        if isinstance(data, pd.Categorical):
+            data_factor = data.codes
+            unique_levels = data.categories.to_numpy()
+            K = len(unique_levels)
+        # Check if data is a pandas Series with categorical dtype
+        elif isinstance(data, pd.Series) and pd.api.types.is_categorical_dtype(data):
+            data_factor = data.cat.codes
+            unique_levels = data.cat.categories.to_numpy()
+            K = len(unique_levels)
+        else:
+            # Check for empty arrays explicitly
+            if hasattr(data, 'size') and data.size == 0:
+                raise ValueError("Empty array provided")
+            
+            unique_levels = np.unique(data)
+            K = len(unique_levels)
+            data_factor = pd.Categorical(
+                data, categories=unique_levels
+            ).codes
+    except Exception as e:
+        raise TypeError(
+            f"Cannot cast to a categorical vector. Error: {e}"
+        )
+    return data_factor, unique_levels, K
 
 def convert_xy_float64(x, y):
     """Convert x or y to np.float64 (if not already done)"""

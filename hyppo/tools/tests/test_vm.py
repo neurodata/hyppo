@@ -6,8 +6,184 @@ from scipy.stats import gaussian_kde
 import pandas as pd
 
 from .. import CATE_SIMULATIONS, cate_sim, simulate_covars
+from ..common import check_min_samples, check_2d_array, check_categorical, contains_nan
 from .. import VectorMatch, _CleanInputsVM
 
+class TestCommonFunctions:
+    """Test the utility functions that were refactored out of _CleanInputsVM"""
+
+    def setup_method(self):
+        """Set up test fixtures before each test method is run"""
+        # Create standard test data
+        np.random.seed(12345)
+        self.n_samples = 100
+        self.n_features = 3
+
+        # Create binary treatment
+        self.Ts_binary = np.concatenate([np.zeros(50), np.ones(50)])
+
+        # Create multi-category treatment
+        self.Ts_multi = np.concatenate([np.zeros(30), np.ones(40), np.ones(30) * 2])
+
+        # Create string categorical treatment
+        treatments = ["control", "treatment_A", "treatment_B"]
+        self.Ts_strings = np.array(
+            [treatments[i % len(treatments)] for i in range(self.n_samples)]
+        )
+
+        # Create pandas categorical treatment
+        self.Ts_pandas_cat = pd.Series(
+            pd.Categorical(
+                ["A", "B", "C", "A", "B"] * (self.n_samples // 5),
+                categories=["A", "B", "C"],
+            )
+        )
+
+        # Create feature matrix
+        self.Xs = np.random.normal(size=(self.n_samples, self.n_features))
+
+        # Create pandas version of features
+        self.Xs_df = pd.DataFrame(
+            self.Xs, columns=[f"Feature_{i}" for i in range(self.n_features)]
+        )
+
+    def test_check_min_samples(self):
+        """Test the check_min_samples function"""
+        # Test with arrays having sufficient samples
+        check_min_samples(Ts=self.Ts_binary, Xs=self.Xs)
+        
+        # Test with minimum samples parameter
+        check_min_samples(min_samples=5, Ts=self.Ts_binary, Xs=self.Xs)
+        
+        # Test with arrays having too few samples
+        small_array1 = np.array([1, 2])
+        small_array2 = np.array([3, 4])
+        
+        with pytest.raises(ValueError, match="has 2 samples, which is below the minimum"):
+            check_min_samples(Arr1=small_array1, Arr2=small_array2)
+        
+        # Test with inconsistent sample counts
+        inconsistent_array = np.ones(self.n_samples + 5)
+        
+        with pytest.raises(ValueError, match="Inconsistent number of samples across arrays"):
+            check_min_samples(Ts=self.Ts_binary, Xs_larger=inconsistent_array)
+        
+        # Test with no arrays provided
+        with pytest.raises(ValueError, match="No arrays provided for sample checking"):
+            check_min_samples()
+
+    def test_check_2d_array(self):
+        """Test the check_2d_array function"""
+        # Test with 1D array
+        arr_1d = np.array([1, 2, 3, 4, 5])
+        result_1d = check_2d_array(arr_1d)
+        
+        # Should be converted to 2D
+        assert result_1d.ndim == 2
+        assert result_1d.shape == (5, 1)
+        
+        # Test with 2D array
+        arr_2d = np.array([[1, 2], [3, 4], [5, 6]])
+        result_2d = check_2d_array(arr_2d)
+        
+        # Should remain unchanged
+        assert result_2d.ndim == 2
+        assert result_2d.shape == (3, 2)
+        assert np.array_equal(result_2d, arr_2d)
+        
+        # Test with 3D array
+        arr_3d = np.ones((2, 3, 4))
+        
+        with pytest.raises(ValueError, match="Expected a 2-D array"):
+            check_2d_array(arr_3d)
+
+    def test_check_categorical(self):
+        """Test the check_categorical function with various input types"""
+        # Case 1: Simple numeric array
+        data_factor, unique_levels, K = check_categorical(self.Ts_binary)
+        assert np.array_equal(unique_levels, np.array([0, 1]))
+        assert K == 2
+        assert np.all(np.isin(data_factor, [0, 1]))
+        
+        # Case 2: Numeric array with different data type (float)
+        float_array = np.array([1.5, 2.5, 1.5, 3.5])
+        data_factor, unique_levels, K = check_categorical(float_array)
+        assert np.array_equal(unique_levels, np.array([1.5, 2.5, 3.5]))
+        assert K == 3
+        
+        # Case 3: String array
+        data_factor, unique_levels, K = check_categorical(self.Ts_strings)
+        assert np.array_equal(unique_levels, np.array(['control', 'treatment_A', 'treatment_B']))
+        assert K == 3
+        assert np.all(np.isin(data_factor, [0, 1, 2]))
+        
+        # Case 4: pandas Categorical directly
+        pd_cat = pd.Categorical(["X", "Y", "Z", "X", "Y"], categories=["X", "Y", "Z"])
+        data_factor, unique_levels, K = check_categorical(pd_cat)
+        assert np.array_equal(unique_levels, np.array(['X', 'Y', 'Z']))
+        assert K == 3
+        assert np.all(np.isin(data_factor, [0, 1, 2]))
+        
+        # Case 5: pandas Series with categorical dtype
+        pd_series_cat = pd.Series(pd_cat)
+        data_factor, unique_levels, K = check_categorical(pd_series_cat)
+        assert np.array_equal(unique_levels, np.array(['X', 'Y', 'Z']))
+        assert K == 3
+        assert np.all(np.isin(data_factor, [0, 1, 2]))
+        
+        # Case 6: pandas Series with non-categorical dtype
+        pd_series_regular = pd.Series([10, 20, 30, 10, 20])
+        data_factor, unique_levels, K = check_categorical(pd_series_regular)
+        assert np.array_equal(unique_levels, np.array([10, 20, 30]))
+        assert K == 3
+        
+        # Case 7: pandas Series with string dtype
+        pd_series_str = pd.Series(["apple", "banana", "apple", "cherry"])
+        data_factor, unique_levels, K = check_categorical(pd_series_str)
+        assert np.array_equal(unique_levels, np.array(['apple', 'banana', 'cherry']))
+        assert K == 3
+        
+        # Case 8: pandas Categorical with ordered=True
+        pd_cat_ordered = pd.Categorical(["small", "large", "medium"], 
+                                        categories=["small", "medium", "large"], 
+                                        ordered=True)
+        data_factor, unique_levels, K = check_categorical(pd_cat_ordered)
+        assert np.array_equal(unique_levels, np.array(['small', 'medium', 'large']))
+        assert K == 3
+        
+        with pytest.raises(TypeError):
+            check_categorical(np.array([]))
+                
+        # Case 10: Invalid inputs
+        with pytest.raises(TypeError, match="Cannot cast to a categorical vector"):
+            check_categorical(np.array([[1, 2], [3, 4]]))  # 2D array
+        
+        # Case 11: Non-array input
+        with pytest.raises(TypeError, match="Cannot cast to a categorical vector"):
+            check_categorical("not_an_array")
+
+    def test_contains_nan(self):
+        """Test the contains_nan function"""
+        # Create array without NaNs
+        array_no_nan = np.array([1.0, 2.0, 3.0])
+        
+        # This should not raise an exception
+        contains_nan(array_no_nan)
+        
+        # Create array with NaNs
+        array_with_nan = np.array([1.0, np.nan, 3.0])
+        
+        # This should raise an exception
+        with pytest.raises(ValueError, match="The input contains nan values"):
+            contains_nan(array_with_nan)
+        
+        # Test with pandas DataFrame
+        df_no_nan = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
+        contains_nan(df_no_nan)
+        
+        df_with_nan = pd.DataFrame({'A': [1, 2, 3], 'B': [4, np.nan, 6]})
+        with pytest.raises(ValueError, match="The input contains nan values"):
+            contains_nan(df_with_nan)
 
 class TestCleanInputsVM:
     """Test the input cleaning and validation directly"""
@@ -15,7 +191,7 @@ class TestCleanInputsVM:
     def setup_method(self):
         """Set up test fixtures before each test method is run"""
         # Create standard test data
-        np.random.seed(12345)
+        np.random.seed(123456789)
         self.n_samples = 100
         self.n_features = 3
 
@@ -54,16 +230,16 @@ class TestCleanInputsVM:
 
         # Test with _CleanInputsVM directly
         cleaner = _CleanInputsVM(self.Ts_binary, Xs_1d)
-        assert cleaner.Xs.shape == (self.n_samples, 1)
+        assert cleaner.Xs_df.shape == (self.n_samples, 1)
 
-    def test_nan_detection(self):
+    def test_nan_detection_covariates(self):
         """Test that NaN values in Xs are detected and proper error is raised"""
         # Create features with NaN
         Xs_with_nan = self.Xs.copy()
         Xs_with_nan[10, 0] = np.nan
 
         # Test with _CleanInputsVM directly
-        with pytest.raises(ValueError, match="issue checking `Xs' for NaNs"):
+        with pytest.raises(ValueError, match="Error checking `Xs'. Error: The input contains nan values"):
             cleaner = _CleanInputsVM(self.Ts_binary, Xs_with_nan)
 
     def test_nan_detection_in_treatments(self):
@@ -73,7 +249,7 @@ class TestCleanInputsVM:
         Ts_with_nan[5] = np.nan
 
         # Test with _CleanInputsVM directly
-        with pytest.raises(ValueError, match="issue checking `Ts' for NaNs"):
+        with pytest.raises(ValueError, match="Error checking `Ts'. Error: The input contains nan values"):
             cleaner = _CleanInputsVM(Ts_with_nan, self.Xs)
 
     def test_ts_categorical_conversion(self):
@@ -107,7 +283,7 @@ class TestCleanInputsVM:
         """Test formula generation for propensity model"""
         # Test with default formula
         cleaner = _CleanInputsVM(self.Ts_binary, self.Xs_df)
-        assert cleaner.formula.startswith("Ts_factor ~")
+        assert cleaner.formula.startswith("Ts ~")
         assert "Feature_0" in cleaner.formula
 
         # Test with custom formula
@@ -115,7 +291,7 @@ class TestCleanInputsVM:
         cleaner = _CleanInputsVM(
             self.Ts_binary, self.Xs_df, prop_form_rhs=custom_formula
         )
-        assert cleaner.formula == f"Ts_factor ~ {custom_formula}"
+        assert cleaner.formula == f"Ts ~ {custom_formula}"
 
     def test_design_matrix_construction(self):
         """Test that the design matrix correctly reflects the formula"""
@@ -161,11 +337,11 @@ class TestCleanInputsVM:
     def test_sample_size_validation(self):
         """Test minimum sample size validation"""
         # Create small datasets
-        Ts_small = np.array([0, 1, 0])
-        Xs_small = np.random.normal(size=(3, 2))
+        Ts_small = np.array([0, 1])
+        Xs_small = np.random.normal(size=(2, 2))
 
         # Test with _CleanInputsVM directly
-        with pytest.raises(ValueError, match="Number of samples is too low"):
+        with pytest.raises(ValueError, match="below the minimum of"):
             cleaner = _CleanInputsVM(Ts_small, Xs_small)
 
     def test_sample_count_mismatch(self):
@@ -174,7 +350,7 @@ class TestCleanInputsVM:
         Ts_short = self.Ts_binary[:-5]  # 5 samples fewer than Xs
 
         # Test with _CleanInputsVM directly
-        with pytest.raises(ValueError, match="number of samples does not match"):
+        with pytest.raises(ValueError, match="Inconsistent number of samples"):
             cleaner = _CleanInputsVM(Ts_short, self.Xs)
 
     def test_custom_formula_with_numpy_array(self):
@@ -212,6 +388,49 @@ class TestCleanInputsVM:
             # Check that encoded value matches the category index
             assert np.all(cleaner.Ts_factor[original_indices] == i)
 
+    def test_categorical_covariate_design_matrix(self):
+        """Test that categorical covariates are properly encoded in the design matrix."""
+        # Create a feature matrix with mixed types
+        numeric_feature = np.random.normal(size=self.n_samples)
+        categorical_feature = np.random.choice(['red', 'green', 'blue'], size=self.n_samples)
+        
+        # Convert to DataFrame
+        mixed_df = pd.DataFrame({
+            'numeric': numeric_feature,
+            'color': categorical_feature
+        })
+        
+        # Initialize with these features
+        cleaner = _CleanInputsVM(self.Ts_binary, mixed_df)
+        
+        # Check the design matrix shape - should have columns for:
+        # intercept + numeric + (3-1) dummy variables for color
+        expected_cols = 1 + 1 + (3-1)  # intercept + numeric + (categories-1)
+        assert cleaner.Xs_design.shape[1] == expected_cols
+        
+        # Check column names - should include "color[T.green]" and "color[T.red]" or similar
+        # (exact format may vary based on patsy's treatment coding)
+        column_names = cleaner.Xs_design.columns.tolist()
+        
+        # One column should be the intercept
+        assert 'Intercept' in column_names
+        
+        # One column should be the numeric feature
+        assert 'numeric' in column_names or any('numeric' in col for col in column_names)
+        
+        # There should be dummy variable columns for the categorical feature
+        assert any('color' in col for col in column_names)
+        
+        # Verify that the categorical feature is being treated as categorical
+        # by checking for dummy variable patterns in the design matrix
+        categorical_cols = [col for col in column_names if 'color' in col]
+        assert len(categorical_cols) == 2  # Should be 2 dummies for 3 categories
+        
+        # Check that the dummy variables contain only 0s and 1s
+        for col in categorical_cols:
+            values = cleaner.Xs_design[col].unique()
+            assert set(values).issubset({0, 1}), f"Column {col} contains values other than 0 and 1"
+
 
 def approx_overlap(X1, X2, nbreaks=100):
     """
@@ -230,7 +449,6 @@ def approx_overlap(X1, X2, nbreaks=100):
 
 
 class TestVectorMatch:
-
     def test_initialization(self):
         """Test initialization and that things are what we expect."""
         vm = VectorMatch(retain_ratio=0.1)
@@ -372,11 +590,11 @@ class TestVectorMatch:
         assert len(retained_ids) > 0
 
         # Verify internal representation converted array to DataFrame
-        assert isinstance(vm.cleaned_inputs.Xs, pd.DataFrame)
-        assert vm.cleaned_inputs.Xs.shape[1] == 3
+        assert isinstance(vm.cleaned_inputs.Xs_df, pd.DataFrame)
+        assert vm.cleaned_inputs.Xs_df.shape[1] == 3
 
         # Column names should be automatically generated
-        assert list(vm.cleaned_inputs.Xs.columns) == ["X0", "X1", "X2"]
+        assert list(vm.cleaned_inputs.Xs_df.columns) == ["X0", "X1", "X2"]
 
         # Default formula should include all columns
         assert "X0 + X1 + X2" in vm.cleaned_inputs.formula
@@ -493,3 +711,72 @@ class TestVectorMatch:
         assert (
             high_improvement > 0
         ), "High balance data should show positive overlap improvement"
+
+    def test_categorical_covariate_design_matrix(self):
+        """Test that categorical covariates are properly encoded in the design matrix."""
+        # Create a feature matrix with mixed types
+        np.random.seed(12345)
+        n_samples = 100
+        
+        # Generate numeric feature
+        numeric_feature = np.random.normal(size=n_samples)
+        
+        # Generate categorical feature with 3 levels
+        categorical_feature = np.random.choice(['red', 'green', 'blue'], size=n_samples)
+        
+        # Generate binary treatment influenced by both features
+        # This creates a simple propensity model
+        logits = (
+            0.5 * numeric_feature + 
+            1.0 * (categorical_feature == 'red') - 
+            0.5 * (categorical_feature == 'green')
+        )
+        probs = 1 / (1 + np.exp(-logits))
+        treatments = np.random.binomial(1, probs)
+        
+        # Convert to DataFrame
+        mixed_df = pd.DataFrame({
+            'numeric': numeric_feature,
+            'color': categorical_feature
+        })
+        
+        # Initialize with these features
+        cleaner = _CleanInputsVM(treatments, mixed_df)
+        
+        # Check the design matrix shape - should have columns for:
+        # intercept + numeric + (3-1) dummy variables for color
+        expected_cols = 1 + 1 + (3-1)  # intercept + numeric + (categories-1)
+        assert cleaner.Xs_design.shape[1] == expected_cols
+        
+        # Check column names
+        column_names = cleaner.Xs_design.columns.tolist()
+        
+        # One column should be the intercept
+        assert 'Intercept' in column_names
+        
+        # One column should be the numeric feature
+        assert 'numeric' in column_names or any('numeric' in col for col in column_names)
+        
+        # There should be dummy variable columns for the categorical feature
+        # Patsy typically creates column names like "color[T.green]"
+        cat_cols = [col for col in column_names if 'color' in col]
+        assert len(cat_cols) == 2  # Should be 2 dummies for 3 categories
+        
+        # Verify the dummy coding is correct
+        # For each categorical value, check that the corresponding row has correct dummy values
+        for i, color in enumerate(mixed_df['color']):
+            # Skip reference category
+            if color == 'blue':  # Assuming 'blue' is reference
+                continue
+                
+            # Find corresponding dummy column
+            dummy_col = next((col for col in cat_cols if color in col), None)
+            assert dummy_col is not None
+            
+            # Verify this row has a 1 in the correct dummy column
+            assert cleaner.Xs_design.iloc[i][dummy_col] == 1
+            
+            # Verify this row has 0s in other dummy columns
+            for other_col in cat_cols:
+                if other_col != dummy_col:
+                    assert cleaner.Xs_design.iloc[i][other_col] == 0
