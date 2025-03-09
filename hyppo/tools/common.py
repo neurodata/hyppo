@@ -137,6 +137,7 @@ def check_categorical(data):
         raise TypeError(f"Cannot cast to a categorical vector. Error: {e}")
     return data_factor, unique_levels, K
 
+
 def check_ndarray_or_dataframe(data, col_id):
     """Ensure that data is a pandas dataframe, or can be cast to one."""
     if not isinstance(data, pd.DataFrame):
@@ -146,10 +147,9 @@ def check_ndarray_or_dataframe(data, col_id):
             # Convert to DataFrame with these column names
             data = pd.DataFrame(data, columns=column_names)
         except Exception as e:
-            raise TypeError(
-                f"Cannot cast to a dataframe. Error: {e}"
-            )
+            raise TypeError(f"Cannot cast to a dataframe. Error: {e}")
     return data
+
 
 def convert_xy_float64(x, y):
     """Convert x or y to np.float64 (if not already done)"""
@@ -189,11 +189,11 @@ def check_reps(reps):
 def _check_distmat(*args):
     """Check if every input is a distance matrix."""
     errors = []
-    
+
     for i, mat in enumerate(args):
         is_sym = np.allclose(mat, mat.T)
         has_zero_diag = np.all(mat.diagonal() == 0)
-        
+
         if not is_sym or not has_zero_diag:
             error_msg = (
                 f"Matrix {i+1} must be a distance matrix, "
@@ -202,7 +202,7 @@ def _check_distmat(*args):
                 f"{'' if has_zero_diag else 'does not have zeros along the diagonal'}"
             )
             errors.append(error_msg)
-    
+
     if errors:
         raise ValueError("\n".join(errors))
 
@@ -444,10 +444,10 @@ def compute_dist(*args, metric="euclidean", workers=1, **kwargs):
     """
     if not args:
         raise ValueError("No data matrices provided.")
-        
+
     if not metric:
         metric = "precomputed"
-        
+
     if callable(metric):
         dist_mats = []
         for mat in args:
@@ -461,9 +461,8 @@ def compute_dist(*args, metric="euclidean", workers=1, **kwargs):
             dist_mat = pairwise_distances(mat, metric=metric, n_jobs=workers, **kwargs)
             dist_mats.append(dist_mat)
         dist_matrices = tuple(dist_mats)
-    
-    return dist_matrices
 
+    return dist_matrices
 
 
 def check_perm_blocks(perm_blocks):

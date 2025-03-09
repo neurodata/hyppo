@@ -487,4 +487,3 @@ class TestSingleMatrixFns:
         df_with_nan = pd.DataFrame({"A": [1, 2, 3], "B": [4, np.nan, 6]})
         with pytest.raises(ValueError, match="The input contains nan values"):
             contains_nan(df_with_nan)
-
