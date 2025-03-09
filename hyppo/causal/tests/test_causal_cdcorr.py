@@ -4,6 +4,7 @@ import pytest
 from sklearn.metrics.pairwise import euclidean_distances
 from ..causal_cdcorr import CausalCDcorr
 from ..propensity_model import GeneralisedPropensityModel
+from ...tools import cate_sim
 
 
 class TestCausalCDcorrPreprocess:
@@ -266,3 +267,108 @@ class TestCausalCDcorrPreprocess:
             # Restore original method
             GeneralisedPropensityModel.vector_match = original_vector_match
             GeneralisedPropensityModel._fit = original_fit
+
+
+class TestCausalCDcorrStat:
+    """Test class for the statistical properties of CausalCDcorr"""
+
+    def setup_method(self):
+        """Setup code that runs before each test"""
+        self.n_sims = 50
+
+    def test_statistic_is_informative(self):
+        """Test that the statistic has higher values with greater effects than smaller effects"""
+        np.random.seed(123456789)
+        results = []
+
+        # Generate random seeds for each simulation
+        seeds = np.random.randint(0, 1000000, size=self.n_sims)
+
+        for i in range(self.n_sims):
+            sim_effect = cate_sim(
+                "Sigmoidal", n=100, p=10, balance=0.5, eff_sz=0.5, random_state=seeds[i]
+            )
+            sim_no_effect = cate_sim(
+                "Sigmoidal",
+                n=100,
+                p=10,
+                balance=0.5,
+                eff_sz=0.0,
+                random_state=seeds[i] // 2,
+            )
+
+            effect_stat = CausalCDcorr(compute_distance="euclidean").statistic(
+                sim_effect["Ys"],
+                sim_effect["Ts"],
+                sim_effect["Xs"],
+            )
+            no_effect_stat = CausalCDcorr(compute_distance="euclidean").statistic(
+                sim_no_effect["Ys"],
+                sim_no_effect["Ts"],
+                sim_no_effect["Xs"],
+            )
+            results.append(effect_stat > no_effect_stat)
+        success_rate = np.mean(results)
+        assert success_rate >= 0.9
+
+
+class TestCausalCDcorrTest:
+    """Test class for the behavior of CausalCDcorr for hypothesis testing"""
+
+    def setup_method(self):
+        """Setup code that runs before each test"""
+        self.n_sims = 20
+        self.n_reps = 100
+        self.alpha = 0.1
+
+    def test_statistical_power_under_alt(self):
+        """Test that the test reliably detects effects when they exist"""
+        np.random.seed(123456789)
+        seeds = np.random.randint(0, 1000000, size=self.n_sims)
+        effect_rejections = []
+
+        for i in range(self.n_sims):
+            # Generate data with effect
+            sim_effect = cate_sim(
+                "Sigmoidal", n=100, p=2, balance=0.5, eff_sz=0.5, random_state=seeds[i]
+            )
+
+            _, effect_pval = CausalCDcorr(compute_distance="euclidean").test(
+                sim_effect["Ys"],
+                sim_effect["Ts"],
+                sim_effect["Xs"],
+                reps=self.n_reps,
+                random_state=seeds[i],
+            )
+            effect_rejections.append(effect_pval < self.alpha)
+
+        # Calculate power
+        power = np.mean(effect_rejections)
+
+        assert power >= 0.8
+
+    def test_statistical_power_under_null(self):
+        """Test that the test fails to reject at approx alpha under null"""
+        np.random.seed(123456789)
+        seeds = np.random.randint(0, 1000000, size=self.n_sims)
+        effect_rejections = []
+
+        for i in range(self.n_sims):
+            # Generate data with effect
+            sim_effect = cate_sim(
+                "Sigmoidal", n=100, p=2, balance=0.5, eff_sz=0, random_state=seeds[i]
+            )
+
+            _, effect_pval = CausalCDcorr(compute_distance="euclidean").test(
+                sim_effect["Ys"],
+                sim_effect["Ts"],
+                sim_effect["Xs"],
+                reps=self.n_reps,
+                random_state=seeds[i],
+            )
+            effect_rejections.append(effect_pval < self.alpha)
+
+        # Calculate power
+        power = np.mean(effect_rejections)
+
+        assert power <= self.alpha * 1.5
