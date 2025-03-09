@@ -6,7 +6,7 @@ from scipy.stats import gaussian_kde
 import pandas as pd
 
 from ...tools import CATE_SIMULATIONS, cate_sim, simulate_covars
-from .._utils import _CleanInputsPM
+from ..cleaners import CleanInputsPM
 from ..propensity_model import GeneralisedPropensityModel
 
 
@@ -53,8 +53,8 @@ class TestCleanInputsPM:
         # Create 1D feature array
         Xs_1d = np.random.normal(size=self.n_samples)
 
-        # Test with _CleanInputsPM directly
-        cleaner = _CleanInputsPM(self.Ts_binary, Xs_1d)
+        # Test with CleanInputsPM directly
+        cleaner = CleanInputsPM(self.Ts_binary, Xs_1d)
         assert cleaner.Xs_df.shape == (self.n_samples, 1)
 
     def test_nan_detection_covariates(self):
@@ -63,12 +63,12 @@ class TestCleanInputsPM:
         Xs_with_nan = self.Xs.copy()
         Xs_with_nan[10, 0] = np.nan
 
-        # Test with _CleanInputsPM directly
+        # Test with CleanInputsPM directly
         with pytest.raises(
             ValueError,
             match="Error checking `Xs'. Error: The input contains nan values",
         ):
-            cleaner = _CleanInputsPM(self.Ts_binary, Xs_with_nan)
+            cleaner = CleanInputsPM(self.Ts_binary, Xs_with_nan)
 
     def test_nan_detection_in_treatments(self):
         """Test that NaN values in Ts are detected and proper error is raised"""
@@ -76,50 +76,51 @@ class TestCleanInputsPM:
         Ts_with_nan = self.Ts_binary.copy()
         Ts_with_nan[5] = np.nan
 
-        # Test with _CleanInputsPM directly
+        # Test with CleanInputsPM directly
         with pytest.raises(
             ValueError,
             match="Error checking `Ts'. Error: The input contains nan values",
         ):
-            cleaner = _CleanInputsPM(Ts_with_nan, self.Xs)
+            cleaner = CleanInputsPM(Ts_with_nan, self.Xs)
 
     def test_ts_categorical_conversion(self):
         """Test that treatments are properly converted to categorical"""
         # Test binary treatment
-        cleaner = _CleanInputsPM(self.Ts_binary, self.Xs)
-        assert_equal(cleaner.unique_treatments, np.array([0, 1]))
+        cleaner = CleanInputsPM(self.Ts_binary, self.Xs)
+        assert set(cleaner.treatment_maps["value_to_code"].keys()) == {0, 1}
         assert cleaner.K == 2
 
         # Test multi-category treatment
-        cleaner = _CleanInputsPM(self.Ts_multi, self.Xs)
-        assert_equal(cleaner.unique_treatments, np.array([0, 1, 2]))
+        cleaner = CleanInputsPM(self.Ts_multi, self.Xs)
+        assert set(cleaner.treatment_maps["value_to_code"].keys()) == {0, 1, 2}
         assert cleaner.K == 3
 
         # Test string categorical treatments
-        cleaner = _CleanInputsPM(self.Ts_strings, self.Xs)
-        assert_equal(
-            cleaner.unique_treatments,
-            np.array(["control", "treatment_A", "treatment_B"]),
-        )
+        cleaner = CleanInputsPM(self.Ts_strings, self.Xs)
+        assert set(cleaner.treatment_maps["value_to_code"].keys()) == {
+            "control",
+            "treatment_A",
+            "treatment_B",
+        }
         assert cleaner.K == 3
         # Check that string treatments are properly encoded as numbers
         assert np.all(np.isin(cleaner.Ts_factor, [0, 1, 2]))
 
         # Test pandas categorical Series
-        cleaner = _CleanInputsPM(self.Ts_pandas_cat, self.Xs)
-        assert_equal(cleaner.unique_treatments, np.array(["A", "B", "C"]))
+        cleaner = CleanInputsPM(self.Ts_pandas_cat, self.Xs)
+        assert set(cleaner.treatment_maps["value_to_code"].keys()) == {"A", "B", "C"}
         assert cleaner.K == 3
 
     def test_propensity_formula_generation(self):
         """Test formula generation for propensity model"""
         # Test with default formula
-        cleaner = _CleanInputsPM(self.Ts_binary, self.Xs_df)
+        cleaner = CleanInputsPM(self.Ts_binary, self.Xs_df)
         assert cleaner.formula.startswith("Ts ~")
         assert "Feature_0" in cleaner.formula
 
         # Test with custom formula
         custom_formula = "Feature_0 + np.log(Feature_1)"
-        cleaner = _CleanInputsPM(
+        cleaner = CleanInputsPM(
             self.Ts_binary, self.Xs_df, prop_form_rhs=custom_formula
         )
         assert cleaner.formula == f"Ts ~ {custom_formula}"
@@ -127,7 +128,7 @@ class TestCleanInputsPM:
     def test_design_matrix_construction(self):
         """Test that the design matrix correctly reflects the formula"""
         # Test with default formula (all features included)
-        cleaner = _CleanInputsPM(self.Ts_binary, self.Xs_df)
+        cleaner = CleanInputsPM(self.Ts_binary, self.Xs_df)
 
         # The design matrix should have an intercept column + all feature columns
         expected_cols = self.n_features + 1  # +1 for intercept
@@ -148,7 +149,7 @@ class TestCleanInputsPM:
 
         # Use formula with math transformations
         custom_formula = "A + np.log(B) + np.sqrt(C)"
-        cleaner = _CleanInputsPM(
+        cleaner = CleanInputsPM(
             self.Ts_binary, Xs_positive, prop_form_rhs=custom_formula
         )
 
@@ -171,18 +172,18 @@ class TestCleanInputsPM:
         Ts_small = np.array([0, 1])
         Xs_small = np.random.normal(size=(2, 2))
 
-        # Test with _CleanInputsPM directly
+        # Test with CleanInputsPM directly
         with pytest.raises(ValueError, match="below the minimum of"):
-            cleaner = _CleanInputsPM(Ts_small, Xs_small)
+            cleaner = CleanInputsPM(Ts_small, Xs_small)
 
     def test_sample_count_mismatch(self):
         """Test detection of sample count mismatch between Ts and Xs"""
         # Create mismatched datasets
         Ts_short = self.Ts_binary[:-5]  # 5 samples fewer than Xs
 
-        # Test with _CleanInputsPM directly
+        # Test with CleanInputsPM directly
         with pytest.raises(ValueError, match="Inconsistent number of samples"):
-            cleaner = _CleanInputsPM(Ts_short, self.Xs)
+            cleaner = CleanInputsPM(Ts_short, self.Xs)
 
     def test_custom_formula_with_numpy_array(self):
         """Test error when providing custom formula with numpy array features"""
@@ -191,14 +192,14 @@ class TestCleanInputsPM:
 
         # Should raise error because can't use custom formula with non-DataFrame
         with pytest.raises(TypeError, match="propensity formula"):
-            cleaner = _CleanInputsPM(
+            cleaner = CleanInputsPM(
                 self.Ts_binary, self.Xs, prop_form_rhs=custom_formula
             )
 
     def test_treatment_factor_encoding(self):
         """Test that treatments are properly encoded as factors"""
         # Test with string treatments
-        cleaner = _CleanInputsPM(self.Ts_strings, self.Xs)
+        cleaner = CleanInputsPM(self.Ts_strings, self.Xs)
 
         # Verify treatment encoding is consistent
         unique_treatments = np.unique(self.Ts_strings)
@@ -210,7 +211,7 @@ class TestCleanInputsPM:
             assert np.all(encoded_values == encoded_values[0])
 
         # Test with pandas categorical
-        cleaner = _CleanInputsPM(self.Ts_pandas_cat, self.Xs)
+        cleaner = CleanInputsPM(self.Ts_pandas_cat, self.Xs)
 
         # The encoding should preserve the order of categories in the pandas Categorical
         for i, cat in enumerate(self.Ts_pandas_cat.cat.categories):
@@ -247,7 +248,7 @@ class TestCleanInputsPM:
         )
 
         # Initialize with these features
-        cleaner = _CleanInputsPM(treatments, mixed_df)
+        cleaner = CleanInputsPM(treatments, mixed_df)
 
         # Check the design matrix shape - should have columns for:
         # intercept + numeric + (3-1) dummy variables for color
@@ -336,7 +337,7 @@ class TestVectorMatch:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 gpm = GeneralisedPropensityModel()
-                retained_ids = gpm.fit_and_match(Ts, Xs, retain_ratio=0.05)
+                retained_ids = gpm.fit_and_vector_match(Ts, Xs, retain_ratio=0.05)
 
             # Check if samples 0 and 199 are excluded
             excl_sample_0 = 0 not in retained_ids
@@ -376,7 +377,7 @@ class TestVectorMatch:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 gpm = GeneralisedPropensityModel()
-                retained_ids = gpm.fit_and_match(Ts, Xs, retain_ratio=0.05)
+                retained_ids = gpm.fit_and_vector_match(Ts, Xs, retain_ratio=0.05)
 
             # Check if samples 0 and 199 are excluded
             excl_sample_0 = 0 not in retained_ids
@@ -411,17 +412,19 @@ class TestVectorMatch:
             # High balance (more samples retained)
             sim_high = cate_sim("Sigmoidal", n=300, p=3, balance=1.0, random_state=rngi)
             gpm_high = GeneralisedPropensityModel()
-            retained_high = gpm_high.fit_and_match(sim_high["Ts"], sim_high["Xs"])
+            retained_high = gpm_high.fit_and_vector_match(
+                sim_high["Ts"], sim_high["Xs"]
+            )
 
             # Moderate balance
             sim_mod = cate_sim("Sigmoidal", n=300, p=3, balance=0.7, random_state=rngi)
             gpm_mod = GeneralisedPropensityModel()
-            retained_mod = gpm_mod.fit_and_match(sim_mod["Ts"], sim_mod["Xs"])
+            retained_mod = gpm_mod.fit_and_vector_match(sim_mod["Ts"], sim_mod["Xs"])
 
             # Low balance (fewer samples retained)
             sim_low = cate_sim("Sigmoidal", n=300, p=3, balance=0.4, random_state=rngi)
             gpm_low = GeneralisedPropensityModel()
-            retained_low = gpm_low.fit_and_match(sim_low["Ts"], sim_low["Xs"])
+            retained_low = gpm_low.fit_and_vector_match(sim_low["Ts"], sim_low["Xs"])
 
             # Check if the number of retained samples decreases as unbalancedness increases
             lengths = [len(retained_high), len(retained_mod), len(retained_low)]
@@ -439,7 +442,7 @@ class TestVectorMatch:
 
         with pytest.warns(UserWarning):
             gpm = GeneralisedPropensityModel()
-            gpm.fit_and_match(sim_low["Ts"], sim_low["Xs"], retain_ratio=0.9)
+            gpm.fit_and_vector_match(sim_low["Ts"], sim_low["Xs"], retain_ratio=0.9)
 
     def test_error_when_no_samples_retained(self):
         """Test VM throws error when no samples are retained."""
@@ -450,7 +453,7 @@ class TestVectorMatch:
 
         with pytest.raises(ValueError):
             gpm = GeneralisedPropensityModel()
-            gpm.fit_and_match(sim_low["Ts"], sim_low["Xs"], retain_ratio=0)
+            gpm.fit_and_vector_match(sim_low["Ts"], sim_low["Xs"], retain_ratio=0)
 
     def test_is_fitted_flag(self):
         """Test that is_fitted flag is properly set after fitting."""
@@ -550,7 +553,9 @@ class TestVectorMatch:
         sim_mod = cate_sim("Sigmoidal", n=200, p=1, balance=0.5, random_state=rng)
 
         gpm = GeneralisedPropensityModel()
-        retained_ids = gpm.fit_and_match(sim_mod["Ts"], sim_mod["Xs"], retain_ratio=0.2)
+        retained_ids = gpm.fit_and_vector_match(
+            sim_mod["Ts"], sim_mod["Xs"], retain_ratio=0.2
+        )
 
         Ts_tilde = sim_mod["Ts"][retained_ids]
         Xs_tilde = sim_mod["Xs"][retained_ids]
@@ -582,14 +587,14 @@ class TestVectorMatch:
         gpm_high = GeneralisedPropensityModel()
 
         # Process low balance data
-        retained_ids_low = gpm_low.fit_and_match(
+        retained_ids_low = gpm_low.fit_and_vector_match(
             sim_low_balance["Ts"], sim_low_balance["Xs"], retain_ratio=0.2
         )
         Ts_tilde_low = sim_low_balance["Ts"][retained_ids_low]
         Xs_tilde_low = sim_low_balance["Xs"][retained_ids_low]
 
         # Process high balance data
-        retained_ids_high = gpm_high.fit_and_match(
+        retained_ids_high = gpm_high.fit_and_vector_match(
             sim_high_balance["Ts"], sim_high_balance["Xs"], retain_ratio=0.2
         )
         Ts_tilde_high = sim_high_balance["Ts"][retained_ids_high]
@@ -730,11 +735,11 @@ class TestVectorMatch:
         sim = cate_sim("Sigmoidal", n=200, p=2, balance=0.5, random_state=rng)
 
         # Create cleaned inputs externally
-        cleaned_inputs = _CleanInputsPM(sim["Ts"], sim["Xs"])
+        cleaned_inputs = CleanInputsPM(sim["Ts"], sim["Xs"])
 
         # Test using fit_from_cleaned
         gpm = GeneralisedPropensityModel()
-        gpm.fit_from_cleaned(cleaned_inputs)
+        gpm._fit_from_cleaned(cleaned_inputs)
 
         # Check that model was fitted
         assert gpm.is_fitted
@@ -745,8 +750,8 @@ class TestVectorMatch:
         retained_ids = gpm.vector_match()
         assert len(retained_ids) > 0
 
-    def test_fit_and_match_retains_parameters(self):
-        """Test that fit_and_match passes parameters to both fit and vector_match."""
+    def test_fit_and_vector_match_retains_parameters(self):
+        """Test that fit_and_vector_match passes parameters to both fit and vector_match."""
         rng = np.random.RandomState(123456789)
         sim = cate_sim("Sigmoidal", n=200, p=1, balance=0.5, random_state=rng)
 
@@ -756,7 +761,7 @@ class TestVectorMatch:
         test_niter = 50
 
         gpm = GeneralisedPropensityModel()
-        gpm.fit_and_match(
+        gpm.fit_and_vector_match(
             sim["Ts"],
             sim["Xs"],
             ddx=test_ddx,

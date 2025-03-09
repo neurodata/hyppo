@@ -9,8 +9,10 @@ from ..tools import (
     check_categorical,
 )
 
+from ..tools.common import _check_distmat
 
-class _CleanInputsPM:
+
+class CleanInputsPM:
     """
     Cleans inputs for Propensity Model.
 
@@ -43,9 +45,9 @@ class _CleanInputsPM:
     """
 
     def __init__(self, Ts, Xs, prop_form_rhs=None):
-        self.validate_inputs(Ts, Xs, prop_form_rhs=prop_form_rhs)
+        self.validate_tx_covars(Ts, Xs, prop_form_rhs=prop_form_rhs)
 
-    def validate_inputs(self, Ts, Xs, prop_form_rhs=None):
+    def validate_tx_covars(self, Ts, Xs, prop_form_rhs=None):
         # check covariates
         try:
             Xs = check_2d_array(Xs)
@@ -117,9 +119,12 @@ class _CleanInputsPM:
         return Ts_design, Xs_design, formula
 
 
-class _CleanInputsConditionalDiscrepancy:
+class CleanInputsConditionalDiscrepancy(CleanInputsPM):
     """
     Cleans inputs for Conditional discrepancy testing.
+
+    Inherits from _CleanInputsPM to handle treatment and covariate cleaning.
+    Additionally validates and cleans outcome data.
 
     Parameters
     ----------
@@ -128,16 +133,9 @@ class _CleanInputsConditionalDiscrepancy:
     Ts : array-like
         Treatment assignment vector, where entries are one of K-possible treatment indicators. Should have a shape castable to an ``n'' vector, where ``n'' is the number of samples.
     Xs : pandas DataFrame or array-like
-        Covariates/features matrix, as an array. Should have a shape ``(n, r)``, where ``n`` is the number of samples, and ``r`` is the number of covariates.
-    outcome_only : bool, default: False
-        Whether to only thoroughly clean and check outcomes `Ys'. Useful, for instance, if
-        a propensity model will be used to separately clean and check the treatments and
-        covariates, to avoid repetition of computations. If True, it is advisable to clean
-        and check the treatments `Ts' and covariates `Xs' first, and pass the cleaned and
-        checked versions into this this utility.
+        Covariates/features matrix, as an array. Should have a shape ``(n, r)``, where ``n'' is the number of samples, and ``r'' is the number of covariates.
     prop_form_rhs : str, or None, default: None
             - Set to `None` to default to a propensity model which includes a single regressor for each column of the covariate matrix.
-            - This option is only functional if `outcome_only' is set to False.
     outcome_isdist: bool, default: False
         Whether the outcome matrix `Ys' is a data matrix with shape ``(n, r)'' or a distance matrix with shape ``(n, n)''.
 
@@ -145,47 +143,54 @@ class _CleanInputsConditionalDiscrepancy:
     ----------
     Ys_df:  pandas DataFrame
         Cleaned outcomes matrix, as a dataframe with named columns.
-    Ts_factor: pandas series
+    Ts_factor: pandas series (inherited)
         Cleaned treatment assignment vector, as a categorical pandas series.
-    Xs_df:  pandas DataFrame
+    Xs_df:  pandas DataFrame (inherited)
         Cleaned covariates/features matrix, as a dataframe with named columns.
-    unique_treatments: list
-        the unique treatment levels of `Ts_factor'.
-    K: int
+    treatment_maps: dict (inherited)
+        a dictionary, whose keys are the remapped treatment names after cleaning and values are the original treatment names.
+    K: int (inherited)
         the number of unique treatments.
-    formula: str
+    formula: str (inherited)
         A propensity model.
-    Xs_design: patsy.DesignMatrix
+    Xs_design: patsy.DesignMatrix (inherited)
         Design matrix for the covariates/features.
-    Ts_design: patsy.DesignMatrix
+    Ts_design: patsy.DesignMatrix (inherited)
         Design matrix for the treatment variables.
     """
 
-    def __init__(
-        self, Ys, Ts, Xs, outcome_only=False, prop_form_rhs=None, outcome_isdist=False
-    ):
-        # check outcomes
-        self.validate_inputs(Ys, Ts, Xs, outcome_isdist=outcome_isdist)
-        if not outcome_only:
-            # if not outcome only, clean the treatments and covariates
-            cleaned_pm = _CleanInputsPM(Ts, Xs, prop_form_rhs=prop_form_rhs)
-            self.Xs_df = cleaned_pm.Xs_df
-            self.Ts_factor = cleaned_pm.Ts_factor
-            self.Xs_design = cleaned_pm.Xs_design
-            self.Ts_design = cleaned_pm.Ts_design
-            self.treatment_maps = cleaned_pm.treatment_maps
-            self.K = cleaned_pm.K
-            self.formula = cleaned_pm.formula
-        # check the minimum number of samples across all
+    def __init__(self, Ys, Ts, Xs, prop_form_rhs=None, outcome_isdist=False):
+        # Initialize the parent class first to clean treatments and covariates
+        super().__init__(Ts, Xs, prop_form_rhs=prop_form_rhs)
+
+        # Validate outcome
+        self.validate_outcome(Ys, outcome_isdist=outcome_isdist)
+
+        # Check the minimum number of samples across all
         check_min_samples(Ys=self.Ys_df, Ts=self.Ts_factor, Xs=self.Xs_df)
 
     def validate_outcome(self, Ys, outcome_isdist=False):
+        """
+        Validate and clean the outcome data.
+
+        Parameters
+        ----------
+        Ys : array-like
+            Outcome matrix
+        outcome_isdist : bool, default: False
+            Whether the outcome is a distance matrix
+
+        Returns
+        -------
+        None, but sets self.Ys_df
+        """
         try:
             Ys = check_2d_array(Ys)
             contains_nan(Ys)
             # if a distance matrix, check it's a ndarray and square
             if outcome_isdist:
-                Ys_df = _check_distmat(Ys)
+                _check_distmat(Ys)
+                Ys_df = Ys
             # if not a distance matrix, check it's a ndarray or pandas df
             else:
                 Ys_df = check_ndarray_or_dataframe(Ys, "Y")

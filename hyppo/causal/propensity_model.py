@@ -3,7 +3,7 @@ import warnings
 from statsmodels.discrete.discrete_model import MNLogit
 import pandas as pd
 import numpy as np
-from ._utils import _CleanInputsPM
+from .cleaners import CleanInputsPM
 
 
 class GeneralisedPropensityModel(ABC):
@@ -33,7 +33,7 @@ class GeneralisedPropensityModel(ABC):
         Formula used for propensity score estimation.
     ddx : bool
         Whether debugging information was displayed during fitting.
-    cleaned_inputs : _CleanInputsPM
+    cleaned_inputs : CleanInputsPM
         Processed input data used for model fitting.
     unique_treatments : array-like
         Unique treatment values found in the data.
@@ -62,7 +62,7 @@ class GeneralisedPropensityModel(ABC):
         Xs : pandas DataFrame or array-like
             Covariates/features matrix
         prop_form_rhs : str, or None, default: None
-            The right-hand side of a formula for a generalized propensity score
+            The right-hand side of a formula for a generalised propensity score
 
         Returns
         -------
@@ -71,7 +71,7 @@ class GeneralisedPropensityModel(ABC):
         """
         # Process inputs
         try:
-            self.cleaned_inputs = _CleanInputsPM(Ts, Xs, prop_form_rhs=prop_form_rhs)
+            self.cleaned_inputs = CleanInputsPM(Ts, Xs, prop_form_rhs=prop_form_rhs)
         except Exception as e:
             raise ValueError(f"Failed to clean inputs: {str(e)}") from e
         # set attributes after cleaning
@@ -81,8 +81,8 @@ class GeneralisedPropensityModel(ABC):
 
     def _fit(self, ddx=False, niter=100):
         """
-        Internal method for fitting the generalized propensity model and
-        estimating generalized propensity scores using .
+        Internal method for fitting the generalised propensity model and
+        estimating generalised propensity scores using .
 
         This method assumes that cleaning has already been performed
         and self.cleaned_inputs is available.
@@ -140,7 +140,7 @@ class GeneralisedPropensityModel(ABC):
 
     def fit(self, Ts, Xs, prop_form_rhs=None, ddx=False, niter=100):
         """
-        Fit the generalized propensity score model (multinomial logistic regression).
+        Fit the generalised propensity score model (multinomial logistic regression).
 
         This method cleans the inputs and fits the propensity model without performing
         vector matching. Use vector_match() after fitting to perform the matching process.
@@ -154,7 +154,7 @@ class GeneralisedPropensityModel(ABC):
             Covariates/features matrix, as an array. Should have a shape "(n, r)",
             where "n" is the number of samples, and "r" is the number of covariates.
         prop_form_rhs : str, or None, default: None
-            The right-hand side of a formula for a generalized propensity score, an extension
+            The right-hand side of a formula for a generalised propensity score, an extension
             of the concept of a propensity score to (optionally) more than two groups.
             - See the documentation for :mod:`statsmodels.discrete.discrete_model.MNLogit` for details
               on the use of formulas. If a propensity model is specified, anticipates that the
@@ -312,7 +312,7 @@ class GeneralisedPropensityModel(ABC):
 
         return balanced_ids
 
-    def fit_and_match(
+    def fit_and_vector_match(
         self, Ts, Xs, prop_form_rhs=None, ddx=False, niter=100, retain_ratio=0.05
     ):
         """
@@ -327,7 +327,7 @@ class GeneralisedPropensityModel(ABC):
         Xs : pandas DataFrame or array-like
             Covariates/features matrix
         prop_form_rhs : str, or None, default: None
-            The right-hand side of a formula for a generalized propensity score
+            The right-hand side of a formula for a generalised propensity score
         ddx : bool, optional, default: False
             Whether to print diagnostic debugging information for model fitting.
         niter : int, optional, default: 100
@@ -343,17 +343,18 @@ class GeneralisedPropensityModel(ABC):
         self.fit(Ts, Xs, prop_form_rhs=prop_form_rhs, ddx=ddx, niter=niter)
         return self.vector_match(retain_ratio=retain_ratio)
 
-    def fit_from_cleaned(self, cleaned_inputs, ddx=False, niter=100):
+    def _fit_from_cleaned(self, cleaned_inputs, ddx=False, niter=100):
         """
-        Fit the model using pre-cleaned inputs.
+        Fit the model using pre-cleaned inputs. Internal method to streamline
+        the use of classes inheriting the CleanInputsPM class.
 
         This method allows for external cleaning of inputs before fitting,
         which can be useful when integrating with other preprocessing steps.
 
         Parameters
         ----------
-        cleaned_inputs : _CleanInputsPM
-            A properly initialized _CleanInputsPM instance with validated inputs
+        cleaned_inputs : CleanInputsPM
+            A properly initialized CleanInputsPM instance with validated inputs
         ddx : bool, optional, default: False
             Whether to print diagnostic debugging information for model fitting
         niter : int, optional, default: 100
@@ -370,8 +371,8 @@ class GeneralisedPropensityModel(ABC):
                 "Create a new instance for a new dataset."
             )
 
-        if not isinstance(cleaned_inputs, _CleanInputsPM):
-            raise TypeError("cleaned_inputs must be an instance of _CleanInputsPM")
+        if not isinstance(cleaned_inputs, CleanInputsPM):
+            raise TypeError("cleaned_inputs must be an instance of CleanInputsPM")
 
         self.cleaned_inputs = cleaned_inputs
         self.nsamples = len(self.cleaned_inputs.Ts_factor)

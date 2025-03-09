@@ -115,7 +115,7 @@ def check_2d_array(data):
 def check_categorical(data):
     """
     Cast data to a categorical vector if not already categorical.
-    
+
     Returns:
     --------
     data_factor : array-like
@@ -133,7 +133,7 @@ def check_categorical(data):
             K = len(unique_levels)
         # Check if data is a pandas Series with categorical dtype
         elif isinstance(data, pd.Series) and pd.api.types.is_categorical_dtype(data):
-            data_factor = data.cat.codes
+            data_factor = data.cat.codes.to_numpy()
             unique_levels = data.cat.categories.to_numpy()
             K = len(unique_levels)
         else:
@@ -144,15 +144,15 @@ def check_categorical(data):
             unique_levels = np.unique(data)
             K = len(unique_levels)
             data_factor = pd.Categorical(data, categories=unique_levels).codes
-        
+
         # Create mappings between original values and remapped codes
         code_to_value = {i: val for i, val in enumerate(unique_levels)}
         value_to_code = {val: i for i, val in enumerate(unique_levels)}
         level_map = {"code_to_value": code_to_value, "value_to_code": value_to_code}
-        
+
     except Exception as e:
         raise TypeError(f"Cannot cast to a categorical vector. Error: {e}")
-    
+
     return data_factor, level_map, K
 
 
@@ -209,8 +209,28 @@ def _check_distmat(*args):
     errors = []
 
     for i, mat in enumerate(args):
+        # First check if it's a numpy array
+        if not isinstance(mat, np.ndarray):
+            errors.append(
+                f"Matrix {i+1} must be a numpy array, got {type(mat).__name__}"
+            )
+            continue
+
+        # Check if it's 2D
+        if mat.ndim != 2:
+            errors.append(f"Matrix {i+1} must be a 2D array, got {mat.ndim}D array")
+            continue
+
+        # Check if it's square
+        if mat.shape[0] != mat.shape[1]:
+            errors.append(
+                f"Matrix {i+1} must be a square matrix, got shape {mat.shape}"
+            )
+            continue
+
+        # Now we know it's square, we can check symmetry and diagonal
         is_sym = np.allclose(mat, mat.T)
-        has_zero_diag = np.all(mat.diagonal() == 0)
+        has_zero_diag = np.allclose(np.diag(mat), 0)
 
         if not is_sym or not has_zero_diag:
             error_msg = (
