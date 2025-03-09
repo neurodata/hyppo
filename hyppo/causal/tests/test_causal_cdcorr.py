@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 from sklearn.metrics.pairwise import euclidean_distances
 from ..causal_cdcorr import CausalCDcorr
+from ..propensity_model import GeneralisedPropensityModel
 
 
 class TestCausalCDcorrPreprocess:
@@ -205,3 +206,63 @@ class TestCausalCDcorrPreprocess:
             self.cdcorr_precomputed._preprocess(
                 np.random.random((self.n_samples, 5)), self.T_binary, self.X_numeric
             )
+
+    def test_distance_matrix_computation(self):
+        """Test that distance matrices are computed correctly"""
+        # Create a simple dataset where we know the expected distances
+        X_simple = pd.DataFrame({"X1": [0, 1, 2, 3], "X2": [0, 0, 1, 1]})
+
+        T_simple = np.array([0, 0, 1, 1])
+
+        Y_simple = pd.DataFrame(
+            {
+                "Y1": [0, 1, 10, 11],  # Clear separation between treatment groups
+                "Y2": [5, 6, 15, 16],
+            }
+        )
+
+        # Initialize with euclidean distance
+        cdcorr = CausalCDcorr(compute_distance="euclidean")
+
+        # overwrite vector match to return all indices
+        original_vector_match = GeneralisedPropensityModel.vector_match
+        original_fit = GeneralisedPropensityModel._fit
+        try:
+
+            def mock_vector_match(self, retain_ratio=0.05):
+                self.balanced_ids = list(range(len(self.cleaned_inputs.Ts_factor)))
+                return self.balanced_ids
+
+            def mock_fit(self, niter=100, ddx=False, retain_ratio=0):
+                return self
+
+            GeneralisedPropensityModel.vector_match = mock_vector_match
+            GeneralisedPropensityModel._fit = mock_fit
+
+            DY, DT, KX = cdcorr._preprocess(Y_simple, T_simple, X_simple)
+
+            # Check DY dimensions match number of samples
+            assert DY.shape == (4, 4)
+
+            # Verify euclidean distances in DY
+            # Distance between Y[0] and Y[2] should be sqrt((10-0)^2 + (15-5)^2) = sqrt(100 + 100) = sqrt(200)
+            assert np.isclose(DY[0, 2], np.sqrt(200))
+
+            # Distance between Y[1] and Y[3] should be sqrt((11-1)^2 + (16-6)^2) = sqrt(100 + 100) = sqrt(200)
+            assert np.isclose(DY[1, 3], np.sqrt(200))
+
+            # Distance between Y[0] and Y[1] should be sqrt((1-0)^2 + (6-5)^2) = sqrt(1 + 1) = sqrt(2)
+            assert np.isclose(DY[0, 1], np.sqrt(2))
+
+            # Verify DT reflects treatment differences
+            assert np.isclose(DT[0, 1], 0)
+            assert np.isclose(DT[2, 3], 0)
+
+            # Distance between different treatment groups should be 1
+            assert np.isclose(DT[0, 2], 1)
+            assert np.isclose(DT[1, 3], 1)
+
+        finally:
+            # Restore original method
+            GeneralisedPropensityModel.vector_match = original_vector_match
+            GeneralisedPropensityModel._fit = original_fit
