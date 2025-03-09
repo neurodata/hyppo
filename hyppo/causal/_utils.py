@@ -1,8 +1,114 @@
 import pandas as pd
 import numpy as np
 import patsy
-from ..tools import contains_nan, check_min_samples, check_2d_array, check_ndarray_or_dataframe
-from ..tools.vm import _CleanInputsPM
+from ..tools import contains_nan, check_min_samples, check_2d_array, check_ndarray_or_dataframe, check_categorical
+
+class _CleanInputsPM:
+    """
+    Cleans inputs for Propensity Model.
+
+    Parameters
+    ----------
+    Ts : array-like
+        Treatment assignment vector, where entries are one of K-possible treatment indicators. Should have a shape castable to an ``n'' vector, where ``n'' is the number of samples.
+    Xs : pandas DataFrame or array-like
+        Covariates/features matrix, as an array. Should have a shape ``(n, r)``, where ``n'' is the number of samples, and ``r'' is the number of covariates.
+    prop_form_rhs : str, or None, default: None
+        the right-hand side of a formula for a generalized propensity score, an extension of the concept of a propensity score to (optionally) more than two groups.
+            - Set to `None` to default to a propensity model which includes a single regressor for each column of the covariate matrix.
+
+    Attributes
+    ----------
+    Ts_factor: pandas series
+        Cleaned treatment assignment vector, as a categorical pandas series.
+    unique_treatments: list
+        the unique treatment levels of `Ts_factor'.
+    K: int
+        the number of unique treatments.
+    formula: str
+        A propensity model.
+    Xs_df:  pandas DataFrame
+        Cleaned covariates/features matrix, as a dataframe with named columns.
+    Xs_design: patsy.DesignMatrix
+        Design matrix for the covariates/features.
+    Ts_design: patsy.DesignMatrix
+        Design matrix for the treatment variables.
+    """
+
+    def __init__(self, Ts, Xs, prop_form_rhs=None):
+        self.validate_inputs(Ts, Xs, prop_form_rhs=prop_form_rhs)
+
+    def validate_inputs(self, Ts, Xs, prop_form_rhs=None):
+        # check covariates
+        try:
+            Xs = check_2d_array(Xs)
+            contains_nan(Xs)
+            Xs_df = self.check_Xs_ndarray_or_dataframe(Xs, prop_form_rhs=prop_form_rhs)
+        except Exception as e:
+            exc_type = type(e)
+            new_message = f"Error checking `Xs'. Error: {e}"
+            raise exc_type(new_message) from e
+        # check treatments
+        try:
+            contains_nan(Ts)
+            Ts_factor, unique_treatments, K = check_categorical(Ts)
+        except Exception as e:
+            exc_type = type(e)
+            new_message = f"Error checking `Ts'. Error: {e}"
+            raise exc_type(new_message) from e
+
+        check_min_samples(Ts=Ts, Xs=Xs)
+        # check that Xs is a ndarray or pandas dataframe, and
+        # remove zero-variance columns if possible
+        # generate a formula using user-specified values
+        self.Ts_design, self.Xs_design, self.formula = self.generate_formula(
+            Xs_df, Ts_factor, prop_form_rhs
+        )
+
+        self.Xs_df = Xs_df
+        self.Ts_factor = Ts_factor
+        self.unique_treatments = unique_treatments
+        self.K = K
+
+    def check_Xs_ndarray_or_dataframe(self, Xs, prop_form_rhs=None):
+        """Ensure that Xs is a pandas dataframe, or can be cast to one."""
+        # Ensure Xs is a DataFrame
+        if not isinstance(Xs, pd.DataFrame):
+            if prop_form_rhs is not None:
+                raise TypeError(
+                    "Specified a propensity formula `prop_form_rhs' upon initialization, but `Xs' covariate matrix is not a pandas dataframe."
+                )
+            Xs = check_ndarray_or_dataframe(Xs, "X")
+        return Xs
+
+    def generate_formula(self, Xs, Ts, prop_form_rhs=None):
+        """
+        Check if the right-hand side of a patsy formula is valid.
+        If not specified, make one.
+
+        Parameters
+        ----------
+        Xs: pandas dataframe
+        Ts: pandas series
+        prop_form_rhs: str
+        """
+        try:
+            # Create the right-hand side of the formula
+            if prop_form_rhs is None:
+                prop_form_rhs = " + ".join(Xs.columns)
+            # Create the design matrix using patsy
+            formula = f"Ts ~ {prop_form_rhs}"
+            Ts_design, Xs_design = patsy.dmatrices(
+                formula,
+                pd.concat([pd.Series(Ts, name="Ts"), Xs], axis=1),
+                return_type="dataframe",
+            )
+        except Exception as e:
+            exc_type = type(e)
+            new_message = f"Error generating propensity model formula: {e}"
+            raise exc_type(new_message) from e
+        return Ts_design, Xs_design, formula
+
 
 class _CleanInputsConditionalDiscrepancy:
     """

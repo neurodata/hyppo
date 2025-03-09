@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import NamedTuple
-import np as np
+import numpy as np
 
 class ConditionalDiscrepancyTestOutput(NamedTuple):
     stat: float

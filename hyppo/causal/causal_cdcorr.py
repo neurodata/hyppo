@@ -1,7 +1,7 @@
 from ..conditional import ConditionalDcorr
-from ..tools import VectorMatch
+from .propensity_model import GeneralisedPropensityModel
 from .base import ConditionalDiscrepancyTest, ConditionalDiscrepancyTestOutput
-from ..tools import compute_dist, perm_test, _check_dist
+from ..tools.common import compute_dist, _check_distmat
 from ._utils import _CleanInputsConditionalDiscrepancy
 import pandas as pd
 import numpy as np
