@@ -1,4 +1,3 @@
-from abc import ABC
 import warnings
 from statsmodels.discrete.discrete_model import MNLogit
 import pandas as pd
@@ -6,7 +5,7 @@ import numpy as np
 from .cleaners import CleanInputsPM
 
 
-class GeneralisedPropensityModel(ABC):
+class GeneralisedPropensityModel:
     """
     This is a lightweight class for fitting generalised propensity models.
 
@@ -82,7 +81,7 @@ class GeneralisedPropensityModel(ABC):
     def _fit(self, ddx=False, niter=100):
         """
         Internal method for fitting the generalised propensity model and
-        estimating generalised propensity scores using .
+        estimating generalised propensity scores using multinomial logistic regression.
 
         This method assumes that cleaning has already been performed
         and self.cleaned_inputs is available.
@@ -140,10 +139,9 @@ class GeneralisedPropensityModel(ABC):
 
     def fit(self, Ts, Xs, prop_form_rhs=None, ddx=False, niter=100):
         """
-        Fit the generalised propensity score model (multinomial logistic regression).
+        Fit a generalised propensity score model (multinomial logistic regression).
 
-        This method cleans the inputs and fits the propensity model without performing
-        vector matching. Use vector_match() after fitting to perform the matching process.
+        This method cleans the inputs and fits a propensity model.
 
         Parameters
         ----------
@@ -216,6 +214,10 @@ class GeneralisedPropensityModel(ABC):
             Table of propensity score ranges for each treatment group.
         retain_ratio : float
             Minimum proportion of samples that should be retained.
+
+        References
+        ----------
+        .. footbibliography::
         """
         if not self.is_fitted:
             raise ValueError(
@@ -316,7 +318,7 @@ class GeneralisedPropensityModel(ABC):
         self, Ts, Xs, prop_form_rhs=None, ddx=False, niter=100, retain_ratio=0.05
     ):
         """
-        Convenience method to both fit the model and perform vector matching in one call.
+        Convenience method to both fit the model and perform vector matching in one call. Vector matching is a propensity score-based algorithm for pre-processing observational data with multiple treatment groups :footcite:p:`Lopez2017Aug`.
 
         This is equivalent to calling fit() followed by vector_match().
 
@@ -339,14 +341,17 @@ class GeneralisedPropensityModel(ABC):
         -------
         balanced_ids : list of int
             The positional indices of samples to include for subsequent analysis.
+
+        References
+        ----------
+        .. footbibliography::
         """
         self.fit(Ts, Xs, prop_form_rhs=prop_form_rhs, ddx=ddx, niter=niter)
         return self.vector_match(retain_ratio=retain_ratio)
 
     def _fit_from_cleaned(self, cleaned_inputs, ddx=False, niter=100):
         """
-        Fit the model using pre-cleaned inputs. Internal method to streamline
-        the use of classes inheriting the CleanInputsPM class.
+        Fits a generalised propensity model using pre-cleaned inputs. Internal method to streamline the use of classes leveraging input cleaners inheriting the CleanInputsPM class.
 
         This method allows for external cleaning of inputs before fitting,
         which can be useful when integrating with other preprocessing steps.
