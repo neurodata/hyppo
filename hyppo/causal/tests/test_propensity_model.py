@@ -7,6 +7,7 @@ import pandas as pd
 
 from ...tools import CATE_SIMULATIONS, cate_sim, simulate_covars
 from .._utils import _CleanInputsPM
+from ..propensity_model import GeneralisedPropensityModel
 
 class TestCleanInputsPM:
     """Test the input cleaning and validation directly"""
@@ -306,11 +307,12 @@ def approx_overlap(X1, X2, nbreaks=100):
 class TestVectorMatch:
     def test_initialization(self):
         """Test initialization and that things are what we expect."""
-        vm = VectorMatch(retain_ratio=0.1)
-        assert vm.retain_ratio == 0.1
-        assert vm.is_fitted is False
-        assert vm.balanced_ids is None
-        assert vm.model is None
+        gpm = GeneralisedPropensityModel()
+        assert hasattr(gpm, 'is_fitted')
+        assert gpm.is_fitted is False
+        assert gpm.model is None
+        assert gpm.model_result is None
+        assert gpm.pred_probs is None
 
     def test_vector_matching_with_one_oddball_per_group(self):
         """Test vector matching correctly excludes outliers."""
@@ -319,35 +321,77 @@ class TestVectorMatch:
 
         # Set seed for reproducibility
         rng = np.random.RandomState(123456789)
+        # Generate 20 unique seeds
+        seeds = rng.randint(0, 1000000, size=nrep)
 
         for i in range(nrep):
             Ts = np.concatenate([np.ones(100), np.ones(100) * 2])
-
+            rngi = np.random.RandomState(seeds[i])
             # Create features with outliers at positions 0 and 199
-            X1 = np.concatenate([[-4], rng.uniform(size=198), [5]])
-            X2 = np.concatenate([[-4], rng.uniform(size=198), [5]])
-            X3 = rng.uniform(size=200)
+            X1 = np.concatenate([[-4], rngi.uniform(size=198), [5]])
+            X2 = np.concatenate([[-4], rngi.uniform(size=198), [5]])
+            X3 = rngi.uniform(size=200)
             Xs = np.column_stack([X1, X2, X3])
 
-            # Suppress warnings during test execution
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                retained_ids = VectorMatch().fit(Ts, Xs)
+                gpm = GeneralisedPropensityModel()
+                retained_ids = gpm.fit_and_match(Ts, Xs, retain_ratio=0.05)
 
             # Check if samples 0 and 199 are excluded
             excl_sample_0 = 0 not in retained_ids
             excl_sample_199 = 199 not in retained_ids
 
-            # Check if most other samples are included (>80%)
+            # Check if most other samples are included (>95%)
             included_samples = (
-                sum([i in retained_ids for i in range(1, 199)]) / 198 > 0.8
+                sum([i in retained_ids for i in range(1, 199)]) / 198 > 0.95
             )
 
             # Success if both outliers excluded and most normal samples included
             results.append(excl_sample_0 and excl_sample_199 and included_samples)
 
-        # Test passes if this works most of the time (>80%)
-        assert np.mean(results) > 0.8
+        # Test passes if this works most of the time (>95%)
+        assert np.mean(results) > 0.95
+
+    def test_vector_matching_with_string_treatments(self):
+        """Test vector matching correctly excludes outliers with string treatment groups."""
+        nrep = 100
+        results = []
+
+        rng = np.random.RandomState(123456789)
+        seeds = rng.randint(0, 1000000, size=nrep)
+
+        for i in range(nrep):
+            # Create string treatments
+            Ts = np.array(["control"] * 100 + ["treatment"] * 100)
+            
+            rngi = np.random.RandomState(seeds[i])
+            
+            # Create features with outliers at positions 0 and 199
+            X1 = np.concatenate([[-4], rngi.uniform(size=198), [5]])
+            X2 = np.concatenate([[-4], rngi.uniform(size=198), [5]])
+            X3 = rngi.uniform(size=200)
+            Xs = np.column_stack([X1, X2, X3])
+
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                gpm = GeneralisedPropensityModel()
+                retained_ids = gpm.fit_and_match(Ts, Xs, retain_ratio=0.05)
+                
+            # Check if samples 0 and 199 are excluded
+            excl_sample_0 = 0 not in retained_ids
+            excl_sample_199 = 199 not in retained_ids
+
+            # Check if most other samples are included (>95%)
+            included_samples = (
+                sum([idx in retained_ids for idx in range(1, 199)]) / 198 > 0.95
+            )
+
+            # Success if both outliers excluded and most normal samples included
+            results.append(excl_sample_0 and excl_sample_199 and included_samples)
+
+        # Test passes if this works most of the time (>95%)
+        assert np.mean(results) > 0.95
 
     def test_unbalancedness_affects_sample_retention(self):
         """Test that as unbalancedness increases, fewer samples are retained by VM."""
@@ -366,21 +410,24 @@ class TestVectorMatch:
 
             # High balance (more samples retained)
             sim_high = cate_sim("Sigmoidal", n=300, p=3, balance=1.0, random_state=rngi)
-            retained_high = VectorMatch().fit(sim_high["Ts"], sim_high["Xs"])
+            gpm_high = GeneralisedPropensityModel()
+            retained_high = gpm_high.fit_and_match(sim_high["Ts"], sim_high["Xs"])
 
             # Moderate balance
             sim_mod = cate_sim("Sigmoidal", n=300, p=3, balance=0.7, random_state=rngi)
-            retained_mod = VectorMatch().fit(sim_mod["Ts"], sim_mod["Xs"])
+            gpm_mod = GeneralisedPropensityModel()
+            retained_mod = gpm_mod.fit_and_match(sim_mod["Ts"], sim_mod["Xs"])
 
             # Low balance (fewer samples retained)
             sim_low = cate_sim("Sigmoidal", n=300, p=3, balance=0.4, random_state=rngi)
-            retained_low = VectorMatch().fit(sim_low["Ts"], sim_low["Xs"])
+            gpm_low = GeneralisedPropensityModel()
+            retained_low = gpm_low.fit_and_match(sim_low["Ts"], sim_low["Xs"])
 
             # Check if the number of retained samples decreases as unbalancedness increases
             lengths = [len(retained_high), len(retained_mod), len(retained_low)]
             ranks = np.argsort(np.argsort(lengths))
 
-            # Test passes if the ranks are as expected (3,2,1)
+            # Test passes if the ranks are as expected (2,1,0)
             results.append(np.array_equal(ranks, [2, 1, 0]))
 
         assert np.mean(results) > 0.8
@@ -391,7 +438,8 @@ class TestVectorMatch:
         sim_low = cate_sim("Sigmoidal", n=200, p=3, balance=0.2, random_state=rng)
 
         with pytest.warns(UserWarning):
-            VectorMatch(retain_ratio=0.9).fit(sim_low["Ts"], sim_low["Xs"])
+            gpm = GeneralisedPropensityModel()
+            gpm.fit_and_match(sim_low["Ts"], sim_low["Xs"], retain_ratio=0.9)
 
     def test_error_when_no_samples_retained(self):
         """Test VM throws error when no samples are retained."""
@@ -401,22 +449,31 @@ class TestVectorMatch:
         )
 
         with pytest.raises(ValueError):
-            VectorMatch(retain_ratio=0).fit(sim_low["Ts"], sim_low["Xs"])
+            gpm = GeneralisedPropensityModel()
+            gpm.fit_and_match(sim_low["Ts"], sim_low["Xs"], retain_ratio=0)
 
     def test_is_fitted_flag(self):
         """Test that is_fitted flag is properly set after fitting."""
         rng = np.random.RandomState(123456789)
         sim = cate_sim("Sigmoidal", n=200, p=1, balance=0.5, random_state=rng)
 
-        vm = VectorMatch()
-        assert vm.is_fitted is False
+        gpm = GeneralisedPropensityModel()
+        assert gpm.is_fitted is False
 
-        vm.fit(sim["Ts"], sim["Xs"])
-        assert vm.is_fitted is True
+        # Test fit without matching
+        gpm.fit(sim["Ts"], sim["Xs"])
+        assert gpm.is_fitted is True
 
         # Test that attempting to fit again raises an error
         with pytest.raises(ValueError, match="already been fit"):
-            vm.fit(sim["Ts"], sim["Xs"])
+            gpm.fit(sim["Ts"], sim["Xs"])
+
+    def test_vector_match_requires_fit_first(self):
+        """Test that vector_match raises an error if called before fit."""
+        gpm = GeneralisedPropensityModel()
+        
+        with pytest.raises(ValueError, match="Model must be fitted"):
+            gpm.vector_match(retain_ratio=0.05)
 
     def test_multicol_numpy_array(self):
         """Test vector matching with a multi-column numpy array without formulas."""
@@ -436,23 +493,28 @@ class TestVectorMatch:
         assert Xs_array.shape == (200, 3)
 
         # Fit vector matching without specifying a formula
-        vm = VectorMatch()
-        retained_ids = vm.fit(sim["Ts"], Xs_array)
-
+        gpm = GeneralisedPropensityModel()
+        gpm.fit(sim["Ts"], Xs_array)
+        
         # Verify fitting succeeded
-        assert vm.is_fitted
+        assert gpm.is_fitted
+        
+        # Perform vector matching
+        retained_ids = gpm.vector_match()
+        
+        # Verify matching succeeded
         assert isinstance(retained_ids, list)
         assert len(retained_ids) > 0
 
         # Verify internal representation converted array to DataFrame
-        assert isinstance(vm.cleaned_inputs.Xs_df, pd.DataFrame)
-        assert vm.cleaned_inputs.Xs_df.shape[1] == 3
+        assert isinstance(gpm.cleaned_inputs.Xs_df, pd.DataFrame)
+        assert gpm.cleaned_inputs.Xs_df.shape[1] == 3
 
         # Column names should be automatically generated
-        assert list(vm.cleaned_inputs.Xs_df.columns) == ["X0", "X1", "X2"]
+        assert list(gpm.cleaned_inputs.Xs_df.columns) == ["X0", "X1", "X2"]
 
         # Default formula should include all columns
-        assert "X0 + X1 + X2" in vm.cleaned_inputs.formula
+        assert "X0 + X1 + X2" in gpm.cleaned_inputs.formula
 
     def test_propensity_formula_parameter(self):
         """Test that prop_form_rhs parameter works correctly when passed to fit."""
@@ -473,22 +535,22 @@ class TestVectorMatch:
         # Create a formula that uses all three columns
         formula = "X0 + np.log(X1 + 1) + X2"
 
-        vm = VectorMatch()
-        vm.fit(sim["Ts"], Xs_df, prop_form_rhs=formula)
+        gpm = GeneralisedPropensityModel()
+        gpm.fit(sim["Ts"], Xs_df, prop_form_rhs=formula)
 
         # Check that the formula was stored
-        assert vm.prop_form_rhs == formula
+        assert gpm.prop_form_rhs == formula
 
         # Verify the formula made it through to the cleaned_inputs
-        assert formula in vm.cleaned_inputs.formula
+        assert formula in gpm.cleaned_inputs.formula
 
     def test_vm_increases_covariate_overlap(self):
         """Test that VM increases covariate overlap between groups."""
         rng = np.random.RandomState(123456789)
         sim_mod = cate_sim("Sigmoidal", n=200, p=1, balance=0.5, random_state=rng)
 
-        vm = VectorMatch(retain_ratio=0.2)
-        retained_ids = vm.fit(sim_mod["Ts"], sim_mod["Xs"])
+        gpm = GeneralisedPropensityModel()
+        retained_ids = gpm.fit_and_match(sim_mod["Ts"], sim_mod["Xs"], retain_ratio=0.2)
 
         Ts_tilde = sim_mod["Ts"][retained_ids]
         Xs_tilde = sim_mod["Xs"][retained_ids]
@@ -516,16 +578,16 @@ class TestVectorMatch:
         )
 
         # Run vector matching on both datasets
-        vm_low = VectorMatch(retain_ratio=0.2)
-        vm_high = VectorMatch(retain_ratio=0.2)
+        gpm_low = GeneralisedPropensityModel()
+        gpm_high = GeneralisedPropensityModel()
 
         # Process low balance data
-        retained_ids_low = vm_low.fit(sim_low_balance["Ts"], sim_low_balance["Xs"])
+        retained_ids_low = gpm_low.fit_and_match(sim_low_balance["Ts"], sim_low_balance["Xs"], retain_ratio=0.2)
         Ts_tilde_low = sim_low_balance["Ts"][retained_ids_low]
         Xs_tilde_low = sim_low_balance["Xs"][retained_ids_low]
 
         # Process high balance data
-        retained_ids_high = vm_high.fit(sim_high_balance["Ts"], sim_high_balance["Xs"])
+        retained_ids_high = gpm_high.fit_and_match(sim_high_balance["Ts"], sim_high_balance["Xs"], retain_ratio=0.2)
         Ts_tilde_high = sim_high_balance["Ts"][retained_ids_high]
         Xs_tilde_high = sim_high_balance["Xs"][retained_ids_high]
 
@@ -595,16 +657,17 @@ class TestVectorMatch:
         })
         
         # Fit vector matching
-        vm = VectorMatch(retain_ratio=0.7)
-        retained_ids = vm.fit(treatments, Xs_df)
+        gpm = GeneralisedPropensityModel()
+        gpm.fit(treatments, Xs_df)
+        retained_ids = gpm.vector_match(retain_ratio=0.7)
         
         # Verify fitting succeeded
-        assert vm.is_fitted
+        assert gpm.is_fitted
         assert isinstance(retained_ids, list)
         assert len(retained_ids) > 0
         
         # Check the propensity model coefficients
-        model_params = vm.model_result.params
+        model_params = gpm.model_result.params
         param_names = model_params.index.tolist()
         
         # Should have intercept and coefficients for category levels
@@ -643,7 +706,7 @@ class TestVectorMatch:
             mean_t0 = np.mean(variable[treatments == 0])
             mean_t1 = np.mean(variable[treatments == 1])
             pooled_std = np.sqrt((np.var(variable[treatments == 0]) + 
-                                np.var(variable[treatments == 1])) / 2)
+                               np.var(variable[treatments == 1])) / 2)
             return abs(mean_t0 - mean_t1) / pooled_std if pooled_std > 0 else 0
         
         # Check balance improvement for numeric1
@@ -654,3 +717,53 @@ class TestVectorMatch:
             f"Expected balance to improve for numeric1. "
             f"Before SMD: {before_smd_num1}, After SMD: {after_smd_num1}"
         )
+        
+    def test_fit_from_cleaned(self):
+        """Test using fit_from_cleaned method with externally created cleaned inputs."""
+        rng = np.random.RandomState(123456789)
+        
+        # Generate simulation data
+        sim = cate_sim("Sigmoidal", n=200, p=2, balance=0.5, random_state=rng)
+        
+        # Create cleaned inputs externally
+        cleaned_inputs = _CleanInputsPM(sim["Ts"], sim["Xs"])
+        
+        # Test using fit_from_cleaned
+        gpm = GeneralisedPropensityModel()
+        gpm.fit_from_cleaned(cleaned_inputs)
+        
+        # Check that model was fitted
+        assert gpm.is_fitted
+        assert gpm.model is not None
+        assert gpm.pred_probs is not None
+        
+        # Check that we can perform vector matching after
+        retained_ids = gpm.vector_match()
+        assert len(retained_ids) > 0
+    
+    def test_fit_and_match_retains_parameters(self):
+        """Test that fit_and_match passes parameters to both fit and vector_match."""
+        rng = np.random.RandomState(123456789)
+        sim = cate_sim("Sigmoidal", n=200, p=1, balance=0.5, random_state=rng)
+        
+        # Set specific parameters for testing
+        test_retain_ratio = 0.15
+        test_ddx = True
+        test_niter = 50
+        
+        gpm = GeneralisedPropensityModel()
+        gpm.fit_and_match(
+            sim["Ts"], 
+            sim["Xs"], 
+            ddx=test_ddx, 
+            niter=test_niter, 
+            retain_ratio=test_retain_ratio
+        )
+        
+        # Check that parameters were correctly passed and stored
+        assert gpm.ddx == test_ddx
+        assert gpm.niter == test_niter
+        assert gpm.retain_ratio == test_retain_ratio
+        
+        # Verify both fitting and matching occurred
+        assert gpm.is_fitted

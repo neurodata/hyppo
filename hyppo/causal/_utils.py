@@ -22,7 +22,7 @@ class _CleanInputsPM:
     Ts_factor: pandas series
         Cleaned treatment assignment vector, as a categorical pandas series.
     unique_treatments: list
-        the unique treatment levels of `Ts_factor'.
+        a dictionary, whose keys are the remapped treatment names after cleaning and values are the original treatment names.
     K: int
         the number of unique treatments.
     formula: str
@@ -51,7 +51,7 @@ class _CleanInputsPM:
         # check treatments
         try:
             contains_nan(Ts)
-            Ts_factor, unique_treatments, K = check_categorical(Ts)
+            Ts_factor, treatment_maps, K = check_categorical(Ts)
         except Exception as e:
             exc_type = type(e)
             new_message = f"Error checking `Ts'. Error: {e}"
@@ -67,7 +67,7 @@ class _CleanInputsPM:
 
         self.Xs_df = Xs_df
         self.Ts_factor = Ts_factor
-        self.unique_treatments = unique_treatments
+        self.treatment_maps = treatment_maps
         self.K = K
 
     def check_Xs_ndarray_or_dataframe(self, Xs, prop_form_rhs=None):
@@ -161,7 +161,7 @@ class _CleanInputsConditionalDiscrepancy:
             cleaned_pm = _CleanInputsPM(Ts, Xs, prop_form_rhs=prop_form_rhs)
             self.Xs_df = cleaned_pm.Xs_df; self.Ts_factor = cleaned_pm.Ts_factor
             self.Xs_design = cleaned_pm.Xs_design; self.Ts_design = cleaned_pm.Ts_design
-            self.unique_treatments = cleaned_pm.unique_treatments
+            self.treatment_maps = cleaned_pm.treatment_maps
             self.K = cleaned_pm.K
             self.formula = cleaned_pm.formula
         # check the minimum number of samples across all

@@ -219,54 +219,80 @@ class GeneralisedPropensityModel(ABC):
             )
             
         # Validate that retain_ratio is valid
-        if not isinstance(self.retain_ratio, (float, int)):
+        if not isinstance(retain_ratio, (float, int)):
             raise TypeError("retain_ratio must be a number (float or int)")
             
-        if not (0 <= self.retain_ratio <= 1):
+        if not (0 <= retain_ratio <= 1):
             raise ValueError("retain_ratio should be a fraction between 0 and 1.")
             
-        # Identify overlapping regions
-        try:
-            Rtable = np.zeros((self.cleaned_inputs.K, 2))
-            for i, t in enumerate(self.cleaned_inputs.unique_treatments):
-                t_idx = np.where(self.cleaned_inputs.Ts_factor == t)[0]
-                for j in range(self.cleaned_inputs.K):
-                    # Min and max probabilities for treatment t when actual treatment is j
-                    min_prob = np.min(self.pred_probs.iloc[t_idx, j])
-                    max_prob = np.max(self.pred_probs.iloc[t_idx, j])
+        Rtable = np.zeros((self.cleaned_inputs.K, 2))
 
-                    # Update Rtable with max of mins and min of maxes
-                    Rtable[j, 0] = max(Rtable[j, 0], min_prob)
-                    Rtable[j, 1] = min(
-                        Rtable[j, 1] if Rtable[j, 1] > 0 else float("inf"),
-                        max_prob,
-                    )
+        try:
+            # For each treatment group t
+            for t in range(self.cleaned_inputs.K):
+                # Arrays to store min and max propensity scores for treatment t across all treatment groups
+                min_probs_across_groups = []
+                max_probs_across_groups = []
+                
+                # For each actual treatment group t'
+                for code in self.cleaned_inputs.treatment_maps["code_to_value"].keys():
+                    # Indices of samples with actual treatment t'
+                    indices = np.where(self.cleaned_inputs.Ts_factor == code)[0]
+                    
+                    # Skip if no samples have this treatment
+                    if len(indices) == 0:
+                        continue
+                        
+                    # Get propensity scores for treatment t among samples with actual treatment t'
+                    propensity_scores = self.pred_probs.iloc[indices, t]
+                    
+                    # Find min and max
+                    min_prob = np.min(propensity_scores)
+                    max_prob = np.max(propensity_scores)
+                    
+                    # Add to lists
+                    min_probs_across_groups.append(min_prob)
+                    max_probs_across_groups.append(max_prob)
+                
+                # Compute l(t) and h(t)
+                # l(t) = max of mins, h(t) = min of maxes
+                Rtable[t, 0] = np.max(min_probs_across_groups)
+                Rtable[t, 1] = np.min(max_probs_across_groups)
+                
         except Exception as e:
             exc_type = type(e)
             new_message = f"Failed to calculate overlap regions: {str(e)}"
             raise exc_type(new_message) from e
-
+        
         # Identify balanced observations
         try:
             balanced_ids = []
+            
+            # For each sample
             for i in range(self.nsamples):
                 is_balanced = True
-                for j in range(self.cleaned_inputs.K):
-                    if not (
-                        self.pred_probs.iloc[i, j] >= Rtable[j, 0]
-                        and self.pred_probs.iloc[i, j] <= Rtable[j, 1]
-                    ):
+                
+                # Check if propensity scores for all treatments fall within bounds
+                for t in range(self.cleaned_inputs.K):
+                    # Get propensity score for treatment t
+                    prop_score = self.pred_probs.iloc[i, t]
+                    
+                    # Check if it's within bounds
+                    if prop_score < Rtable[t, 0] or prop_score > Rtable[t, 1]:
                         is_balanced = False
                         break
+                
+                # If sample is balanced, add to list
                 if is_balanced:
                     balanced_ids.append(i)
+                    
         except Exception as e:
             exc_type = type(e)
             new_message = f"Failed to identify balanced observations: {str(e)}"
             raise exc_type(new_message) from e
 
         # Check if enough samples are retained
-        if len(balanced_ids) < self.retain_ratio * self.nsamples:
+        if len(balanced_ids) < retain_ratio * self.nsamples:
             percentage = 100 * len(balanced_ids) / self.nsamples
             warnings.warn(
                 f"Few samples retained by vector matching ({len(balanced_ids)} out of {self.nsamples}, {percentage:.1f}%)."
@@ -274,10 +300,10 @@ class GeneralisedPropensityModel(ABC):
 
         if len(balanced_ids) == 0:
             raise ValueError("No samples retained by vector matching.")
-
+        
+        self.retain_ratio = retain_ratio
         self.Rtable = Rtable
         self.balanced_ids = balanced_ids
-        self.is_matched = True
 
         return balanced_ids
         
