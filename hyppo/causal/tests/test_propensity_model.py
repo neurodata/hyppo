@@ -5,9 +5,9 @@ import warnings
 from scipy.stats import gaussian_kde
 import pandas as pd
 
-from .. import CATE_SIMULATIONS, cate_sim, simulate_covars
-from ..common import check_min_samples, check_2d_array, check_categorical, contains_nan
-from .. import VectorMatch, _CleanInputsPM
+from ...tools import CATE_SIMULATIONS, cate_sim, simulate_covars
+from ...tools.common import check_min_samples, check_2d_array, check_categorical, contains_nan
+# from ...tools import VectorMatch, _CleanInputsPM
 
 
 class TestCommonFunctions:
