@@ -7,11 +7,11 @@ import pandas as pd
 
 from .. import CATE_SIMULATIONS, cate_sim, simulate_covars
 from ..common import check_min_samples, check_2d_array, check_categorical, contains_nan
-from .. import VectorMatch, _CleanInputsVM
+from .. import VectorMatch, _CleanInputsPM
 
 
 class TestCommonFunctions:
-    """Test the utility functions that were refactored out of _CleanInputsVM"""
+    """Test the utility functions that were refactored out of _CleanInputsPM"""
 
     def setup_method(self):
         """Set up test fixtures before each test method is run"""
@@ -195,7 +195,7 @@ class TestCommonFunctions:
             contains_nan(df_with_nan)
 
 
-class TestCleanInputsVM:
+class TestCleanInputsPM:
     """Test the input cleaning and validation directly"""
 
     def setup_method(self):
@@ -238,8 +238,8 @@ class TestCleanInputsVM:
         # Create 1D feature array
         Xs_1d = np.random.normal(size=self.n_samples)
 
-        # Test with _CleanInputsVM directly
-        cleaner = _CleanInputsVM(self.Ts_binary, Xs_1d)
+        # Test with _CleanInputsPM directly
+        cleaner = _CleanInputsPM(self.Ts_binary, Xs_1d)
         assert cleaner.Xs_df.shape == (self.n_samples, 1)
 
     def test_nan_detection_covariates(self):
@@ -248,12 +248,12 @@ class TestCleanInputsVM:
         Xs_with_nan = self.Xs.copy()
         Xs_with_nan[10, 0] = np.nan
 
-        # Test with _CleanInputsVM directly
+        # Test with _CleanInputsPM directly
         with pytest.raises(
             ValueError,
             match="Error checking `Xs'. Error: The input contains nan values",
         ):
-            cleaner = _CleanInputsVM(self.Ts_binary, Xs_with_nan)
+            cleaner = _CleanInputsPM(self.Ts_binary, Xs_with_nan)
 
     def test_nan_detection_in_treatments(self):
         """Test that NaN values in Ts are detected and proper error is raised"""
@@ -261,27 +261,27 @@ class TestCleanInputsVM:
         Ts_with_nan = self.Ts_binary.copy()
         Ts_with_nan[5] = np.nan
 
-        # Test with _CleanInputsVM directly
+        # Test with _CleanInputsPM directly
         with pytest.raises(
             ValueError,
             match="Error checking `Ts'. Error: The input contains nan values",
         ):
-            cleaner = _CleanInputsVM(Ts_with_nan, self.Xs)
+            cleaner = _CleanInputsPM(Ts_with_nan, self.Xs)
 
     def test_ts_categorical_conversion(self):
         """Test that treatments are properly converted to categorical"""
         # Test binary treatment
-        cleaner = _CleanInputsVM(self.Ts_binary, self.Xs)
+        cleaner = _CleanInputsPM(self.Ts_binary, self.Xs)
         assert_equal(cleaner.unique_treatments, np.array([0, 1]))
         assert cleaner.K == 2
 
         # Test multi-category treatment
-        cleaner = _CleanInputsVM(self.Ts_multi, self.Xs)
+        cleaner = _CleanInputsPM(self.Ts_multi, self.Xs)
         assert_equal(cleaner.unique_treatments, np.array([0, 1, 2]))
         assert cleaner.K == 3
 
         # Test string categorical treatments
-        cleaner = _CleanInputsVM(self.Ts_strings, self.Xs)
+        cleaner = _CleanInputsPM(self.Ts_strings, self.Xs)
         assert_equal(
             cleaner.unique_treatments,
             np.array(["control", "treatment_A", "treatment_B"]),
@@ -291,20 +291,20 @@ class TestCleanInputsVM:
         assert np.all(np.isin(cleaner.Ts_factor, [0, 1, 2]))
 
         # Test pandas categorical Series
-        cleaner = _CleanInputsVM(self.Ts_pandas_cat, self.Xs)
+        cleaner = _CleanInputsPM(self.Ts_pandas_cat, self.Xs)
         assert_equal(cleaner.unique_treatments, np.array(["A", "B", "C"]))
         assert cleaner.K == 3
 
     def test_propensity_formula_generation(self):
         """Test formula generation for propensity model"""
         # Test with default formula
-        cleaner = _CleanInputsVM(self.Ts_binary, self.Xs_df)
+        cleaner = _CleanInputsPM(self.Ts_binary, self.Xs_df)
         assert cleaner.formula.startswith("Ts ~")
         assert "Feature_0" in cleaner.formula
 
         # Test with custom formula
         custom_formula = "Feature_0 + np.log(Feature_1)"
-        cleaner = _CleanInputsVM(
+        cleaner = _CleanInputsPM(
             self.Ts_binary, self.Xs_df, prop_form_rhs=custom_formula
         )
         assert cleaner.formula == f"Ts ~ {custom_formula}"
@@ -312,7 +312,7 @@ class TestCleanInputsVM:
     def test_design_matrix_construction(self):
         """Test that the design matrix correctly reflects the formula"""
         # Test with default formula (all features included)
-        cleaner = _CleanInputsVM(self.Ts_binary, self.Xs_df)
+        cleaner = _CleanInputsPM(self.Ts_binary, self.Xs_df)
 
         # The design matrix should have an intercept column + all feature columns
         expected_cols = self.n_features + 1  # +1 for intercept
@@ -333,7 +333,7 @@ class TestCleanInputsVM:
 
         # Use formula with math transformations
         custom_formula = "A + np.log(B) + np.sqrt(C)"
-        cleaner = _CleanInputsVM(
+        cleaner = _CleanInputsPM(
             self.Ts_binary, Xs_positive, prop_form_rhs=custom_formula
         )
 
@@ -356,18 +356,18 @@ class TestCleanInputsVM:
         Ts_small = np.array([0, 1])
         Xs_small = np.random.normal(size=(2, 2))
 
-        # Test with _CleanInputsVM directly
+        # Test with _CleanInputsPM directly
         with pytest.raises(ValueError, match="below the minimum of"):
-            cleaner = _CleanInputsVM(Ts_small, Xs_small)
+            cleaner = _CleanInputsPM(Ts_small, Xs_small)
 
     def test_sample_count_mismatch(self):
         """Test detection of sample count mismatch between Ts and Xs"""
         # Create mismatched datasets
         Ts_short = self.Ts_binary[:-5]  # 5 samples fewer than Xs
 
-        # Test with _CleanInputsVM directly
+        # Test with _CleanInputsPM directly
         with pytest.raises(ValueError, match="Inconsistent number of samples"):
-            cleaner = _CleanInputsVM(Ts_short, self.Xs)
+            cleaner = _CleanInputsPM(Ts_short, self.Xs)
 
     def test_custom_formula_with_numpy_array(self):
         """Test error when providing custom formula with numpy array features"""
@@ -376,14 +376,14 @@ class TestCleanInputsVM:
 
         # Should raise error because can't use custom formula with non-DataFrame
         with pytest.raises(ValueError, match="propensity formula"):
-            cleaner = _CleanInputsVM(
+            cleaner = _CleanInputsPM(
                 self.Ts_binary, self.Xs, prop_form_rhs=custom_formula
             )
 
     def test_treatment_factor_encoding(self):
         """Test that treatments are properly encoded as factors"""
         # Test with string treatments
-        cleaner = _CleanInputsVM(self.Ts_strings, self.Xs)
+        cleaner = _CleanInputsPM(self.Ts_strings, self.Xs)
 
         # Verify treatment encoding is consistent
         unique_treatments = np.unique(self.Ts_strings)
@@ -395,7 +395,7 @@ class TestCleanInputsVM:
             assert np.all(encoded_values == encoded_values[0])
 
         # Test with pandas categorical
-        cleaner = _CleanInputsVM(self.Ts_pandas_cat, self.Xs)
+        cleaner = _CleanInputsPM(self.Ts_pandas_cat, self.Xs)
 
         # The encoding should preserve the order of categories in the pandas Categorical
         for i, cat in enumerate(self.Ts_pandas_cat.cat.categories):
@@ -432,7 +432,7 @@ class TestCleanInputsVM:
         )
 
         # Initialize with these features
-        cleaner = _CleanInputsVM(treatments, mixed_df)
+        cleaner = _CleanInputsPM(treatments, mixed_df)
 
         # Check the design matrix shape - should have columns for:
         # intercept + numeric + (3-1) dummy variables for color
@@ -471,6 +471,7 @@ class TestCleanInputsVM:
             for other_col in cat_cols:
                 if other_col != dummy_col:
                     assert cleaner.Xs_design.iloc[i][other_col] == 0
+
 
 
 def approx_overlap(X1, X2, nbreaks=100):
@@ -755,87 +756,87 @@ class TestVectorMatch:
 
     def test_vector_matching_with_categorical_covariates(self):
         """Test vector matching with a controlled propensity model including categorical covariates."""
-        np.random.seed(12345)
+        np.random.seed(123456789)
         n_samples = 1000
-
+        
         # Generate features with known effect on propensity
         numeric1 = np.random.normal(size=n_samples)
         numeric2 = np.random.normal(size=n_samples)
-        categorical = np.random.choice(["A", "B", "C"], size=n_samples)
-
+        categorical = np.random.choice(['A', 'B', 'C'], size=n_samples)
+        
         # Create a propensity model with known coefficients
         logits = (
-            0.5 * numeric1
-            - 0.3 * numeric2
-            + 1.5 * (categorical == "A")
-            + 0.5 * (categorical == "B")
+            0.5 * numeric1 - 
+            0.3 * numeric2 + 
+            1.5 * (categorical == 'A') + 
+            0.5 * (categorical == 'B')
         )
         probs = 1 / (1 + np.exp(-logits))
         treatments = np.random.binomial(1, probs)
-
+        
         # Create DataFrame with all features
-        Xs_df = pd.DataFrame(
-            {"numeric1": numeric1, "numeric2": numeric2, "category": categorical}
-        )
-
+        Xs_df = pd.DataFrame({
+            'numeric1': numeric1,
+            'numeric2': numeric2,
+            'category': categorical
+        })
+        
         # Fit vector matching
         vm = VectorMatch(retain_ratio=0.7)
         retained_ids = vm.fit(treatments, Xs_df)
-
+        
         # Verify fitting succeeded
         assert vm.is_fitted
         assert isinstance(retained_ids, list)
         assert len(retained_ids) > 0
-
+        
         # Check the propensity model coefficients
         model_params = vm.model_result.params
         param_names = model_params.index.tolist()
-
+        
         # Should have intercept and coefficients for category levels
-        assert "Intercept" in param_names
-
+        assert 'Intercept' in param_names
+        
         # Check if category levels are present in parameters
-        category_params = [p for p in param_names if "category" in p]
+        category_params = [p for p in param_names if 'category' in p]
         assert len(category_params) == 2  # Should have 2 parameters for 3 categories
-
+        
         # Compare covariate balance before and after matching
         def categorical_imbalance(treatments, categories):
             imbalance = 0
-            for cat in ["A", "B", "C"]:
+            for cat in ['A', 'B', 'C']:
                 prop_t0 = np.mean(categories[treatments == 0] == cat)
                 prop_t1 = np.mean(categories[treatments == 1] == cat)
                 # Add absolute difference to imbalance measure
                 imbalance += abs(prop_t0 - prop_t1)
             return imbalance
-
+        
         # Calculate imbalance before matching
         before_imbalance = categorical_imbalance(treatments, categorical)
-
+        
         # Calculate imbalance after matching
         retained_Ts = treatments[retained_ids]
         retained_cats = categorical[retained_ids]
         after_imbalance = categorical_imbalance(retained_Ts, retained_cats)
-
+        
         # Imbalance should decrease after matching
         assert after_imbalance < before_imbalance, (
             f"Expected categorical imbalance to decrease after matching. "
             f"Before: {before_imbalance}, After: {after_imbalance}"
         )
-
+        
         # Also check numeric variables balance
         def std_mean_diff(treatments, variable):
             mean_t0 = np.mean(variable[treatments == 0])
             mean_t1 = np.mean(variable[treatments == 1])
-            pooled_std = np.sqrt(
-                (np.var(variable[treatments == 0]) + np.var(variable[treatments == 1]))
-                / 2
-            )
+            pooled_std = np.sqrt((np.var(variable[treatments == 0]) + 
+                                np.var(variable[treatments == 1])) / 2)
             return abs(mean_t0 - mean_t1) / pooled_std if pooled_std > 0 else 0
-
+        
         # Check balance improvement for numeric1
         before_smd_num1 = std_mean_diff(treatments, numeric1)
         after_smd_num1 = std_mean_diff(retained_Ts, numeric1[retained_ids])
-
+        
         assert after_smd_num1 < before_smd_num1, (
             f"Expected balance to improve for numeric1. "
             f"Before SMD: {before_smd_num1}, After SMD: {after_smd_num1}"

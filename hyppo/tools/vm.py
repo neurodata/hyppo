@@ -4,12 +4,11 @@ from statsmodels.discrete.discrete_model import MNLogit
 import pandas as pd
 import numpy as np
 import patsy
-from ..tools import contains_nan, check_min_samples, check_2d_array, check_categorical
+from ..tools import contains_nan, check_min_samples, check_2d_array, check_categorical, check_ndarray_or_dataframe
 
-
-class _CleanInputsVM:
+class _CleanInputsPM:
     """
-    Cleans inputs for VM.
+    Cleans inputs for Propensity Model.
 
     Parameters
     ----------
@@ -18,8 +17,7 @@ class _CleanInputsVM:
     Xs : pandas DataFrame or array-like
         Covariates/features matrix, as an array. Should have a shape ``(n, r)``, where ``n`` is the number of samples, and ``r`` is the number of covariates.
     prop_form_rhs : str, or None, default: None
-        the right-hand side of a formula for a generalized propensity score, an extension of the concept of a propensity score to more than two groups.
-            - See the documentation for :mod:`statsmodels.discrete.discrete_model.MNLogit` for details on the use of formulas. If a propensity model is specified, anticipates that the covariate matrix specified for the `fit()` method will be a pandas dataframe.
+        the right-hand side of a formula for a generalized propensity score, an extension of the concept of a propensity score to (optionally) more than two groups.
             - Set to `None` to default to a propensity model which includes a single regressor for each column of the covariate matrix.
 
     Attributes
@@ -31,6 +29,7 @@ class _CleanInputsVM:
     K: int
         the number of unique treatments.
     formula: str
+        A propensity model.
     Xs_df:  pandas DataFrame
         Cleaned covariates/features matrix, as a dataframe with named columns.
     Xs_design: patsy.DesignMatrix
@@ -43,17 +42,23 @@ class _CleanInputsVM:
         self.validate_inputs(Ts, Xs, prop_form_rhs=prop_form_rhs)
 
     def validate_inputs(self, Ts, Xs, prop_form_rhs=None):
+        # check covariates
         try:
             Xs = check_2d_array(Xs)
             contains_nan(Xs)
-            Xs_df = self.check_Xs_ndarray_or_pandas(Xs, prop_form_rhs=prop_form_rhs)
+            Xs_df = self.check_Xs_ndarray_or_dataframe(Xs, prop_form_rhs=prop_form_rhs)
         except Exception as e:
-            raise ValueError(f"Error checking `Xs'. Error: {e}")
+            exc_type = type(e)
+            new_message = f"Error checking `Xs'. Error: {e}"
+            raise exc_type(new_message) from e
+        # check treatments
         try:
             contains_nan(Ts)
             Ts_factor, unique_treatments, K = check_categorical(Ts)
         except Exception as e:
-            raise ValueError(f"Error checking `Ts'. Error: {e}")
+            exc_type = type(e)
+            new_message = f"Error checking `Ts'. Error: {e}"
+            raise exc_type(new_message) from e
 
         check_min_samples(Ts=Ts, Xs=Xs)
         # check that Xs is a ndarray or pandas dataframe, and
@@ -68,23 +73,15 @@ class _CleanInputsVM:
         self.unique_treatments = unique_treatments
         self.K = K
 
-    def check_Xs_ndarray_or_pandas(self, Xs, prop_form_rhs=None):
+    def check_Xs_ndarray_or_dataframe(self, Xs, prop_form_rhs=None):
         """Ensure that Xs is a pandas dataframe, or can be cast to one."""
         # Ensure Xs is a DataFrame
         if not isinstance(Xs, pd.DataFrame):
             if prop_form_rhs is not None:
-                raise ValueError(
+                raise TypeError(
                     "Specified a propensity formula `prop_form_rhs' upon initialization, but `Xs' covariate matrix is not a pandas dataframe."
                 )
-            try:
-                # Create column names based on the shape of Xs
-                column_names = [f"X{i}" for i in range(Xs.shape[1])]
-                # Convert Xs to DataFrame with these column names
-                Xs = pd.DataFrame(Xs, columns=column_names)
-            except Exception as e:
-                raise TypeError(
-                    f"Cannot cast covariates `Xs' to a dataframe. Error: {e}"
-                )
+            Xs = check_ndarray_or_dataframe(Xs, "X")
         return Xs
 
     def generate_formula(self, Xs, Ts, prop_form_rhs=None):
@@ -110,11 +107,13 @@ class _CleanInputsVM:
                 return_type="dataframe",
             )
         except Exception as e:
-            raise ValueError(f"Error generating propensity model formula: {e}")
+            exc_type = type(e)
+            new_message = f"Error generating propensity model formula: {e}"
+            raise exc_type(new_message) from e
         return Ts_design, Xs_design, formula
 
 
-class VectorMatch(ABC):
+class GeneralisedPropensityModel(ABC):
     """
     Vector matching causal data pre-processing.
 
@@ -154,7 +153,7 @@ class VectorMatch(ABC):
         Formula used for propensity score estimation.
     ddx : bool
         Whether debugging information was displayed during fitting.
-    cleaned_inputs : _CleanInputsVM
+    cleaned_inputs : _CleanInputsPM
         Processed input data used for model fitting.
     unique_treatments : array-like
         Unique treatment values found in the data.
@@ -170,25 +169,33 @@ class VectorMatch(ABC):
     .. footbibliography::
     """
 
-    def __init__(self, retain_ratio=0.05):
+    def __init__(self):
         """
         Initialize the VectorMatcher.
-
-        Parameters:
-        -----------
-        retain_ratio : float, optional
-            Minimum proportion of samples to retain
         """
-        self.retain_ratio = retain_ratio
+        self.retain_ratio = np.nan
         self.is_fitted = False
         self.balanced_ids = None
         self.model = None
         self.pred_probs = None
         self.Rtable = None
-        self.unique_treatments = None
         self.cleaned_inputs = None
 
-    def fit(self, Ts, Xs, prop_form_rhs=None, ddx=False, niter=100):
+    def _clean(self, Ts, Xs, prop_form_rhs=None):
+        """
+        An internal function to handle cleaning separately.
+        """
+        # Process inputs
+        try:
+            self.cleaned_inputs = _CleanInputsPM(Ts, Xs, prop_form_rhs=prop_form_rhs)
+        except Exception as e:
+            raise ValueError(f"Failed to clean inputs: {str(e)}") from e
+        # set attributes after cleaning
+        self.prop_form_rhs = prop_form_rhs
+        self.nsamples = len(self.cleaned_inputs.Ts_factor)
+        return self
+
+    def fit(self, Ts, Xs, prop_form_rhs=None, ddx=False, niter=100, retain_ratio=0.05):
         """
         Fit the vector matching model and identify balanced observations.
 
@@ -199,13 +206,15 @@ class VectorMatch(ABC):
         Xs : pandas DataFrame or array-like
             Covariates/features matrix, as an array. Should have a shape ``(n, r)``, where ``n`` is the number of samples, and ``r`` is the number of covariates.
         prop_form_rhs : str, or None, default: None
-            the right-hand side of a formula for a generalized propensity score, an extension of the concept of a propensity score to more than two groups.
+            the right-hand side of a formula for a generalized propensity score, an extension of the concept of a propensity score to (optionally) more than two groups.
                 - See the documentation for :mod:`statsmodels.discrete.discrete_model.MNLogit` for details on the use of formulas. If a propensity model is specified, anticipates that the covariate matrix specified for the `fit()` method will be a pandas dataframe.
                 - Set to `None` to default to a propensity model which includes a single regressor for each column of the covariate matrix.
         ddx : bool, optional, default: False
             Whether to print diagnostic debugging information for model fitting.
         niter : int, optional, default: 100
             The number of iterations for the multinomial logit model.
+        retain_ratio : float, optional
+            Minimum proportion of samples to retain
 
         Returns:
         --------
@@ -217,40 +226,64 @@ class VectorMatch(ABC):
                 "This VectorMatch instance has already been fit. "
                 "Create a new instance for a new dataset."
             )
+        self._clean(Ts, Xs, prop_form_rhs=prop_form_rhs)
+        return self._fit(ddx=ddx, niter=niter, retain_ratio=0.05)
 
-        # Process inputs
-        try:
-            cleaned_inputs = _CleanInputsVM(Ts, Xs, prop_form_rhs=prop_form_rhs)
-        except Exception as e:
-            raise ValueError(f"Failed to clean inputs: {str(e)}") from e
+    
+    def _fit(self, ddx=False, niter=100, retain_ratio=0.05):
+        """
+        Internal method for fitting the vector matching model and identify balanced observations.
+
+        Parameters:
+        -----------
+        ddx : bool, optional, default: False
+            Whether to print diagnostic debugging information for model fitting.
+        niter : int, optional, default: 100
+            The number of iterations for the multinomial logit model.
+        retain_ratio : float, optional
+            Minimum proportion of samples to retain
+
+        Returns:
+        --------
+        balance_ids: list of int
+        - the positional indices of samples to include for subsequent analysis.
+        """
+        # Validate that retain_ratio is valid
+        if not isinstance(retain_ratio, (float, int)):
+            raise TypeError("retain_ratio must be a number (float or int)")
+            
+        if not (0 <= retain_ratio <= 1):
+            raise ValueError("retain_ratio should be a fraction between 0 and 1.")
 
         # Fit the multinomial logit model
         try:
-            model = MNLogit(cleaned_inputs.Ts_design, cleaned_inputs.Xs_design)
+            model = MNLogit(self.cleaned_inputs.Ts_design, self.cleaned_inputs.Xs_design)
             if ddx:
                 result = model.fit(disp=True, maxiter=niter)
             else:
                 result = model.fit(disp=False, maxiter=niter)
         except Exception as e:
-            raise ValueError(f"Failed to fit propensity model: {str(e)}") from e
+            exc_type = type(e)
+            new_message = f"Failed to fit generalised propensity model: {str(e)}"
+            raise exc_type(new_message) from e
 
         # Get predictions
         try:
             pred_probs = result.predict()
             pred_probs = pd.DataFrame(
-                pred_probs, columns=[str(t) for t in range(cleaned_inputs.K)]
+                pred_probs, columns=[str(t) for t in range(self.cleaned_inputs.K)]
             )
         except Exception as e:
-            raise ValueError(
-                f"Failed to generate propensity score predictions: {str(e)}"
-            ) from e
+            exc_type = type(e)
+            new_message = f"Failed to generate generalised propensity score predictions: {str(e)}"
+            raise exc_type(new_message) from e
 
         # Identify overlapping regions
         try:
-            Rtable = np.zeros((cleaned_inputs.K, 2))
-            for i, t in enumerate(cleaned_inputs.unique_treatments):
-                t_idx = np.where(Ts == t)[0]
-                for j in range(cleaned_inputs.K):
+            Rtable = np.zeros((self.cleaned_inputs.K, 2))
+            for i, t in enumerate(self.cleaned_inputs.unique_treatments):
+                t_idx = np.where(self.cleaned_inputs.Ts_factor == t)[0]
+                for j in range(self.cleaned_inputs.K):
                     # Min and max probabilities for treatment t when actual treatment is j
                     min_prob = np.min(pred_probs.iloc[t_idx, j])
                     max_prob = np.max(pred_probs.iloc[t_idx, j])
@@ -262,14 +295,16 @@ class VectorMatch(ABC):
                         max_prob,
                     )
         except Exception as e:
-            raise ValueError(f"Failed to calculate overlap regions: {str(e)}") from e
+            exc_type = type(e)
+            new_message = f"Failed to calculate overlap regions: {str(e)}"
+            raise exc_type(new_message) from e
 
         # Identify balanced observations
         try:
             balanced_ids = []
-            for i in range(len(Ts)):
+            for i in range(self.nsamples):
                 is_balanced = True
-                for j in range(cleaned_inputs.K):
+                for j in range(self.cleaned_inputs.K):
                     if not (
                         pred_probs.iloc[i, j] >= Rtable[j, 0]
                         and pred_probs.iloc[i, j] <= Rtable[j, 1]
@@ -279,24 +314,22 @@ class VectorMatch(ABC):
                 if is_balanced:
                     balanced_ids.append(i)
         except Exception as e:
-            raise ValueError(
-                f"Failed to identify balanced observations: {str(e)}"
-            ) from e
+            exc_type = type(e)
+            new_message = f"Failed to identify balanced observations: {str(e)}"
+            raise exc_type(new_message) from e
 
         # Check if enough samples are retained
-        if len(balanced_ids) < self.retain_ratio * len(Ts):
-            percentage = 100 * len(balanced_ids) / len(Ts)
+        if len(balanced_ids) < retain_ratio * self.nsamples:
+            percentage = 100 * len(balanced_ids) / self.nsamples
             warnings.warn(
-                f"Few samples retained by vector matching ({len(balanced_ids)} out of {len(Ts)}, {percentage:.1f}%)."
+                f"Few samples retained by vector matching ({len(balanced_ids)} out of {self.nsamples}, {percentage:.1f}%)."
             )
 
         if len(balanced_ids) == 0:
             raise ValueError("No samples retained by vector matching.")
 
-        # set attributes after successful rfitting
-        self.prop_form_rhs = prop_form_rhs
+        self.retain_ratio = retain_ratio
         self.ddx = ddx
-        self.cleaned_inputs = cleaned_inputs
         self.model = model
         self.model_result = result
         self.pred_probs = pred_probs
