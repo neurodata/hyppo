@@ -1,7 +1,14 @@
 import pandas as pd
 import numpy as np
 import patsy
-from ..tools import contains_nan, check_min_samples, check_2d_array, check_ndarray_or_dataframe, check_categorical
+from ..tools import (
+    contains_nan,
+    check_min_samples,
+    check_2d_array,
+    check_ndarray_or_dataframe,
+    check_categorical,
+)
+
 
 class _CleanInputsPM:
     """
@@ -133,7 +140,7 @@ class _CleanInputsConditionalDiscrepancy:
             - This option is only functional if `outcome_only' is set to False.
     outcome_isdist: bool, default: False
         Whether the outcome matrix `Ys' is a data matrix with shape ``(n, r)'' or a distance matrix with shape ``(n, n)''.
-    
+
     Attributes
     ----------
     Ys_df:  pandas DataFrame
@@ -153,14 +160,19 @@ class _CleanInputsConditionalDiscrepancy:
     Ts_design: patsy.DesignMatrix
         Design matrix for the treatment variables.
     """
-    def __init__(self, Ys, Ts, Xs, outcome_only=False, prop_form_rhs=None, outcome_isdist=False):
+
+    def __init__(
+        self, Ys, Ts, Xs, outcome_only=False, prop_form_rhs=None, outcome_isdist=False
+    ):
         # check outcomes
-        self.validate_inputs(Ys, Ts, Xs, outcome_isdist=outcome_isdist)            
+        self.validate_inputs(Ys, Ts, Xs, outcome_isdist=outcome_isdist)
         if not outcome_only:
             # if not outcome only, clean the treatments and covariates
             cleaned_pm = _CleanInputsPM(Ts, Xs, prop_form_rhs=prop_form_rhs)
-            self.Xs_df = cleaned_pm.Xs_df; self.Ts_factor = cleaned_pm.Ts_factor
-            self.Xs_design = cleaned_pm.Xs_design; self.Ts_design = cleaned_pm.Ts_design
+            self.Xs_df = cleaned_pm.Xs_df
+            self.Ts_factor = cleaned_pm.Ts_factor
+            self.Xs_design = cleaned_pm.Xs_design
+            self.Ts_design = cleaned_pm.Ts_design
             self.treatment_maps = cleaned_pm.treatment_maps
             self.K = cleaned_pm.K
             self.formula = cleaned_pm.formula
@@ -177,7 +189,7 @@ class _CleanInputsConditionalDiscrepancy:
             # if not a distance matrix, check it's a ndarray or pandas df
             else:
                 Ys_df = check_ndarray_or_dataframe(Ys, "Y")
-            
+
         except Exception as e:
             exc_type = type(e)
             new_message = f"Error checking `Ys'. Error: {e}"

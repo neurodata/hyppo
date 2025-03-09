@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from ._utils import _CleanInputsPM
 
+
 class GeneralisedPropensityModel(ABC):
     """
     This is a lightweight class for fitting generalised propensity models.
@@ -53,7 +54,7 @@ class GeneralisedPropensityModel(ABC):
     def _clean(self, Ts, Xs, prop_form_rhs=None):
         """
         An internal function to handle cleaning separately.
-        
+
         Parameters
         ----------
         Ts : array-like
@@ -62,7 +63,7 @@ class GeneralisedPropensityModel(ABC):
             Covariates/features matrix
         prop_form_rhs : str, or None, default: None
             The right-hand side of a formula for a generalized propensity score
-            
+
         Returns
         -------
         self : GeneralisedPropensityModel
@@ -77,35 +78,37 @@ class GeneralisedPropensityModel(ABC):
         self.prop_form_rhs = prop_form_rhs
         self.nsamples = len(self.cleaned_inputs.Ts_factor)
         return self
-    
+
     def _fit(self, ddx=False, niter=100):
         """
         Internal method for fitting the generalized propensity model and
         estimating generalized propensity scores using .
-        
+
         This method assumes that cleaning has already been performed
         and self.cleaned_inputs is available.
-        
+
         Parameters
         ----------
         ddx : bool, optional, default: False
             Whether to print diagnostic debugging information for model fitting.
         niter : int, optional, default: 100
             The number of iterations for the multinomial logit model.
-            
+
         Returns
         -------
         self : GeneralisedPropensityModel
             The fitted model instance
         """
-        if not hasattr(self, 'cleaned_inputs') or self.cleaned_inputs is None:
+        if not hasattr(self, "cleaned_inputs") or self.cleaned_inputs is None:
             raise ValueError(
                 "Inputs must be cleaned before fitting. Call _clean() first."
             )
-        
+
         # Fit the multinomial logit model
         try:
-            model = MNLogit(self.cleaned_inputs.Ts_design, self.cleaned_inputs.Xs_design)
+            model = MNLogit(
+                self.cleaned_inputs.Ts_design, self.cleaned_inputs.Xs_design
+            )
             if ddx:
                 result = model.fit(disp=True, maxiter=niter)
             else:
@@ -123,21 +126,23 @@ class GeneralisedPropensityModel(ABC):
             )
         except Exception as e:
             exc_type = type(e)
-            new_message = f"Failed to generate generalised propensity score predictions: {str(e)}"
+            new_message = (
+                f"Failed to generate generalised propensity score predictions: {str(e)}"
+            )
             raise exc_type(new_message) from e
-            
+
         self.model = model
         self.model_result = result
         self.pred_probs = pred_probs
         self.is_fitted = True
-        
+
         return self
-        
+
     def fit(self, Ts, Xs, prop_form_rhs=None, ddx=False, niter=100):
         """
         Fit the generalized propensity score model (multinomial logistic regression).
-        
-        This method cleans the inputs and fits the propensity model without performing 
+
+        This method cleans the inputs and fits the propensity model without performing
         vector matching. Use vector_match() after fitting to perform the matching process.
 
         Parameters
@@ -171,13 +176,13 @@ class GeneralisedPropensityModel(ABC):
                 "This GeneralisedPropensityModel instance has already been fit. "
                 "Create a new instance for a new dataset."
             )
-            
+
         self._clean(Ts, Xs, prop_form_rhs=prop_form_rhs)
         self.ddx = ddx
         self.niter = niter
-        
+
         return self._fit(ddx=ddx, niter=niter)
-    
+
     def vector_match(self, retain_ratio=0.05):
         """
         Perform vector matching to identify balanced observations.
@@ -190,14 +195,14 @@ class GeneralisedPropensityModel(ABC):
 
         This effectively removes observations without comparable matches in other treatment
         groups, improving covariate balance for downstream causal inference.
-    
+
         This method should be called after fitting the propensity model with `fit()`.
-        
+
         Parameters
         ----------
         retain_ratio : float, default 0.05
             Minimum proportion of samples to retain. Defaults to 0.05.
-            
+
         Returns
         -------
         balanced_ids : list of int
@@ -217,14 +222,14 @@ class GeneralisedPropensityModel(ABC):
                 "Model must be fitted before performing vector matching. "
                 "Call fit() method first."
             )
-            
+
         # Validate that retain_ratio is valid
         if not isinstance(retain_ratio, (float, int)):
             raise TypeError("retain_ratio must be a number (float or int)")
-            
+
         if not (0 <= retain_ratio <= 1):
             raise ValueError("retain_ratio should be a fraction between 0 and 1.")
-            
+
         Rtable = np.zeros((self.cleaned_inputs.K, 2))
 
         try:
@@ -233,59 +238,59 @@ class GeneralisedPropensityModel(ABC):
                 # Arrays to store min and max propensity scores for treatment t across all treatment groups
                 min_probs_across_groups = []
                 max_probs_across_groups = []
-                
+
                 # For each actual treatment group t'
                 for code in self.cleaned_inputs.treatment_maps["code_to_value"].keys():
                     # Indices of samples with actual treatment t'
                     indices = np.where(self.cleaned_inputs.Ts_factor == code)[0]
-                    
+
                     # Skip if no samples have this treatment
                     if len(indices) == 0:
                         continue
-                        
+
                     # Get propensity scores for treatment t among samples with actual treatment t'
                     propensity_scores = self.pred_probs.iloc[indices, t]
-                    
+
                     # Find min and max
                     min_prob = np.min(propensity_scores)
                     max_prob = np.max(propensity_scores)
-                    
+
                     # Add to lists
                     min_probs_across_groups.append(min_prob)
                     max_probs_across_groups.append(max_prob)
-                
+
                 # Compute l(t) and h(t)
                 # l(t) = max of mins, h(t) = min of maxes
                 Rtable[t, 0] = np.max(min_probs_across_groups)
                 Rtable[t, 1] = np.min(max_probs_across_groups)
-                
+
         except Exception as e:
             exc_type = type(e)
             new_message = f"Failed to calculate overlap regions: {str(e)}"
             raise exc_type(new_message) from e
-        
+
         # Identify balanced observations
         try:
             balanced_ids = []
-            
+
             # For each sample
             for i in range(self.nsamples):
                 is_balanced = True
-                
+
                 # Check if propensity scores for all treatments fall within bounds
                 for t in range(self.cleaned_inputs.K):
                     # Get propensity score for treatment t
                     prop_score = self.pred_probs.iloc[i, t]
-                    
+
                     # Check if it's within bounds
                     if prop_score < Rtable[t, 0] or prop_score > Rtable[t, 1]:
                         is_balanced = False
                         break
-                
+
                 # If sample is balanced, add to list
                 if is_balanced:
                     balanced_ids.append(i)
-                    
+
         except Exception as e:
             exc_type = type(e)
             new_message = f"Failed to identify balanced observations: {str(e)}"
@@ -300,17 +305,19 @@ class GeneralisedPropensityModel(ABC):
 
         if len(balanced_ids) == 0:
             raise ValueError("No samples retained by vector matching.")
-        
+
         self.retain_ratio = retain_ratio
         self.Rtable = Rtable
         self.balanced_ids = balanced_ids
 
         return balanced_ids
-        
-    def fit_and_match(self, Ts, Xs, prop_form_rhs=None, ddx=False, niter=100, retain_ratio=0.05):
+
+    def fit_and_match(
+        self, Ts, Xs, prop_form_rhs=None, ddx=False, niter=100, retain_ratio=0.05
+    ):
         """
         Convenience method to both fit the model and perform vector matching in one call.
-        
+
         This is equivalent to calling fit() followed by vector_match().
 
         Parameters
@@ -327,7 +334,7 @@ class GeneralisedPropensityModel(ABC):
             The number of iterations for the multinomial logit model.
         retain_ratio : float, optional, default: 0.05
             Minimum proportion of samples to retain
-            
+
         Returns
         -------
         balanced_ids : list of int
@@ -335,14 +342,14 @@ class GeneralisedPropensityModel(ABC):
         """
         self.fit(Ts, Xs, prop_form_rhs=prop_form_rhs, ddx=ddx, niter=niter)
         return self.vector_match(retain_ratio=retain_ratio)
-        
+
     def fit_from_cleaned(self, cleaned_inputs, ddx=False, niter=100):
         """
         Fit the model using pre-cleaned inputs.
-        
+
         This method allows for external cleaning of inputs before fitting,
         which can be useful when integrating with other preprocessing steps.
-        
+
         Parameters
         ----------
         cleaned_inputs : _CleanInputsPM
@@ -362,16 +369,14 @@ class GeneralisedPropensityModel(ABC):
                 "This GeneralisedPropensityModel instance has already been fit. "
                 "Create a new instance for a new dataset."
             )
-            
+
         if not isinstance(cleaned_inputs, _CleanInputsPM):
-            raise TypeError(
-                "cleaned_inputs must be an instance of _CleanInputsPM"
-            )
-            
+            raise TypeError("cleaned_inputs must be an instance of _CleanInputsPM")
+
         self.cleaned_inputs = cleaned_inputs
         self.nsamples = len(self.cleaned_inputs.Ts_factor)
-        self.prop_form_rhs = getattr(cleaned_inputs, 'prop_form_rhs', None)
+        self.prop_form_rhs = getattr(cleaned_inputs, "prop_form_rhs", None)
         self.ddx = ddx
         self.niter = niter
-        
+
         return self._fit(ddx=ddx, niter=niter)

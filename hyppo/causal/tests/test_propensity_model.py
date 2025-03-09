@@ -9,6 +9,7 @@ from ...tools import CATE_SIMULATIONS, cate_sim, simulate_covars
 from .._utils import _CleanInputsPM
 from ..propensity_model import GeneralisedPropensityModel
 
+
 class TestCleanInputsPM:
     """Test the input cleaning and validation directly"""
 
@@ -287,7 +288,6 @@ class TestCleanInputsPM:
                     assert cleaner.Xs_design.iloc[i][other_col] == 0
 
 
-
 def approx_overlap(X1, X2, nbreaks=100):
     """
     Calculate approximate overlap between two distributions using KDE.
@@ -308,7 +308,7 @@ class TestVectorMatch:
     def test_initialization(self):
         """Test initialization and that things are what we expect."""
         gpm = GeneralisedPropensityModel()
-        assert hasattr(gpm, 'is_fitted')
+        assert hasattr(gpm, "is_fitted")
         assert gpm.is_fitted is False
         assert gpm.model is None
         assert gpm.model_result is None
@@ -364,9 +364,9 @@ class TestVectorMatch:
         for i in range(nrep):
             # Create string treatments
             Ts = np.array(["control"] * 100 + ["treatment"] * 100)
-            
+
             rngi = np.random.RandomState(seeds[i])
-            
+
             # Create features with outliers at positions 0 and 199
             X1 = np.concatenate([[-4], rngi.uniform(size=198), [5]])
             X2 = np.concatenate([[-4], rngi.uniform(size=198), [5]])
@@ -377,7 +377,7 @@ class TestVectorMatch:
                 warnings.simplefilter("ignore")
                 gpm = GeneralisedPropensityModel()
                 retained_ids = gpm.fit_and_match(Ts, Xs, retain_ratio=0.05)
-                
+
             # Check if samples 0 and 199 are excluded
             excl_sample_0 = 0 not in retained_ids
             excl_sample_199 = 199 not in retained_ids
@@ -471,7 +471,7 @@ class TestVectorMatch:
     def test_vector_match_requires_fit_first(self):
         """Test that vector_match raises an error if called before fit."""
         gpm = GeneralisedPropensityModel()
-        
+
         with pytest.raises(ValueError, match="Model must be fitted"):
             gpm.vector_match(retain_ratio=0.05)
 
@@ -495,13 +495,13 @@ class TestVectorMatch:
         # Fit vector matching without specifying a formula
         gpm = GeneralisedPropensityModel()
         gpm.fit(sim["Ts"], Xs_array)
-        
+
         # Verify fitting succeeded
         assert gpm.is_fitted
-        
+
         # Perform vector matching
         retained_ids = gpm.vector_match()
-        
+
         # Verify matching succeeded
         assert isinstance(retained_ids, list)
         assert len(retained_ids) > 0
@@ -582,12 +582,16 @@ class TestVectorMatch:
         gpm_high = GeneralisedPropensityModel()
 
         # Process low balance data
-        retained_ids_low = gpm_low.fit_and_match(sim_low_balance["Ts"], sim_low_balance["Xs"], retain_ratio=0.2)
+        retained_ids_low = gpm_low.fit_and_match(
+            sim_low_balance["Ts"], sim_low_balance["Xs"], retain_ratio=0.2
+        )
         Ts_tilde_low = sim_low_balance["Ts"][retained_ids_low]
         Xs_tilde_low = sim_low_balance["Xs"][retained_ids_low]
 
         # Process high balance data
-        retained_ids_high = gpm_high.fit_and_match(sim_high_balance["Ts"], sim_high_balance["Xs"], retain_ratio=0.2)
+        retained_ids_high = gpm_high.fit_and_match(
+            sim_high_balance["Ts"], sim_high_balance["Xs"], retain_ratio=0.2
+        )
         Ts_tilde_high = sim_high_balance["Ts"][retained_ids_high]
         Xs_tilde_high = sim_high_balance["Xs"][retained_ids_high]
 
@@ -633,137 +637,137 @@ class TestVectorMatch:
         """Test vector matching with a controlled propensity model including categorical covariates."""
         np.random.seed(123456789)
         n_samples = 1000
-        
+
         # Generate features with known effect on propensity
         numeric1 = np.random.normal(size=n_samples)
         numeric2 = np.random.normal(size=n_samples)
-        categorical = np.random.choice(['A', 'B', 'C'], size=n_samples)
-        
+        categorical = np.random.choice(["A", "B", "C"], size=n_samples)
+
         # Create a propensity model with known coefficients
         logits = (
-            0.5 * numeric1 - 
-            0.3 * numeric2 + 
-            1.5 * (categorical == 'A') + 
-            0.5 * (categorical == 'B')
+            0.5 * numeric1
+            - 0.3 * numeric2
+            + 1.5 * (categorical == "A")
+            + 0.5 * (categorical == "B")
         )
         probs = 1 / (1 + np.exp(-logits))
         treatments = np.random.binomial(1, probs)
-        
+
         # Create DataFrame with all features
-        Xs_df = pd.DataFrame({
-            'numeric1': numeric1,
-            'numeric2': numeric2,
-            'category': categorical
-        })
-        
+        Xs_df = pd.DataFrame(
+            {"numeric1": numeric1, "numeric2": numeric2, "category": categorical}
+        )
+
         # Fit vector matching
         gpm = GeneralisedPropensityModel()
         gpm.fit(treatments, Xs_df)
         retained_ids = gpm.vector_match(retain_ratio=0.7)
-        
+
         # Verify fitting succeeded
         assert gpm.is_fitted
         assert isinstance(retained_ids, list)
         assert len(retained_ids) > 0
-        
+
         # Check the propensity model coefficients
         model_params = gpm.model_result.params
         param_names = model_params.index.tolist()
-        
+
         # Should have intercept and coefficients for category levels
-        assert 'Intercept' in param_names
-        
+        assert "Intercept" in param_names
+
         # Check if category levels are present in parameters
-        category_params = [p for p in param_names if 'category' in p]
+        category_params = [p for p in param_names if "category" in p]
         assert len(category_params) == 2  # Should have 2 parameters for 3 categories
-        
+
         # Compare covariate balance before and after matching
         def categorical_imbalance(treatments, categories):
             imbalance = 0
-            for cat in ['A', 'B', 'C']:
+            for cat in ["A", "B", "C"]:
                 prop_t0 = np.mean(categories[treatments == 0] == cat)
                 prop_t1 = np.mean(categories[treatments == 1] == cat)
                 # Add absolute difference to imbalance measure
                 imbalance += abs(prop_t0 - prop_t1)
             return imbalance
-        
+
         # Calculate imbalance before matching
         before_imbalance = categorical_imbalance(treatments, categorical)
-        
+
         # Calculate imbalance after matching
         retained_Ts = treatments[retained_ids]
         retained_cats = categorical[retained_ids]
         after_imbalance = categorical_imbalance(retained_Ts, retained_cats)
-        
+
         # Imbalance should decrease after matching
         assert after_imbalance < before_imbalance, (
             f"Expected categorical imbalance to decrease after matching. "
             f"Before: {before_imbalance}, After: {after_imbalance}"
         )
-        
+
         # Also check numeric variables balance
         def std_mean_diff(treatments, variable):
             mean_t0 = np.mean(variable[treatments == 0])
             mean_t1 = np.mean(variable[treatments == 1])
-            pooled_std = np.sqrt((np.var(variable[treatments == 0]) + 
-                               np.var(variable[treatments == 1])) / 2)
+            pooled_std = np.sqrt(
+                (np.var(variable[treatments == 0]) + np.var(variable[treatments == 1]))
+                / 2
+            )
             return abs(mean_t0 - mean_t1) / pooled_std if pooled_std > 0 else 0
-        
+
         # Check balance improvement for numeric1
         before_smd_num1 = std_mean_diff(treatments, numeric1)
         after_smd_num1 = std_mean_diff(retained_Ts, numeric1[retained_ids])
-        
+
         assert after_smd_num1 < before_smd_num1, (
             f"Expected balance to improve for numeric1. "
             f"Before SMD: {before_smd_num1}, After SMD: {after_smd_num1}"
         )
-        
+
     def test_fit_from_cleaned(self):
         """Test using fit_from_cleaned method with externally created cleaned inputs."""
         rng = np.random.RandomState(123456789)
-        
+
         # Generate simulation data
         sim = cate_sim("Sigmoidal", n=200, p=2, balance=0.5, random_state=rng)
-        
+
         # Create cleaned inputs externally
         cleaned_inputs = _CleanInputsPM(sim["Ts"], sim["Xs"])
-        
+
         # Test using fit_from_cleaned
         gpm = GeneralisedPropensityModel()
         gpm.fit_from_cleaned(cleaned_inputs)
-        
+
         # Check that model was fitted
         assert gpm.is_fitted
         assert gpm.model is not None
         assert gpm.pred_probs is not None
-        
+
         # Check that we can perform vector matching after
         retained_ids = gpm.vector_match()
         assert len(retained_ids) > 0
-    
+
     def test_fit_and_match_retains_parameters(self):
         """Test that fit_and_match passes parameters to both fit and vector_match."""
         rng = np.random.RandomState(123456789)
         sim = cate_sim("Sigmoidal", n=200, p=1, balance=0.5, random_state=rng)
-        
+
         # Set specific parameters for testing
         test_retain_ratio = 0.15
         test_ddx = True
         test_niter = 50
-        
+
         gpm = GeneralisedPropensityModel()
         gpm.fit_and_match(
-            sim["Ts"], 
-            sim["Xs"], 
-            ddx=test_ddx, 
-            niter=test_niter, 
-            retain_ratio=test_retain_ratio
+            sim["Ts"],
+            sim["Xs"],
+            ddx=test_ddx,
+            niter=test_niter,
+            retain_ratio=test_retain_ratio,
         )
-        
+
         # Check that parameters were correctly passed and stored
         assert gpm.ddx == test_ddx
         assert gpm.niter == test_niter
         assert gpm.retain_ratio == test_retain_ratio
-        
+
         # Verify both fitting and matching occurred
         assert gpm.is_fitted
