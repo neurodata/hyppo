@@ -113,7 +113,18 @@ def check_2d_array(data):
 
 
 def check_categorical(data):
-    """Cast data to a categorical vector if not already categorical."""
+    """
+    Cast data to a categorical vector if not already categorical.
+    
+    Returns:
+    --------
+    data_factor : array-like
+        The remapped categorical codes (0, 1, 2, etc.)
+    level_map : dict
+        Two dictionaries mapping between remapped codes and original values
+    K : int
+        Number of unique categories
+    """
     try:
         # Check if data is already a pandas Categorical
         if isinstance(data, pd.Categorical):
@@ -133,9 +144,16 @@ def check_categorical(data):
             unique_levels = np.unique(data)
             K = len(unique_levels)
             data_factor = pd.Categorical(data, categories=unique_levels).codes
+        
+        # Create mappings between original values and remapped codes
+        code_to_value = {i: val for i, val in enumerate(unique_levels)}
+        value_to_code = {val: i for i, val in enumerate(unique_levels)}
+        level_map = {"code_to_value": code_to_value, "value_to_code": value_to_code}
+        
     except Exception as e:
         raise TypeError(f"Cannot cast to a categorical vector. Error: {e}")
-    return data_factor, unique_levels, K
+    
+    return data_factor, level_map, K
 
 
 def check_ndarray_or_dataframe(data, col_id):

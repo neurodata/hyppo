@@ -399,50 +399,92 @@ class TestSingleMatrixFns:
     def test_check_categorical(self):
         """Test the check_categorical function with various input types"""
         # Case 1: Simple numeric array
-        data_factor, unique_levels, K = check_categorical(self.Ts_binary)
+        data_factor, level_map, K = check_categorical(self.Ts_binary)
+        unique_levels = np.array(list(level_map["code_to_value"].values()))
         assert np.array_equal(unique_levels, np.array([0, 1]))
         assert K == 2
         assert np.all(np.isin(data_factor, [0, 1]))
+        assert level_map["code_to_value"][0] == 0
+        assert level_map["code_to_value"][1] == 1
+        assert level_map["value_to_code"][0] == 0
+        assert level_map["value_to_code"][1] == 1
 
         # Case 2: Numeric array with different data type (float)
         float_array = np.array([1.5, 2.5, 1.5, 3.5])
-        data_factor, unique_levels, K = check_categorical(float_array)
+        data_factor, level_map, K = check_categorical(float_array)
+        unique_levels = np.array(list(level_map["code_to_value"].values()))
         assert np.array_equal(unique_levels, np.array([1.5, 2.5, 3.5]))
         assert K == 3
+        # Check mapping
+        assert level_map["code_to_value"][0] == 1.5
+        assert level_map["code_to_value"][1] == 2.5
+        assert level_map["code_to_value"][2] == 3.5
+        assert level_map["value_to_code"][1.5] == 0
+        assert level_map["value_to_code"][2.5] == 1
+        assert level_map["value_to_code"][3.5] == 2
 
         # Case 3: String array
-        data_factor, unique_levels, K = check_categorical(self.Ts_strings)
+        data_factor, level_map, K = check_categorical(self.Ts_strings)
+        unique_levels = np.array(list(level_map["code_to_value"].values()))
         assert np.array_equal(
             unique_levels, np.array(["control", "treatment_A", "treatment_B"])
         )
         assert K == 3
         assert np.all(np.isin(data_factor, [0, 1, 2]))
+        # Check mapping
+        assert level_map["code_to_value"][0] == "control"
+        assert level_map["code_to_value"][1] == "treatment_A"
+        assert level_map["code_to_value"][2] == "treatment_B"
+        assert level_map["value_to_code"]["control"] == 0
+        assert level_map["value_to_code"]["treatment_A"] == 1
+        assert level_map["value_to_code"]["treatment_B"] == 2
 
         # Case 4: pandas Categorical directly
         pd_cat = pd.Categorical(["X", "Y", "Z", "X", "Y"], categories=["X", "Y", "Z"])
-        data_factor, unique_levels, K = check_categorical(pd_cat)
+        data_factor, level_map, K = check_categorical(pd_cat)
+        unique_levels = np.array(list(level_map["code_to_value"].values()))
         assert np.array_equal(unique_levels, np.array(["X", "Y", "Z"]))
         assert K == 3
         assert np.all(np.isin(data_factor, [0, 1, 2]))
+        # Check mapping
+        assert level_map["code_to_value"][0] == "X"
+        assert level_map["code_to_value"][1] == "Y"
+        assert level_map["code_to_value"][2] == "Z"
+        assert level_map["value_to_code"]["X"] == 0
+        assert level_map["value_to_code"]["Y"] == 1
+        assert level_map["value_to_code"]["Z"] == 2
 
         # Case 5: pandas Series with categorical dtype
         pd_series_cat = pd.Series(pd_cat)
-        data_factor, unique_levels, K = check_categorical(pd_series_cat)
+        data_factor, level_map, K = check_categorical(pd_series_cat)
+        unique_levels = np.array(list(level_map["code_to_value"].values()))
         assert np.array_equal(unique_levels, np.array(["X", "Y", "Z"]))
         assert K == 3
         assert np.all(np.isin(data_factor, [0, 1, 2]))
+        # Check mapping
+        assert level_map["code_to_value"][0] == "X"
+        assert level_map["value_to_code"]["Y"] == 1
 
         # Case 6: pandas Series with non-categorical dtype
         pd_series_regular = pd.Series([10, 20, 30, 10, 20])
-        data_factor, unique_levels, K = check_categorical(pd_series_regular)
+        data_factor, level_map, K = check_categorical(pd_series_regular)
+        unique_levels = np.array(list(level_map["code_to_value"].values()))
         assert np.array_equal(unique_levels, np.array([10, 20, 30]))
         assert K == 3
+        # Check mapping
+        assert level_map["code_to_value"][0] == 10
+        assert level_map["code_to_value"][1] == 20
+        assert level_map["code_to_value"][2] == 30
 
         # Case 7: pandas Series with string dtype
         pd_series_str = pd.Series(["apple", "banana", "apple", "cherry"])
-        data_factor, unique_levels, K = check_categorical(pd_series_str)
+        data_factor, level_map, K = check_categorical(pd_series_str)
+        unique_levels = np.array(list(level_map["code_to_value"].values()))
         assert np.array_equal(unique_levels, np.array(["apple", "banana", "cherry"]))
         assert K == 3
+        # Check mapping
+        assert level_map["code_to_value"][0] == "apple"
+        assert level_map["value_to_code"]["cherry"] == 2
 
         # Case 8: pandas Categorical with ordered=True
         pd_cat_ordered = pd.Categorical(
@@ -450,10 +492,16 @@ class TestSingleMatrixFns:
             categories=["small", "medium", "large"],
             ordered=True,
         )
-        data_factor, unique_levels, K = check_categorical(pd_cat_ordered)
+        data_factor, level_map, K = check_categorical(pd_cat_ordered)
+        unique_levels = np.array(list(level_map["code_to_value"].values()))
         assert np.array_equal(unique_levels, np.array(["small", "medium", "large"]))
         assert K == 3
+        # Check mapping
+        assert level_map["code_to_value"][0] == "small"
+        assert level_map["code_to_value"][1] == "medium"
+        assert level_map["code_to_value"][2] == "large"
 
+        # Case 9: Empty array
         with pytest.raises(TypeError):
             check_categorical(np.array([]))
 
