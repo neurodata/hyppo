@@ -137,6 +137,19 @@ def check_categorical(data):
         raise TypeError(f"Cannot cast to a categorical vector. Error: {e}")
     return data_factor, unique_levels, K
 
+def check_ndarray_or_dataframe(data, col_id):
+    """Ensure that data is a pandas dataframe, or can be cast to one."""
+    if not isinstance(data, pd.DataFrame):
+        try:
+            # Create column names based on the shape of data
+            column_names = [f"{col_id}{i}" for i in range(data.shape[1])]
+            # Convert to DataFrame with these column names
+            data = pd.DataFrame(data, columns=column_names)
+        except Exception as e:
+            raise TypeError(
+                f"Cannot cast to a dataframe. Error: {e}"
+            )
+    return data
 
 def convert_xy_float64(x, y):
     """Convert x or y to np.float64 (if not already done)"""
@@ -173,35 +186,25 @@ def check_reps(reps):
         warnings.warn(msg, RuntimeWarning)
 
 
-def _check_distmat(x, y, z=None):
-    """Check if x, y, and z are distance matrices."""
-    if z is None:
-        data = (x, y)
-        labs = np.array(["x", "y"])
-    else:
-        data = (x, y, z)
-        labs = np.array(["x", "y", "z"])
-
-    check_sym = np.array([not np.allclose(arr, arr.T) for arr in data])
-    check_diag = np.array([not np.all((arr.diagonal() == 0)) for arr in data])
-
-    if np.any(check_sym) or np.any(check_diag):
-        inputs = "x and y" if z is None else "x, y and z"
-        if np.any(check_sym):
-            names = ", ".join(labs[check_sym])
-            verb = "is" if check_sym.sum() == 1 else "are"
-            sym_msg = f"{names} {verb} not symmetric."
-        else:
-            sym_msg = ""
-        if np.any(check_diag):
-            names = ", ".join(labs[check_diag])
-            verb = "does not" if check_diag.sum() == 1 else "do not"
-            diag_msg = f"{names} {verb} have zeros along the diagonal."
-        else:
-            diag_msg = ""
-
-        msg = f"{inputs} must be distance matrices. {sym_msg} {diag_msg}"
-        raise ValueError(msg)
+def _check_distmat(*args):
+    """Check if every input is a distance matrix."""
+    errors = []
+    
+    for i, mat in enumerate(args):
+        is_sym = np.allclose(mat, mat.T)
+        has_zero_diag = np.all(mat.diagonal() == 0)
+        
+        if not is_sym or not has_zero_diag:
+            error_msg = (
+                f"Matrix {i+1} must be a distance matrix, "
+                f"{'' if is_sym else 'is not symmetric'}"
+                f"{' and ' if not is_sym and not has_zero_diag else ''}"
+                f"{'' if has_zero_diag else 'does not have zeros along the diagonal'}"
+            )
+            errors.append(error_msg)
+    
+    if errors:
+        raise ValueError("\n".join(errors))
 
 
 def _check_kernmat(x, y):
@@ -392,20 +395,17 @@ def multi_compute_kern(*args, metric="gaussian", workers=1, **kwargs):
     return sim_matrices
 
 
-def compute_dist(x, y, z=None, metric="euclidean", workers=1, **kwargs):
+def compute_dist(*args, metric="euclidean", workers=1, **kwargs):
     """
-    Distance matrices for the inputs.
+    Distance matrices for the input matrices.
 
     Parameters
     ----------
-    x,y,z : ndarray of float
-        Input data matrices. ``x``, ``y`` and ``z`` must have the same number
-        of samples. That is, the shapes must be ``(n, p)``, ``(n, q)`` and
-        ``(n, r)`` where `n` is the number of samples and `p`, `q`, and `r`
-        are the number of dimensions. Alternatively, ``x``, ``y`` and ``z``
-        can be distance matrices where the shapes must be ``(n, n)``. ``z``
-        is an optional ndarray.
-    metric : str, callable, or None, default: "euclidean"
+    *args: ndarray of float
+        Variable length input data matrices. The shapes must be ``(n, p)``, ``(n, q)``,
+        etc., where `n` is the number of samples and `p` and `q` are the
+        number of dimensions.
+    metric: str, callable, or None, default="euclidean"
         A function that computes the distance among the samples within each
         data matrix.
         Valid strings for ``metric`` are, as defined in
@@ -423,13 +423,12 @@ def compute_dist(x, y, z=None, metric="euclidean", workers=1, **kwargs):
               ``"yule"``] See the documentation for :mod:`scipy.spatial.distance` for
               details on these metrics.
 
-        Set to ``None`` or ``"precomputed"`` if ``x``, ``y``, and ``z`` are already
+        Set to ``None`` or ``"precomputed"`` if matrices are already
         distance matrices. To call a custom function, either create the distance matrix
         before-hand or create a function of the form ``metric(x, **kwargs)``
         where ``x`` is the data matrix for which pairwise distances are
-        calculated and ``**kwargs`` are extra arguements to send to your custom
-        function.
-    workers : int, default: 1
+        calculated and ``**kwargs`` are extra arguements to send to your custom function.
+    workers: int, default=1
         The number of cores to parallelize the p-value computation over.
         Supply ``-1`` to use all cores available to the Process.
     **kwargs
@@ -439,34 +438,32 @@ def compute_dist(x, y, z=None, metric="euclidean", workers=1, **kwargs):
 
     Returns
     -------
-    distx, disty, distz : ndarray of float
-        Distance matrices based on the metric provided by the user. ``distz`` is
-        only returned if ``z`` is provided.
+    dist_matrices: tuple of ndarray of float
+        Distance matrices based on the metric provided by the user.
+        One matrix is returned for each input matrix, in the same order.
     """
+    if not args:
+        raise ValueError("No data matrices provided.")
+        
     if not metric:
         metric = "precomputed"
+        
     if callable(metric):
-        distx = metric(x, **kwargs)
-        disty = metric(y, **kwargs)
-        distz = None if z is None else metric(z, **kwargs)
-        _check_distmat(
-            distx,
-            disty,
-            distz,
-        )  # verify whether matrix is correct, built into sklearn func
+        dist_mats = []
+        for mat in args:
+            dist_mat = metric(mat, **kwargs)
+            dist_mats.append(dist_mat)
+        dist_matrices = tuple(dist_mats)
+        _check_distmat(*dist_matrices)
     else:
-        distx = pairwise_distances(x, metric=metric, n_jobs=workers, **kwargs)
-        disty = pairwise_distances(y, metric=metric, n_jobs=workers, **kwargs)
-        distz = (
-            None
-            if z is None
-            else pairwise_distances(z, metric=metric, n_jobs=workers, **kwargs)
-        )
+        dist_mats = []
+        for mat in args:
+            dist_mat = pairwise_distances(mat, metric=metric, n_jobs=workers, **kwargs)
+            dist_mats.append(dist_mat)
+        dist_matrices = tuple(dist_mats)
+    
+    return dist_matrices
 
-    if z is None:
-        return distx, disty
-    else:
-        return distx, disty, distz
 
 
 def check_perm_blocks(perm_blocks):
