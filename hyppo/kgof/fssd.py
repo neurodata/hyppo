@@ -1,7 +1,6 @@
 from __future__ import division
 
 from builtins import str, range, object
-from past.utils import old_div
 
 import autograd.numpy as np
 from ._utils import outer_rows
@@ -122,7 +121,7 @@ class FSSDH0SimCovDraw(H0Simulator):
         Tau = fea_tensor.reshape(n, -1)
         # Make sure it is a matrix i.e, np.cov returns a scalar when Tau is
         # 1d.
-        cov = old_div(Tau.T.dot(Tau), n) + np.zeros((1, 1))
+        cov = Tau.T.dot(Tau) / n + np.zeros((1, 1))
         n_simulate = self.n_simulate
 
         arr_nfssd, eigs = list_simulate_spectral(cov, J, n_simulate, seed=self.seed)
@@ -310,7 +309,7 @@ class FSSD(GofTest):
         # n x d x J tensor
         grad_logp_K = outer_rows(grad_logp, K)
 
-        Xi = old_div((grad_logp_K + dKdV), np.sqrt(d * J))
+        Xi = (grad_logp_K + dKdV) / np.sqrt(d * J)
         return Xi
 
 
@@ -340,9 +339,9 @@ def power_criterion(p, X, k, test_locs, reg=1e-2, use_unbiased=True, use_2terms=
 
     # mean/sd criterion
     sigma_h1 = np.sqrt(u_variance + reg)
-    ratio = old_div(u_mean, sigma_h1)
+    ratio = u_mean / sigma_h1
     if use_2terms:
-        obj = old_div(-1.0, (np.sqrt(n) * sigma_h1)) + np.sqrt(n) * ratio
+        obj = -1.0 / (np.sqrt(n) * sigma_h1) + np.sqrt(n) * ratio
     else:
         obj = ratio
     return obj
@@ -372,8 +371,8 @@ def ustat_h1_mean_variance(fea_tensor, return_variance=True, use_unbiased=True):
     # n x d*J
     Tau = np.reshape(Xi, [n, d * J])
     if use_unbiased:
-        t1 = np.sum(np.mean(Tau, 0) ** 2) * (old_div(n, float(n - 1)))
-        t2 = old_div(np.sum(np.mean(Tau**2, 0)), float(n - 1))
+        t1 = np.sum(np.mean(Tau, 0) ** 2) * (n / float(n - 1))
+        t2 = np.sum(np.mean(Tau**2, 0)) / float(n - 1)
         # stat is the mean
         stat = t1 - t2
     else:
@@ -425,20 +424,16 @@ def simulate_null_dist(eigs, J, n_simulate=2000, seed=7):
     -------
     fssds : a numpy array of simulated statistics.
     """
-    d = old_div(len(eigs), J)
+    d = len(eigs) // J  # Use integer division
     assert d > 0
-    # draw at most d x J x block_size values at a time
-    block_size = max(20, int(old_div(1000.0, (d * J))))
+    block_size = max(20, int(1000.0 / (d * J)))
     fssds = np.zeros(n_simulate)
     from_ind = 0
     rng = default_rng(seed)
     while from_ind < n_simulate:
         to_draw = min(block_size, n_simulate - from_ind)
-        # draw chi^2 random variables.
-        chi2 = rng.standard_normal(size=(d * J, to_draw)) ** 2
-        # an array of length to_draw
+        chi2 = rng.standard_normal(size=(d * J, to_draw)) ** 2  # d * J is now an integer
         sim_fssds = eigs.dot(chi2 - 1.0)
-        # store
         end_ind = from_ind + to_draw
         fssds[from_ind:end_ind] = sim_fssds
         from_ind = end_ind
