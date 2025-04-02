@@ -60,7 +60,7 @@ hyppo requires the following:
 - `scipy <https://docs.scipy.org/doc/scipy/reference/>`_ (>= 1.4.0)
 - `scikit-learn <https://scikit-learn.org/stable/>`_ (>= 0.22)
 - `joblib <https://joblib.readthedocs.io/en/latest/>`_ (>= 0.17.0)
-- `statsmodels <https://www.statsmodels.org/>`_ (>= 0.14.4)
+- `statsmodels <https://www.statsmodels.org/>`_ (>= 0.14.1)
 - `patsy <https://patsy.readthedocs.io/en/latest/>`_ (>= 0.5.1)
 - `pandas <https://pandas.pydata.org/>`_ (>= 2.2.3)
 
