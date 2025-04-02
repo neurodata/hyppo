@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 from numpy.testing import assert_almost_equal
 
-from ...tools import joint_normal, linear, power
-from .. import CCA
+from hyppo.tools import joint_normal, linear, power
+from hyppo.independence import CCA
 
 
 class TestCCAStat:
