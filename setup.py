@@ -31,7 +31,7 @@ REQUIRED_PACKAGES = [
     "numba>=0.46",
     "scikit-learn>=0.19.1",
     "autograd>=1.3",
-    "statsmodels>=0.14.4",
+    "statsmodels>=0.14.1",
     "patsy>=0.5.1",
     "pandas>=2.2.3",
 ]
