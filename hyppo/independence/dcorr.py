@@ -434,7 +434,7 @@ def _dcorr(distx, disty, bias=False, is_fast=False):  # pragma: no cover
         vary = _dcov(disty, disty, bias=bias, only_dcov=False)
 
     # stat is 0 with negative variances (would make denominator undefined)
-    if varx <= 0 or vary <= 0 or covar <= 0:
+    if varx <= 0 or vary <= 0 or (covar <= 0 and bias):
         stat = 0
 
     # calculate generalized test statistic
