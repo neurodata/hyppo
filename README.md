@@ -31,6 +31,9 @@ hyppo requires the following:
 * [scipy](https://docs.scipy.org/doc/scipy/reference/) (>= 1.4.0)
 * [scikit-learn](https://scikit-learn.org/stable/) (>= 0.22)
 * [joblib](https://joblib.readthedocs.io/en/latest/) (>= 0.17.0)
+* [statsmodels](https://www.statsmodels.org/) (>= 0.14.4)
+* [patsy](https://patsy.readthedocs.io/en/latest/) (>= 0.5.1)
+* [pandas](https://pandas.pydata.org/) (>= 2.2.3)
 
 ### User installation
 

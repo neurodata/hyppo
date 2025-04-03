@@ -32,6 +32,9 @@ and make sure that you install the package dependencies as well:
     numba>=0.46
     scikit-learn>=0.22
     joblib>=0.17.0
+    statsmodels>=0.14.1
+    patsy>=0.5.1
+    pandas>=2.2.3
 
 ## Pandoc dependency
 
