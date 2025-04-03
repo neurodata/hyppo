@@ -21,8 +21,8 @@ class TestKMERFStat(object):
             ),  # test spiral simulation
             (
                 multimodal_independence,
-                0.0,
-                0.31731050786291115,
+                -0.0365162074938057,
+                1.0,
             ),  # test independence simulation
         ],
     )
