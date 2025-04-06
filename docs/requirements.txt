@@ -12,3 +12,4 @@ seaborn
 sphinxcontrib-bibtex>=2.2.0
 docutils==0.17.1
 sphinx_sitemap
+Jinja2<3.1
