@@ -1,9 +1,9 @@
 sphinxcontrib-rawfiles==0.1.1
 nbsphinx==0.8.0
-ipython==8.10.0
+ipython==7.19.0
 ipykernel==5.4.3
-sphinx==4.0.2
-pydata-sphinx-theme==0.8.1
+sphinx==3.3
+pydata-sphinx-theme==0.7.1
 sphinx-gallery==0.8.2
 numpydoc==0.7.0
 myst_parser
