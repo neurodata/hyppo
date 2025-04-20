@@ -2,7 +2,7 @@ sphinxcontrib-rawfiles==0.1.1
 nbsphinx==0.8.0
 ipython==8.10.0
 ipykernel==5.4.3
-sphinx==4.0.2
+sphinx==3.3
 pydata-sphinx-theme==0.7.1
 sphinx-gallery==0.8.2
 numpydoc==0.7.0
@@ -12,3 +12,4 @@ seaborn
 sphinxcontrib-bibtex>=2.2.0
 docutils==0.17.1
 sphinx_sitemap
+Jinja2<3.1
