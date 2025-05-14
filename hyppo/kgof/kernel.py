@@ -49,7 +49,7 @@ class DifferentiableKernel(ABC):
         with respect to x_i.
         """
         # Removed default autograd implementation, eliminating dependency entirely
-        # This forces subclasses to impliment manually, which is fine if we work with analytic grads
+        # This forces subclasses to implement manually, which is fine if we work with analytic grads
         # You cannot use compute_kern at all here, since compute_kern only returns self-similarity
         # We need
         pass
