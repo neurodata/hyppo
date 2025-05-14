@@ -1,19 +1,14 @@
 """
 Module containing kernel related classes
-
-TODO: Replace kernel evaluation with compute_kern found in hyppo.common.tools by reducing
-dependencies on autograd.numpy
 """
+
 from __future__ import division
 
 from builtins import str
 from past.utils import old_div
 
 from abc import ABC, abstractmethod
-import autograd
-import autograd.numpy as np
-
-from ..tools import compute_kern
+import numpy as np
 
 
 class Kernel(ABC):
@@ -40,23 +35,24 @@ class Kernel(ABC):
 
 
 class DifferentiableKernel(ABC):
+    """Abstract class for differentiable kernels."""
+
+    @abstractmethod
     def gradX_y(self, X, y):
         """
-        Compute the gradient with respect to X (the first argument of the
-        kernel). Base class provides a default autograd implementation for convenience.
-        Subclasses should override if this does not work.
+        Compute the gradient of the kernel with respect to the first input (X),
+        evaluated against a fixed point y.
         X: nx x d numpy array.
         y: numpy array of length d.
-        Return a numpy array G of size nx x d, the derivative of k(X, y) with
-        respect to X.
+        Return gradients in a numpy array of size nx x d, the derivative of
+        k(X, y) with respect to X. Each row i contains the gradient of k(x_i, y)
+        with respect to x_i.
         """
-        yrow = np.reshape(y, (1, -1))
-        f = lambda X: self.eval(X, yrow)
-        g = autograd.elementwise_grad(f)
-        G = g(X)
-        assert G.shape[0] == X.shape[0]
-        assert G.shape[1] == X.shape[1]
-        return G
+        # Removed default autograd implementation, eliminating dependency entirely
+        # This forces subclasses to implement manually, which is fine if we work with analytic grads
+        # You cannot use compute_kern at all here, since compute_kern only returns self-similarity
+        # We need
+        pass
 
 
 class LinearKSTKernel(ABC):
@@ -166,6 +162,39 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         K = np.exp(old_div(-D2, (2.0 * self.sigma2)))
         return K
 
+    # Moved pair_eval so its defined above where its called
+    def pair_eval(self, X, Y):
+        """
+        Evaluate k(x1, y1), k(x2, y2), ...
+        Parameters
+        ----------
+        X, Y : n x d numpy array
+        Return
+        -------
+        a numpy array with length n
+        """
+        D2 = np.sum((X - Y) ** 2, 1)
+        Kvec = np.exp(old_div(-D2, (2.0 * self.sigma2)))
+        return Kvec
+
+    # Implementation of gradX_y from DifferentiableKernel, rather than inheritance from the autograd default
+    def gradX_y(self, X, y):
+        """
+        Compute the gradient of the kernel with respect to the first input (X),
+        evaluated against a fixed point y.
+        X: nx x d numpy array.
+        y: numpy array of length d.
+        Return gradients in a numpy array of size nx x d, the derivative of
+        k(X, y) with respect to X. Each row i contains the gradient of k(x_i, y)
+        with respect to x_i.
+        """
+        sigma2 = self.sigma2
+        Diff = X - y
+        D2 = np.sum(Diff**2, axis=1)
+        Kvec = np.exp(old_div(-D2, (2.0 * self.sigma2)))
+        G = -Kvec[:, np.newaxis] * Diff / sigma2
+        return G
+
     def gradX_Y(self, X, Y, dim):
         """
         Compute the gradient with respect to the dimension dim of X in k(X, Y).
@@ -244,17 +273,3 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         Kvec = np.exp(old_div(-D2, (2.0 * self.sigma2)))
         G = Kvec / sigma2 * (d - old_div(D2, sigma2))
         return G
-
-    def pair_eval(self, X, Y):
-        """
-        Evaluate k(x1, y1), k(x2, y2), ...
-        Parameters
-        ----------
-        X, Y : n x d numpy array
-        Return
-        -------
-        a numpy array with length n
-        """
-        D2 = np.sum((X - Y) ** 2, 1)
-        Kvec = np.exp(old_div(-D2, (2.0 * self.sigma2)))
-        return Kvec
