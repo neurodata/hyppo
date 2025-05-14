@@ -177,7 +177,7 @@ class KGauss(DifferentiableKernel, KSTKernel, LinearKSTKernel):
         Kvec = np.exp(old_div(-D2, (2.0 * self.sigma2)))
         return Kvec
 
-    # Implimentation of gradX_y from DifferentiableKernel, rather than inheritance from the autograd default
+    # Implementation of gradX_y from DifferentiableKernel, rather than inheritance from the autograd default
     def gradX_y(self, X, y):
         """
         Compute the gradient of the kernel with respect to the first input (X),
