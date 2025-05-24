@@ -34,6 +34,7 @@ REQUIRED_PACKAGES = [
     "statsmodels>=0.14.1",
     "patsy>=0.5.1",
     "pandas>=2.2.3",
+    "future>=1.0.0",
 ]
 
 # Find mgc version.
