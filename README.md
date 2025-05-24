@@ -33,7 +33,7 @@ hyppo requires the following:
 * [joblib](https://joblib.readthedocs.io/en/latest/) (>= 0.17.0)
 * [statsmodels](https://www.statsmodels.org/) (>= 0.14.4)
 * [patsy](https://patsy.readthedocs.io/en/latest/) (>= 0.5.1)
-* [pandas](https://pandas.pydata.org/) (>= 2.2.3)
+* [future](https://pypi.org/project/future/) (>=1.0.0)
 
 ### User installation
 
