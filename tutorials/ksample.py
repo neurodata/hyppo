@@ -76,6 +76,10 @@ let's look at unique properties of some of these tests:
 #
 # .. note::
 #
+#    This algorithm is currently under review at a peer-review journal.
+#
+# .. note::
+#
 #    If you want use 2-sample MGC, we have added that functionality to SciPy!
 #    Please see :func:`scipy.stats.multiscale_graphcorr`.
 #

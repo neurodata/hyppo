@@ -56,6 +56,9 @@ class KSample(KSampleTest):
 
     Notes
     -----
+    .. note::
+       This algorithm is currently under review at a peer-review journal.
+
     The formulation for this implementation is as follows
     :footcite:p:`pandaNonparMANOVAIndependence2021`:
 

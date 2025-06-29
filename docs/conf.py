@@ -54,6 +54,8 @@ extensions = [
     "myst_parser",
 ]
 
+mathjax_path = "https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+
 bibtex_bibfiles = ["refs.bib"]
 bibtex_reference_style = "super"
 bibtex_default_style = "unsrt"
@@ -82,7 +84,7 @@ numpydoc_class_members_toctree = True
 numpydoc_show_class_members = False
 
 # -- sphinx.ext.autosummary
-autosummary_generate = []
+autosummary_generate = True
 
 # Otherwise, the Return parameter list looks different from the Parameters list
 napoleon_use_rtype = False

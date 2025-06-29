@@ -426,17 +426,10 @@
 }
 
 @article{mehtaIndependenceTestingMultivariate2020,
-  title = {Independence {{Testing}} for {{Multivariate Time Series}}},
-  author = {Mehta, Ronak and Chung, Jaewon and Shen, Cencheng and Xu, Ting and Vogelstein, Joshua T.},
-  year = {2020},
-  month = may,
-  journal = {arXiv:1908.06486 [cs, stat]},
-  eprint = {1908.06486},
-  eprinttype = {arxiv},
-  primaryclass = {cs, stat},
-  abstract = {Complex data structures such as time series are increasingly present in modern data science problems. A fundamental question is whether two such time-series are statistically dependent. Many current approaches make parametric assumptions on the random processes, only detect linear association, require multiple tests, or forfeit power in high-dimensional, nonlinear settings. Estimating the distribution of any test statistic under the null is non-trivial, as the permutation test is invalid. This work juxtaposes distance correlation (Dcorr) and multiscale graph correlation (MGC) from independence testing literature and block permutation from time series analysis to address these challenges. The proposed nonparametric procedure is valid and consistent, building upon prior work by characterizing the geometry of the relationship, estimating the time lag at which dependence is maximized, avoiding the need for multiple testing, and exhibiting superior power in high-dimensional, low sample size, nonlinear settings. Neural connectivity is analyzed via fMRI data, revealing linear dependence of signals within the visual network and default mode network, and nonlinear relationships in other networks. This work uncovers a first-resort data analysis tool with open-source code available, directly impacting a wide range of scientific disciplines.},
-  archiveprefix = {arXiv},
-  keywords = {Computer Science - Machine Learning,Statistics - Machine Learning,Statistics - Methodology},
+  title={Independence testing for temporal data},
+  author={Shen, Cencheng and Chung, Jaewon and Mehta, Ronak and Xu, Ting and Vogelstein, Joshua T},
+  journal={Transactions on Machine Learning Research},
+  year={2024}
 }
 
 @article{shenChiSquareTestDistance2021,
@@ -458,30 +451,23 @@
 }
 
 @article{chwialkowski2015fast,
-      title={Fast Two-Sample Testing with Analytic Representations of Probability Measures},
-      author={Kacper Chwialkowski and Aaditya Ramdas and Dino Sejdinovic and Arthur Gretton},
-      year={2015},
-      journal={arXiv:1506.04725 [math, stat]},
-      print={1506.04725},
-      eprinttype={arxiv},
-      abstract={We propose a class of nonparametric two-sample tests with a cost linear in the sample size. Two tests are given, both based on an ensemble of distances between analytic functions representing each of the distributions. The first test uses smoothed empirical characteristic functions to represent the distributions, the second uses distribution embeddings in a reproducing kernel Hilbert space. Analyticity implies that differences in the distributions may be detected almost surely at a finite number of randomly chosen locations/frequencies. The new tests are consistent against a larger class of alternatives than the previous linear-time tests based on the (non-smoothed) empirical characteristic functions, while being much faster than the current state-of-the-art quadratic-time kernel-based or energy distance-based tests. Experiments on artificial benchmarks and on challenging real-world testing problems demonstrate that our tests give a better power/time tradeoff than competing approaches, and in some cases, better outright power than even the most expensive quadratic-time tests. This performance advantage is retained even in high dimensions, and in cases where the difference in distributions is not observable with low order statistics.},
-      archivePrefix={arXiv},
-      primaryClass={stat.ML}
+  title={Fast two-sample testing with analytic representations of probability measures},
+  author={Chwialkowski, Kacper P and Ramdas, Aaditya and Sejdinovic, Dino and Gretton, Arthur},
+  journal={Advances in Neural Information Processing Systems},
+  volume={28},
+  year={2015}
 }
 
-@article{grettonKernelJointIndependence2016,
-  title = {{Kernel-based Tests} for {Joint Independence}},
-  author = {Pfister, Nikolas and Buhlmann, Peter and Scholkopf, Bernhard and Peters, Jonas},
-  year = {2016},
-  month = nov,
-  journal = {arXiv:1603.00285 [math, stat]},
-  eprint = {1603.00285},
-  eprinttype = {arxiv},
-  primaryclass = {math, stat},
-  abstract = {We investigate the problem of testing whether d random variables, which may or may not be continuous, are jointly (or mutually) independent. Our method builds on ideas of the two variable Hilbert-Schmidt independence criterion (HSIC) but allows for an arbitrary number of variables. We embed the d-dimensional joint distribution and the product of the marginals into a reproducing kernel Hilbert space and define the d-variable Hilbert-Schmidt independence criterion (dHSIC) as the squared distance between the embeddings. In the population case, the value of dHSIC is zero if and only if the d variables are jointly independent, as long as the kernel is characteristic. Based on an empirical estimate of dHSIC, we define three different non-parametric hypothesis tests: a permutation test, a bootstrap test and a test based on a Gamma approximation. We prove that the permutation test achieves the significance level and that the bootstrap test achieves pointwise asymptotic significance level as well as pointwise asymptotic consistency (i.e., it is able to detect any type of fixed dependence in the large sample limit). The Gamma approximation does not come with these guarantees; however, it is computationally very fast and for small d, it performs well in practice. Finally, we apply the test to a problem in causal discovery.},
-  archiveprefix = {arXiv},
-  keywords = {Math - Statistics Theory, Statistics - Machine Learning},
- }
+@article{pfister2018kernel,
+  title={Kernel-based tests for joint independence},
+  author={Pfister, Niklas and B{\"u}hlmann, Peter and Sch{\"o}lkopf, Bernhard and Peters, Jonas},
+  journal={Journal of the Royal Statistical Society: Series B (Statistical Methodology)},
+  volume={80},
+  number={1},
+  pages={5--31},
+  year={2018},
+  publisher={Wiley Online Library}
+}
 
  @article{friedmanMultivariateGeneralizationsoftheWaldWolfowitzandSmirnovTwoSampleTests1979,
   title = {Multivariate Generalizations of the Wald-Wolfowitz and Smirnov Two-Sample Tests},
@@ -544,4 +530,27 @@ abstract="Concepts of correlation and regression may be applied not only to ordi
 isbn="978-1-4612-4380-9",
 doi="10.1007/978-1-4612-4380-9_14",
 url="https://doi.org/10.1007/978-1-4612-4380-9_14"
+}
+
+@article{jitkrittum2017linear,
+  title={A linear-time kernel goodness-of-fit test},
+  author={Jitkrittum, Wittawat and Xu, Wenkai and Szab{\'o}, Zolt{\'a}n and Fukumizu, Kenji and Gretton, Arthur},
+  journal={Advances in Neural Information Processing Systems},
+  volume={30},
+  year={2017}
+}
+
+@inproceedings{10.5555/3020548.3020641,
+author = {Zhang, Kun and Peters, Jonas and Janzing, Dominik and Sch\"{o}lkopf, Bernhard},
+title = {Kernel-Based Conditional Independence Test and Application in Causal Discovery},
+year = {2011},
+isbn = {9780974903972},
+publisher = {AUAI Press},
+address = {Arlington, Virginia, USA},
+abstract = {Conditional independence testing is an important problem, especially in Bayesian network learning and causal discovery. Due to the curse of dimensionality, testing for conditional independence of continuous variables is particularly challenging. We propose a Kernel-based Conditional Independence test (KCI-test), by constructing an appropriate test statistic and deriving its asymptotic distribution under the null hypothesis of conditional independence. The proposed method is computationally efficient and easy to implement. Experimental results show that it outperforms other methods, especially when the conditioning set is large or the sample size is not very large, in which case other methods encounter difficulties.},
+booktitle = {Proceedings of the Twenty-Seventh Conference on Uncertainty in Artificial Intelligence},
+pages = {804–813},
+numpages = {10},
+location = {Barcelona, Spain},
+series = {UAI'11}
 }

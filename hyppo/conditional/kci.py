@@ -10,9 +10,9 @@ class KCI(ConditionalIndependenceTest):
     r"""
     Kernel Conditional Independence Test Statistic and P-Value.
 
-    This is a conditional indpendence test utilizing a radial basis 
+    This is a conditional indpendence test utilizing a radial basis
     function to calculate the kernels of two datasets. The trace
-    of the normalized matrix product is then calculated to extract the test 
+    of the normalized matrix product is then calculated to extract the test
     statistic. A Gaussian distribution is then utilized to calculate
     the p-value given the statistic and approximate mean and variance
     of the trace values of the independent kernel matrices.
@@ -20,14 +20,20 @@ class KCI(ConditionalIndependenceTest):
 
     Notes
     -----
+    The statistic is computed as follows :footcite:p:`10.5555/3020548.3020641`:
+
     Let :math:`x` be a combined sample of :math:`(n, p)` sample
     of random variables :math:`X` and let :math:`y` be a :math:`(n, 1)`
     labels of sample classes :math:`Y`. We can then generate
-    :math:`Kx` and :math:`Ky` kernel matrices for each of the respective
+    :math:`K^x` and :math:`K^y` kernel matrices for each of the respective
     samples. Normalizing, multiplying, and taking the trace of these
     kernel matrices gives the resulting test statistic.
     The p-value and null distribution for the corrected statistic are calculated a
     gamma distribution approximation.
+
+    References
+    ----------
+    .. footbibliography::
     """
 
     def __init__(self, **kwargs):
@@ -110,9 +116,7 @@ class KCI(ConditionalIndependenceTest):
         stat = self.statistic(x, y)
 
         mean_appr = (np.trace(Kx) * np.trace(Ky)) / T
-        var_appr = (
-            2 * np.trace(Kx @ Kx) * np.trace(Ky @ Ky) / T**2
-        )
+        var_appr = 2 * np.trace(Kx @ Kx) * np.trace(Ky @ Ky) / T**2
         k_appr = mean_appr**2 / var_appr
         theta_appr = var_appr / mean_appr
         pvalue = 1 - np.mean(gamma.cdf(stat, k_appr, theta_appr))

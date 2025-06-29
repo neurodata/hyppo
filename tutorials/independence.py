@@ -262,6 +262,10 @@ plt.show()
 #
 # .. note::
 #
+#    This algorithm is currently under review at a peer-reviewed journal.
+#
+# .. note::
+#
 #    :Pros: - Highly accurate, powerful independence test for multivariate and nonlinear
 #             data
 #           - Gives information about releative dimension (or feature) importance
@@ -322,6 +326,10 @@ plt.show()
 # :mod:`hyppo.independence`, and compute the maximal correlation of pairwise comparisons
 # between each dimension of `x` and `y`.
 # More details can be found in :class:`hyppo.independence.MaxMargin`.
+#
+# .. note::
+#
+#    This algorithm is currently under review at a peer-review journal.
 #
 # .. note::
 #
