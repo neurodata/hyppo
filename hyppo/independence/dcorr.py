@@ -56,7 +56,7 @@ class Dcorr(IndependenceTest):
 
     .. math::
 
-        \mathrm{Dcov}^b_n (x, y) = \frac{1}{n^2} \mathrm{tr} (D^x H D^y H)
+        \mathrm{Dcov}^b_n (x, y) = \frac{1}{n^2} \mathrm{tr} (H D^x H H D^y H)
 
     where :math:`\mathrm{tr} (\cdot)` is the trace operator and :math:`H` is
     defined as :math:`H = I - (1/n) J` where :math:`I` is the identity matrix
