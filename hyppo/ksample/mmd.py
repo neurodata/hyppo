@@ -60,7 +60,7 @@ class MMD(KSampleTest):
         \mathrm{MMD}_{n, m}(\mathbf{u}, \mathbf{v}) =
         \frac{1}{m(m - 1)} \sum_{i = 1}^m \sum_{j \neq i}^m k(u_i, u_j)
         + \frac{1}{n(n - 1)} \sum_{i = 1}^n \sum_{j \neq i}^n k(v_i, v_j)
-        - \frac{2}{mn} \sum_{i = 1}^n \sum_{j \neq i}^n k(v_i, v_j)
+        - \frac{2}{mn} \sum_{i = 1}^n \sum_{j \neq i}^n k(u_i, v_j)
 
     The implementation in the :class:`hyppo.ksample.KSample` class (using
     :class:`hyppo.independence.Hsic` using 2 samples) is in
