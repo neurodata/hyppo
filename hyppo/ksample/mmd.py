@@ -49,8 +49,8 @@ class MMD(KSampleTest):
     is as follows :footcite:p:`grettonKernelTwoSampleTest2012`:
 
     Define
-    :math:`\{ u_i \stackrel{iid}{\sim} F_U,\ i = 1, ..., n \}` and
-    :math:`\{ v_j \stackrel{iid}{\sim} F_V,\ j = 1, ..., m \}` as two groups
+    :math:`\{ u_i \stackrel{iid}{\sim} F_U,\ i = 1, ..., m \}` and
+    :math:`\{ v_j \stackrel{iid}{\sim} F_V,\ j = 1, ..., n \}` as two groups
     of samples deriving from different distributions with the same
     dimensionality. If :math:`k(\cdot, \cdot)` is a kernel metric (i.e. Gaussian)
     then,
@@ -60,7 +60,7 @@ class MMD(KSampleTest):
         \mathrm{MMD}_{n, m}(\mathbf{u}, \mathbf{v}) =
         \frac{1}{m(m - 1)} \sum_{i = 1}^m \sum_{j \neq i}^m k(u_i, u_j)
         + \frac{1}{n(n - 1)} \sum_{i = 1}^n \sum_{j \neq i}^n k(v_i, v_j)
-        - \frac{2}{mn} \sum_{i = 1}^n \sum_{j \neq i}^n k(u_i, v_j)
+        - \frac{2}{mn} \sum_{i = 1}^m \sum_{j = 1}^n k(u_i, v_j)
 
     The implementation in the :class:`hyppo.ksample.KSample` class (using
     :class:`hyppo.independence.Hsic` using 2 samples) is in
