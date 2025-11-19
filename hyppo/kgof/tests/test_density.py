@@ -1,6 +1,5 @@
 import numpy as np
 from numpy import testing
-from past.utils import old_div
 from scipy.linalg.misc import norm
 
 from ..datasource import DSNormal, DSIsotropicNormal
@@ -61,10 +60,10 @@ class TestNormal:
         norm = Normal(mean, cov)
         log_dens = norm.log_den(X)
         E, V = np.linalg.eigh(cov)
-        prec = np.dot(np.dot(V, np.diag(old_div(1.0, E))), V.T)
+        prec = np.dot(np.dot(V, np.diag(1.0 / E)), V.T)
         X0 = X - mean
         X0prec = np.dot(X0, prec)
-        my_log_dens = old_div(-np.sum(X0prec * X0, 1), 2.0)
+        my_log_dens = -np.sum(X0prec * X0, 1) / 2.0
 
         ds_norm = DSNormal(test_mean, cov)
         ds_norm.sample(n=10)
