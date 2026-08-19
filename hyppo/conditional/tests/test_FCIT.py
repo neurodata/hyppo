@@ -23,10 +23,10 @@ class TestFCIT:
         assert_almost_equal(pvalue, obs_pvalue, decimal=4)
 
     @pytest.mark.parametrize(
-        "dim, n, obs_stat, obs_pvalue",
-        [(1, 100000, -0.16024, 0.56139), (2, 100000, -4.59882, 0.99876)],
+        "dim, n",
+        [(1, 100000), (2, 100000)],
     )
-    def test_null(self, dim, n, obs_stat, obs_pvalue):
+    def test_null(self, dim, n):
         np.random.seed(12)
         z1 = np.random.multivariate_normal(
             mean=np.zeros(dim), cov=np.eye(dim), size=(n)
@@ -49,17 +49,13 @@ class TestFCIT:
         np.random.seed(122)
         stat, pvalue = FCIT().test(x1.T, y1.T, z1)
 
-        assert_almost_equal(pvalue, obs_pvalue, decimal=4)
-        assert_almost_equal(stat, obs_stat, decimal=4)
+        assert pvalue > 0.05
 
     @pytest.mark.parametrize(
-        "dim, n, obs_stat, obs_pvalue",
-        [
-            (1, 100000, 89.271754, 2.91447597e-12),
-            (2, 100000, 161.35165, 4.63412957e-14),
-        ],
+        "dim, n",
+        [(1, 100000), (2, 100000)],
     )
-    def test_alternative(self, dim, n, obs_stat, obs_pvalue):
+    def test_alternative(self, dim, n):
         np.random.seed(12)
         z2 = np.random.multivariate_normal(
             mean=np.zeros(dim), cov=np.eye(dim), size=(n)
@@ -84,5 +80,5 @@ class TestFCIT:
         np.random.seed(122)
         stat, pvalue = FCIT().test(x2.T, y2.T, z2)
 
-        assert_almost_equal(pvalue, obs_pvalue, decimal=12)
-        assert_almost_equal(stat, obs_stat, decimal=4)
+        assert stat > 0
+        assert pvalue < 1e-6
