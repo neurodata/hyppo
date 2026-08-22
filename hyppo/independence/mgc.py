@@ -164,9 +164,13 @@ class MGC(IndependenceTest):
 
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
-            mgc = multiscale_graphcorr(distx, disty, compute_distance=None, reps=0)
+            try:
+                mgc = multiscale_graphcorr(distx, disty, compute_distance=None, reps=0)
+                stat = mgc.stat
+            except IndexError:
+                # scipy mgc throws IndexError if disty is all zeros (variance 0)
+                stat = 0.0
 
-        stat = mgc.stat
         self.stat = stat
 
         return stat
