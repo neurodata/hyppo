@@ -62,24 +62,28 @@ class CCA(IndependenceTest):
             The computed CCA statistic.
         """
         # center each matrix
+        if x.ndim == 1:
+            x = x[:, np.newaxis]
+        if y.ndim == 1:
+            y = y[:, np.newaxis]
+
         centx = x - np.mean(x, axis=0)
         centy = y - np.mean(y, axis=0)
 
-        # calculate covariance and variances for inputs
-        covar = centx.T @ centy
-        varx = centx.T @ centx
-        vary = centy.T @ centy
+        # calculate orthonormal bases for the column spaces
+        Ux, Sx, _ = np.linalg.svd(centx, full_matrices=False)
+        Uy, Sy, _ = np.linalg.svd(centy, full_matrices=False)
 
-        # if 1-d, don't calculate the svd
-        if varx.size == 1 or vary.size == 1 or covar.size == 1:
-            covar = np.sum(np.abs(covar))
-            stat = covar / np.sqrt(np.sum(np.abs(varx)) * np.sum(np.abs(vary)))
+        # filter out zero singular values for stability
+        Ux = Ux[:, Sx > 1e-7]
+        Uy = Uy[:, Sy > 1e-7]
+
+        if Ux.shape[1] == 0 or Uy.shape[1] == 0:
+            stat = 0.0
         else:
-            covar = np.sum(np.linalg.svd(covar, 1)[1] ** 2)
-            stat = covar / np.sqrt(
-                np.sum(np.linalg.svd(varx, 1)[1] ** 2)
-                * np.sum(np.linalg.svd(vary, 1)[1] ** 2)
-            )
+            # The maximum singular value is the canonical correlation
+            stat = np.max(np.linalg.svd(Ux.T @ Uy, compute_uv=False))
+
         self.stat = stat
 
         return stat
