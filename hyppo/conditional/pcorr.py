@@ -148,6 +148,12 @@ class PartialCorr(ConditionalIndependenceTest):
         check_input = _CheckInputs(x, y, z, reps=reps, max_dims=1)
         x, y, z = check_input()
 
+        if check_input.is_zero_variance:
+            self.stat = 0.0
+            self.pvalue = 1.0
+            self.null_dist = None
+            return ConditionalIndependenceTestOutput(0.0, 1.0)
+
         if auto:  # run t-stat
             stat = self.statistic(x, y, z)
 

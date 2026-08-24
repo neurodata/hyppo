@@ -181,6 +181,12 @@ class PartialDcorr(ConditionalIndependenceTest):
         check_input = _CheckInputs(x, y, z, reps=reps)
         x, y, z = check_input()
 
+        if check_input.is_zero_variance:
+            self.stat = 0.0
+            self.pvalue = 1.0
+            self.null_dist = None
+            return ConditionalIndependenceTestOutput(0.0, 1.0)
+
         if not self.is_distance:
             x, y, z = compute_dist(x, y, z, metric=self.compute_distance, **self.kwargs)
             self.is_distance = True

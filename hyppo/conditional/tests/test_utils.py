@@ -64,7 +64,9 @@ class TestErrorWarn:
         y = np.arange(20).reshape(-1, 1)
         z = np.ones(20).reshape(-1, 1)
 
-        assert_raises(ValueError, _CheckInputs(x, y, z, ignore_z_var=False))
+        check_input = _CheckInputs(x, y, z, ignore_z_var=False)
+        check_input()
+        assert check_input.is_zero_variance == True
 
         try:
             _CheckInputs(x, y, z, ignore_z_var=True)

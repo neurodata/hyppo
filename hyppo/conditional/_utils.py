@@ -6,13 +6,14 @@ from ..tools import check_ndarray_xyz, check_reps, contains_nan, convert_xyz_flo
 class _CheckInputs:
     """Checks inputs for all independence tests"""
 
-    def __init__(self, x, y, z, reps=None, max_dims=None, ignore_z_var=False):
+    def __init__(self, x, y, z=None, reps=None, max_dims=None, ignore_z_var=False):
         self.x = x
         self.y = y
         self.z = z
         self.reps = reps
         self.max_dims = max_dims
         self.ignore_z_var = ignore_z_var # to allow for constant z input
+        self.is_zero_variance = False
 
     def __call__(self):
         check_ndarray_xyz(self.x, self.y, self.z)
@@ -59,8 +60,8 @@ class _CheckInputs:
                 raise ValueError(
                     f"x, y, z must have be univariate and have shape [n,{max_dims}]"
                 )
-
         self._check_nd_indeptest()
+        self._check_variance()
 
         return self.x, self.y, self.z
 
@@ -86,10 +87,9 @@ class _CheckInputs:
 
     def _check_variance(self):
         if np.var(self.x) == 0:
-        # or np.var(self.y) == 0 or np.var(self.z) == 0:
-            raise ValueError("Test cannot be run. Input array x has 0 variance.")
+            self.is_zero_variance = True
         if np.var(self.y) == 0:
-            raise ValueError("Test cannot be run. Input array y has 0 variance")
-        if not self.ignore_z_var:
+            self.is_zero_variance = True
+        if not self.ignore_z_var and self.z is not None:
             if np.var(self.z) == 0:
-                raise ValueError("Test cannot be run. Input array z has 0 variance")
+                self.is_zero_variance = True

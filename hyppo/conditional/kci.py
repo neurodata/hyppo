@@ -112,6 +112,10 @@ class KCI(ConditionalIndependenceTest):
 
         T = len(y)
 
+        if np.var(x) == 0 or np.var(y) == 0:
+            self.stat = 0.0
+            return ConditionalIndependenceTestOutput(0.0, 1.0)
+
         Kx, Ky = self.compute_kern(x, y)
         stat = self.statistic(x, y)
 

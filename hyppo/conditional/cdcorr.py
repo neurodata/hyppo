@@ -172,6 +172,12 @@ class ConditionalDcorr(ConditionalIndependenceTest):
         check_input = _CheckInputs(x, y, z, reps=reps, ignore_z_var=True)
         x, y, z = check_input()
 
+        if check_input.is_zero_variance:
+            self.stat = 0.0
+            self.pvalue = 1.0
+            self.null_dist = None
+            return ConditionalIndependenceTestOutput(0.0, 1.0)
+
         if not self.is_distance:
             x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
             z = self._compute_kde(z)
