@@ -3,10 +3,12 @@ import time
 import joblib
 import numpy as np
 from scipy.stats import ttest_1samp
+from sklearn.base import clone
 from sklearn.metrics import mean_squared_error as mse
 from sklearn.model_selection import GridSearchCV, ShuffleSplit
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.utils import check_random_state
 
 from .base import ConditionalIndependenceTest, ConditionalIndependenceTestOutput
 
@@ -30,6 +32,16 @@ class FCIT(ConditionalIndependenceTest):
         Proportion of data to evaluate test stat on.
     discrete: tuple of string
         Whether :math:`X` or :math:`Y` are discrete
+    random_state: int, RandomState instance, or None
+        Controls every source of randomness used internally (the data
+        permutations, the cross-validation splits, and, when ``model``
+        doesn't already pin its own ``random_state``, the regressor
+        fit on each permutation). Pass an int for reproducible results.
+        When ``None`` (the default), results are not reproducible and,
+        because the underlying regressor then draws from NumPy's global
+        random state, the exact statistic/p-value can also drift across
+        scikit-learn versions whenever they change how many times that
+        global state gets consumed internally.
 
     Notes
     -----
@@ -62,6 +74,7 @@ class FCIT(ConditionalIndependenceTest):
         num_perm=8,
         prop_test=0.1,
         discrete=(False, False),
+        random_state=None,
     ):
 
         self.model = model
@@ -69,6 +82,7 @@ class FCIT(ConditionalIndependenceTest):
         self.num_perm = num_perm
         self.prop_test = prop_test
         self.discrete = discrete
+        self.random_state = random_state
         ConditionalIndependenceTest.__init__(self)
 
     def statistic(self, x, y, z=None):
@@ -91,16 +105,29 @@ class FCIT(ConditionalIndependenceTest):
         n_samples = x.shape[0]
         n_test = int(n_samples * self.prop_test)
 
-        data_permutations = [
-            np.random.permutation(x.shape[0]) for i in range(self.num_perm)
-        ]
+        rng = check_random_state(self.random_state)
 
-        clf = _cross_val(x, y, z, self.cv_grid, self.model, prop_test=self.prop_test)
+        data_permutations = [
+            rng.permutation(x.shape[0]) for i in range(self.num_perm)
+        ]
+        reshuffle_seeds = rng.randint(0, np.iinfo(np.int32).max, size=self.num_perm)
+
+        cv_seed = rng.randint(0, np.iinfo(np.int32).max)
+        clf = _cross_val(
+            x,
+            y,
+            z,
+            self.cv_grid,
+            self.model,
+            prop_test=self.prop_test,
+            random_state=cv_seed,
+        )
         datadict = {
             "x": x,
             "y": y,
             "z": z,
             "data_permutation": data_permutations,
+            "reshuffle_seeds": reshuffle_seeds,
             "n_test": n_test,
             "reshuffle": False,
             "clf": clf,
@@ -113,12 +140,19 @@ class FCIT(ConditionalIndependenceTest):
         )
 
         if z.shape[1] == 0:
-            x_indep_y = x[np.random.permutation(n_samples)]
+            x_indep_y = x[rng.permutation(n_samples)]
         else:
             x_indep_y = np.empty([x.shape[0], 0])
 
+        cv_seed = rng.randint(0, np.iinfo(np.int32).max)
         clf = _cross_val(
-            x_indep_y, y, z, self.cv_grid, self.model, prop_test=self.prop_test
+            x_indep_y,
+            y,
+            z,
+            self.cv_grid,
+            self.model,
+            prop_test=self.prop_test,
+            random_state=cv_seed,
         )
 
         datadict["reshuffle"] = True
@@ -166,8 +200,8 @@ class FCIT(ConditionalIndependenceTest):
         >>> model = DecisionTreeRegressor()
         >>> cv_grid = {"min_samples_split": [2, 8, 64, 512, 1e-2, 0.2, 0.4]}
         >>> stat, pvalue = FCIT(model=model, cv_grid=cv_grid).test(x1.T, y1.T, z1)
-        >>> bool(pvalue > 0.5)
-        True
+        >>> '%.1f, %.2f' % (stat, pvalue)
+        '-3.6, 1.00'
         """
 
         n_samples = x.shape[0]
@@ -192,23 +226,30 @@ class FCIT(ConditionalIndependenceTest):
         return ConditionalIndependenceTestOutput(stat, pvalue)
 
 
-def _cross_val(x, y, z, cv_grid, model, prop_test):
+def _cross_val(x, y, z, cv_grid, model, prop_test, random_state=None):
     """
     Choose the regression hyperparameters by
     cross-validation.
     """
 
-    splitter = ShuffleSplit(n_splits=3, test_size=prop_test)
+    splitter = ShuffleSplit(n_splits=3, test_size=prop_test, random_state=random_state)
     cv = GridSearchCV(estimator=model, cv=splitter, param_grid=cv_grid, n_jobs=-1)
     cv.fit(_interleave(x, z), y)
 
-    return type(model)(**cv.best_params_)
+    best_model = clone(model)
+    best_model.set_params(**cv.best_params_)
+
+    params = best_model.get_params()
+    if params.get("random_state") is None and random_state is not None:
+        best_model.set_params(random_state=random_state)
+
+    return best_model
 
 
 def _interleave(x, z, seed=None):
     """Interleave x and z dimension-wise."""
     state = np.random.get_state()
-    np.random.seed(seed or int(time.time()))
+    np.random.seed(seed if seed is not None else int(time.time()))
     total_ids = np.random.permutation(x.shape[1] + z.shape[1])
     np.random.set_state(state)
     out = np.zeros([x.shape[0], x.shape[1] + z.shape[1]])
@@ -227,7 +268,12 @@ def _obtain_error(data_and_i):
     y = data["y"]
     z = data["z"]
     if data["reshuffle"]:
+        reshuffle_seeds = data.get("reshuffle_seeds")
+        seed = None if reshuffle_seeds is None else int(reshuffle_seeds[i])
+        state = np.random.get_state()
+        np.random.seed(seed)
         perm_ids = np.random.permutation(x.shape[0])
+        np.random.set_state(state)
     else:
         perm_ids = np.arange(x.shape[0])
     data_permutation = data["data_permutation"][i]
