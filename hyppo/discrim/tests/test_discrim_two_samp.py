@@ -61,3 +61,18 @@ class TestDiscrErrorWarn:
         x2 = np.arange(3, 23)
         y = np.arange(5, 25)
         assert_raises(ValueError, DiscrimTwoSample().test, x1, x2, y, alt="abcd")
+
+    def test_symmetry_isolates(self):
+        # test #422: ensure output is symmetrical when isolates are removed
+        x1 = np.ones((20, 2), dtype=float)
+        x2 = np.concatenate([np.zeros((10, 2)), np.ones((10, 2))], axis=0)
+        y = np.concatenate([np.zeros(10), np.ones(9), [2]], axis=0) # 2 is an isolate
+
+        discrim1, discrim2, pvalue = DiscrimTwoSample(remove_isolates=True).test(x1, x2, y, workers=1, reps=10)
+        
+        y2 = np.concatenate([np.zeros(10), np.ones(9), [2]], axis=0)
+        discrim1_rev, discrim2_rev, pvalue_rev = DiscrimTwoSample(remove_isolates=True).test(x2, x1, y2, workers=1, reps=10)
+
+        assert_almost_equal(discrim1, discrim2_rev, decimal=2)
+        assert_almost_equal(discrim2, discrim1_rev, decimal=2)
+

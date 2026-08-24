@@ -20,14 +20,31 @@ class _CheckInputs:
                 msg = "The input matrices do not have the same number of rows."
                 raise ValueError(msg)
 
-        tmp_ = []
-        for x1 in self.x:
+        # Pre-process validations for all inputs
+        for i, x1 in enumerate(self.x):
             check_ndarray_xy(x1, self.y)
             contains_nan(x1)
             contains_nan(self.y)
             check_min_samples(x1)
+            # convert_xy_float64 converts both x1 and self.y to float64
             x1, self.y = convert_xy_float64(x1, self.y)
-            tmp_.append(self._condition_input(x1))
+            self.x[i] = x1
+
+        # Calculate uniqueness and isolation ONLY ONCE using the original sized y
+        uniques, counts = np.unique(self.y, return_counts=True)
+        if (counts != 1).sum() <= 1:
+            msg = "You have passed a vector containing only a single unique sample id."
+            raise ValueError(msg)
+
+        if self.remove_isolates:
+            idx = np.isin(self.y, uniques[counts != 1])
+            self.y = self.y[idx]
+        else:
+            idx = np.ones(len(self.y), dtype=bool)
+
+        tmp_ = []
+        for x1 in self.x:
+            tmp_.append(self._condition_input(x1, idx))
 
         self.x = tmp_
 
@@ -36,20 +53,10 @@ class _CheckInputs:
 
         return self.x, self.y
 
-    def _condition_input(self, x1):
-        """Checks whether there is only one subject and removes
-        isolates and calculate distance."""
-        uniques, counts = np.unique(self.y, return_counts=True)
-
-        if (counts != 1).sum() <= 1:
-            msg = "You have passed a vector containing only a single unique sample id."
-            raise ValueError(msg)
-
+    def _condition_input(self, x1, idx):
+        """Removes isolates and calculates distance based on given indices."""
+        x1 = np.asarray(x1)
         if self.remove_isolates:
-            idx = np.isin(self.y, uniques[counts != 1])
-            self.y = self.y[idx]
-
-            x1 = np.asarray(x1)
             if not self.is_distance:
                 x1 = x1[idx]
             else:

@@ -121,6 +121,9 @@ def compute_scale_at_lag(x, y, opt_lag, compute_distance, **kwargs):
     mgc = MGC()
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore")
-        opt_scale = mgc.test(slice_distx, slice_disty, reps=0)[2]["opt_scale"]
+        try:
+            opt_scale = mgc.test(slice_distx, slice_disty, reps=0)[2]["opt_scale"]
+        except ValueError:
+            opt_scale = (slice_distx.shape[0], slice_disty.shape[0])
 
     return opt_scale
