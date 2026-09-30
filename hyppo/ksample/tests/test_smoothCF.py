@@ -50,3 +50,13 @@ class TestSmoothCF:
         stat, pvalue = SmoothCFTest(num_randfreq=1).test(x, y, random_state=1234)
         assert_almost_equal(stat, obs_stat, decimal=2)
         assert_almost_equal(pvalue, obs_pval, decimal=2)
+
+    def test_seed_zero_is_independent_of_prior_global_state(self):
+        rng = np.random.default_rng(0)
+        x = rng.normal(size=(80, 3))
+        y = rng.normal(loc=0.18, size=(80, 3))
+        results = []
+        for prior_seed in (6, 8):
+            np.random.seed(prior_seed)
+            results.append(SmoothCFTest().test(x, y, random_state=0))
+        assert results[0] == results[1]
