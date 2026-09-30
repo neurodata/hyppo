@@ -87,7 +87,7 @@ class MeanEmbeddingTest(KSampleTest):
         """
         _, p = np.shape(x)
 
-        if random_state:
+        if random_state is not None:
             np.random.seed(random_state)
         points = np.random.randn(self.num_randfreq, p)
 

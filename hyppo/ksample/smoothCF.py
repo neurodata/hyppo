@@ -94,7 +94,7 @@ class SmoothCFTest(KSampleTest):
             The computed Smooth CF statistic.
         """
         _, p = np.shape(x)
-        if random_state:
+        if random_state is not None:
             np.random.seed(random_state)
         random_frequencies = np.random.randn(p, self.num_randfreq)
 
