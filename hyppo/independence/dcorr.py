@@ -387,11 +387,16 @@ def _fast_1d_dcov(x, y, bias=False):  # pragma: no cover
         -1, 1
     ) + (si[-1] - 2 * si)
 
+    # use floats so the n**4 terms do not overflow int64 for n > ~55,000
+    nf = float(n)
     if bias:
-        denom = [n**2, n**3, n**4]
+        denom = [nf**2, nf**3, nf**4]
     else:
-        denom = [n * (n - 3), n * (n - 3) * (n - 2), n * (n - 3) * (n - 2) * (n - 1)]
-
+        denom = [
+            nf * (nf - 3),
+            nf * (nf - 3) * (nf - 2),
+            nf * (nf - 3) * (nf - 2) * (nf - 1),
+        ]
     stat = np.sum(
         (d / denom[0])
         + (np.sum(ax) * np.sum(by) / denom[2])
