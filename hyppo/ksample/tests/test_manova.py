@@ -3,7 +3,7 @@ import pytest
 from numpy.testing import assert_almost_equal, assert_raises
 
 from ...tools import power, rot_ksamp
-from .. import MANOVA
+from .. import MANOVA, Hotelling
 
 
 class TestManova:
@@ -19,6 +19,17 @@ class TestManova:
         assert_almost_equal(stat, obs_stat, decimal=1)
         assert_almost_equal(pvalue, obs_pvalue, decimal=1)
 
+    def test_matches_hotelling_multivariate(self):
+        # for two samples MANOVA is equivalent to Hotelling's T^2 test; this
+        # failed for p > 1 because W and B were built with inner products
+        # instead of outer products (issue #323)
+        rng = np.random.default_rng(2022)
+        x = rng.standard_normal((1000, 20))
+        y = rng.standard_normal((1000, 20))
+        _, pvalue_manova = MANOVA().test(x, y)
+        _, pvalue_hotelling = Hotelling().test(x, y)
+
+        assert_almost_equal(pvalue_manova, pvalue_hotelling, decimal=5)
 
 class TestManovaErrorWarn:
     """Tests errors and warnings derived from MGC."""
@@ -42,4 +53,6 @@ class TestManovaTypeIError:
             alpha=0.05,
         )
 
-        assert est_power <= 0.05
+        # a correctly calibrated 5% test has type I error ~0.05 with a standard
+        # error of ~0.007 over 1000 reps, so allow ~3 standard errors
+        assert est_power <= 0.07

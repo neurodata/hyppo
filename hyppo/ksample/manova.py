@@ -180,7 +180,8 @@ def _compute_w(inputs, cmean):  # pragma: no cover
 
     for i in range(len(inputs)):
         for j in range(inputs[i].shape[0]):
-            W += (inputs[i][j, :] - cmean[i]) @ (inputs[i][j, :] - cmean[i]).T
+            diff = inputs[i][j, :] - cmean[i]
+            W += np.outer(diff, diff)
 
     return W
 
@@ -194,6 +195,7 @@ def _compute_b(inputs, cmean, gmean):  # pragma: no cover
 
     for i in range(len(inputs)):
         n = inputs[i].shape[0]
-        B += n * (cmean[i] - gmean) @ (cmean[i] - gmean).T
+        diff = cmean[i] - gmean
+        B += n * np.outer(diff, diff)
 
     return B
