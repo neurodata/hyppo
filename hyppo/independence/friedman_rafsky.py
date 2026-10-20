@@ -42,6 +42,10 @@ class FriedmanRafsky(IndependenceTest):
     class are removed. The number of independent graphs is then summed to determine
     the uncorrected statistic for the test.
 
+    The graph is complete, including zero-length edges between coincident
+    observations. Finite distances are eligible regardless of the units used
+    to measure the samples.
+
     The p-value and null distribution for the corrected statistic are calculated via
     a permutation test using :meth:`hyppo.tools.perm_test`.
 
@@ -180,7 +184,7 @@ def prim(weight_mat, labels):
     MST_connections : list of int
         List of pairs of nodes connected in final MST.
     """
-    INF = 9999999
+    INF = np.inf
     V = len(labels)
     selected = np.zeros(len(labels))
     no_edge = 0
@@ -194,8 +198,8 @@ def prim(weight_mat, labels):
         for i in range(V):
             if selected[i]:
                 for j in range(V):
-                    if (not selected[j]) and weight_mat[i][j]:
-                        # not in selected and there is an edge
+                    if not selected[j]:
+                        # The complete graph includes zero-length edges.
                         if minimum > weight_mat[i][j]:
                             minimum = weight_mat[i][j]
                             x = i
