@@ -196,6 +196,13 @@ class Dcorr(IndependenceTest):
         pvalue : float
             The computed Dcorr p-value.
 
+        Notes
+        -----
+        A test instance can be reused with different data shapes or ``auto``
+        settings. Fast computation and internally computed distance matrices are
+        scoped to each call, so subsequent calls to ``test`` or ``statistic``
+        continue to use the configured distance metric.
+
         Examples
         --------
         >>> import numpy as np
@@ -228,32 +235,38 @@ class Dcorr(IndependenceTest):
         if perm_blocks is not None:
             check_perm_blocks_dim(perm_blocks, y)
 
-        if (
-            auto
-            and x.shape[1] == 1
-            and y.shape[1] == 1
-            and self.compute_distance == "euclidean"
-        ):
-            self.is_fast = True
+        is_fast, is_distance = self.is_fast, self.is_distance
+        try:
+            if (
+                auto
+                and x.shape[1] == 1
+                and y.shape[1] == 1
+                and self.compute_distance == "euclidean"
+            ):
+                self.is_fast = True
 
-        if auto and x.shape[0] > 20 and perm_blocks is None:
-            stat, pvalue = chi2_approx(self.statistic, x, y)
-            self.stat = stat
-            self.pvalue = pvalue
-            self.null_dist = None
-        else:
-            if not self.is_fast:
-                x, y = compute_dist(x, y, metric=self.compute_distance, **self.kwargs)
-                self.is_distance = True
-            stat, pvalue = super(Dcorr, self).test(
-                x,
-                y,
-                reps,
-                workers,
-                perm_blocks=perm_blocks,
-                is_distsim=self.is_distance,
-                random_state=random_state,
-            )
+            if auto and x.shape[0] > 20 and perm_blocks is None:
+                stat, pvalue = chi2_approx(self.statistic, x, y)
+                self.stat = stat
+                self.pvalue = pvalue
+                self.null_dist = None
+            else:
+                if not self.is_fast:
+                    x, y = compute_dist(
+                        x, y, metric=self.compute_distance, **self.kwargs
+                    )
+                    self.is_distance = True
+                stat, pvalue = super(Dcorr, self).test(
+                    x,
+                    y,
+                    reps,
+                    workers,
+                    perm_blocks=perm_blocks,
+                    is_distsim=self.is_distance,
+                    random_state=random_state,
+                )
+        finally:
+            self.is_fast, self.is_distance = is_fast, is_distance
 
         return IndependenceTestOutput(stat, pvalue)
 

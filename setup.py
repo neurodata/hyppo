@@ -31,6 +31,7 @@ REQUIRED_PACKAGES = [
     "numba>=0.46",
     "scikit-learn>=0.19.1",
     "autograd>=1.3",
+    "future>=1.0.0",
 ]
 
 # Find mgc version.
