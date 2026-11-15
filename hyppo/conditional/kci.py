@@ -36,14 +36,10 @@ class KCI(ConditionalIndependenceTest):
     gamma distribution approximation.
 
     When a conditioning variable ``z`` is given, the test follows
-    :footcite:p:`10.5555/3020548.3020641`: the kernel matrices of
-    :math:`(X, Z/2)` and :math:`Y` are centered, the part explained by
-    :math:`Z` is removed with the regularized kernel ridge residual operator
-    :math:`R_Z = \epsilon (\tilde K_Z + \epsilon I)^{-1}`, and the statistic
-    is :math:`\mathrm{tr}(R_Z \tilde K_{X,Z} R_Z \, R_Z \tilde K_Y R_Z)`.
-    The gamma approximation uses the eigenvalues of the two residual kernel
-    matrices. If ``z`` is omitted, the test is unconditional (independence of
-    ``x`` and ``y``) and a warning is raised.
+    :footcite:p:`10.5555/3020548.3020641`: the part of the kernels explained by
+    :math:`Z` is removed with the kernel ridge residual operator
+    :math:`R_Z = \epsilon (\tilde K_Z + \epsilon I)^{-1}`. If ``z`` is omitted,
+    the test is unconditional and a warning is raised.
 
     References
     ----------
@@ -81,11 +77,7 @@ class KCI(ConditionalIndependenceTest):
 
     @staticmethod
     def _residual_kernels(x, y, z, epsilon=1e-3):
-        # Conditional kernels of Zhang et al. (2011), with the default constants
-        # of the authors' reference implementation: Gaussian kernels on
-        # standardized data (ddof=1), kernel width by sample size, squared width
-        # scaled by the dimension of z, z/2 appended to x, kernels centered and
-        # then projected onto the residual space of z.
+        # constants follow the authors' reference implementation
         x, y, z = _CheckInputs(x, y, z, ignore_z_var=True)()
 
         def standardize(a):
@@ -119,8 +111,7 @@ class KCI(ConditionalIndependenceTest):
         Kx, Ky = self._residual_kernels(x, y, z)
         stat = np.trace(Kx @ Ky)
 
-        # null distribution: weighted sum of products of eigenvalues
-        # (Zhang et al. 2011, Theorem 4), gamma approximation
+        # gamma approximation from the eigenvalues (Zhang et al. 2011, Theorem 4)
         wx, vx = np.linalg.eigh((Kx + Kx.T) / 2)
         wy, vy = np.linalg.eigh((Ky + Ky.T) / 2)
         keep_x = wx > wx.max() * 1e-5
@@ -185,9 +176,8 @@ class KCI(ConditionalIndependenceTest):
             dimensions.
         z : ndarray of float, optional
             Conditioning variable of shape ``(n, q)``. If ``None`` (the
-            default), the unconditional test of the previous releases is
-            run and a ``UserWarning`` is raised. The same applies to
-            :meth:`statistic`.
+            default), the unconditional test is run and a ``UserWarning`` is
+            raised.
 
         Returns
         -------
@@ -206,8 +196,7 @@ class KCI(ConditionalIndependenceTest):
         >>> '%.1f, %.2f' % (stat, pvalue)
         '544.7, 0.00'
 
-        With a conditioning variable ``z``, the test asks whether ``x`` and
-        ``y`` are independent given ``z``:
+        With a conditioning variable ``z``:
 
         >>> rng = np.random.RandomState(0)
         >>> z = rng.normal(size=(100, 1))

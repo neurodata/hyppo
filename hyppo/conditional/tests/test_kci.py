@@ -46,7 +46,7 @@ class TestKCI:
 
 
 def _chain(n, seed):
-    # x and y both depend on z, and are independent given z
+    # x and y both depend on z, independent given z
     rng = np.random.RandomState(seed)
     z = rng.normal(size=(n, 1))
     x = z + 0.5 * rng.normal(size=(n, 1))
@@ -66,14 +66,13 @@ class TestKCIConditional:
     @pytest.mark.parametrize("n", [100, 300])
     def test_conditionally_dependent(self, n):
         x, y, z = _chain(n, 0)
-        y = y + x  # y now depends on x also given z
+        y = y + x
         stat, pvalue = KCI().test(x, y, z)
 
         assert pvalue < 0.05
 
     def test_z_is_used(self):
-        # x and y are independent given the true z, and not given a z that
-        # has been shuffled so that it no longer carries the dependence
+        # a shuffled z no longer removes the dependence of x and y on z
         x, y, z = _chain(300, 1)
         z_shuffled = z[np.random.RandomState(5).permutation(300)]
 
@@ -101,8 +100,7 @@ class TestKCIConditional:
         [(100, 0.99449337, 0.17610331), (300, 23.0644991, 0.10251098)],
     )
     def test_matches_causal_learn(self, n, stat, pvalue):
-        # reference values: causal-learn 0.1.4.8, KCI_CInd().compute_pvalue(x, y, z)
-        # on the same data (equal to about 1e-11)
+        # reference values from causal-learn 0.1.4.8 KCI_CInd on the same data
         x, y, z = _chain(n, 0)
         out = KCI().test(x, y, z)
 
@@ -110,7 +108,7 @@ class TestKCIConditional:
         assert_allclose(out.pvalue, pvalue, rtol=1e-6)
 
     def test_matches_causal_learn_multivariate_z(self):
-        # causal-learn 0.1.4.8, KCI_CInd().compute_pvalue(x, y, z), 3-D z
+        # reference values from causal-learn 0.1.4.8 KCI_CInd, 3-D z
         rng = np.random.RandomState(7)
         z = rng.normal(size=(120, 3))
         s = z.sum(axis=1, keepdims=True)
