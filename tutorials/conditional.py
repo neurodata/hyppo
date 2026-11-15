@@ -88,14 +88,16 @@ print("p-value: ", pvalue)
 #    :Pros: - Very fast on high-dimensional data due to simplicity and approximation
 #    :Cons: - Dispute in literature as to ideal theta value, loss of accuracy on very large datasets
 #
-# Below is a linear example where we reject the null hypothesis:
+# Below is an example where ``y`` depends on ``x`` even given ``z``, so we reject
+# the null hypothesis:
 
 import numpy as np
 from hyppo.conditional import KCI
-from hyppo.tools import linear
 np.random.seed(123456789)
-x, y = linear(100, 1)
-stat, pvalue = KCI().test(x, y)
+z = np.random.normal(size=(100, 1))
+x = z + 0.5 * np.random.normal(size=(100, 1))
+y = z + x + 0.5 * np.random.normal(size=(100, 1))
+stat, pvalue = KCI().test(x, y, z)
 print("Statistic: ", stat)
 print("p-value: ", pvalue)
 
